@@ -1,0 +1,39 @@
+.container {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    z-index: 5;
+    height: 100%;
+    overflow: hidden;
+    margin: 0 auto;
+    box-shadow: rgb(0 0 0 / 50%) 2px 2px 15px;
+}
+
+.cell {
+    width: calc(100% / var(--segment, 3));
+    padding: 2px;
+}
+
+@media screen and (min-width: 560px) {
+    .cell {
+        --segment: 5;
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .cell {
+        --segment: 7;
+    }
+}
+
+@media screen and (min-width: 900px) {
+    .cell {
+        --segment: 8;
+    }
+}
+
+@media screen and (min-width: 1000px) {
+    .cell {
+        --segment: 10;
+    }
+}
