@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import IframeWithoutHistory from './IframeWithoutHistory';
 import LoadingOverlay from '../../loading/LoadingOverlay';
 
-function IframeWithLoading({ src, onLoad, ...props }: JSX.IntrinsicElements['iframe']) {
+function IframeWithLoading({ src, onLoad, style, ...props }: JSX.IntrinsicElements['iframe']) {
     const [loading, setLoading] = useState(false)
     useEffect(() => {
         setLoading(true)
@@ -16,6 +16,10 @@ function IframeWithLoading({ src, onLoad, ...props }: JSX.IntrinsicElements['ifr
         }}>
             <IframeWithoutHistory
                 {...props}
+                style={{
+                    ...style,
+                    opacity: loading ? 0 : 1
+                }}
                 src={src}
                 onLoad={
                     (event) => {

@@ -215,10 +215,10 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                 backgroundImage: 'var(--line-gradient-image)'
             }}>
                 <title>{this.pageTitle}</title>
-                <BackgroundContainer>
-                    <Box className={css.container}>
-                        {
-                            this.props.video ? (
+                {
+                    this.props.video ? (
+                        <BackgroundContainer>
+                            <Box className={css.container}>
                                 <Box sx={
                                     (theme) => ({
                                         display: 'flex',
@@ -434,12 +434,12 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                         </TabPanel>
                                     </Box>
                                 </Box>
-                            ) : (
-                                <NoData text="💔 数据解析错误.." />
-                            )
-                        }
-                    </Box>
-                </BackgroundContainer>
+                            </Box>
+                        </BackgroundContainer>
+                    ) : (
+                        <NoData text="💔 数据解析错误.." />
+                    )
+                }
             </Box>
         )
     }
