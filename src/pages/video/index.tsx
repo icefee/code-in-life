@@ -506,7 +506,7 @@ function VideoSummary({ video }: VideoSummaryProps) {
 
 function parseDataUrl(s: string): VideoDetailProps {
     try {
-        return JSON.parse(utf82utf16(atob(s))) as VideoDetailProps;
+        return JSON.parse(utf82utf16(atob(decodeURIComponent(s)))) as VideoDetailProps;
     }
     catch (err) {
         return {
@@ -518,11 +518,10 @@ function parseDataUrl(s: string): VideoDetailProps {
 }
 
 export default function Page({ location }: PageProps) {
-    const urlSearch = new URLSearchParams(location.search)
     return (
         <NoSsr>
             <VideoDetail
-                {...parseDataUrl(urlSearch.get('d'))}
+                {...parseDataUrl(location.hash.slice(1))}
             />
         </NoSsr>
     )
