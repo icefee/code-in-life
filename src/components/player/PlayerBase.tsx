@@ -1,5 +1,7 @@
 import React, { useCallback } from 'react';
-import Player from './Player';
+import loadable from '@loadable/component'
+
+const Player = loadable(() => import('./Player'))
 
 export type VideoParams = {
     seek?: number;
