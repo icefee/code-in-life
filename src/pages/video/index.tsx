@@ -205,7 +205,7 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
         if (this.props.video) {
             return this.props.video.name
         }
-        return '访问的内容不存在'
+        return '数据解析错误'
     }
 
     public render(): React.ReactNode {
@@ -215,10 +215,10 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                 backgroundImage: 'var(--line-gradient-image)'
             }}>
                 <title>{this.pageTitle}</title>
-                {
-                    this.props.video ? (
-                        <BackgroundContainer>
-                            <Box className={css.container}>
+                <BackgroundContainer>
+                    <Box className={css.container}>
+                        {
+                            this.props.video ? (
                                 <Box sx={
                                     (theme) => ({
                                         display: 'flex',
@@ -434,12 +434,12 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                         </TabPanel>
                                     </Box>
                                 </Box>
-                            </Box>
-                        </BackgroundContainer>
-                    ) : (
-                        <NoData text="😥 数据解析失败.." />
-                    )
-                }
+                            ) : (
+                                <NoData text="💔 数据解析错误.." />
+                            )
+                        }
+                    </Box>
+                </BackgroundContainer>
             </Box>
         )
     }
