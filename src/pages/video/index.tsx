@@ -19,6 +19,7 @@ import { M3u8 } from '../../util/RegExp';
 import IframeWithLoading from '../../components/layout/element/IframeWithLoading';
 import { Api } from '../../util/config';
 import { jsonBase64, utf82utf16 } from '../../util/parser';
+import M3u8UrlParser from '../../components/search/M3u8UrlParser';
 import * as css from './style.module.css';
 
 interface TabPanelProps extends React.PropsWithChildren<{
@@ -240,28 +241,18 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                             maxHeight: '100vh'
                                         }
                                     })}>
-                                        {
-                                            M3u8.isM3u8Url(this.playingUrl) ? (
-                                                <VideoPlayer
-                                                    url={this.playingUrl}
-                                                    params={this.videoParams}
-                                                    onPlaying={this.onPlaying.bind(this)}
-                                                    onEnd={this.onPlayEnd.bind(this)}
-                                                />
-                                            ) : (
-                                                <IframeWithLoading
-                                                    width="100%"
-                                                    height="100%"
-                                                    style={{
-                                                        border: 'none'
-                                                    }}
-                                                    allowFullScreen
-                                                    allowTransparency
-                                                    allow="autoplay fullscreen picture-in-picture screen-wake-lock web-share"
-                                                    src={`/video/player?url=${this.playingUrl}`}
-                                                />
-                                            )
-                                        }
+                                        <M3u8UrlParser url={this.playingUrl}>
+                                            {
+                                                url => (
+                                                    <VideoPlayer
+                                                        url={url}
+                                                        params={this.videoParams}
+                                                        onPlaying={this.onPlaying.bind(this)}
+                                                        onEnd={this.onPlayEnd.bind(this)}
+                                                    />
+                                                )
+                                            }
+                                        </M3u8UrlParser>
                                     </Box>
                                     {
                                         this.activeSource.urls.length > 1 && (

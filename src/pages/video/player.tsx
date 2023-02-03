@@ -3,6 +3,7 @@ import { type PageProps, type GetServerDataProps } from 'gatsby';
 import Box from '@mui/material/Box';
 import VideoPlayer from '../../components/player/PlayerBase';
 import { M3u8 } from '../../util/RegExp';
+import { getM3u8Url } from '../../components/search/api';
 
 interface VideoParserPlayerProps {
     url: string;
@@ -19,40 +20,18 @@ const VideoParserPlayer: React.FC<PageProps<object, object, unknown, VideoParser
     )
 }
 
-async function getM3u8Url(url: string) {
-    try {
-        const html = await fetch(url).then(
-            response => response.text()
-        );
-        const matchedUrls = html.match(M3u8.match);
-        if (matchedUrls) {
-            const parsedUrl = matchedUrls[0];
-            if (parsedUrl.startsWith('http')) {
-                return parsedUrl;
-            }
-            const uri = new URL(url);
-            if (parsedUrl.startsWith('/')) {
-                return uri.origin + parsedUrl;
-            }
-            const paths = uri.pathname.split('/');
-            paths.pop();
-            return uri.origin + paths.join('/') + '/' + parsedUrl;
-        }
-    }
-    catch (err) {
-        console.log('💔 req failed')
-    }
-    return null;
-}
-
 export async function getServerData({ query }: GetServerDataProps) {
     const { url } = query as Record<'url', string>;
     if (url) {
+        const headers = {
+            'x-frame-options': 'ALLOW-FROM https://cif.stormkit.dev'
+        }
         if (M3u8.isM3u8Url(url)) {
             return {
                 props: {
                     url
-                }
+                },
+                headers
             }
         }
         else {
@@ -62,7 +41,8 @@ export async function getServerData({ query }: GetServerDataProps) {
                     return {
                         props: {
                             url: parsedUrl
-                        }
+                        },
+                        headers
                     }
                 }
                 else {
