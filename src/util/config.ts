@@ -3,7 +3,6 @@ export abstract class MapConfig {
 }
 
 export abstract class Api {
-    public static baseUrl = 'https://video-space.vercel.app/api'
     public static site = 'http://code-in-life.netlify.app'
     public static assetSite = 'https://code-in-life.onrender.com'
 }

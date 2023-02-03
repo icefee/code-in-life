@@ -79,6 +79,7 @@ export const ThemeStorager: React.FC<ThemeStoragerProps> = ({ children }) => {
 
     return (
         <ThemeProvider theme={displayTheme}>
+            <CssBaseline enableColorScheme />
             {typeof children === 'function' ? children({
                 themeMode,
                 setThemeMode

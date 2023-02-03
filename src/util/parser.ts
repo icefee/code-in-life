@@ -4,7 +4,7 @@ export async function jsonBase64<T extends any>(response: Response) {
     if (!matchedBase64 && isNextResult(text)) {
         return null;
     }
-    return matchedBase64 ? JSON.parse(utf82utf16(atob(matchedBase64[0]))) as T : null;
+    return matchedBase64 ? JSON.parse(Buffer.from(matchedBase64[0], 'base64').toString('utf-8')) as T : null;
 }
 
 export async function image(response: Response) {

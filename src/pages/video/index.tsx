@@ -1,5 +1,5 @@
 import React, { Component, useMemo } from 'react';
-import { PageProps } from 'gatsby';
+import { PageProps, GetServerDataProps } from 'gatsby';
 import NoSsr from '@mui/material/NoSsr';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -18,7 +18,7 @@ import VideoPlayer, { type VideoParams } from '../../components/player/PlayerBas
 import { M3u8 } from '../../util/RegExp';
 import IframeWithLoading from '../../components/layout/element/IframeWithLoading';
 import { Api } from '../../util/config';
-import { utf82utf16 } from '../../util/parser';
+import { jsonBase64, utf82utf16 } from '../../util/parser';
 import * as css from './style.module.css';
 
 interface TabPanelProps extends React.PropsWithChildren<{
@@ -517,12 +517,45 @@ function parseDataUrl(s: string): VideoDetailProps {
     }
 }
 
-export default function Page({ location }: PageProps) {
+export default function Page({ location, serverData }: PageProps<object, object, unknown, { data: VideoDetailProps | null }>) {
     return (
         <NoSsr>
             <VideoDetail
-                {...parseDataUrl(location.hash.slice(1))}
+                {...(serverData.data ?? parseDataUrl(location.hash.slice(1)))}
             />
         </NoSsr>
     )
+}
+
+export async function getServerData({ query }: GetServerDataProps) {
+    const { api, id } = query;
+    if (api && id) {
+        try {
+            const videoInfo = await fetch(`${Api.site}/video/api?api=${api}&id=${id}`).then(
+                response => jsonBase64<VideoInfo>(response)
+            )
+            if (videoInfo) {
+                return {
+                    props: {
+                        data: {
+                            api,
+                            id,
+                            video: videoInfo
+                        }
+                    }
+                }
+            }
+            else {
+                throw new Error('fetch error.')
+            }
+        }
+        catch (err) {
+            return {
+                status: 404
+            }
+        }
+    }
+    return {
+        props: {}
+    }
 }
