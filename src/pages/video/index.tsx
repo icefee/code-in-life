@@ -258,7 +258,7 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                                     allowFullScreen
                                                     allowTransparency
                                                     allow="autoplay fullscreen picture-in-picture screen-wake-lock web-share"
-                                                    src={`${Api.assetSite}/video/player?url=${this.playingUrl}`}
+                                                    src={`/video/player?url=${this.playingUrl}`}
                                                 />
                                             )
                                         }
