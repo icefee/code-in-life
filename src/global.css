@@ -7,8 +7,8 @@ body,
 }
 
 :root {
-  --line-gradient: #561f8d, #3f51b5;
-  --line-gradient-image: linear-gradient(0, var(--line-gradient));
+  --linear-gradient: #561f8d, #3f51b5;
+  --linear-gradient-image: linear-gradient(0, var(--linear-gradient));
 }
 
 body {

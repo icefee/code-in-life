@@ -9,7 +9,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 export function Head() {
     return (
-        <title>页面不存在</title>
+        <title>内容不存在</title>
     )
 }
 
@@ -43,7 +43,7 @@ const Page404 = () => (
                         }
                     })}
                 >
-                    访问的页面不存在
+                    访问的内容不存在
                 </Typography>
                 <Box sx={{
                     textAlign: 'center',
@@ -68,10 +68,15 @@ const Page404 = () => (
                     }}
                 >
                     <Button
-                        startIcon={(<ArrowBackIcon fontSize="small" />)}
+                        startIcon={
+                            <ArrowBackIcon fontSize="small" />
+                        }
                         variant="contained"
+                        onClick={
+                            () => history.back()
+                        }
                     >
-                        返回主页
+                        返回上一页
                     </Button>
                 </Link>
             </Box>

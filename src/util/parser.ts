@@ -1,3 +1,5 @@
+export type DataParser<P = unknown> = <T extends any = P>(response: Response) => Promise<T> | T;
+
 export async function jsonBase64<T extends any>(response: Response) {
     const text = await response.text()
     const matchedBase64 = text.match(/[a-zA-Z\d\/\+\=]{100,}/g)

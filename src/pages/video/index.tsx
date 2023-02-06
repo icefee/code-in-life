@@ -15,8 +15,6 @@ import BackgroundContainer from '../../components/layout/BackgroundContainer';
 import { type VideoItem, type VideoSource, type VideoInfo } from '../../components/search/api';
 import NoData from '../../components/search/NoData';
 import VideoPlayer, { type VideoParams } from '../../components/player/PlayerBase';
-import { M3u8 } from '../../util/RegExp';
-import IframeWithLoading from '../../components/layout/element/IframeWithLoading';
 import { Api } from '../../util/config';
 import { jsonBase64, utf82utf16 } from '../../util/parser';
 import M3u8UrlParser from '../../components/search/M3u8UrlParser';
@@ -213,7 +211,7 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
         return (
             <Box sx={{
                 height: '100%',
-                backgroundImage: 'var(--line-gradient-image)'
+                backgroundImage: 'var(--linear-gradient-image)'
             }}>
                 <title>{this.pageTitle}</title>
                 {

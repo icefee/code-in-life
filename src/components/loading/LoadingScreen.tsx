@@ -12,7 +12,7 @@ function LoadingScreen({ label = '数据加载中...' }: LoadingScreenProps) {
     return (
         <Stack sx={{
             height: '100%',
-            backgroundImage: 'var(--line-gradient-image)'
+            backgroundImage: 'var(--linear-gradient-image)'
         }} justifyContent="center" alignItems="center">
             <Stack sx={(theme) => ({
                 p: 1.5,

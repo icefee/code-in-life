@@ -1,5 +1,13 @@
 import { M3u8 } from '../../util/RegExp';
 
+export interface SearchVideo {
+    key: string;
+    name: string;
+    rating: number;
+    data: VideoListItem[];
+    page: ResponsePagination;
+}
+
 export type VideoItem = {
     label: string;
     url: string;
@@ -25,6 +33,23 @@ export interface VideoInfo {
     state: number;
     tid: number;
     dataList: VideoSource[]
+}
+
+export interface VideoListItem {
+    id: number;
+    name: string;
+    note: string;
+    last: string;
+    dt: string;
+    tid: number;
+    type: string;
+}
+
+export interface ResponsePagination {
+    page: number;
+    pagecount: number;
+    pagesize: number;
+    recordcount: number;
 }
 
 export async function getM3u8Url(url: string) {

@@ -59,7 +59,7 @@ class BackgroundContainer extends Component<BackgroundContainerProps, Background
     public get backgroundImage() {
         const { backgroundImage } = this.state;
         if (backgroundImage === '') {
-            return 'var(--line-gradient-image)'
+            return 'var(--linear-gradient-image)'
         }
         return `url(${backgroundImage})`;
     }

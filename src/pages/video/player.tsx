@@ -26,7 +26,7 @@ export async function getServerData({ query }: GetServerDataProps) {
         const headers = {
             'x-frame-options': 'ALLOW-FROM https://cif.stormkit.dev/video'
         }
-        if (M3u8.isM3u8Url(url)) {
+        if (M3u8.isM3u8Url(url) || /\.(mp4)$/.test(url)) {
             return {
                 props: {
                     url
