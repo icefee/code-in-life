@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import type { GetServerDataProps, PageProps } from 'gatsby';
+import type { GetServerDataProps, HeadProps, PageProps } from 'gatsby';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import SearchResult from '../../../components/search/Result';
 import { StaticTheme } from '../../../components/theme';
 import SearchForm from '../../../components/search/Form';
@@ -18,7 +19,7 @@ interface VideoSearchProps {
 
 export default function VideoSearch({ serverData }: PageProps<object, object, unknown, VideoSearchProps>) {
 
-    const { s = '', prefer, list } = serverData;
+    const { s = '', prefer = '', list } = serverData;
     const [keyword, setKeyword] = useState(s)
 
     return (
@@ -42,36 +43,70 @@ export default function VideoSearch({ serverData }: PageProps<object, object, un
                         })
                     }>
                         <SearchForm
+                            action="/video/search/"
                             value={keyword}
                             onChange={setKeyword}
-                            staticFields={{}}
+                            staticFields={keyword.startsWith('$') ? {
+                                prefer: '18'
+                            } : null}
                         />
                     </Box>
                 </Stack>
-                <SearchResult keyword={keyword} videoList={list} />
+                {
+                    s === '' ? (
+                        <Stack sx={{
+                            position: 'relative',
+                            zIndex: 120
+                        }} flexGrow={1} justifyContent="center" alignItems="center">
+                            <Typography variant="h6" color="#fff">🔍 输入关键词发起搜索</Typography>
+                        </Stack>
+                    ) : (
+                        <Box sx={{
+                            flexGrow: 1,
+                            overflowY: 'auto'
+                        }}>
+                            <SearchResult keyword={keyword} videoList={list} />
+                        </Box>
+                    )
+                }
             </BackgroundContainer>
         </StaticTheme>
     )
 }
 
-export function Head() {
+export function Head({ serverData }: HeadProps<object, object, VideoSearchProps>) {
+    const { s } = serverData;
+    let title = '影视搜索';
+    if (s) {
+        title += ' - ' + s
+    }
     return (
-        <title>影视搜索</title>
+        <title>{title}</title>
     )
 }
 
 export async function getServerData({ query }: GetServerDataProps) {
-    const { s = '', prefer } = query as Record<'s' | 'prefer', string>;
-    const url = Api.site + `/video/search/api?s=${s}&prefer=${prefer}`;
+    const { s = '', prefer = '' } = query as Record<'s' | 'prefer', string>;
+    if (s === '') {
+        return {
+            props: {
+                list: []
+            }
+        }
+    }
+    const wd = s.startsWith('$') ? s.slice(1) : s;
+    const url = Api.site + `/video/search/api?s=${wd}&prefer=${prefer}`;
     try {
         const list = await fetch(url).then(
             response => jsonBase64<SearchVideo[]>(response)
         )
         if (list) {
             return {
-                list,
-                s,
-                prefer
+                props: {
+                    list,
+                    s,
+                    prefer
+                }
             }
         }
         else {

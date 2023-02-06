@@ -190,6 +190,7 @@ function Proxy({ serverData }: PageProps<object, object, unknown, ProxyProps>) {
                         })
                     }>
                         <SearchForm
+                            action="/video/proxy/"
                             value={keyword}
                             onChange={setKeyword}
                             staticFields={{

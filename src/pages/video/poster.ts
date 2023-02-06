@@ -1,17 +1,18 @@
 import React from 'react';
 import type { GetServerDataProps, PageProps } from 'gatsby';
 import { Api } from '../../util/config';
+import { image } from '../../util/parser';
 
-interface ParserProps {
+interface PosterParserProps {
     url: string;
 }
 
-const Parser: React.FC<PageProps<object, object, unknown, ParserProps>> = ({ serverData }) => React.createElement(React.Fragment, null, [serverData.url]);
+const PosterParser: React.FC<PageProps<object, object, unknown, PosterParserProps>> = ({ serverData }) => React.createElement(React.Fragment, null, [serverData.url]);
 
 async function getPosterUrl(api: string, id: string) {
     const url = `${Api.site}/video/${api}/${id}/poster`;
     try {
-        const parsedUrl = await fetch(url);
+        const parsedUrl = await fetch(url).then(image);
         return parsedUrl;
     }
     catch (err) {
@@ -34,4 +35,4 @@ export async function getServerData({ query }: GetServerDataProps) {
     }
 }
 
-export default Parser;
+export default PosterParser;

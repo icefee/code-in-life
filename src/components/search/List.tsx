@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
 import Box from '@mui/material/Box';
@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import CardActionArea from '@mui/material/CardActionArea';
 import ThumbLoader from './ThumbLoader';
 import RowClipTypography from '../layout/element/RowClipTypography';
-import { DataParser, image } from '../../util/parser';
+import { image } from '../../util/parser';
 import type { VideoListItem } from './api';
 
 type ListData = VideoListItem[];
@@ -43,7 +43,20 @@ export function SearchList({ data, api, typed = false }: ListProps) {
 }
 
 function usePosterUrl(api: string, id: number) {
-    return '';
+    const [poster, setPoster] = useState(null)
+    useEffect(() => {
+        const getPoster = async () => {
+            const parsedPoster = await fetch(`/video/poster/?api=${api}&id=${id}`).then(image)
+            if (parsedPoster) {
+                setPoster(parsedPoster)
+            }
+            else {
+                getPoster()
+            }
+        }
+        getPoster()
+    }, [])
+    return poster;
 }
 
 interface VideoItemProps extends Pick<ListProps, 'api' | 'typed'> {
@@ -53,6 +66,7 @@ interface VideoItemProps extends Pick<ListProps, 'api' | 'typed'> {
 function VideoItem({ video, api, typed }: VideoItemProps) {
 
     const poster = usePosterUrl(api, video.id)
+    const videoUrl = useMemo(() => `/video/?api=${api}&id=${video.id}`, [api, video.id])
 
     return (
         <Card elevation={2}>
@@ -61,7 +75,7 @@ function VideoItem({ video, api, typed }: VideoItemProps) {
                     width: 125,
                     height: 180,
                     flexShrink: 0
-                }} href={`/video/${api}/${video.id}`} target="_blank">
+                }} href={videoUrl} target="_blank">
                     {
                         poster ? (
                             <ThumbLoader
@@ -90,7 +104,7 @@ function VideoItem({ video, api, typed }: VideoItemProps) {
                         <Box sx={{
                             flexGrow: 1
                         }}>
-                            <Link underline="hover" href={`/video/${api}/${video.id}`} target="_blank">
+                            <Link underline="hover" href={videoUrl} target="_blank">
                                 <RowClipTypography
                                     lineHeight={1.2}
                                     rows={2}
@@ -102,15 +116,7 @@ function VideoItem({ video, api, typed }: VideoItemProps) {
                                 <Chip
                                     label={video.type}
                                     color="primary"
-                                    {...(typed ? {
-                                        variant: 'outlined'
-                                    } : {
-                                        variant: 'filled',
-                                        clickable: true,
-                                        component: 'a',
-                                        href: `/video/${api}?t=` + video.tid,
-                                        target: '_blank'
-                                    })}
+                                    variant="outlined"
                                 />
                                 <Typography variant="body1" color="text.secondary">{video.note}</Typography>
                             </Stack>

@@ -6,6 +6,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import SearchIcon from '@mui/icons-material/Search';
 
 interface SearchFormProps {
+    action: string;
     value: string;
     onChange: (value: string) => void;
     staticFields?: Record<string, string>;
@@ -17,7 +18,7 @@ class SearchForm extends Component<SearchFormProps, {}> {
         return (
             <Paper
                 component="form"
-                action="/video/proxy/"
+                action={this.props.action}
                 sx={(theme) => ({
                     display: 'flex',
                     width: '100%',

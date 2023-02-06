@@ -58,7 +58,7 @@ function SearchResult({ keyword, videoList }: SearchResultProps) {
                                         readOnly
                                     />
                                 </Stack>
-                                <Button
+                                {/* <Button
                                     LinkComponent="a"
                                     href={`/video/${key}`}
                                     target="_blank"
@@ -66,7 +66,7 @@ function SearchResult({ keyword, videoList }: SearchResultProps) {
                                     startIcon={
                                         <ManageSearchIcon />
                                     }
-                                >站内查询</Button>
+                                >站内查询</Button> */}
                             </ListSubheader>
                         }>
                             <Box sx={(theme) => ({
