@@ -46,12 +46,17 @@ function usePosterUrl(api: string, id: number) {
     const [poster, setPoster] = useState(null)
     useEffect(() => {
         const getPoster = async () => {
-            const parsedPoster = await fetch(`/video/poster/?api=${api}&id=${id}`).then(image)
-            if (parsedPoster) {
-                setPoster(parsedPoster)
+            try {
+                const parsedPoster = await fetch(`/video/poster/?api=${api}&id=${id}`).then(image)
+                if (parsedPoster) {
+                    setPoster(parsedPoster)
+                }
+                else {
+                    throw new Error(`Get poster failed through api=${api}&id=${id}`)
+                }
             }
-            else {
-                getPoster()
+            catch (err) {
+                setTimeout(getPoster, 2e3)
             }
         }
         getPoster()
