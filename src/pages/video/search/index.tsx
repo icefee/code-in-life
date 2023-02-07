@@ -104,7 +104,7 @@ export async function getServerData({ query }: GetServerDataProps) {
             return {
                 props: {
                     list,
-                    s,
+                    s: decodeURIComponent(s),
                     prefer
                 }
             }

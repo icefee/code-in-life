@@ -332,7 +332,7 @@ export async function getServerData({ query }: GetServerDataProps) {
             const list = await getSearch(s, pg, host)
             return {
                 props: {
-                    s,
+                    s: decodeURIComponent(s),
                     p: pg,
                     host,
                     list
