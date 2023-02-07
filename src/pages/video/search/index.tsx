@@ -58,7 +58,7 @@ export default function VideoSearch({ serverData }: PageProps<object, object, un
                             position: 'relative',
                             zIndex: 120
                         }} flexGrow={1} justifyContent="center" alignItems="center">
-                            <Typography variant="h6" color="#fff">🔍 输入关键词发起搜索</Typography>
+                            <Typography variant="body1" color="hsl(270, 64%, 84%)">🔍 输入关键词发起搜索</Typography>
                         </Stack>
                     ) : (
                         <Box sx={{

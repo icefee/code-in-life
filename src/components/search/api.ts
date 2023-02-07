@@ -18,6 +18,11 @@ export type VideoSource = {
     urls: VideoItem[]
 }
 
+export type VideoType = {
+    tid: string;
+    tname: string;
+}
+
 export interface VideoInfo {
     name: string;
     note: string;

@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'gatsby';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
@@ -61,24 +60,17 @@ const Page404 = () => (
                         }}
                     />
                 </Box>
-                <Link
-                    to="/"
-                    style={{
-                        textDecoration: 'none'
-                    }}
+                <Button
+                    startIcon={
+                        <ArrowBackIcon fontSize="small" />
+                    }
+                    variant="contained"
+                    onClick={
+                        () => history.back()
+                    }
                 >
-                    <Button
-                        startIcon={
-                            <ArrowBackIcon fontSize="small" />
-                        }
-                        variant="contained"
-                        onClick={
-                            () => history.back()
-                        }
-                    >
-                        返回上一页
-                    </Button>
-                </Link>
+                    返回上一页
+                </Button>
             </Box>
         </Container>
     </Box>

@@ -116,7 +116,15 @@ function VideoItem({ video, api, typed }: VideoItemProps) {
                                 <Chip
                                     label={video.type}
                                     color="primary"
-                                    variant="outlined"
+                                    {...(typed ? {
+                                        variant: 'outlined'
+                                    } : {
+                                        variant: 'filled',
+                                        clickable: true,
+                                        component: 'a',
+                                        href: `/video/${api}?t=` + video.tid,
+                                        target: '_blank'
+                                    })}
                                 />
                                 <Typography variant="body1" color="text.secondary">{video.note}</Typography>
                             </Stack>
