@@ -94,7 +94,6 @@ async function getLatest(page: number, host: string) {
         }
     }
     catch (err) {
-        console.log(err)
         return null;
     }
 }
