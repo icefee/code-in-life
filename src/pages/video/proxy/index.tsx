@@ -334,7 +334,7 @@ export async function getServerData({ query }: GetServerDataProps) {
             }
         }
         const pg = p ? Number(p) : 1;
-        if (s) {
+        if (s && s.trim().length > 0) {
             const list = await getSearch(s, pg, host)
             return {
                 props: {
@@ -349,8 +349,8 @@ export async function getServerData({ query }: GetServerDataProps) {
             const list = await getLatest(pg, host)
             return {
                 props: {
-                    host,
                     p: pg,
+                    host,
                     list
                 }
             }
