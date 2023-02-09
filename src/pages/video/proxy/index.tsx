@@ -60,8 +60,8 @@ async function getLatest(page: number, host: string) {
             }
         }
 
-        const posters = html.match(
-            new RegExp('(' + posterUrl + '|' + sparePosterUrl + ')' + '.+?\.webp', 'g')
+        const posters = html.match( // https://img1.ng8wu.com/p2/7dac5bff19ca1d98da20a378c2bfd198.webp
+            new RegExp('https://.+?\.webp', 'g')
         )
         const data = html.match(
             /<a href=\"\/video\/\d{1,9}\/\">.+?<\/a>/g
@@ -83,7 +83,7 @@ async function getLatest(page: number, host: string) {
                     videoTitle,
                     pageUrl,
                     createTime: '',
-                    videoImgUrl: posters[index]?.replace(new RegExp('(' + posterUrl + '|' + sparePosterUrl + ')'), '')
+                    videoImgUrl: posters[index]
                 }
             }
         )
@@ -95,6 +95,7 @@ async function getLatest(page: number, host: string) {
         }
     }
     catch (err) {
+        console.log(err)
         return null;
     }
 }
@@ -169,6 +170,13 @@ function Proxy({ serverData }: PageProps<object, object, unknown, ProxyProps>) {
         </Stack>
     )
 
+    const getPosterUrl = (url: string) => {
+        if (url.startsWith('http')) {
+            return url;
+        }
+        return posterUrl + url;
+    }
+
     return (
         <StaticTheme>
             <BackgroundContainer style={{
@@ -227,7 +235,7 @@ function Proxy({ serverData }: PageProps<object, object, unknown, ProxyProps>) {
                                                                     flexShrink: 0
                                                                 }}>
                                                                     <ThumbLoader
-                                                                        src={posterUrl + video.videoImgUrl}
+                                                                        src={getPosterUrl(video.videoImgUrl)}
                                                                         fill
                                                                         alt={video.videoTitle}
                                                                         errorText="缩略图加载失败"
@@ -317,7 +325,7 @@ export function Head() {
 
 export async function getServerData({ query }: GetServerDataProps) {
     try {
-        let { host, s = '', p } = query as Record<string, string>;
+        let { host, s, p } = query as Record<string, string>;
         if (!host) {
             const latestHost = await checkHost();
             if (latestHost) {

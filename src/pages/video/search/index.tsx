@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import type { GetServerDataProps, HeadProps, PageProps } from 'gatsby';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
@@ -21,6 +21,13 @@ export default function VideoSearch({ serverData }: PageProps<object, object, un
 
     const { s = '', prefer = '', list } = serverData;
     const [keyword, setKeyword] = useState(s)
+    const prefer18 = useMemo(() => keyword.startsWith('$'), [keyword])
+    const actualKeyword = useMemo(() => {
+        if (prefer18) {
+            return keyword.slice(1)
+        }
+        return keyword;
+    }, [prefer18, keyword])
 
     return (
         <StaticTheme>
@@ -44,9 +51,9 @@ export default function VideoSearch({ serverData }: PageProps<object, object, un
                     }>
                         <SearchForm
                             action="/video/search/"
-                            value={keyword}
+                            value={prefer === '18' ? actualKeyword : keyword}
                             onChange={setKeyword}
-                            staticFields={keyword.startsWith('$') ? {
+                            staticFields={prefer18 ? {
                                 prefer: '18'
                             } : null}
                         />
@@ -65,7 +72,7 @@ export default function VideoSearch({ serverData }: PageProps<object, object, un
                             flexGrow: 1,
                             overflowY: 'auto'
                         }}>
-                            <SearchResult keyword={keyword} videoList={list} />
+                            <SearchResult keyword={actualKeyword} videoList={list} />
                         </Box>
                     )
                 }
