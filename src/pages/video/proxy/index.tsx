@@ -33,7 +33,6 @@ interface SearchVideo {
 }
 
 const posterUrl = 'https://2e68cq.8gosimg.top:8443';
-const sparePosterUrl = 'https://8x2um.xyz:8443';
 
 const checkUrl = 'https://8xx.live';
 
