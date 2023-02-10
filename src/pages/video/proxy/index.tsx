@@ -335,10 +335,11 @@ export async function getServerData({ query }: GetServerDataProps) {
         }
         const pg = p ? Number(p) : 1;
         if (s && s.trim().length > 0) {
-            const list = await getSearch(s, pg, host)
+            const wd = decodeURIComponent(s).trim();
+            const list = await getSearch(wd, pg, host)
             return {
                 props: {
-                    s: decodeURIComponent(s),
+                    s: wd,
                     p: pg,
                     host,
                     list
