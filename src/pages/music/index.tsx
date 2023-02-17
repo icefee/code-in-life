@@ -256,7 +256,7 @@ async function parseMusicUrl(id: number): Promise<string | null> {
         ).then(
             response => response.text()
         ).then(
-            text => text.match(/https?:\/\/[^<]+/i)[0]
+            text => text.match(/https?:\/\/[^<]+/i)[0].replace(new RegExp('&amp;', 'g'), '&')
         )
         if (url) {
             return url;

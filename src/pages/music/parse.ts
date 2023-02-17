@@ -17,7 +17,7 @@ async function getMusicUrl(id: string) {
         const matchBlock = html.match(
             /const url = 'https?:\/\/[^']+'/
         )
-        return matchBlock[0].match(/https?:\/\/[^']+/)[0].replace(new RegExp('&amp;', 'g'), '&')
+        return matchBlock[0].match(/https?:\/\/[^']+/)[0]
     }
     catch (err) {
         return null
