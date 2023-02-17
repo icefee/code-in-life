@@ -125,7 +125,7 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
                                 pb: activeMusic ? 13 : 0
                             }}>
                                 <List sx={{
-                                    bgcolor: 'rgba(255, 255, 255, .75)'
+                                    bgcolor: 'background.paper'
                                 }}>
                                     {
                                         list.map(
@@ -256,7 +256,7 @@ async function parseMusicUrl(id: number): Promise<string | null> {
         ).then(
             response => response.text()
         ).then(
-            text => text.match(/https?:\/\/[^<]+/i)[0]
+            text => `https://apis.jxcxin.cn/api/kuwo?id=440615&type=mp3` // text.match(/https?:\/\/[^<]+/i)[0].replace(new RegExp('&amp;', 'g'), '&')
         )
         if (url) {
             return url;
@@ -353,14 +353,17 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
             bgcolor: '#111',
             color: '#fff',
             columnGap: 2
-        }} direction="row">
-            <Stack sx={{
-                width: 75,
+        }} direction="row" alignItems="center">
+            <Stack sx={(theme) => ({
+                width: 50,
                 aspectRatio: '1 / 1',
                 color: '#fff',
                 borderRadius: '50%',
-                backgroundImage: 'var(--linear-gradient-image)'
-            }} justifyContent="center" alignItems="center" flexShrink={0}>
+                backgroundImage: 'var(--linear-gradient-image)',
+                [theme.breakpoints.up('sm')]: {
+                    width: 75
+                }
+            })} justifyContent="center" alignItems="center" flexShrink={0}>
                 <MusicNoteIcon fontSize="large" />
             </Stack>
             <Stack sx={{
@@ -409,16 +412,24 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
                         pr: 2,
                         columnGap: 1
                     }} flexDirection="row" alignItems="center" flexGrow={1}>
-                        <Stack>
-                            <Typography variant="button">{music.name}</Typography>
+                        <Stack sx={(theme) => ({
+                            maxWidth: 120,
+                            [theme.breakpoints.up('sm')]: {
+                                maxWidth: 300
+                            }
+                        })}>
+                            <Typography variant="button" noWrap textOverflow="ellipsis">{music.name}</Typography>
                         </Stack>
                         <Stack>
-                            <Typography variant="overline" color="#ffffffcc">{music.artist}</Typography>
+                            <Typography variant="overline" color="#ffffffcc" noWrap>{music.artist}</Typography>
                         </Stack>
                     </Stack>
-                    <Stack sx={{
-                        width: 120
-                    }} direction="row" justifyContent="space-between" alignItems="center" columnGap={1}>
+                    <Stack sx={(theme) => ({
+                        width: 100,
+                        [theme.breakpoints.up('sm')]: {
+                            width: 120
+                        }
+                    })} direction="row" justifyContent="space-between" alignItems="center" flexShrink={0} columnGap={1}>
                         <VolumeUpRoundedIcon />
                         <Stack flexGrow={1} justifyContent="center">
                             <Slider
