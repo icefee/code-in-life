@@ -25,6 +25,7 @@ import { StaticTheme } from '../../components/theme';
 import SearchForm from '../../components/search/Form';
 import { Api } from '../../util/config';
 import { timeFormatter } from '../../util/date';
+import { LoadingOverlay } from '../../components/loading';
 
 interface SearchMusic {
     id: number;
@@ -52,6 +53,8 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
     const musicUrlMap = useRef<Map<number, string>>(new Map())
     const [downloadModalOpen, setDownloadModalOpen] = useState(false)
 
+    const [urlParsing, setUrlParsing] = useState(false)
+
     const [downloadUrl, setDownloadUrl] = useState<string>()
 
     const handleClose = (_event?: React.SyntheticEvent | Event, reason?: string) => {
@@ -66,10 +69,12 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
         if (cachedMusicUrl) {
             return cachedMusicUrl;
         }
+        setUrlParsing(true)
         const parsedUrl = await parseMusicUrl(id)
         if (parsedUrl) {
             musicUrlMap.current.set(id, parsedUrl);
         }
+        setUrlParsing(false)
         return parsedUrl;
     }
 
@@ -188,6 +193,12 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
                                     />
                                 </Box>
                             </Slide>
+                            <LoadingOverlay
+                                open={urlParsing}
+                                label="地址解析中.."
+                                withBackground
+                                labelColor="#fff"
+                            />
                         </Box>
                     )
                 }
@@ -197,7 +208,7 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
                     horizontal: 'center',
                     vertical: 'bottom'
                 }}>
-                    <Alert severity="error" onClose={handleClose} sx={{ width: '100%' }}>当前歌曲不可用</Alert>
+                    <Alert severity="error" onClose={handleClose}>当前歌曲不可用</Alert>
                 </Snackbar>
                 <Modal
                     open={downloadModalOpen}
@@ -240,13 +251,19 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
 
 async function parseMusicUrl(id: number): Promise<string | null> {
     try {
-        return fetch(
-            `/video/parse?id=${id}`
+        const url = await fetch(
+            `/music/parse?id=${id}`
         ).then(
             response => response.text()
         ).then(
             text => text.match(/^(?:https?:\/\/)?((|[\w-]+\.)+[a-z0-9]+)(?:(\/[^/?#]+)*)?(\?[^#]+)?(#.+)?$/i)[0]
         )
+        if (url) {
+            return url;
+        }
+        else {
+            throw new Error('url parse error');
+        }
     }
     catch (err) {
         return null;
