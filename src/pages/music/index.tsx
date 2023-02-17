@@ -252,11 +252,11 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
 async function parseMusicUrl(id: number): Promise<string | null> {
     try {
         const url = await fetch(
-            `/music/parse?id=${id}`
+            `/music/parse/?id=${id}`
         ).then(
             response => response.text()
         ).then(
-            text => text.match(/^(?:https?:\/\/)?((|[\w-]+\.)+[a-z0-9]+)(?:(\/[^/?#]+)*)?(\?[^#]+)?(#.+)?$/i)[0]
+            text => text.match(/(?:https?:\/\/)?((|[\w-]+\.)+[a-z0-9]+)(?:(\/[^/?#]+)*)?(\?[^#]+)?(#.+)?$/i)[0]
         )
         if (url) {
             return url;
