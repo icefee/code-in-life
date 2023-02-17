@@ -256,7 +256,7 @@ async function parseMusicUrl(id: number): Promise<string | null> {
         ).then(
             response => response.text()
         ).then(
-            text => `https://apis.jxcxin.cn/api/kuwo?id=440615&type=mp3` // text.match(/https?:\/\/[^<]+/i)[0].replace(new RegExp('&amp;', 'g'), '&')
+            text => text.match(/https?:\/\/[^<]+/i)[0].replace(new RegExp('&amp;', 'g'), '&')
         )
         if (url) {
             return url;
