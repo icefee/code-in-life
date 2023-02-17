@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import type { GetServerDataProps, HeadProps, PageProps } from 'gatsby';
 import Stack from '@mui/material/Stack';
 import List from '@mui/material/List';
@@ -346,6 +346,12 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
     const [currentTime, setCurrentTime] = useState<number>(0)
     const [volume, setVolume] = useState(1)
 
+    useEffect(() => {
+        return () => {
+            setCurrentTime(0)
+        }
+    }, [music.id])
+
     return (
         <Stack sx={{
             position: 'relative',
@@ -455,6 +461,7 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
                     width: 0,
                     height: 0
                 }}
+                key={music.id}
                 ref={audioRef}
                 onLoadedMetadata={
                     () => {
