@@ -259,7 +259,7 @@ async function parseMusicUrl(id: number): Promise<string | null> {
             text => text.match(/https?:\/\/[^<]+/i)[0]
         )
         if (url) {
-            return url.replace(new RegExp('&amp;', 'g'), '&');
+            return url;
         }
         else {
             throw new Error('url parse error');
