@@ -387,21 +387,17 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
                 </Box>
             </Stack>
             <Stack flexGrow={1}>
-                <Stack sx={{
-                    columnGap: 1
-                }} direction="row">
-                    <Stack flexDirection="row" alignItems="center" flexGrow={1}>
-                        <Stack sx={(theme) => ({
-                            maxWidth: 120,
-                            [theme.breakpoints.up('sm')]: {
-                                maxWidth: 300
-                            }
-                        })}>
-                            <Typography variant="button" noWrap textOverflow="ellipsis">{music.name}</Typography>
-                        </Stack>
-                        <Stack>
-                            <Typography variant="overline" color="#ffffffcc" noWrap>{music.artist}</Typography>
-                        </Stack>
+                <Stack flexDirection="row" alignItems="center" rowGap={1} columnGap={1}>
+                    <Stack sx={(theme) => ({
+                        maxWidth: 120,
+                        [theme.breakpoints.up('sm')]: {
+                            maxWidth: 300
+                        }
+                    })}>
+                        <Typography variant="button" noWrap textOverflow="ellipsis">{music.name}</Typography>
+                    </Stack>
+                    <Stack>
+                        <Typography variant="overline" color="#ffffffcc" noWrap>{music.artist}</Typography>
                     </Stack>
                 </Stack>
                 <Stack direction="row" alignItems="center">
