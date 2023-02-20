@@ -10,6 +10,7 @@ import Alert from '@mui/material/Alert';
 import Divider from '@mui/material/Divider';
 import Avatar from '@mui/material/Avatar';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
 import Slide from '@mui/material/Slide';
 import Slider from '@mui/material/Slider';
@@ -84,7 +85,7 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
             <Stack sx={{
                 position: 'absolute',
                 width: '100%',
-                zIndex: 100,
+                zIndex: 150,
                 p: 1
             }} direction="row" justifyContent="center">
                 <Box sx={
@@ -115,13 +116,17 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
                         position: 'relative',
                         flexGrow: 1,
                         overflow: 'hidden',
-                        pt: 8
+                        pt: 8,
+                        width: '100%',
+                        maxWidth: 600,
+                        margin: '0 auto'
                     }}>
                         <Box sx={{
                             height: '100%',
+                            pt: 1,
                             px: 1,
                             overflowY: 'auto',
-                            pb: activeMusic ? 13 : 2
+                            pb: activeMusic ? 15 : 2
                         }}>
                             <List sx={{
                                 bgcolor: 'background.paper'
@@ -269,24 +274,28 @@ function MusicItem({ music, playing, onDownload, onTogglePlay }: MusicItemProps)
     return (
         <ListItem
             secondaryAction={
-                <IconButton color="inherit" onClick={
-                    () => onDownload(music)
-                }>
-                    <DownloadIcon />
-                </IconButton>
+                <Tooltip title="下载歌曲">
+                    <IconButton color="inherit" onClick={
+                        () => onDownload(music)
+                    }>
+                        <DownloadIcon />
+                    </IconButton>
+                </Tooltip>
             }
         >
             <ListItemAvatar>
-                <Avatar sx={{
-                    backgroundImage: 'var(--linear-gradient-image)'
-                }}>
-                    <PlayOrPauseButton
-                        playing={playing}
-                        onTogglePlay={
-                            () => onTogglePlay(music)
-                        }
-                    />
-                </Avatar>
+                <Tooltip title="试听歌曲">
+                    <Avatar sx={{
+                        backgroundImage: 'var(--linear-gradient-image)'
+                    }}>
+                        <PlayOrPauseButton
+                            playing={playing}
+                            onTogglePlay={
+                                () => onTogglePlay(music)
+                            }
+                        />
+                    </Avatar>
+                </Tooltip>
             </ListItemAvatar>
             <ListItemText
                 primary={music.name}
@@ -381,9 +390,7 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
                 <Stack sx={{
                     columnGap: 1
                 }} direction="row">
-                    <Stack sx={{
-                        columnGap: 1
-                    }} flexDirection="row" alignItems="center" flexGrow={1}>
+                    <Stack flexDirection="row" alignItems="center" flexGrow={1}>
                         <Stack sx={(theme) => ({
                             maxWidth: 120,
                             [theme.breakpoints.up('sm')]: {
@@ -396,22 +403,6 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
                             <Typography variant="overline" color="#ffffffcc" noWrap>{music.artist}</Typography>
                         </Stack>
                     </Stack>
-                    <Box sx={{
-                        color: '#fff',
-                        display: {
-                            xs: 'none',
-                            sm: 'block'
-                        }
-                    }}>
-                        <PlayOrPauseButton
-                            playing={playing}
-                            onTogglePlay={
-                                (nextState) => {
-                                    onPlayStateChange(nextState)
-                                }
-                            }
-                        />
-                    </Box>
                 </Stack>
                 <Stack direction="row" alignItems="center">
                     <Typography variant="button">{timeFormatter(currentTime)} / {duration ? timeFormatter(duration) : '--:--'}</Typography>
