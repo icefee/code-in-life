@@ -1,5 +1,6 @@
 import React from 'react';
 import type { GetServerDataProps, PageProps } from 'gatsby';
+import fetch from 'node-fetch';
 import { Api } from '../../util/config';
 import { image } from '../../util/parser';
 

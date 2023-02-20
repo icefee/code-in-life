@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import type { GetServerDataProps, PageProps } from 'gatsby';
+import fetch from 'node-fetch';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';

@@ -2,13 +2,12 @@ import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
 import { Api } from '../../../util/config';
 import { jsonBase64 } from '../../../util/parser';
 import type { VideoInfo } from '../../../components/search/api';
+import fetch from 'node-fetch';
 
-async function getVideoInfo(api: string, id: string): Promise<VideoInfo | string> {
+async function getVideoInfo(api: string, id: string): Promise<VideoInfo> {
     try {
         const videoInfo = await fetch(`${Api.site}/video/api?api=${api}&id=${id}`).then(
-            response => {
-                return jsonBase64<VideoInfo>(response);
-            }
+            response => jsonBase64<VideoInfo>(response)
         )
         if (videoInfo) {
             return videoInfo;
@@ -18,7 +17,7 @@ async function getVideoInfo(api: string, id: string): Promise<VideoInfo | string
         }
     }
     catch (err) {
-        return String(err);
+        return null;
     }
 }
 

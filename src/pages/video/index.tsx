@@ -1,5 +1,6 @@
 import React, { Component, useMemo } from 'react';
 import { PageProps, GetServerDataProps } from 'gatsby';
+import fetch from 'node-fetch';
 import NoSsr from '@mui/material/NoSsr';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';

@@ -1,5 +1,6 @@
 import React from 'react';
 import { type PageProps, type GetServerDataProps } from 'gatsby';
+import fetch from 'node-fetch';
 import Box from '@mui/material/Box';
 import VideoPlayer from '../../../components/player/PlayerBase';
 

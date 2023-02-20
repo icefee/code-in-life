@@ -1,3 +1,5 @@
+import { type Response } from 'node-fetch'
+
 export type DataParser<P = unknown> = <T extends any = P>(response: Response) => Promise<T> | T;
 
 export async function jsonBase64<T extends any>(response: Response) {

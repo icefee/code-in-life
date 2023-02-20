@@ -1,3 +1,4 @@
+import fetch from 'node-fetch';
 import { M3u8 } from '../../util/RegExp';
 
 export interface SearchVideo {
