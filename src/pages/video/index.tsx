@@ -1,7 +1,6 @@
-import React, { Component, useMemo } from 'react';
+import React, { Component, useState, useEffect, useMemo } from 'react';
 import { PageProps, GetServerDataProps } from 'gatsby';
 import fetch from 'node-fetch';
-import NoSsr from '@mui/material/NoSsr';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -12,12 +11,12 @@ import Tab from '@mui/material/Tab';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
 import ThumbLoader from '../../components/search/ThumbLoader';
+import { LoadingScreen } from '../../components/loading';
 import BackgroundContainer from '../../components/layout/BackgroundContainer';
 import { type VideoItem, type VideoSource, type VideoInfo } from '../../components/search/api';
 import NoData from '../../components/search/NoData';
 import VideoPlayer, { type VideoParams } from '../../components/player/PlayerBase';
-import { Api } from '../../util/config';
-import { jsonBase64, utf82utf16 } from '../../util/parser';
+import { utf82utf16 } from '../../util/parser';
 import M3u8UrlParser from '../../components/search/M3u8UrlParser';
 import * as css from './style.module.css';
 
@@ -507,45 +506,62 @@ function parseDataUrl(s: string): VideoDetailProps {
     }
 }
 
-export default function Page({ location, serverData }: PageProps<object, object, unknown, { data: VideoDetailProps | null }>) {
-    return (
-        <NoSsr>
+export default function Page({ location, serverData }: PageProps<object, object, unknown, VideoDetailProps>) {
+    const { api, id } = serverData;
+    const fromApi = api && id;
+    const [loading, setLoading] = useState(false)
+    const [video, setVideo] = useState<VideoInfo>()
+
+    useEffect(() => {
+        const getVideoInfo = async () => {
+            setLoading(true)
+            try {
+                const { code, data } = await fetch(`/api/video/${api}/${id}/`).then<{
+                    code: number;
+                    data: VideoInfo
+                }>(
+                    response => response.json()
+                )
+                if (code === 0) {
+                    setVideo(data)
+                }
+            }
+            catch (err) {
+                getVideoInfo()
+            }
+            setLoading(false)
+        }
+        if (fromApi) {
+            getVideoInfo()
+        }
+    }, [])
+
+    if (fromApi) {
+        return loading ? (
+            <LoadingScreen />
+        ) : (
             <VideoDetail
-                {...(serverData.data ?? parseDataUrl(location.hash.slice(1)))}
+                api={api}
+                id={id}
+                video={video}
             />
-        </NoSsr>
-    )
+        )
+    }
+    else {
+        return (
+            <VideoDetail
+                {...parseDataUrl(location.hash.slice(1))}
+            />
+        )
+    }
 }
 
 export async function getServerData({ query }: GetServerDataProps) {
     const { api, id } = query;
-    if (api && id) {
-        try {
-            const videoInfo = await fetch(`${Api.site}/video/api?api=${api}&id=${id}`).then(
-                response => jsonBase64<VideoInfo>(response)
-            )
-            if (videoInfo) {
-                return {
-                    props: {
-                        data: {
-                            api,
-                            id,
-                            video: videoInfo
-                        }
-                    }
-                }
-            }
-            else {
-                throw new Error('fetch error.')
-            }
-        }
-        catch (err) {
-            return {
-                status: 404
-            }
-        }
-    }
     return {
-        props: {}
+        props: {
+            api,
+            id
+        }
     }
 }

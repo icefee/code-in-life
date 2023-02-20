@@ -14,13 +14,13 @@ import Box from '@mui/material/Box';
 import Slide from '@mui/material/Slide';
 import Slider from '@mui/material/Slider';
 import Typography from '@mui/material/Typography';
-import Modal from '@mui/material/Modal';
-import Link from '@mui/material/Link';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import DownloadIcon from '@mui/icons-material/Download';
 import VolumeUpRoundedIcon from '@mui/icons-material/VolumeUpRounded';
+import VolumeDownRoundedIcon from '@mui/icons-material/VolumeDownRounded';
+import VolumeOffRoundedIcon from '@mui/icons-material/VolumeOffRounded';
 import SearchForm from '../../components/search/Form';
 import { Api } from '../../util/config';
 import { timeFormatter } from '../../util/date';
@@ -50,11 +50,8 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
     const [activeMusic, setActiveMusic] = useState<PlayingMusic>()
     const [playing, setPlaying] = useState(false)
     const musicUrlMap = useRef<Map<number, string>>(new Map())
-    const [downloadModalOpen, setDownloadModalOpen] = useState(false)
 
     const [urlParsing, setUrlParsing] = useState(false)
-
-    const [downloadUrl, setDownloadUrl] = useState<string>()
 
     const handleClose = (_event?: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
@@ -161,8 +158,9 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
                                                         async (music) => {
                                                             const url = await getMusicUrl(music.id)
                                                             if (url) {
-                                                                setDownloadUrl(url)
-                                                                setDownloadModalOpen(true)
+                                                                window.open(
+                                                                    `/api/music/download?name=${encodeURIComponent(`${music.artist}-${music.name}`)}&id=${btoa(url)}`
+                                                                )
                                                             }
                                                             else {
                                                                 setError(true)
@@ -182,7 +180,7 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
                                 left: 0,
                                 right: 0,
                                 bottom: 0,
-                                boxShadow: 5
+                                boxShadow: '0px -4px 12px 0px rgb(0 0 0 / 80%)'
                             }}>
                                 <MusicPlayer
                                     music={activeMusic}
@@ -208,55 +206,22 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
             }}>
                 <Alert severity="error" onClose={handleClose}>当前歌曲不可用</Alert>
             </Snackbar>
-            <Modal
-                open={downloadModalOpen}
-                onClose={
-                    () => setDownloadModalOpen(false)
-                }
-            >
-                <Stack sx={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    width: 300,
-                    height: 250,
-                    backgroundImage: 'var(--linear-gradient-image)',
-                    p: 2
-                }}>
-                    <Link sx={{
-                        display: 'block',
-                        width: '100%',
-                        cursor: 'default',
-                        color: '#ffffff88',
-                        flexGrow: 1
-                    }} href={downloadUrl} underline="none" onClick={
-                        (event: React.SyntheticEvent) => event.preventDefault()
-                    }>
-                        <Stack sx={{
-                            height: '100%',
-                            border: '1px dashed #999'
-                        }} justifyContent="center" alignItems="center">
-                            <Typography variant="button">右键此区域选择链接(目标)另存为</Typography>
-                        </Stack>
-                    </Link>
-                </Stack>
-            </Modal>
         </Stack>
     )
 }
 
 async function parseMusicUrl(id: number): Promise<string | null> {
     try {
-        const url = await fetch(
-            `/music/parse/?id=${id}`
-        ).then(
-            response => response.text()
-        ).then(
-            text => text.match(/https?:\/\/[^<]+/i)[0].replace(new RegExp('&amp;', 'g'), '&')
-        )
-        if (url) {
-            return url;
+        const { code, data } = await fetch(
+            `/api/music/parse?id=${id}`
+        ).then<{
+            code: number;
+            data: string;
+        }>(
+            response => response.json()
+        );
+        if (code === 0) {
+            return data;
         }
         else {
             throw new Error('url parse error');
@@ -342,6 +307,7 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
     const [duration, setDuration] = useState<number>()
     const [currentTime, setCurrentTime] = useState<number>(0)
     const [volume, setVolume] = useState(1)
+    const cachedVolumeRef = useRef<number>(1)
 
     useEffect(() => {
         return () => {
@@ -378,44 +344,11 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
             })} justifyContent="center" alignItems="center" flexShrink={0}>
                 <MusicNoteIcon fontSize="large" />
             </Stack>
-            <Stack sx={{
-                pr: 1
-            }} flexGrow={1}>
+            <Stack flexGrow={1}>
                 <Stack sx={{
                     columnGap: 1
                 }} direction="row">
                     <Stack sx={{
-                        color: '#fff',
-                        mr: 2
-                    }} direction="row" alignItems="center">
-                        <PlayOrPauseButton
-                            playing={playing}
-                            onTogglePlay={
-                                (nextState) => {
-                                    onPlayStateChange(nextState)
-                                }
-                            }
-                        />
-                        <Typography variant="button">{timeFormatter(currentTime)} / {duration ? timeFormatter(duration) : '--:--'}</Typography>
-                    </Stack>
-                    <Stack justifyContent="center" flexGrow={1}>
-                        <Slider
-                            size="small"
-                            value={duration ? (currentTime * 100 / duration) : 0}
-                            onChange={
-                                (_event, value: number) => {
-                                    if (duration) {
-                                        audioRef.current.currentTime = value * duration / 100;
-                                    }
-                                }
-                            }
-                        />
-                    </Stack>
-                </Stack>
-                <Stack direction="row" justifyContent="space-between" alignItems="center">
-                    <Stack sx={{
-                        pl: 1,
-                        pr: 2,
                         columnGap: 1
                     }} flexDirection="row" alignItems="center" flexGrow={1}>
                         <Stack sx={(theme) => ({
@@ -430,13 +363,69 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
                             <Typography variant="overline" color="#ffffffcc" noWrap>{music.artist}</Typography>
                         </Stack>
                     </Stack>
+                    <Stack sx={{
+                        color: '#fff'
+                    }} direction="row" alignItems="center">
+                        <PlayOrPauseButton
+                            playing={playing}
+                            onTogglePlay={
+                                (nextState) => {
+                                    onPlayStateChange(nextState)
+                                }
+                            }
+                        />
+                    </Stack>
+                </Stack>
+                <Stack direction="row" alignItems="center">
+                    <Typography variant="button">{timeFormatter(currentTime)} / {duration ? timeFormatter(duration) : '--:--'}</Typography>
+                    <Stack sx={{
+                        ml: 2
+                    }} flexGrow={1}>
+                        <Slider
+                            size="small"
+                            value={duration ? (currentTime * 100 / duration) : 0}
+                            onChange={
+                                (_event, value: number) => {
+                                    if (duration) {
+                                        audioRef.current.currentTime = value * duration / 100;
+                                    }
+                                }
+                            }
+                        />
+                    </Stack>
+                </Stack>
+                <Stack sx={{
+                    display: {
+                        xs: 'none',
+                        sm: 'block'
+                    }
+                }} direction="row" justifyContent="space-between" alignItems="center">
                     <Stack sx={(theme) => ({
-                        width: 100,
+                        width: 120,
                         [theme.breakpoints.up('sm')]: {
-                            width: 120
+                            width: 150
                         }
                     })} direction="row" justifyContent="space-between" alignItems="center" flexShrink={0} columnGap={1}>
-                        <VolumeUpRoundedIcon />
+                        <IconButton
+                            color="inherit"
+                            onClick={
+                                () => {
+                                    if (volume > 0) {
+                                        setVolume(0)
+                                        audioRef.current.volume = 0;
+                                    }
+                                    else {
+                                        const targetVolume = cachedVolumeRef.current > 0 ? cachedVolumeRef.current : .5;
+                                        setVolume(targetVolume)
+                                        audioRef.current.volume = targetVolume;
+                                    }
+                                }
+                            }
+                        >
+                            {
+                                volume > 0 ? volume > .5 ? <VolumeUpRoundedIcon /> : <VolumeDownRoundedIcon /> : <VolumeOffRoundedIcon />
+                            }
+                        </IconButton>
                         <Stack flexGrow={1} justifyContent="center">
                             <Slider
                                 size="small"
@@ -445,7 +434,9 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
                                     (_event, value: number) => {
                                         if (duration) {
                                             // setVolume(value / 100)
-                                            audioRef.current.volume = value / 100;
+                                            const actualVolume = value / 100;
+                                            audioRef.current.volume = actualVolume;
+                                            cachedVolumeRef.current = actualVolume;
                                         }
                                     }
                                 }
@@ -463,6 +454,7 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
                 }}
                 key={music.id}
                 ref={audioRef}
+                preload="auto"
                 onLoadedMetadata={
                     () => {
                         setDuration(audioRef.current.duration)
@@ -495,7 +487,8 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
                 }
                 onVolumeChange={
                     () => {
-                        setVolume(audioRef.current.volume)
+                        const volume = audioRef.current.volume;
+                        setVolume(volume);
                     }
                 }
                 src={music.url}

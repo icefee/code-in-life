@@ -1,7 +1,7 @@
 import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
-import { Api } from '../../../util/config';
-import { jsonBase64 } from '../../../util/parser';
-import type { VideoInfo } from '../../../components/search/api';
+import { Api } from '../../../../util/config';
+import { jsonBase64 } from '../../../../util/parser';
+import type { VideoInfo } from '../../../../components/search/api';
 import fetch from 'node-fetch';
 
 async function getVideoInfo(api: string, id: string): Promise<VideoInfo> {

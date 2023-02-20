@@ -1,64 +1,58 @@
-import React from 'react';
-import { type PageProps, type GetServerDataProps } from 'gatsby';
+import React, { useState, useEffect } from 'react';
+import { type PageProps } from 'gatsby';
 import Box from '@mui/material/Box';
+import { LoadingScreen } from '../../components/loading';
 import VideoPlayer from '../../components/player/PlayerBase';
 import { M3u8 } from '../../util/RegExp';
-import { getM3u8Url } from '../../components/search/api';
 
 interface VideoParserPlayerProps {
     url: string;
 }
 
 const VideoParserPlayer: React.FC<PageProps<object, object, unknown, VideoParserPlayerProps>> = ({ serverData }) => {
+    const { url } = serverData;
+    const needParse = M3u8.isM3u8Url(url) || /\.(mp4)$/.test(url);
+    const [loading, setLoading] = useState(false)
+    const [parsedUrl, setParsedUrl] = useState(
+        needParse ? null : url
+    )
+    useEffect(() => {
+        const parseUrl = async () => {
+            setLoading(true)
+            try {
+                const { code, data } = await fetch(`/api/video/parse?url=${url}`).then<{
+                    code: number;
+                    data: string;
+                }>(
+                    response => response.json()
+                )
+                if (code === 0) {
+                    setParsedUrl(data)
+                }
+            }
+            catch (err) {
+                parseUrl()
+            }
+            setLoading(false)
+        }
+        if (needParse) {
+            parseUrl()
+        }
+    }, [])
+
+    if (loading) {
+        return (
+            <LoadingScreen />
+        )
+    }
     return (
         <Box sx={{
             height: '100%',
             bgcolor: '#000'
         }}>
-            <VideoPlayer url={serverData.url} />
+            <VideoPlayer url={parsedUrl} />
         </Box>
     )
-}
-
-export async function getServerData({ query }: GetServerDataProps) {
-    const { url } = query as Record<'url', string>;
-    if (url) {
-        const headers = {
-            'x-frame-options': 'ALLOW-FROM https://cif.stormkit.dev/video'
-        }
-        if (M3u8.isM3u8Url(url) || /\.(mp4)$/.test(url)) {
-            return {
-                props: {
-                    url
-                },
-                headers
-            }
-        }
-        else {
-            try {
-                const parsedUrl = await getM3u8Url(url)
-                if (parsedUrl) {
-                    return {
-                        props: {
-                            url: parsedUrl
-                        },
-                        headers
-                    }
-                }
-                else {
-                    throw new Error('fetch error.')
-                }
-            }
-            catch (err) {
-                return {
-                    status: 404
-                }
-            }
-        }
-    }
-    return {
-        status: 404
-    }
 }
 
 export default VideoParserPlayer;

@@ -15,12 +15,14 @@ type M3u8UrlParserProps = {
 
 const parseUrl = async (url: string) => {
     try {
-        const html = await fetch('/video/parse/?url=' + url).then(
-            response => response.text()
+        const { code, data } = await fetch('/api/video/parse?url=' + url).then<{
+            code: number;
+            data: string;
+        }>(
+            response => response.json()
         )
-        const matchedUrls = html.match(M3u8.match);
-        if (matchedUrls) {
-            return matchedUrls[0];
+        if (code === 0) {
+            return data;
         }
         throw new Error('url parse fail.')
     }
