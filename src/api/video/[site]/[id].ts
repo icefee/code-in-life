@@ -2,11 +2,15 @@ import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
 import { Api } from '../../../util/config';
 import { jsonBase64 } from '../../../util/parser';
 import type { VideoInfo } from '../../../components/search/api';
+import fetch from 'node-fetch';
 
 async function getVideoInfo(api: string, id: string): Promise<VideoInfo | string> {
     try {
         const videoInfo = await fetch(`${Api.site}/video/api?api=${api}&id=${id}`).then(
-            response => jsonBase64<VideoInfo>(response)
+            response => {
+                /* @ts-ignore */
+                return jsonBase64<VideoInfo>(response);
+            }
         )
         if (videoInfo) {
             return videoInfo;
