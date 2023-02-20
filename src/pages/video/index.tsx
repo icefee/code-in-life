@@ -1,6 +1,7 @@
 import React, { Component, useState, useEffect, useMemo } from 'react';
-import { PageProps, GetServerDataProps } from 'gatsby';
+import { PageProps } from 'gatsby';
 import fetch from 'node-fetch';
+import NoSsr from '@mui/material/NoSsr';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -506,8 +507,9 @@ function parseDataUrl(s: string): VideoDetailProps {
     }
 }
 
-export default function Page({ location, serverData }: PageProps<object, object, unknown, VideoDetailProps>) {
-    const { api, id } = serverData;
+export default function Page({ location }: PageProps<object, object, unknown, unknown>) {
+    const query = new URLSearchParams(location.search)
+    const api = query.get('api'), id = query.get('id');
     const fromApi = api && id;
     const [loading, setLoading] = useState(false)
     const [video, setVideo] = useState<VideoInfo>()
@@ -518,7 +520,7 @@ export default function Page({ location, serverData }: PageProps<object, object,
             try {
                 const { code, data } = await fetch(`/api/video/${api}/${id}/`).then<{
                     code: number;
-                    data: VideoInfo
+                    data: VideoInfo;
                 }>(
                     response => response.json()
                 )
@@ -540,28 +542,22 @@ export default function Page({ location, serverData }: PageProps<object, object,
         return loading ? (
             <LoadingScreen />
         ) : (
-            <VideoDetail
-                api={api}
-                id={id}
-                video={video}
-            />
+            <NoSsr>
+                <VideoDetail
+                    api={api}
+                    id={id}
+                    video={video}
+                />
+            </NoSsr>
         )
     }
     else {
         return (
-            <VideoDetail
-                {...parseDataUrl(location.hash.slice(1))}
-            />
+            <NoSsr>
+                <VideoDetail
+                    {...parseDataUrl(location.hash.slice(1))}
+                />
+            </NoSsr>
         )
-    }
-}
-
-export async function getServerData({ query }: GetServerDataProps) {
-    const { api, id } = query;
-    return {
-        props: {
-            api,
-            id
-        }
     }
 }
