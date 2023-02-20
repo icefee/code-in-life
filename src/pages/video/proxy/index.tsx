@@ -11,7 +11,6 @@ import PaginationItem from '@mui/material/PaginationItem';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
-import { StaticTheme } from '../../../components/theme';
 import BackgroundContainer from '../../../components/layout/BackgroundContainer';
 import SearchForm from '../../../components/search/Form';
 import ThumbLoader from '../../../components/search/ThumbLoader';
@@ -176,142 +175,140 @@ function Proxy({ serverData }: PageProps<object, object, unknown, ProxyProps>) {
     }
 
     return (
-        <StaticTheme>
-            <BackgroundContainer style={{
-                display: 'flex',
-                flexDirection: 'column',
-                overflow: 'hidden'
-            }} prefer18>
-                <Stack sx={{
-                    position: 'relative',
-                    zIndex: 100,
-                    p: 2
-                }} direction="row" justifyContent="center">
-                    <Box sx={
-                        (theme) => ({
-                            width: '100%',
-                            [theme.breakpoints.up('sm')]: {
-                                width: 300
-                            }
-                        })
-                    }>
-                        <SearchForm
-                            action="/video/proxy/"
-                            value={keyword}
-                            onChange={setKeyword}
-                            staticFields={{
-                                host
-                            }}
-                        />
-                    </Box>
-                </Stack>
-                {
-                    list ? list.data.length > 0 ? (
+        <BackgroundContainer style={{
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden'
+        }} prefer18>
+            <Stack sx={{
+                position: 'relative',
+                zIndex: 100,
+                p: 2
+            }} direction="row" justifyContent="center">
+                <Box sx={
+                    (theme) => ({
+                        width: '100%',
+                        [theme.breakpoints.up('sm')]: {
+                            width: 300
+                        }
+                    })
+                }>
+                    <SearchForm
+                        action="/video/proxy/"
+                        value={keyword}
+                        onChange={setKeyword}
+                        staticFields={{
+                            host
+                        }}
+                    />
+                </Box>
+            </Stack>
+            {
+                list ? list.data.length > 0 ? (
+                    <Stack sx={{
+                        position: 'relative',
+                        zIndex: 90,
+                        overflow: 'hidden'
+                    }} flexGrow={1}>
+                        <Box sx={{
+                            flexGrow: 1,
+                            px: 2,
+                            overflowY: 'auto'
+                        }}>
+                            <Grid spacing={2} container>
+                                {
+                                    list.data.map(
+                                        (video) => (
+                                            <Grid xs={12} sm={6} lg={3} key={video.videoInfoId} item>
+                                                <Card sx={{
+                                                    bgcolor: 'background.paper'
+                                                }} elevation={2}>
+                                                    <CardActionArea href={'/video/proxy/player/?url=https://' + host + video.pageUrl} target="_blank">
+                                                        <Stack direction="row">
+                                                            <Box sx={{
+                                                                width: 125,
+                                                                height: 180,
+                                                                flexShrink: 0
+                                                            }}>
+                                                                <ThumbLoader
+                                                                    src={getPosterUrl(video.videoImgUrl)}
+                                                                    fill
+                                                                    alt={video.videoTitle}
+                                                                    errorText="缩略图加载失败"
+                                                                />
+                                                            </Box>
+                                                            <Box sx={{
+                                                                flexGrow: 1,
+                                                                p: 1.5,
+                                                                overflow: 'hidden'
+                                                            }}>
+                                                                <Stack sx={{
+                                                                    height: '100%',
+                                                                    justifyContent: 'space-between'
+                                                                }}>
+                                                                    <Tooltip title={video.videoTitle}>
+                                                                        <Box>
+                                                                            <RowClipTypography
+                                                                                lineHeight={1.2}
+                                                                                rows={4}
+                                                                                variant="h5"
+                                                                                paragraph
+                                                                            >{video.videoTitle}</RowClipTypography>
+                                                                        </Box>
+                                                                    </Tooltip>
+                                                                    <Typography variant="subtitle2" color="text.secondary" align="right">{video.createTime}</Typography>
+                                                                </Stack>
+                                                            </Box>
+                                                        </Stack>
+                                                    </CardActionArea>
+                                                </Card>
+                                            </Grid>
+                                        )
+                                    )
+                                }
+                            </Grid>
+                        </Box>
                         <Stack sx={{
-                            position: 'relative',
-                            zIndex: 90,
-                            overflow: 'hidden'
-                        }} flexGrow={1}>
-                            <Box sx={{
-                                flexGrow: 1,
-                                px: 2,
-                                overflowY: 'auto'
-                            }}>
-                                <Grid spacing={2} container>
-                                    {
-                                        list.data.map(
-                                            (video) => (
-                                                <Grid xs={12} sm={6} lg={3} key={video.videoInfoId} item>
-                                                    <Card sx={{
-                                                        bgcolor: 'background.paper'
-                                                    }} elevation={2}>
-                                                        <CardActionArea href={'/video/proxy/player/?url=https://' + host + video.pageUrl} target="_blank">
-                                                            <Stack direction="row">
-                                                                <Box sx={{
-                                                                    width: 125,
-                                                                    height: 180,
-                                                                    flexShrink: 0
-                                                                }}>
-                                                                    <ThumbLoader
-                                                                        src={getPosterUrl(video.videoImgUrl)}
-                                                                        fill
-                                                                        alt={video.videoTitle}
-                                                                        errorText="缩略图加载失败"
-                                                                    />
-                                                                </Box>
-                                                                <Box sx={{
-                                                                    flexGrow: 1,
-                                                                    p: 1.5,
-                                                                    overflow: 'hidden'
-                                                                }}>
-                                                                    <Stack sx={{
-                                                                        height: '100%',
-                                                                        justifyContent: 'space-between'
-                                                                    }}>
-                                                                        <Tooltip title={video.videoTitle}>
-                                                                            <Box>
-                                                                                <RowClipTypography
-                                                                                    lineHeight={1.2}
-                                                                                    rows={4}
-                                                                                    variant="h5"
-                                                                                    paragraph
-                                                                                >{video.videoTitle}</RowClipTypography>
-                                                                            </Box>
-                                                                        </Tooltip>
-                                                                        <Typography variant="subtitle2" color="text.secondary" align="right">{video.createTime}</Typography>
-                                                                    </Stack>
-                                                                </Box>
-                                                            </Stack>
-                                                        </CardActionArea>
-                                                    </Card>
-                                                </Grid>
-                                            )
-                                        )
-                                    }
-                                </Grid>
-                            </Box>
-                            <Stack sx={{
-                                px: 1,
-                                py: 2
-                            }} direction="row" justifyContent="center">
-                                <Pagination
-                                    page={list.page}
-                                    count={list.totalPage}
-                                    variant="outlined"
-                                    color="primary"
-                                    renderItem={(item) => {
-                                        const searchParams = new URLSearchParams({
-                                            s: keyword,
-                                            host
-                                        })
-                                        searchParams.set('p', String(item.page));
-                                        const href = `/video/proxy/?` + searchParams.toString();
-                                        const current = item.page === list.page;
-                                        return (
-                                            <PaginationItem
-                                                component={Link}
-                                                href={current ? null : href}
-                                                disabled={current}
-                                                {...item}
-                                            />
-                                        )
-                                    }}
-                                />
-                            </Stack>
+                            px: 1,
+                            py: 2
+                        }} direction="row" justifyContent="center">
+                            <Pagination
+                                page={list.page}
+                                count={list.totalPage}
+                                variant="outlined"
+                                color="primary"
+                                renderItem={(item) => {
+                                    const searchParams = new URLSearchParams({
+                                        s: keyword,
+                                        host
+                                    })
+                                    searchParams.set('p', String(item.page));
+                                    const href = `/video/proxy/?` + searchParams.toString();
+                                    const current = item.page === list.page;
+                                    return (
+                                        <PaginationItem
+                                            component={Link}
+                                            href={current ? null : href}
+                                            disabled={current}
+                                            {...item}
+                                        />
+                                    )
+                                }}
+                            />
                         </Stack>
-                    ) : layerWrapper(
-                        <NoData />
-                    ) : layerWrapper(
-                        <>
-                            <Typography sx={{
-                                mb: 2
-                            }} color="text.secondary">当前链接已失效, 请尝试重新获取</Typography>
-                            <Button variant="outlined" href={refreshUrl}>重新获取</Button>
-                        </>
-                    )
-                }
-            </BackgroundContainer>
-        </StaticTheme>
+                    </Stack>
+                ) : layerWrapper(
+                    <NoData />
+                ) : layerWrapper(
+                    <>
+                        <Typography sx={{
+                            mb: 2
+                        }} color="text.secondary">当前链接已失效, 请尝试重新获取</Typography>
+                        <Button variant="outlined" href={refreshUrl}>重新获取</Button>
+                    </>
+                )
+            }
+        </BackgroundContainer>
     )
 }
 

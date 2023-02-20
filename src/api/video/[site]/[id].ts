@@ -16,7 +16,7 @@ async function getVideoInfo(api: string, id: string): Promise<VideoInfo | null> 
         }
     }
     catch (err) {
-        return null;
+        return err;
     }
 }
 

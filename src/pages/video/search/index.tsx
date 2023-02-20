@@ -4,7 +4,6 @@ import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import SearchResult from '../../../components/search/Result';
-import { StaticTheme } from '../../../components/theme';
 import SearchForm from '../../../components/search/Form';
 import { SearchVideo } from '../../../components/search/api';
 import BackgroundContainer from '../../../components/layout/BackgroundContainer';
@@ -30,54 +29,52 @@ export default function VideoSearch({ serverData }: PageProps<object, object, un
     }, [prefer18, keyword])
 
     return (
-        <StaticTheme>
-            <BackgroundContainer style={{
-                display: 'flex',
-                flexDirection: 'column',
-                overflow: 'hidden'
-            }} prefer18={prefer === '18'}>
-                <Stack sx={{
-                    position: 'relative',
-                    zIndex: 100,
-                    p: 2
-                }} direction="row" justifyContent="center">
-                    <Box sx={
-                        (theme) => ({
-                            width: '100%',
-                            [theme.breakpoints.up('sm')]: {
-                                width: 300
-                            }
-                        })
-                    }>
-                        <SearchForm
-                            action="/video/search/"
-                            value={prefer === '18' ? actualKeyword : keyword}
-                            onChange={setKeyword}
-                            staticFields={prefer18 ? {
-                                prefer: '18'
-                            } : null}
-                        />
+        <BackgroundContainer style={{
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden'
+        }} prefer18={prefer === '18'}>
+            <Stack sx={{
+                position: 'relative',
+                zIndex: 100,
+                p: 2
+            }} direction="row" justifyContent="center">
+                <Box sx={
+                    (theme) => ({
+                        width: '100%',
+                        [theme.breakpoints.up('sm')]: {
+                            width: 300
+                        }
+                    })
+                }>
+                    <SearchForm
+                        action="/video/search/"
+                        value={prefer === '18' ? actualKeyword : keyword}
+                        onChange={setKeyword}
+                        staticFields={prefer18 ? {
+                            prefer: '18'
+                        } : null}
+                    />
+                </Box>
+            </Stack>
+            {
+                s === '' ? (
+                    <Stack sx={{
+                        position: 'relative',
+                        zIndex: 120
+                    }} flexGrow={1} justifyContent="center" alignItems="center">
+                        <Typography variant="body1" color="hsl(270, 64%, 84%)">🔍 输入关键词开始搜索</Typography>
+                    </Stack>
+                ) : (
+                    <Box sx={{
+                        flexGrow: 1,
+                        overflowY: 'auto'
+                    }}>
+                        <SearchResult keyword={actualKeyword} videoList={list} />
                     </Box>
-                </Stack>
-                {
-                    s === '' ? (
-                        <Stack sx={{
-                            position: 'relative',
-                            zIndex: 120
-                        }} flexGrow={1} justifyContent="center" alignItems="center">
-                            <Typography variant="body1" color="hsl(270, 64%, 84%)">🔍 输入关键词开始搜索</Typography>
-                        </Stack>
-                    ) : (
-                        <Box sx={{
-                            flexGrow: 1,
-                            overflowY: 'auto'
-                        }}>
-                            <SearchResult keyword={actualKeyword} videoList={list} />
-                        </Box>
-                    )
-                }
-            </BackgroundContainer>
-        </StaticTheme>
+                )
+            }
+        </BackgroundContainer>
     )
 }
 

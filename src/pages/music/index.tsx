@@ -21,7 +21,6 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import DownloadIcon from '@mui/icons-material/Download';
 import VolumeUpRoundedIcon from '@mui/icons-material/VolumeUpRounded';
-import { StaticTheme } from '../../components/theme';
 import SearchForm from '../../components/search/Form';
 import { Api } from '../../util/config';
 import { timeFormatter } from '../../util/date';
@@ -79,173 +78,171 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
     }
 
     return (
-        <StaticTheme>
+        <Stack sx={{
+            height: '100%',
+            backgroundImage: 'var(--linear-gradient-image)'
+        }} direction="column">
             <Stack sx={{
-                height: '100%',
-                backgroundImage: 'var(--linear-gradient-image)'
-            }} direction="column">
-                <Stack sx={{
-                    position: 'relative',
-                    zIndex: 100,
-                    p: 2
-                }} direction="row" justifyContent="center">
-                    <Box sx={
-                        (theme) => ({
-                            width: '100%',
-                            [theme.breakpoints.up('sm')]: {
-                                width: 300
-                            }
-                        })
-                    }>
-                        <SearchForm
-                            action="/music"
-                            value={keyword}
-                            onChange={setKeyword}
-                        />
-                    </Box>
-                </Stack>
-                {
-                    s === '' ? (
-                        <Stack sx={{
-                            position: 'relative',
-                            zIndex: 120
-                        }} flexGrow={1} justifyContent="center" alignItems="center">
-                            <Typography variant="body1" color="hsl(270, 64%, 84%)">🔍 输入歌名/歌手名开始搜索</Typography>
-                        </Stack>
-                    ) : (
+                position: 'relative',
+                zIndex: 100,
+                p: 2
+            }} direction="row" justifyContent="center">
+                <Box sx={
+                    (theme) => ({
+                        width: '100%',
+                        [theme.breakpoints.up('sm')]: {
+                            width: 300
+                        }
+                    })
+                }>
+                    <SearchForm
+                        action="/music"
+                        value={keyword}
+                        onChange={setKeyword}
+                    />
+                </Box>
+            </Stack>
+            {
+                s === '' ? (
+                    <Stack sx={{
+                        position: 'relative',
+                        zIndex: 120
+                    }} flexGrow={1} justifyContent="center" alignItems="center">
+                        <Typography variant="body1" color="hsl(270, 64%, 84%)">🔍 输入歌名/歌手名开始搜索</Typography>
+                    </Stack>
+                ) : (
+                    <Box sx={{
+                        position: 'relative',
+                        flexGrow: 1,
+                        overflow: 'hidden'
+                    }}>
                         <Box sx={{
-                            position: 'relative',
-                            flexGrow: 1,
-                            overflow: 'hidden'
+                            height: '100%',
+                            px: 2,
+                            overflowY: 'auto',
+                            pb: activeMusic ? 13 : 0
                         }}>
-                            <Box sx={{
-                                height: '100%',
-                                px: 2,
-                                overflowY: 'auto',
-                                pb: activeMusic ? 13 : 0
+                            <List sx={{
+                                bgcolor: 'background.paper'
                             }}>
-                                <List sx={{
-                                    bgcolor: 'background.paper'
-                                }}>
-                                    {
-                                        list.map(
-                                            (music, index) => (
-                                                <React.Fragment key={music.id}>
-                                                    {
-                                                        index > 0 && <Divider />
-                                                    }
-                                                    <MusicItem
-                                                        music={music}
-                                                        playing={activeMusic && activeMusic.id === music.id && playing}
-                                                        onTogglePlay={
-                                                            async (music) => {
-                                                                if (activeMusic && music.id === activeMusic.id) {
-                                                                    setPlaying(
-                                                                        state => !state
-                                                                    )
-                                                                }
-                                                                else {
-                                                                    const url = await getMusicUrl(music.id)
-                                                                    if (url) {
-                                                                        setActiveMusic({
-                                                                            ...music,
-                                                                            url
-                                                                        })
-                                                                        setPlaying(true)
-                                                                    }
-                                                                    else {
-                                                                        setError(true)
-                                                                    }
-                                                                }
+                                {
+                                    list.map(
+                                        (music, index) => (
+                                            <React.Fragment key={music.id}>
+                                                {
+                                                    index > 0 && <Divider />
+                                                }
+                                                <MusicItem
+                                                    music={music}
+                                                    playing={activeMusic && activeMusic.id === music.id && playing}
+                                                    onTogglePlay={
+                                                        async (music) => {
+                                                            if (activeMusic && music.id === activeMusic.id) {
+                                                                setPlaying(
+                                                                    state => !state
+                                                                )
                                                             }
-                                                        }
-                                                        onDownload={
-                                                            async (music) => {
+                                                            else {
                                                                 const url = await getMusicUrl(music.id)
                                                                 if (url) {
-                                                                    setDownloadUrl(url)
-                                                                    setDownloadModalOpen(true)
+                                                                    setActiveMusic({
+                                                                        ...music,
+                                                                        url
+                                                                    })
+                                                                    setPlaying(true)
                                                                 }
                                                                 else {
                                                                     setError(true)
                                                                 }
                                                             }
                                                         }
-                                                    />
-                                                </React.Fragment>
-                                            )
+                                                    }
+                                                    onDownload={
+                                                        async (music) => {
+                                                            const url = await getMusicUrl(music.id)
+                                                            if (url) {
+                                                                setDownloadUrl(url)
+                                                                setDownloadModalOpen(true)
+                                                            }
+                                                            else {
+                                                                setError(true)
+                                                            }
+                                                        }
+                                                    }
+                                                />
+                                            </React.Fragment>
                                         )
-                                    }
-                                </List>
-                            </Box>
-                            <Slide direction="up" in={Boolean(activeMusic)} mountOnEnter unmountOnExit>
-                                <Box sx={{
-                                    position: 'absolute',
-                                    left: 0,
-                                    right: 0,
-                                    bottom: 0,
-                                    boxShadow: 5
-                                }}>
-                                    <MusicPlayer
-                                        music={activeMusic}
-                                        playing={playing}
-                                        onPlayStateChange={setPlaying}
-                                    />
-                                </Box>
-                            </Slide>
-                            <LoadingOverlay
-                                open={urlParsing}
-                                label="地址解析中.."
-                                withBackground
-                                labelColor="#fff"
-                            />
+                                    )
+                                }
+                            </List>
                         </Box>
-                    )
+                        <Slide direction="up" in={Boolean(activeMusic)} mountOnEnter unmountOnExit>
+                            <Box sx={{
+                                position: 'absolute',
+                                left: 0,
+                                right: 0,
+                                bottom: 0,
+                                boxShadow: 5
+                            }}>
+                                <MusicPlayer
+                                    music={activeMusic}
+                                    playing={playing}
+                                    onPlayStateChange={setPlaying}
+                                />
+                            </Box>
+                        </Slide>
+                        <LoadingOverlay
+                            open={urlParsing}
+                            label="地址解析中.."
+                            withBackground
+                            labelColor="#fff"
+                        />
+                    </Box>
+                )
+            }
+            <Snackbar open={error} autoHideDuration={5000} onClose={
+                () => setError(false)
+            } anchorOrigin={{
+                horizontal: 'center',
+                vertical: 'bottom'
+            }}>
+                <Alert severity="error" onClose={handleClose}>当前歌曲不可用</Alert>
+            </Snackbar>
+            <Modal
+                open={downloadModalOpen}
+                onClose={
+                    () => setDownloadModalOpen(false)
                 }
-                <Snackbar open={error} autoHideDuration={5000} onClose={
-                    () => setError(false)
-                } anchorOrigin={{
-                    horizontal: 'center',
-                    vertical: 'bottom'
+            >
+                <Stack sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: 300,
+                    height: 250,
+                    backgroundImage: 'var(--linear-gradient-image)',
+                    p: 2
                 }}>
-                    <Alert severity="error" onClose={handleClose}>当前歌曲不可用</Alert>
-                </Snackbar>
-                <Modal
-                    open={downloadModalOpen}
-                    onClose={
-                        () => setDownloadModalOpen(false)
-                    }
-                >
-                    <Stack sx={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        width: 300,
-                        height: 250,
-                        backgroundImage: 'var(--linear-gradient-image)',
-                        p: 2
-                    }}>
-                        <Link sx={{
-                            display: 'block',
-                            width: '100%',
-                            cursor: 'default',
-                            color: '#ffffff88',
-                            flexGrow: 1
-                        }} href={downloadUrl} underline="none" onClick={
-                            (event: React.SyntheticEvent) => event.preventDefault()
-                        }>
-                            <Stack sx={{
-                                height: '100%',
-                                border: '1px dashed #999'
-                            }} justifyContent="center" alignItems="center">
-                                <Typography variant="button">右键此区域选择链接(目标)另存为</Typography>
-                            </Stack>
-                        </Link>
-                    </Stack>
-                </Modal>
-            </Stack>
-        </StaticTheme>
+                    <Link sx={{
+                        display: 'block',
+                        width: '100%',
+                        cursor: 'default',
+                        color: '#ffffff88',
+                        flexGrow: 1
+                    }} href={downloadUrl} underline="none" onClick={
+                        (event: React.SyntheticEvent) => event.preventDefault()
+                    }>
+                        <Stack sx={{
+                            height: '100%',
+                            border: '1px dashed #999'
+                        }} justifyContent="center" alignItems="center">
+                            <Typography variant="button">右键此区域选择链接(目标)另存为</Typography>
+                        </Stack>
+                    </Link>
+                </Stack>
+            </Modal>
+        </Stack>
     )
 }
 
@@ -352,6 +349,15 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
         }
     }, [music.id])
 
+    useEffect(() => {
+        if (playing) {
+            audioRef.current.play()
+        }
+        else {
+            audioRef.current.pause()
+        }
+    }, [playing])
+
     return (
         <Stack sx={{
             position: 'relative',
@@ -386,12 +392,6 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
                             playing={playing}
                             onTogglePlay={
                                 (nextState) => {
-                                    if (nextState) {
-                                        audioRef.current.play()
-                                    }
-                                    else {
-                                        audioRef.current.pause()
-                                    }
                                     onPlayStateChange(nextState)
                                 }
                             }
@@ -471,6 +471,16 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
                 onCanPlay={
                     () => {
                         audioRef.current.play()
+                    }
+                }
+                onPlay={
+                    () => {
+                        onPlayStateChange(true)
+                    }
+                }
+                onPause={
+                    () => {
+                        onPlayStateChange(false)
                     }
                 }
                 onTimeUpdate={
