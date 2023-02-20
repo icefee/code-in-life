@@ -3,7 +3,7 @@ import { Api } from '../../../util/config';
 import { jsonBase64 } from '../../../util/parser';
 import type { VideoInfo } from '../../../components/search/api';
 
-async function getVideoInfo(api: string, id: string): Promise<VideoInfo | null> {
+async function getVideoInfo(api: string, id: string): Promise<VideoInfo | string> {
     try {
         const videoInfo = await fetch(`${Api.site}/video/api?api=${api}&id=${id}`).then(
             response => jsonBase64<VideoInfo>(response)
@@ -16,7 +16,7 @@ async function getVideoInfo(api: string, id: string): Promise<VideoInfo | null> 
         }
     }
     catch (err) {
-        return err;
+        return String(err);
     }
 }
 
