@@ -1,16 +1,32 @@
 import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
+import fetch from 'node-fetch';
 import { Api } from '../../util/config';
 
-async function getMusicUrl(id: string) {
-    const url = `${Api.music}/music/${id}`
+function parseUrl(html: string) {
+    const matchBlock = html.match(
+        /const url = 'https?:\/\/[^']+'/
+    )
+    return matchBlock[0].match(/https?:\/\/[^']+/)[0].replace(new RegExp('&amp;', 'g'), '&')
+}
+
+function parsePoster(html: string) {
+    const matchBlock = html.match(
+        /<img id="cover" src="https?:\/\/[^"]+"/
+    )
+    return matchBlock[0].match(/https?:\/\/[^"]+/)[0]
+}
+
+async function getMusic(id: string) {
     try {
-        const html = await fetch(url).then(
+        const html = await fetch(`${Api.music}/music/${id}`).then(
             response => response.text()
         )
-        const matchBlock = html.match(
-            /const url = 'https?:\/\/[^']+'/
-        )
-        return matchBlock[0].match(/https?:\/\/[^']+/)[0].replace(new RegExp('&amp;', 'g'), '&')
+        const url = parseUrl(html)
+        const poster = parsePoster(html)
+        return {
+            url,
+            poster
+        }
     }
     catch (err) {
         return null
@@ -19,11 +35,11 @@ async function getMusicUrl(id: string) {
 
 export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
     const { id } = req.query;
-    const url = await getMusicUrl(id)
-    if (url) {
+    const music = await getMusic(id)
+    if (music) {
         res.json({
             code: 0,
-            data: url,
+            data: music,
             msg: '成功'
         })
     }

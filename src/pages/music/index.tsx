@@ -9,12 +9,11 @@ import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import Divider from '@mui/material/Divider';
 import Avatar from '@mui/material/Avatar';
-import IconButton from '@mui/material/IconButton';
+import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
 import Slide from '@mui/material/Slide';
 import Slider from '@mui/material/Slider';
 import Typography from '@mui/material/Typography';
-import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -37,9 +36,12 @@ interface MusicSearchProps {
     list: SearchMusic[];
 }
 
-interface PlayingMusic extends SearchMusic {
+interface MusicInfo {
     url: string;
+    poster: string;
 }
+
+interface PlayingMusic extends SearchMusic, MusicInfo { }
 
 export default function MusicSearch({ serverData }: PageProps<object, object, unknown, MusicSearchProps>) {
 
@@ -49,7 +51,7 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
 
     const [activeMusic, setActiveMusic] = useState<PlayingMusic>()
     const [playing, setPlaying] = useState(false)
-    const musicUrlMap = useRef<Map<number, string>>(new Map())
+    const musicUrlMap = useRef<Map<number, MusicInfo>>(new Map())
 
     const [urlParsing, setUrlParsing] = useState(false)
 
@@ -66,12 +68,12 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
             return cachedMusicUrl;
         }
         setUrlParsing(true)
-        const parsedUrl = await parseMusicUrl(id)
-        if (parsedUrl) {
-            musicUrlMap.current.set(id, parsedUrl);
+        const musicInfo = await parseMusic(id)
+        if (musicInfo) {
+            musicUrlMap.current.set(id, musicInfo);
         }
         setUrlParsing(false)
-        return parsedUrl;
+        return musicInfo;
     }
 
     return (
@@ -80,9 +82,10 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
             backgroundImage: 'var(--linear-gradient-image)'
         }} direction="column">
             <Stack sx={{
-                position: 'relative',
+                position: 'absolute',
+                width: '100%',
                 zIndex: 100,
-                p: 2
+                p: 1
             }} direction="row" justifyContent="center">
                 <Box sx={
                     (theme) => ({
@@ -111,13 +114,14 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
                     <Box sx={{
                         position: 'relative',
                         flexGrow: 1,
-                        overflow: 'hidden'
+                        overflow: 'hidden',
+                        pt: 8
                     }}>
                         <Box sx={{
                             height: '100%',
-                            px: 2,
+                            px: 1,
                             overflowY: 'auto',
-                            pb: activeMusic ? 13 : 0
+                            pb: activeMusic ? 13 : 2
                         }}>
                             <List sx={{
                                 bgcolor: 'background.paper'
@@ -140,11 +144,11 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
                                                                 )
                                                             }
                                                             else {
-                                                                const url = await getMusicUrl(music.id)
-                                                                if (url) {
+                                                                const musicInfo = await getMusicUrl(music.id)
+                                                                if (musicInfo) {
                                                                     setActiveMusic({
                                                                         ...music,
-                                                                        url
+                                                                        ...musicInfo
                                                                     })
                                                                     setPlaying(true)
                                                                 }
@@ -156,10 +160,10 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
                                                     }
                                                     onDownload={
                                                         async (music) => {
-                                                            const url = await getMusicUrl(music.id)
-                                                            if (url) {
+                                                            const musicInfo = await getMusicUrl(music.id)
+                                                            if (musicInfo) {
                                                                 window.open(
-                                                                    `/api/music/download?name=${encodeURIComponent(`${music.artist}-${music.name}`)}&id=${btoa(url)}`
+                                                                    `/api/music/download?name=${encodeURIComponent(`${music.artist}-${music.name}`)}&id=${btoa(musicInfo.url)}`
                                                                 )
                                                             }
                                                             else {
@@ -210,13 +214,13 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
     )
 }
 
-async function parseMusicUrl(id: number): Promise<string | null> {
+async function parseMusic<T extends MusicInfo = MusicInfo>(id: number): Promise<T | null> {
     try {
         const { code, data } = await fetch(
             `/api/music/parse?id=${id}`
         ).then<{
             code: number;
-            data: string;
+            data: T;
         }>(
             response => response.json()
         );
@@ -235,16 +239,17 @@ async function parseMusicUrl(id: number): Promise<string | null> {
 interface PlayOrPauseButtonProps {
     playing: boolean;
     onTogglePlay(value: boolean): void;
+    size?: IconButtonProps['size']
 }
 
-function PlayOrPauseButton({ playing, onTogglePlay }: PlayOrPauseButtonProps) {
+function PlayOrPauseButton({ playing, onTogglePlay, size }: PlayOrPauseButtonProps) {
     return (
-        <IconButton color="inherit" onClick={
+        <IconButton size={size} color="inherit" onClick={
             () => onTogglePlay(!playing)
         }>
-            {
-                playing ? <PauseIcon /> : <PlayArrowIcon />
-            }
+            {React.createElement(playing ? PauseIcon : PlayArrowIcon, {
+                fontSize: 'inherit'
+            })}
         </IconButton>
     )
 }
@@ -264,30 +269,32 @@ function MusicItem({ music, playing, onDownload, onTogglePlay }: MusicItemProps)
     return (
         <ListItem
             secondaryAction={
-                <Stack direction="row" columnGap={.5}>
+                <IconButton color="inherit" onClick={
+                    () => onDownload(music)
+                }>
+                    <DownloadIcon />
+                </IconButton>
+            }
+        >
+            <ListItemAvatar>
+                <Avatar sx={{
+                    backgroundImage: 'var(--linear-gradient-image)'
+                }}>
                     <PlayOrPauseButton
                         playing={playing}
                         onTogglePlay={
                             () => onTogglePlay(music)
                         }
                     />
-                    <IconButton color="inherit" onClick={
-                        () => onDownload(music)
-                    }>
-                        <DownloadIcon />
-                    </IconButton>
-                </Stack>
-            }
-        >
-            <ListItemAvatar>
-                <Avatar sx={{
-                    bgcolor: '#561f8d'
-                }}>
-                    <MusicNoteIcon />
                 </Avatar>
             </ListItemAvatar>
             <ListItemText
                 primary={music.name}
+                primaryTypographyProps={{
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
+                }}
                 secondary={music.artist}
             />
         </ListItem>
@@ -333,16 +340,42 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
             columnGap: 2
         }} direction="row" alignItems="center">
             <Stack sx={(theme) => ({
-                width: 50,
+                position: 'relative',
+                width: 60,
                 aspectRatio: '1 / 1',
                 color: '#fff',
                 borderRadius: '50%',
-                backgroundImage: 'var(--linear-gradient-image)',
                 [theme.breakpoints.up('sm')]: {
-                    width: 75
+                    width: 80
                 }
             })} justifyContent="center" alignItems="center" flexShrink={0}>
-                <MusicNoteIcon fontSize="large" />
+                <Avatar
+                    alt={`${music.name}-${music.artist}`}
+                    src={music.poster}
+                    sx={{
+                        width: '100%',
+                        height: '100%',
+                        opacity: .8
+                    }}
+                />
+                <Box sx={{
+                    position: 'absolute',
+                    left: '50%',
+                    top: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    opacity: .8,
+                    zIndex: 20
+                }}>
+                    <PlayOrPauseButton
+                        playing={playing}
+                        onTogglePlay={
+                            (nextState) => {
+                                onPlayStateChange(nextState)
+                            }
+                        }
+                        size="large"
+                    />
+                </Box>
             </Stack>
             <Stack flexGrow={1}>
                 <Stack sx={{
@@ -363,9 +396,13 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
                             <Typography variant="overline" color="#ffffffcc" noWrap>{music.artist}</Typography>
                         </Stack>
                     </Stack>
-                    <Stack sx={{
-                        color: '#fff'
-                    }} direction="row" alignItems="center">
+                    <Box sx={{
+                        color: '#fff',
+                        display: {
+                            xs: 'none',
+                            sm: 'block'
+                        }
+                    }}>
                         <PlayOrPauseButton
                             playing={playing}
                             onTogglePlay={
@@ -374,7 +411,7 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
                                 }
                             }
                         />
-                    </Stack>
+                    </Box>
                 </Stack>
                 <Stack direction="row" alignItems="center">
                     <Typography variant="button">{timeFormatter(currentTime)} / {duration ? timeFormatter(duration) : '--:--'}</Typography>
