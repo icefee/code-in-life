@@ -23,6 +23,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 import VolumeUpRoundedIcon from '@mui/icons-material/VolumeUpRounded';
 import VolumeDownRoundedIcon from '@mui/icons-material/VolumeDownRounded';
 import VolumeOffRoundedIcon from '@mui/icons-material/VolumeOffRounded';
+import RepeatOneIcon from '@mui/icons-material/RepeatOne';
 import SearchForm from '../../components/search/Form';
 import { Api } from '../../util/config';
 import { timeFormatter } from '../../util/date';
@@ -335,6 +336,7 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
     const [currentTime, setCurrentTime] = useState<number>(0)
     const [volume, setVolume] = useState(1)
     const cachedVolumeRef = useRef<number>(1)
+    const [repeat, setRepeat] = useState(true)
 
     useEffect(() => {
         return () => {
@@ -422,9 +424,7 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
                         )
                     }
                 </Stack>
-                <Stack sx={{
-                    pr: 1
-                }} direction="row" alignItems="center">
+                <Stack direction="row" alignItems="center">
                     <Typography variant="button">{timeFormatter(currentTime)} / {duration ? timeFormatter(duration) : '--:--'}</Typography>
                     <Stack sx={{
                         ml: 2
@@ -441,6 +441,14 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
                             }
                         />
                     </Stack>
+                    <IconButton
+                        color={repeat ? 'primary' : 'inherit'}
+                        onClick={
+                            () => setRepeat(repeat => !repeat)
+                        }
+                    >
+                        <RepeatOneIcon />
+                    </IconButton>
                 </Stack>
                 <Stack sx={{
                     display: {
@@ -530,7 +538,12 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
                 }
                 onEnded={
                     () => {
-                        onPlayStateChange(false)
+                        if (repeat) {
+                            audioRef.current.currentTime = 0
+                        }
+                        else {
+                            onPlayStateChange(false)
+                        }
                     }
                 }
                 onVolumeChange={
