@@ -17,7 +17,7 @@ function parsePoster(html: string) {
 }
 
 function parseDuration(time: string) {
-    const timeStamp = time.match(/^\d{2}:\d{2}/)
+    const timeStamp = time.match(/^\d{1,2}:\d{1,2}/)
     const [m, s] = timeStamp[0].split(':')
     const mills = time.match(/\.\d+/)
     return parseInt(m) * 60 + parseInt(s) + parseFloat(mills[0])
@@ -32,8 +32,8 @@ async function parseLrc(id: string) {
             s => s.trim().length > 0
         ).map(
             line => {
-                const timeMatch = line.match(/\d{2}:\d{2}\.\d+/)
-                const textMatch = line.match(/(?<=]).+$/)
+                const timeMatch = line.match(/\d{1,2}:\d{1,2}\.\d+/)
+                const textMatch = line.match(/(?<=]).+(?=($|\r))/)
                 return {
                     time: parseDuration(timeMatch[0]),
                     text: textMatch[0]
@@ -43,7 +43,6 @@ async function parseLrc(id: string) {
         return lines;
     }
     catch (err) {
-        console.log(err)
         return null;
     }
 }
