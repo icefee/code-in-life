@@ -76,3 +76,15 @@ export function utf162utf8(source: string) {
 export function toBase64(source: string): string {
     return btoa(source);
 }
+
+/*
+declare global {
+    interface Array<T> {
+        shuffle(this: T[]): T[];
+    }
+}
+
+Array.prototype.shuffle = function() {
+    return this.sort(() => Math.random() - .5)
+}
+*/

@@ -121,13 +121,16 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
                         maxWidth: 600,
                         margin: '0 auto'
                     }}>
-                        <Box sx={{
+                        <Box sx={(theme) => ({
                             height: '100%',
                             pt: 1,
                             px: 1,
                             overflowY: 'auto',
-                            pb: activeMusic ? 15 : 2
-                        }}>
+                            pb: activeMusic ? 11 : 2,
+                            [theme.breakpoints.up('sm')]: {
+                                pb: activeMusic ? 16 : 2
+                            }
+                        })}>
                             <List sx={{
                                 bgcolor: 'background.paper'
                             }}>
@@ -319,7 +322,7 @@ interface MusicPlayerProps {
 
 function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
 
-    const audioRef = useRef<HTMLAudioElement>()
+    const audioRef = useRef<HTMLVideoElement>()
     const [duration, setDuration] = useState<number>()
     const [currentTime, setCurrentTime] = useState<number>(0)
     const [volume, setVolume] = useState(1)
@@ -400,7 +403,9 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
                         <Typography variant="overline" color="#ffffffcc" noWrap>{music.artist}</Typography>
                     </Stack>
                 </Stack>
-                <Stack direction="row" alignItems="center">
+                <Stack sx={{
+                    pr: 1
+                }} direction="row" alignItems="center">
                     <Typography variant="button">{timeFormatter(currentTime)} / {duration ? timeFormatter(duration) : '--:--'}</Typography>
                     <Stack sx={{
                         ml: 2
@@ -469,7 +474,7 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
                     </Stack>
                 </Stack>
             </Stack>
-            <audio
+            <video
                 style={{
                     position: 'absolute',
                     zIndex: -100,
@@ -538,7 +543,7 @@ async function getMusicSearch(s: string): Promise<SearchMusic[]> {
         const html = await fetch(url).then(
             response => response.text()
         )
-        const matchBlocks = html.replace(/[\n\s\r]+/g, '').match(
+        const matchBlocks = html.replace(/[\n\s\r]+/g, '').replace(new RegExp('&amp;', 'g'), '&').match(
             /<tr><td><ahref="\/music\/\d+"class="text-primaryfont-weight-bold"target="_blank">[^<]+<\/a><\/td><tdclass="text-success">[^<]+<\/td><td><ahref="\/music\/\d+"target="_blank"><u>下载<\/u><\/a><\/td><\/tr>/g
         )
         if (matchBlocks) {
