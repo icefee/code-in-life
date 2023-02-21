@@ -542,6 +542,7 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
                             audioRef.current.currentTime = 0
                         }
                         else {
+                            setCurrentTime(0)
                             onPlayStateChange(false)
                         }
                     }
