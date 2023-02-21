@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import type { GetServerDataProps, HeadProps, PageProps } from 'gatsby';
+import type { SxProps, Theme } from '@mui/material/styles'
 import Stack from '@mui/material/Stack';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -15,6 +16,7 @@ import Box from '@mui/material/Box';
 import Slide from '@mui/material/Slide';
 import Slider from '@mui/material/Slider';
 import Typography from '@mui/material/Typography';
+// import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -39,7 +41,13 @@ interface MusicSearchProps {
 
 interface MusicInfo {
     url: string;
-    poster: string;
+    poster?: string;
+    lrc?: Lrc[];
+}
+
+interface Lrc {
+    time: number;
+    text: string;
 }
 
 interface PlayingMusic extends SearchMusic, MusicInfo { }
@@ -361,14 +369,10 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
                     width: 80
                 }
             })} justifyContent="center" alignItems="center" flexShrink={0}>
-                <Avatar
+                <MusicPoster
                     alt={`${music.name}-${music.artist}`}
                     src={music.poster}
-                    sx={{
-                        width: '100%',
-                        height: '100%',
-                        opacity: .8
-                    }}
+                    playing={playing}
                 />
                 <Box sx={{
                     position: 'absolute',
@@ -390,7 +394,9 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
                 </Box>
             </Stack>
             <Stack flexGrow={1}>
-                <Stack flexDirection="row" alignItems="center" rowGap={1} columnGap={1}>
+                <Stack sx={{
+                    position: 'relative'
+                }} flexDirection="row" alignItems="center" rowGap={1} columnGap={1}>
                     <Stack sx={(theme) => ({
                         maxWidth: 120,
                         [theme.breakpoints.up('sm')]: {
@@ -402,6 +408,19 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
                     <Stack>
                         <Typography variant="overline" color="#ffffffcc" noWrap>{music.artist}</Typography>
                     </Stack>
+                    {
+                        music.lrc && (
+                            <Box sx={{
+                                position: 'absolute',
+                                right: 0,
+                                top: '50%',
+                                transform: 'translate(0, -50%)',
+                                pr: 1
+                            }}>
+                                <MusicLrc lrc={music.lrc} currentTime={currentTime} />
+                            </Box>
+                        )
+                    }
                 </Stack>
                 <Stack sx={{
                     pr: 1
@@ -523,6 +542,61 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
                 src={music.url}
             />
         </Stack>
+    )
+}
+
+interface MusicPosterProps {
+    playing: boolean;
+    src?: string;
+    alt?: string;
+}
+
+function MusicPoster({ playing, src, alt }: MusicPosterProps) {
+    const style: SxProps<Theme> = {
+        width: '100%',
+        height: '100%',
+        opacity: .8,
+        animationName: 'rotate',
+        animationIterationCount: 'infinite',
+        animationDuration: '12s',
+        animationTimingFunction: 'linear',
+        animationPlayState: playing ? 'running' : 'paused'
+    };
+    return src ? (
+        <Avatar
+            alt={alt}
+            src={src}
+            sx={style}
+        />
+    ) : (
+        <Box
+            sx={{
+                ...style,
+                borderRadius: '50%',
+                backgroundImage: 'var(--linear-gradient-image)'
+            }}
+        />
+    )
+}
+
+
+interface MusicLrcProps {
+    currentTime: number;
+    lrc: Lrc[];
+}
+
+function MusicLrc({ lrc, currentTime }: MusicLrcProps) {
+    const lrcLine = useMemo(() => {
+        const playedLines = lrc.filter(
+            ({ time }) => time <= currentTime
+        )
+        if (playedLines.length > 0) {
+            return playedLines[playedLines.length - 1].text
+        }
+        return '';
+    }, [lrc, currentTime])
+    return (
+        <Typography variant="caption">{lrcLine}</Typography>
     )
 }
 

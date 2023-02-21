@@ -13,7 +13,39 @@ function parsePoster(html: string) {
     const matchBlock = html.match(
         /<img id="cover" src="https?:\/\/[^"]+"/
     )
-    return matchBlock[0].match(/https?:\/\/[^"]+/)[0]
+    return matchBlock ? matchBlock[0].match(/https?:\/\/[^"]+/)[0] : null
+}
+
+function parseDuration(time: string) {
+    const timeStamp = time.match(/^\d{2}:\d{2}/)
+    const [m, s] = timeStamp[0].split(':')
+    const mills = time.match(/\.\d+/)
+    return parseInt(m) * 60 + parseInt(s) + parseFloat(mills[0])
+}
+
+async function parseLrc(id: string) {
+    try {
+        const lrc = await fetch(`${Api.music}/download/lrc/${id}`).then(
+            response => response.text()
+        )
+        const lines = lrc.split(/\n/).filter(
+            s => s.trim().length > 0
+        ).map(
+            line => {
+                const timeMatch = line.match(/\d{2}:\d{2}\.\d+/)
+                const textMatch = line.match(/(?<=]).+$/)
+                return {
+                    time: parseDuration(timeMatch[0]),
+                    text: textMatch[0]
+                }
+            }
+        )
+        return lines;
+    }
+    catch (err) {
+        console.log(err)
+        return null;
+    }
 }
 
 async function getMusic(id: string) {
@@ -23,9 +55,11 @@ async function getMusic(id: string) {
         )
         const url = parseUrl(html)
         const poster = parsePoster(html)
+        const lrc = await parseLrc(id)
         return {
             url,
-            poster
+            poster,
+            lrc
         }
     }
     catch (err) {
