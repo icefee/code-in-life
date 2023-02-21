@@ -9,8 +9,9 @@ interface VideoParserPlayerProps {
     url: string;
 }
 
-const VideoParserPlayer: React.FC<PageProps<object, object, unknown, VideoParserPlayerProps>> = ({ serverData }) => {
-    const { url } = serverData;
+const VideoParserPlayer: React.FC<PageProps<object, object, unknown, VideoParserPlayerProps>> = ({ location }) => {
+    const query = new URLSearchParams(location.search);
+    const url = query.get('url');
     const needParse = M3u8.isM3u8Url(url) || /\.(mp4)$/.test(url);
     const [loading, setLoading] = useState(false)
     const [parsedUrl, setParsedUrl] = useState(
