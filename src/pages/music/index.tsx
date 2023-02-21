@@ -16,6 +16,7 @@ import Box from '@mui/material/Box';
 import Slide from '@mui/material/Slide';
 import Slider from '@mui/material/Slider';
 import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
 // import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
@@ -135,7 +136,7 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
                             pt: 1,
                             px: 1,
                             overflowY: 'auto',
-                            pb: activeMusic ? 11 : 2,
+                            pb: activeMusic ? 13 : 2,
                             [theme.breakpoints.up('sm')]: {
                                 pb: activeMusic ? 16 : 2
                             }
@@ -337,6 +338,7 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
     const [volume, setVolume] = useState(1)
     const cachedVolumeRef = useRef<number>(1)
     const [repeat, setRepeat] = useState(true)
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         return () => {
@@ -384,15 +386,26 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
                     opacity: .8,
                     zIndex: 20
                 }}>
-                    <PlayOrPauseButton
-                        playing={playing}
-                        onTogglePlay={
-                            (nextState) => {
-                                onPlayStateChange(nextState)
-                            }
-                        }
-                        size="large"
-                    />
+                    {
+                        loading ? (
+                            <Box sx={{
+                                width: 40,
+                                height: 40
+                            }}>
+                                <CircularProgress color="inherit" />
+                            </Box>
+                        ) : (
+                            <PlayOrPauseButton
+                                playing={playing}
+                                onTogglePlay={
+                                    (nextState) => {
+                                        onPlayStateChange(nextState)
+                                    }
+                                }
+                                size="large"
+                            />
+                        )
+                    }
                 </Box>
             </Stack>
             <Stack flexGrow={1}>
@@ -531,8 +544,14 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
                         onPlayStateChange(false)
                     }
                 }
+                onWaiting={
+                    () => {
+                        setLoading(true)
+                    }
+                }
                 onTimeUpdate={
                     () => {
+                        setLoading(false)
                         setCurrentTime(audioRef.current.currentTime)
                     }
                 }
