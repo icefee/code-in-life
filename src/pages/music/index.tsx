@@ -5,6 +5,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListSubheader from '@mui/material/ListSubheader';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import Avatar from '@mui/material/Avatar';
@@ -18,8 +19,10 @@ import DownloadIcon from '@mui/icons-material/Download';
 import SearchForm from '../../components/search/Form';
 import { Api } from '../../util/config';
 import { LoadingOverlay } from '../../components/loading';
-import MusicPlayer, { type SearchMusic, type MusicInfo, type PlayingMusic } from '../../components/player/MusicPlayer';
+import MusicPlayer, { type SearchMusic, type MusicInfo, type PlayingMusic, RepeatMode } from '../../components/player/MusicPlayer';
+import MusicPoster from '../../components/player/MusicPoster';
 import PlayOrPauseButton from '../../components/player/PlayOrPauseButton';
+import { DarkThemed } from '../../components/theme';
 import NoData from '../../components/search/NoData';
 
 interface MusicSearchProps {
@@ -38,6 +41,9 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
     const musicUrlMap = useRef<Map<number, MusicInfo>>(new Map())
 
     const [urlParsing, setUrlParsing] = useState(false)
+    const [playlistShow, setPlaylistShow] = useState(false)
+    const [playlist, setPlaylist] = useState<PlayingMusic[]>([])
+    const [repeat, setRepeat] = useState<RepeatMode>(RepeatMode.All)
 
     const handleClose = (_event?: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
@@ -58,6 +64,14 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
         }
         setUrlParsing(false)
         return musicInfo;
+    }
+
+    const generateRandomIndex = (max: number, current: number) => {
+        const random = Math.round(Math.random() * max);
+        if (random === current) {
+            return generateRandomIndex(max, current)
+        }
+        return random;
     }
 
     return (
@@ -130,7 +144,7 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
                                                                         const musicInfo = await getMusicUrl(music.id)
                                                                         if (musicInfo) {
                                                                             window.open(
-                                                                                `/api/music/download?name=${encodeURIComponent(`${music.artist}-${music.name}`)}&id=${btoa(musicInfo.url)}`
+                                                                                `/api/music?name=${encodeURIComponent(`${music.artist}-${music.name}`)}&id=${btoa(musicInfo.url)}`
                                                                             )
                                                                         }
                                                                         else {
@@ -162,10 +176,21 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
                                                                                 else {
                                                                                     const musicInfo = await getMusicUrl(music.id)
                                                                                     if (musicInfo) {
-                                                                                        setActiveMusic({
+                                                                                        const nextPlay = {
                                                                                             ...music,
-                                                                                            ...musicInfo
-                                                                                        })
+                                                                                            ...musicInfo,
+                                                                                            url: `/api/music?id=${btoa(musicInfo.url)}`
+                                                                                        }
+                                                                                        setActiveMusic(nextPlay)
+                                                                                        const playIndex = playlist.findIndex(
+                                                                                            music => music.id === nextPlay.id
+                                                                                        )
+                                                                                        if (playIndex !== -1) {
+                                                                                            setActiveMusic(playlist[playIndex])
+                                                                                        }
+                                                                                        else {
+                                                                                            setPlaylist(list => [nextPlay, ...list])
+                                                                                        }
                                                                                         setPlaying(true)
                                                                                     }
                                                                                     else {
@@ -198,19 +223,106 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
                             )
                         }
                         <Slide direction="up" in={Boolean(activeMusic)} mountOnEnter unmountOnExit>
-                            <Box sx={{
+                            <Stack sx={{
                                 position: 'absolute',
                                 left: 0,
                                 right: 0,
                                 bottom: 0,
-                                boxShadow: '0px -4px 12px 0px rgb(0 0 0 / 80%)'
+                                boxShadow: '0px -4px 12px 0px rgb(0 0 0 / 80%)',
+                                maxHeight: '60%'
                             }}>
                                 <MusicPlayer
                                     music={activeMusic}
                                     playing={playing}
                                     onPlayStateChange={setPlaying}
+                                    onTogglePlayList={
+                                        () => setPlaylistShow(
+                                            show => !show
+                                        )
+                                    }
+                                    repeat={repeat}
+                                    onRepeatChange={setRepeat}
+                                    onPlayEnd={
+                                        () => {
+                                            const playIndex = playlist.findIndex(
+                                                music => music.id === activeMusic.id
+                                            )
+                                            switch (repeat) {
+                                                case RepeatMode.Random:
+                                                    const nextPlayIndex = generateRandomIndex(playlist.length - 1, playIndex)
+                                                    setActiveMusic(playlist[nextPlayIndex])
+                                                    break;
+                                                case RepeatMode.All:
+                                                case RepeatMode.Off:
+                                                    if (playIndex < playlist.length) {
+                                                        setActiveMusic(playlist[playIndex + 1])
+                                                    }
+                                                    else if (repeat === RepeatMode.All && playIndex === playlist.length - 1) {
+                                                        setActiveMusic(playlist[0])
+                                                    }
+                                            }
+                                        }
+                                    }
                                 />
-                            </Box>
+                                {
+                                    playlistShow && (
+                                        <DarkThemed>
+                                            <Box sx={{
+                                                flexGrow: 1,
+                                                bgcolor: 'background.paper',
+                                                color: '#fff',
+                                                overflowY: 'auto',
+                                                borderTop: '1px solid #333'
+                                            }}>
+                                                <List subheader={
+                                                    <ListSubheader component="li">播放列表</ListSubheader>
+                                                } disablePadding dense>
+                                                    {
+                                                        playlist.map(
+                                                            (music, index) => (
+                                                                <ListItem
+                                                                    key={music.id}
+                                                                    divider={index < playlist.length - 1}
+                                                                    secondaryAction={
+                                                                        <PlayOrPauseButton
+                                                                            playing={music.id === activeMusic.id}
+                                                                            onTogglePlay={
+                                                                                () => {
+                                                                                    if (activeMusic && music.id === activeMusic.id) {
+                                                                                        setPlaying(
+                                                                                            state => !state
+                                                                                        )
+                                                                                    }
+                                                                                    else {
+                                                                                        setActiveMusic(music)
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        />
+                                                                    }
+                                                                >
+                                                                    <Box sx={{
+                                                                        width: 40,
+                                                                        mr: 2
+                                                                    }}>
+                                                                        <MusicPoster
+                                                                            src={music.poster}
+                                                                        />
+                                                                    </Box>
+                                                                    <ListItemText
+                                                                        primary={music.name}
+                                                                        secondary={music.artist}
+                                                                    />
+                                                                </ListItem>
+                                                            )
+                                                        )
+                                                    }
+                                                </List>
+                                            </Box>
+                                        </DarkThemed>
+                                    )
+                                }
+                            </Stack>
                         </Slide>
                         <LoadingOverlay
                             open={urlParsing}

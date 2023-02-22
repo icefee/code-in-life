@@ -4,12 +4,12 @@ import Avatar from '@mui/material/Avatar';
 import type { SxProps, Theme } from '@mui/material/styles';
 
 interface MusicPosterProps {
-    playing: boolean;
+    playing?: boolean;
     src?: string;
     alt?: string;
 }
 
-function MusicPoster({ playing, src, alt }: MusicPosterProps) {
+function MusicPoster({ playing = false, src, alt }: MusicPosterProps) {
     const style: SxProps<Theme> = {
         width: '100%',
         height: '100%',

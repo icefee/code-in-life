@@ -6,10 +6,15 @@ import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 import Slider from '@mui/material/Slider';
 import Popover from '@mui/material/Popover';
-import VolumeUpRoundedIcon from '@mui/icons-material/VolumeUpRounded';
-import VolumeDownRoundedIcon from '@mui/icons-material/VolumeDownRounded';
-import VolumeOffRoundedIcon from '@mui/icons-material/VolumeOffRounded';
+import Tooltip from '@mui/material/Tooltip';
+import VolumeUpIcon from '@mui/icons-material/VolumeUp';
+import VolumeDownIcon from '@mui/icons-material/VolumeDown';
+import VolumeOffIcon from '@mui/icons-material/VolumeOff';
 import RepeatOneIcon from '@mui/icons-material/RepeatOne';
+import LoopIcon from '@mui/icons-material/Loop';
+import QueueMusicIcon from '@mui/icons-material/QueueMusic';
+import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
+import ShuffleIcon from '@mui/icons-material/Shuffle';
 import MusicPoster from './MusicPoster';
 import MusicLrc, { type Lrc } from './MusicLrc';
 import PlayOrPauseButton from './PlayOrPauseButton';
@@ -27,22 +32,32 @@ export interface MusicInfo {
     lrc?: Lrc[];
 }
 
+export enum RepeatMode {
+    All,
+    One,
+    Random,
+    Off
+}
+
 export interface PlayingMusic extends SearchMusic, MusicInfo { }
 
 interface MusicPlayerProps {
     music: PlayingMusic;
     playing: boolean;
+    repeat: RepeatMode;
+    onRepeatChange(mode: RepeatMode): void;
     onPlayStateChange(state: boolean): void;
+    onTogglePlayList?: VoidFunction;
+    onPlayEnd?: VoidFunction;
 }
 
-function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
+function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayList, onRepeatChange, onPlayEnd }: MusicPlayerProps) {
 
     const audioRef = useRef<HTMLVideoElement>()
     const [duration, setDuration] = useState<number>()
     const [currentTime, setCurrentTime] = useState<number>(0)
     const [volume, setVolume] = useState(1)
     const cachedVolumeRef = useRef<number>(1)
-    const [repeat, setRepeat] = useState(true)
     const [loading, setLoading] = useState(false)
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null)
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)
@@ -62,7 +77,7 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
         }
     }, [playing])
 
-    const volumeIcon = useMemo(() => volume > 0 ? volume > .5 ? <VolumeUpRoundedIcon /> : <VolumeDownRoundedIcon /> : <VolumeOffRoundedIcon />, [volume])
+    const volumeIcon = useMemo(() => volume > 0 ? volume > .5 ? <VolumeUpIcon /> : <VolumeDownIcon /> : <VolumeOffIcon />, [volume])
 
     return (
         <Stack sx={{
@@ -235,14 +250,53 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
                             </>
                         )
                     }
+                    <Tooltip title="播放列表">
+                        <IconButton
+                            color="inherit"
+                            onClick={onTogglePlayList}
+                        >
+                            <PlaylistPlayIcon />
+                        </IconButton>
+                    </Tooltip>
                     <IconButton
-                        color={repeat ? 'primary' : 'inherit'}
+                        color="inherit"
                         size="small"
                         onClick={
-                            () => setRepeat(repeat => !repeat)
+                            () => {
+                                if (repeat === RepeatMode.All) {
+                                    onRepeatChange(RepeatMode.One)
+                                }
+                                else if (repeat === RepeatMode.One) {
+                                    onRepeatChange(RepeatMode.Random)
+                                }
+                                else if (repeat === RepeatMode.Random) {
+                                    onRepeatChange(RepeatMode.Off)
+                                }
+                                else {
+                                    onRepeatChange(RepeatMode.All)
+                                }
+                            }
                         }
                     >
-                        <RepeatOneIcon />
+                        {
+                            repeat === RepeatMode.All ? (
+                                <Tooltip title="列表循环">
+                                    <LoopIcon />
+                                </Tooltip>
+                            ) : repeat === RepeatMode.One ? (
+                                <Tooltip title="单曲循环">
+                                    <RepeatOneIcon />
+                                </Tooltip>
+                            ) : repeat === RepeatMode.Random ? (
+                                <Tooltip title="随机播放">
+                                    <ShuffleIcon />
+                                </Tooltip>
+                            ) : (
+                                <Tooltip title="顺序播放">
+                                    <QueueMusicIcon />
+                                </Tooltip>
+                            )
+                        }
                     </IconButton>
                 </Stack>
             </Stack>
@@ -295,12 +349,9 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
                 }
                 onEnded={
                     () => {
-                        if (repeat) {
-                            audioRef.current.currentTime = 0
-                        }
-                        else {
-                            setCurrentTime(0)
-                            onPlayStateChange(false)
+                        audioRef.current.currentTime = 0
+                        if (repeat !== RepeatMode.One) {
+                            onPlayEnd?.()
                         }
                     }
                 }

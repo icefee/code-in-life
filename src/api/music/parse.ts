@@ -44,7 +44,6 @@ async function parseLrc(id: string) {
         return lines;
     }
     catch (err) {
-        console.log(err)
         return null;
     }
 }
