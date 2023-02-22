@@ -263,7 +263,9 @@ function MusicPlayer({ music, playing, onPlayStateChange }: MusicPlayerProps) {
                 onCanPlay={
                     () => {
                         setLoading(false)
-                        audioRef.current.play()
+                        if (!playing) {
+                            audioRef.current.play()
+                        }
                     }
                 }
                 onCanPlayThrough={
