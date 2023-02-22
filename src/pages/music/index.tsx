@@ -20,6 +20,7 @@ import { Api } from '../../util/config';
 import { LoadingOverlay } from '../../components/loading';
 import MusicPlayer, { type SearchMusic, type MusicInfo, type PlayingMusic } from '../../components/player/MusicPlayer';
 import PlayOrPauseButton from '../../components/player/PlayOrPauseButton';
+import NoData from '../../components/search/NoData';
 
 interface MusicSearchProps {
     s?: string;
@@ -103,93 +104,99 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
                         maxWidth: 600,
                         margin: '0 auto'
                     }}>
-                        <Box sx={(theme) => ({
-                            height: '100%',
-                            pt: 1,
-                            px: 1,
-                            overflowY: 'auto',
-                            pb: activeMusic ? 13 : 2,
-                            [theme.breakpoints.up('sm')]: {
-                                pb: activeMusic ? 16 : 2
-                            }
-                        })}>
-                            <List sx={{
-                                bgcolor: 'background.paper'
-                            }}>
-                                {
-                                    list.map(
-                                        (music, index) => (
-                                            <ListItem
-                                                secondaryAction={
-                                                    <Tooltip title="下载歌曲">
-                                                        <IconButton color="inherit" onClick={
-                                                            async () => {
-                                                                const musicInfo = await getMusicUrl(music.id)
-                                                                if (musicInfo) {
-                                                                    window.open(
-                                                                        `/api/music/download?name=${encodeURIComponent(`${music.artist}-${music.name}`)}&id=${btoa(musicInfo.url)}`
-                                                                    )
-                                                                }
-                                                                else {
-                                                                    setError(true)
-                                                                }
-                                                            }
-                                                        }>
-                                                            <DownloadIcon />
-                                                        </IconButton>
-                                                    </Tooltip>
-                                                }
-                                                divider={index < list.length - 1}
-                                                key={music.id}
-                                            >
-                                                <ListItemAvatar>
-                                                    <Tooltip title="试听歌曲">
-                                                        <Avatar sx={{
-                                                            backgroundImage: 'var(--linear-gradient-image)'
-                                                        }}>
-                                                            <PlayOrPauseButton
-                                                                playing={activeMusic && activeMusic.id === music.id && playing}
-                                                                onTogglePlay={
+                        {
+                            list.length > 0 ? (
+                                <Box sx={(theme) => ({
+                                    height: '100%',
+                                    pt: 1,
+                                    px: 1,
+                                    overflowY: 'auto',
+                                    pb: activeMusic ? 13 : 2,
+                                    [theme.breakpoints.up('sm')]: {
+                                        pb: activeMusic ? 16 : 2
+                                    }
+                                })}>
+                                    <List sx={{
+                                        bgcolor: 'background.paper'
+                                    }}>
+                                        {
+                                            list.map(
+                                                (music, index) => (
+                                                    <ListItem
+                                                        secondaryAction={
+                                                            <Tooltip title="下载歌曲">
+                                                                <IconButton color="inherit" onClick={
                                                                     async () => {
-                                                                        if (activeMusic && music.id === activeMusic.id) {
-                                                                            setPlaying(
-                                                                                state => !state
+                                                                        const musicInfo = await getMusicUrl(music.id)
+                                                                        if (musicInfo) {
+                                                                            window.open(
+                                                                                `/api/music/download?name=${encodeURIComponent(`${music.artist}-${music.name}`)}&id=${btoa(musicInfo.url)}`
                                                                             )
                                                                         }
                                                                         else {
-                                                                            const musicInfo = await getMusicUrl(music.id)
-                                                                            if (musicInfo) {
-                                                                                setActiveMusic({
-                                                                                    ...music,
-                                                                                    ...musicInfo
-                                                                                })
-                                                                                setPlaying(true)
-                                                                            }
-                                                                            else {
-                                                                                setError(true)
-                                                                            }
+                                                                            setError(true)
                                                                         }
                                                                     }
-                                                                }
-                                                            />
-                                                        </Avatar>
-                                                    </Tooltip>
-                                                </ListItemAvatar>
-                                                <ListItemText
-                                                    primary={music.name}
-                                                    primaryTypographyProps={{
-                                                        whiteSpace: 'nowrap',
-                                                        overflow: 'hidden',
-                                                        textOverflow: 'ellipsis'
-                                                    }}
-                                                    secondary={music.artist}
-                                                />
-                                            </ListItem>
-                                        )
-                                    )
-                                }
-                            </List>
-                        </Box>
+                                                                }>
+                                                                    <DownloadIcon />
+                                                                </IconButton>
+                                                            </Tooltip>
+                                                        }
+                                                        divider={index < list.length - 1}
+                                                        key={music.id}
+                                                    >
+                                                        <ListItemAvatar>
+                                                            <Tooltip title="试听歌曲">
+                                                                <Avatar sx={{
+                                                                    backgroundImage: 'var(--linear-gradient-image)'
+                                                                }}>
+                                                                    <PlayOrPauseButton
+                                                                        playing={activeMusic && activeMusic.id === music.id && playing}
+                                                                        onTogglePlay={
+                                                                            async () => {
+                                                                                if (activeMusic && music.id === activeMusic.id) {
+                                                                                    setPlaying(
+                                                                                        state => !state
+                                                                                    )
+                                                                                }
+                                                                                else {
+                                                                                    const musicInfo = await getMusicUrl(music.id)
+                                                                                    if (musicInfo) {
+                                                                                        setActiveMusic({
+                                                                                            ...music,
+                                                                                            ...musicInfo
+                                                                                        })
+                                                                                        setPlaying(true)
+                                                                                    }
+                                                                                    else {
+                                                                                        setError(true)
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    />
+                                                                </Avatar>
+                                                            </Tooltip>
+                                                        </ListItemAvatar>
+                                                        <ListItemText
+                                                            primary={music.name}
+                                                            primaryTypographyProps={{
+                                                                whiteSpace: 'nowrap',
+                                                                overflow: 'hidden',
+                                                                textOverflow: 'ellipsis'
+                                                            }}
+                                                            secondary={music.artist}
+                                                        />
+                                                    </ListItem>
+                                                )
+                                            )
+                                        }
+                                    </List>
+                                </Box>
+                            ) : (
+                                <NoData text='💔 没有找到相关的音乐, 换个关键词试试吧' />
+                            )
+                        }
                         <Slide direction="up" in={Boolean(activeMusic)} mountOnEnter unmountOnExit>
                             <Box sx={{
                                 position: 'absolute',
