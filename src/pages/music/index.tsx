@@ -1,5 +1,4 @@
-import React, { useState, useRef } from 'react';
-import type { GetServerDataProps, HeadProps, PageProps } from 'gatsby';
+import React, { useState, useEffect, useRef } from 'react';
 import Stack from '@mui/material/Stack';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -16,8 +15,8 @@ import Slide from '@mui/material/Slide';
 import Typography from '@mui/material/Typography';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import DownloadIcon from '@mui/icons-material/Download';
+import { useLocalStorage } from 'react-use';
 import SearchForm from '../../components/search/Form';
-import { Api } from '../../util/config';
 import { LoadingOverlay } from '../../components/loading';
 import MusicPlayer, { type SearchMusic, type MusicInfo, type PlayingMusic, RepeatMode } from '../../components/player/MusicPlayer';
 import MusicPoster from '../../components/player/MusicPoster';
@@ -26,16 +25,13 @@ import { DarkThemed } from '../../components/theme';
 import NoData from '../../components/search/NoData';
 import MusicPlayIcon from '../../components/loading/music';
 
-interface MusicSearchProps {
-    s?: string;
-    list: SearchMusic[];
-}
+export default function MusicSearch() {
 
-export default function MusicSearch({ serverData }: PageProps<object, object, unknown, MusicSearchProps>) {
-
-    const { s = '', list } = serverData;
-    const [keyword, setKeyword] = useState(s)
-    const [error, setError] = useState(false)
+    const [keyword, setKeyword] = useState('')
+    const [error, setError] = useState<Error>(null)
+    const [songList, setSongList] = useState<SearchMusic[]>([])
+    const [searching, setSearching] = useState(false)
+    const [searchComplete, setSearchComplete] = useState(false)
 
     const [activeMusic, setActiveMusic] = useState<PlayingMusic>()
     const [playing, setPlaying] = useState(false)
@@ -43,14 +39,16 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
 
     const [urlParsing, setUrlParsing] = useState(false)
     const [playlistShow, setPlaylistShow] = useState(false)
-    const [playlist, setPlaylist] = useState<PlayingMusic[]>([])
+    // const [playlist, setPlaylist] = useState<PlayingMusic[]>([])
     const [repeat, setRepeat] = useState<RepeatMode>(RepeatMode.All)
+
+    const [playlist, setPlaylist] = useLocalStorage<PlayingMusic[]>('__playlist', [])
 
     const handleClose = (_event?: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
             return;
         }
-        setError(false);
+        setError(null);
     }
 
     const getMusicUrl = async (id: SearchMusic['id']) => {
@@ -75,6 +73,27 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
         return random;
     }
 
+    const onSearch = async (s: string) => {
+        setSearching(true)
+        const list = await getSearch(s)
+        if (list) {
+            setSongList(list)
+        }
+        else {
+            setError(
+                new Error('获取歌曲列表失败')
+            )
+        }
+        setSearching(false)
+        setSearchComplete(true)
+    }
+
+    useEffect(() => {
+        if (playlist.length > 0) {
+            setActiveMusic(playlist[0])
+        }
+    }, [])
+
     return (
         <Stack sx={{
             height: '100%',
@@ -95,21 +114,14 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
                     })
                 }>
                     <SearchForm
-                        action="/music"
                         value={keyword}
                         onChange={setKeyword}
+                        onSubmit={onSearch}
                     />
                 </Box>
             </Stack>
             {
-                s === '' ? (
-                    <Stack sx={{
-                        position: 'relative',
-                        zIndex: 120
-                    }} flexGrow={1} justifyContent="center" alignItems="center">
-                        <Typography variant="body1" color="hsl(270, 64%, 84%)">🔍 输入歌名/歌手名开始搜索</Typography>
-                    </Stack>
-                ) : (
+                searchComplete ? (
                     <Box sx={{
                         position: 'relative',
                         flexGrow: 1,
@@ -120,7 +132,7 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
                         margin: '0 auto'
                     }}>
                         {
-                            list.length > 0 ? (
+                            songList.length > 0 ? (
                                 <Box sx={(theme) => ({
                                     height: '100%',
                                     pt: 1,
@@ -135,7 +147,7 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
                                         bgcolor: 'background.paper'
                                     }}>
                                         {
-                                            list.map(
+                                            songList.map(
                                                 (music, index) => (
                                                     <ListItem
                                                         secondaryAction={
@@ -149,7 +161,9 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
                                                                             )
                                                                         }
                                                                         else {
-                                                                            setError(true)
+                                                                            setError(
+                                                                                new Error('解析歌曲失败, 可能是网络连接问题')
+                                                                            )
                                                                         }
                                                                     }
                                                                 }>
@@ -157,7 +171,7 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
                                                                 </IconButton>
                                                             </Tooltip>
                                                         }
-                                                        divider={index < list.length - 1}
+                                                        divider={index < songList.length - 1}
                                                         key={music.id}
                                                     >
                                                         <ListItemAvatar>
@@ -195,7 +209,9 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
                                                                                         setPlaying(true)
                                                                                     }
                                                                                     else {
-                                                                                        setError(true)
+                                                                                        setError(
+                                                                                            new Error('解析歌曲失败, 可能是网络连接问题')
+                                                                                        )
                                                                                     }
                                                                                 }
                                                                             }
@@ -223,134 +239,6 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
                                 <NoData text='💔 没有找到相关的音乐, 换个关键词试试吧' />
                             )
                         }
-                        <Slide direction="up" in={Boolean(activeMusic)} mountOnEnter unmountOnExit>
-                            <Stack sx={{
-                                position: 'absolute',
-                                left: 0,
-                                right: 0,
-                                bottom: 0,
-                                boxShadow: '0px -4px 12px 0px rgb(0 0 0 / 80%)',
-                                maxHeight: '60%'
-                            }}>
-                                <MusicPlayer
-                                    music={activeMusic}
-                                    playing={playing}
-                                    onPlayStateChange={setPlaying}
-                                    onTogglePlayList={
-                                        () => setPlaylistShow(
-                                            show => !show
-                                        )
-                                    }
-                                    repeat={repeat}
-                                    onRepeatChange={setRepeat}
-                                    onPlayEnd={
-                                        () => {
-                                            const playIndex = playlist.findIndex(
-                                                music => music.id === activeMusic.id
-                                            )
-                                            switch (repeat) {
-                                                case RepeatMode.Random:
-                                                    if (playlist.length > 1) {
-                                                        const nextPlayIndex = generateRandomIndex(playlist.length - 1, playIndex)
-                                                        setActiveMusic(playlist[nextPlayIndex])
-                                                    }
-                                                    break;
-                                                case RepeatMode.All:
-                                                    if (playIndex < playlist.length - 1) {
-                                                        setActiveMusic(playlist[playIndex + 1])
-                                                    }
-                                                    else {
-                                                        setActiveMusic(playlist[0])
-                                                    }
-                                            }
-                                        }
-                                    }
-                                />
-                                {
-                                    playlistShow && (
-                                        <DarkThemed>
-                                            <Box sx={{
-                                                flexGrow: 1,
-                                                bgcolor: 'background.paper',
-                                                color: '#fff',
-                                                overflowY: 'auto',
-                                                borderTop: '1px solid #333'
-                                            }}>
-                                                <List subheader={
-                                                    <ListSubheader component="li">播放列表</ListSubheader>
-                                                } disablePadding dense>
-                                                    {
-                                                        playlist.map(
-                                                            (music, index) => {
-                                                                const isCurrentPlaying = music.id === activeMusic.id;
-                                                                return (
-                                                                    <ListItem
-                                                                        key={music.id}
-                                                                        divider={index < playlist.length - 1}
-                                                                        secondaryAction={
-                                                                            <PlayOrPauseButton
-                                                                                playing={isCurrentPlaying}
-                                                                                onTogglePlay={
-                                                                                    () => {
-                                                                                        if (activeMusic && isCurrentPlaying) {
-                                                                                            setPlaying(
-                                                                                                state => !state
-                                                                                            )
-                                                                                        }
-                                                                                        else {
-                                                                                            setActiveMusic(music)
-                                                                                        }
-                                                                                    }
-                                                                                }
-                                                                            />
-                                                                        }
-                                                                    >
-                                                                        <Box sx={{
-                                                                            position: 'relative',
-                                                                            width: 40,
-                                                                            height: 40,
-                                                                            mr: 2
-                                                                        }}>
-                                                                            <MusicPoster
-                                                                                src={music.poster}
-                                                                                placeholder={
-                                                                                    !music.poster && !isCurrentPlaying && <MusicNoteIcon />
-                                                                                }
-                                                                            />
-                                                                            {
-                                                                                isCurrentPlaying && (
-                                                                                    <Box sx={{
-                                                                                        position: 'absolute',
-                                                                                        left: '50%',
-                                                                                        top: '50%',
-                                                                                        transform: 'translate(-50%, -50%)'
-                                                                                    }}>
-                                                                                        <MusicPlayIcon
-                                                                                            sx={{
-                                                                                                display: 'block',
-                                                                                                fontSize: 18
-                                                                                            }}
-                                                                                        />
-                                                                                    </Box>
-                                                                                )
-                                                                            }
-                                                                        </Box>
-                                                                        <ListItemText
-                                                                            primary={music.name}
-                                                                            secondary={music.artist}
-                                                                        />
-                                                                    </ListItem>
-                                                                )
-                                                            }
-                                                        )
-                                                    }
-                                                </List>
-                                            </Box>
-                                        </DarkThemed>
-                                    )
-                                }
-                            </Stack>
-                        </Slide>
                         <LoadingOverlay
                             open={urlParsing}
                             label="地址解析中.."
@@ -358,18 +246,185 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
                             labelColor="#fff"
                         />
                     </Box>
+                ) : (
+                    <Stack sx={{
+                        position: 'relative',
+                        zIndex: 120
+                    }} flexGrow={1} justifyContent="center" alignItems="center">
+                        <Typography variant="body1" color="hsl(270, 100%, 100%)">🔍 输入歌名/歌手名开始搜索</Typography>
+                    </Stack>
                 )
             }
-            <Snackbar open={error} autoHideDuration={5000} onClose={
-                () => setError(false)
-            } anchorOrigin={{
-                horizontal: 'center',
-                vertical: 'bottom'
-            }}>
+            <Slide direction="up" in={Boolean(activeMusic)} mountOnEnter unmountOnExit>
+                <Stack sx={{
+                    position: 'absolute',
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    boxShadow: '0px -4px 12px 0px rgb(0 0 0 / 80%)',
+                    maxHeight: '60%',
+                    zIndex: 200
+                }}>
+                    <MusicPlayer
+                        music={activeMusic}
+                        playing={playing}
+                        onPlayStateChange={setPlaying}
+                        onTogglePlayList={
+                            () => setPlaylistShow(
+                                show => !show
+                            )
+                        }
+                        repeat={repeat}
+                        onRepeatChange={setRepeat}
+                        onPlayEnd={
+                            () => {
+                                const playIndex = playlist.findIndex(
+                                    music => music.id === activeMusic.id
+                                )
+                                switch (repeat) {
+                                    case RepeatMode.Random:
+                                        if (playlist.length > 1) {
+                                            const nextPlayIndex = generateRandomIndex(playlist.length - 1, playIndex)
+                                            setActiveMusic(playlist[nextPlayIndex])
+                                        }
+                                        break;
+                                    case RepeatMode.All:
+                                        if (playIndex < playlist.length - 1) {
+                                            setActiveMusic(playlist[playIndex + 1])
+                                        }
+                                        else {
+                                            setActiveMusic(playlist[0])
+                                        }
+                                }
+                            }
+                        }
+                    />
+                    {
+                        playlistShow && (
+                            <DarkThemed>
+                                <Box sx={{
+                                    flexGrow: 1,
+                                    bgcolor: 'background.paper',
+                                    color: '#fff',
+                                    overflowY: 'auto',
+                                    borderTop: '1px solid #333'
+                                }}>
+                                    <List subheader={
+                                        <ListSubheader component="li">播放列表</ListSubheader>
+                                    } disablePadding dense>
+                                        {
+                                            playlist.map(
+                                                (music, index) => {
+                                                    const isCurrentPlaying = music.id === activeMusic.id;
+                                                    return (
+                                                        <ListItem
+                                                            key={music.id}
+                                                            divider={index < playlist.length - 1}
+                                                            secondaryAction={
+                                                                <PlayOrPauseButton
+                                                                    playing={isCurrentPlaying && playing}
+                                                                    onTogglePlay={
+                                                                        () => {
+                                                                            if (activeMusic && isCurrentPlaying) {
+                                                                                setPlaying(
+                                                                                    state => !state
+                                                                                )
+                                                                            }
+                                                                            else {
+                                                                                setActiveMusic(music)
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                />
+                                                            }
+                                                        >
+                                                            <Box sx={{
+                                                                position: 'relative',
+                                                                width: 40,
+                                                                height: 40,
+                                                                mr: 2
+                                                            }}>
+                                                                <MusicPoster
+                                                                    src={music.poster}
+                                                                    placeholder={
+                                                                        !music.poster && !isCurrentPlaying && <MusicNoteIcon />
+                                                                    }
+                                                                />
+                                                                {
+                                                                    isCurrentPlaying && (
+                                                                        <Box sx={{
+                                                                            position: 'absolute',
+                                                                            left: '50%',
+                                                                            top: '50%',
+                                                                            transform: 'translate(-50%, -50%)'
+                                                                        }}>
+                                                                            <MusicPlayIcon
+                                                                                sx={{
+                                                                                    display: 'block',
+                                                                                    fontSize: 18
+                                                                                }}
+                                                                            />
+                                                                        </Box>
+                                                                    )
+                                                                }
+                                                            </Box>
+                                                            <ListItemText
+                                                                primary={music.name}
+                                                                secondary={music.artist}
+                                                            />
+                                                        </ListItem>
+                                                    )
+                                                }
+                                            )
+                                        }
+                                    </List>
+                                </Box>
+                            </DarkThemed>
+                        )
+                    }
+                </Stack>
+            </Slide>
+            <LoadingOverlay
+                open={searching}
+                label="搜索中.."
+                withBackground
+                labelColor="#fff"
+            />
+            <Snackbar
+                open={Boolean(error)}
+                autoHideDuration={5000}
+                onClose={
+                    () => setError(null)
+                } anchorOrigin={{
+                    horizontal: 'center',
+                    vertical: 'bottom'
+                }}>
                 <Alert severity="error" onClose={handleClose}>当前歌曲不可用</Alert>
             </Snackbar>
         </Stack>
     )
+}
+
+async function getSearch(s: string): Promise<SearchMusic[] | null> {
+    try {
+        const { code, data } = await fetch(
+            `/api/music/list?s=${encodeURIComponent(s)}`
+        ).then<{
+            code: number;
+            data: SearchMusic[];
+        }>(
+            response => response.json()
+        );
+        if (code === 0) {
+            return data;
+        }
+        else {
+            throw new Error('search failed');
+        }
+    }
+    catch (err) {
+        return null;
+    }
 }
 
 async function parseMusic<T extends MusicInfo = MusicInfo>(id: number): Promise<T | null> {
@@ -394,74 +449,8 @@ async function parseMusic<T extends MusicInfo = MusicInfo>(id: number): Promise<
     }
 }
 
-export function Head({ serverData }: HeadProps<object, object, MusicSearchProps>) {
-    const { s } = serverData;
-    let title = '音乐搜索';
-    if (s) {
-        title += ' - ' + s
-    }
+export function Head() {
     return (
-        <title>{title}</title>
+        <title>音乐搜索</title>
     )
-}
-
-async function getMusicSearch(s: string): Promise<SearchMusic[]> {
-    const url = `${Api.music}/s/${s}`;
-    try {
-        const html = await fetch(url).then(
-            response => response.text()
-        )
-        const matchBlocks = html.replace(/[\n\s\r]+/g, '').replace(new RegExp('&amp;', 'g'), '&').match(
-            /<tr><td><ahref="\/music\/\d+"class="text-primaryfont-weight-bold"target="_blank">[^<]+<\/a><\/td><tdclass="text-success">[^<]+<\/td><td><ahref="\/music\/\d+"target="_blank"><u>下载<\/u><\/a><\/td><\/tr>/g
-        )
-        if (matchBlocks) {
-            return matchBlocks.map(
-                (block) => {
-                    const url = block.match(/music\/\d+/)[0]
-                    const id = url.match(/\d+/)
-                    const nameBlock = block.match(/(?<=<ahref="\/music\/\d+"class="text-primaryfont-weight-bold"target="_blank">)[^<]+(?=<\/a>)/)
-                    const artistBlock = block.match(/(?<=<tdclass="text-success">)[^<]+(?=<\/td>)/)
-                    return {
-                        id: parseInt(id[0]),
-                        name: nameBlock[0],
-                        artist: artistBlock[0]
-                    }
-                }
-            )
-        }
-        return [];
-    }
-    catch (err) {
-        return null;
-    }
-}
-
-export async function getServerData({ query }: GetServerDataProps) {
-    const { s = '' } = query as Record<'s', string>;
-    if (s === '') {
-        return {
-            props: {
-                list: []
-            }
-        }
-    }
-    try {
-        const list = await getMusicSearch(s)
-        if (list) {
-            return {
-                props: {
-                    list,
-                    s: decodeURIComponent(s)
-                }
-            }
-        }
-        else {
-            throw new Error('Get search error')
-        }
-    }
-    catch (err) {
-        return {
-            status: 404
-        }
-    }
 }

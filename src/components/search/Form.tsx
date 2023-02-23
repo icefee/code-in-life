@@ -6,9 +6,10 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import SearchIcon from '@mui/icons-material/Search';
 
 interface SearchFormProps {
-    action: string;
+    action?: string;
     value: string;
     onChange: (value: string) => void;
+    onSubmit?: (value: string) => void;
     staticFields?: Record<string, string>;
 }
 
@@ -22,8 +23,17 @@ class SearchForm extends Component<SearchFormProps, {}> {
                 sx={(theme) => ({
                     display: 'flex',
                     width: '100%',
-                    backgroundColor: alpha(theme.palette.background.paper, .6)
+                    backgroundColor: alpha(theme.palette.background.paper, .75)
                 })}
+                onSubmit={
+                    (event: React.SyntheticEvent<HTMLFormElement>) => {
+                        const { value, onSubmit } = this.props;
+                        if (onSubmit) {
+                            event.preventDefault();
+                            onSubmit(value);
+                        }
+                    }
+                }
             >
                 <InputBase
                     sx={{ ml: 1, flex: 1 }}

@@ -90,6 +90,15 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
         }
     }, [repeat])
 
+    const tryToAutoPlay = async () => {
+        try {
+            await audioRef.current.play()
+        }
+        catch (err) {
+            console.warn('auto play failed because of browser security policy.')
+        }
+    }
+
     return (
         <Stack sx={{
             position: 'relative',
@@ -292,7 +301,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                     </Tooltip>
                 </Stack>
             </Stack>
-            <video
+            <audio
                 style={{
                     position: 'absolute',
                     zIndex: -100,
@@ -310,7 +319,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                     () => {
                         setLoading(false)
                         if (audioRef.current.paused) {
-                            audioRef.current.play()
+                            tryToAutoPlay()
                         }
                     }
                 }
