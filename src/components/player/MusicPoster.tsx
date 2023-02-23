@@ -1,5 +1,5 @@
 import React from 'react';
-import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
 import type { SxProps, Theme } from '@mui/material/styles';
 
@@ -7,33 +7,40 @@ interface MusicPosterProps {
     playing?: boolean;
     src?: string;
     alt?: string;
+    placeholder?: React.ReactNode;
 }
 
-function MusicPoster({ playing = false, src, alt }: MusicPosterProps) {
+function MusicPoster({ playing = false, src, alt, placeholder }: MusicPosterProps) {
     const style: SxProps<Theme> = {
         width: '100%',
-        height: '100%',
-        opacity: .8,
-        animationName: 'rotate',
-        animationIterationCount: 'infinite',
-        animationDuration: '12s',
-        animationTimingFunction: 'linear',
-        animationPlayState: playing ? 'running' : 'paused'
+        height: '100%'
     };
     return src ? (
         <Avatar
             alt={alt}
             src={src}
-            sx={style}
+            sx={{
+                ...style,
+                opacity: .8,
+                animationName: 'rotate',
+                animationIterationCount: 'infinite',
+                animationDuration: '12s',
+                animationTimingFunction: 'linear',
+                animationPlayState: playing ? 'running' : 'paused'
+            }}
         />
     ) : (
-        <Box
+        <Stack
+            justifyContent="center"
+            alignItems="center"
             sx={{
                 ...style,
                 borderRadius: '50%',
                 backgroundImage: 'var(--linear-gradient-image)'
             }}
-        />
+        >
+            {placeholder}
+        </Stack>
     )
 }
 

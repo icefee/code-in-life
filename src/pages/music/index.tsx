@@ -24,6 +24,7 @@ import MusicPoster from '../../components/player/MusicPoster';
 import PlayOrPauseButton from '../../components/player/PlayOrPauseButton';
 import { DarkThemed } from '../../components/theme';
 import NoData from '../../components/search/NoData';
+import MusicPlayIcon from '../../components/loading/music';
 
 interface MusicSearchProps {
     s?: string;
@@ -249,15 +250,16 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
                                             )
                                             switch (repeat) {
                                                 case RepeatMode.Random:
-                                                    const nextPlayIndex = generateRandomIndex(playlist.length - 1, playIndex)
-                                                    setActiveMusic(playlist[nextPlayIndex])
+                                                    if (playlist.length > 1) {
+                                                        const nextPlayIndex = generateRandomIndex(playlist.length - 1, playIndex)
+                                                        setActiveMusic(playlist[nextPlayIndex])
+                                                    }
                                                     break;
                                                 case RepeatMode.All:
-                                                case RepeatMode.Off:
-                                                    if (playIndex < playlist.length) {
+                                                    if (playIndex < playlist.length - 1) {
                                                         setActiveMusic(playlist[playIndex + 1])
                                                     }
-                                                    else if (repeat === RepeatMode.All && playIndex === playlist.length - 1) {
+                                                    else {
                                                         setActiveMusic(playlist[0])
                                                     }
                                             }
@@ -303,10 +305,18 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
                                                                 >
                                                                     <Box sx={{
                                                                         width: 40,
+                                                                        height: 40,
                                                                         mr: 2
                                                                     }}>
                                                                         <MusicPoster
                                                                             src={music.poster}
+                                                                            placeholder={
+                                                                                <MusicPlayIcon
+                                                                                    sx={{
+                                                                                        fontSize: 18
+                                                                                    }}
+                                                                                />
+                                                                            }
                                                                         />
                                                                     </Box>
                                                                     <ListItemText

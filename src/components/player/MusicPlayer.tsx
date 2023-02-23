@@ -12,7 +12,6 @@ import VolumeDownIcon from '@mui/icons-material/VolumeDown';
 import VolumeOffIcon from '@mui/icons-material/VolumeOff';
 import RepeatOneIcon from '@mui/icons-material/RepeatOne';
 import LoopIcon from '@mui/icons-material/Loop';
-import QueueMusicIcon from '@mui/icons-material/QueueMusic';
 import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import MusicPoster from './MusicPoster';
@@ -35,8 +34,7 @@ export interface MusicInfo {
 export enum RepeatMode {
     All,
     One,
-    Random,
-    Off
+    Random
 }
 
 export interface PlayingMusic extends SearchMusic, MusicInfo { }
@@ -78,6 +76,19 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
     }, [playing])
 
     const volumeIcon = useMemo(() => volume > 0 ? volume > .5 ? <VolumeUpIcon /> : <VolumeDownIcon /> : <VolumeOffIcon />, [volume])
+
+    const repeatMeta = useMemo(() => {
+        return repeat === RepeatMode.All ? {
+            label: '列表循环',
+            icon: <LoopIcon />
+        } : repeat === RepeatMode.One ? {
+            label: '单曲循环',
+            icon: <RepeatOneIcon />
+        } : {
+            label: '随机播放',
+            icon: <ShuffleIcon />
+        }
+    }, [repeat])
 
     return (
         <Stack sx={{
@@ -258,46 +269,27 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                             <PlaylistPlayIcon />
                         </IconButton>
                     </Tooltip>
-                    <IconButton
-                        color="inherit"
-                        size="small"
-                        onClick={
-                            () => {
-                                if (repeat === RepeatMode.All) {
-                                    onRepeatChange(RepeatMode.One)
-                                }
-                                else if (repeat === RepeatMode.One) {
-                                    onRepeatChange(RepeatMode.Random)
-                                }
-                                else if (repeat === RepeatMode.Random) {
-                                    onRepeatChange(RepeatMode.Off)
-                                }
-                                else {
-                                    onRepeatChange(RepeatMode.All)
+                    <Tooltip title={repeatMeta.label}>
+                        <IconButton
+                            color="inherit"
+                            size="small"
+                            onClick={
+                                () => {
+                                    if (repeat === RepeatMode.All) {
+                                        onRepeatChange(RepeatMode.One)
+                                    }
+                                    else if (repeat === RepeatMode.One) {
+                                        onRepeatChange(RepeatMode.Random)
+                                    }
+                                    else {
+                                        onRepeatChange(RepeatMode.All)
+                                    }
                                 }
                             }
-                        }
-                    >
-                        {
-                            repeat === RepeatMode.All ? (
-                                <Tooltip title="列表循环">
-                                    <LoopIcon />
-                                </Tooltip>
-                            ) : repeat === RepeatMode.One ? (
-                                <Tooltip title="单曲循环">
-                                    <RepeatOneIcon />
-                                </Tooltip>
-                            ) : repeat === RepeatMode.Random ? (
-                                <Tooltip title="随机播放">
-                                    <ShuffleIcon />
-                                </Tooltip>
-                            ) : (
-                                <Tooltip title="顺序播放">
-                                    <QueueMusicIcon />
-                                </Tooltip>
-                            )
-                        }
-                    </IconButton>
+                        >
+                            {repeatMeta.icon}
+                        </IconButton>
+                    </Tooltip>
                 </Stack>
             </Stack>
             <video
