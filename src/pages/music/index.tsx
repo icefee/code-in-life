@@ -1,10 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Stack from '@mui/material/Stack';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListSubheader from '@mui/material/ListSubheader';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import Avatar from '@mui/material/Avatar';
@@ -15,6 +19,9 @@ import Slide from '@mui/material/Slide';
 import Typography from '@mui/material/Typography';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import DownloadIcon from '@mui/icons-material/Download';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import PublishIcon from '@mui/icons-material/Publish';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { useLocalStorage } from 'react-use';
 import SearchForm from '../../components/search/Form';
 import { LoadingOverlay } from '../../components/loading';
@@ -39,10 +46,13 @@ export default function MusicSearch() {
 
     const [urlParsing, setUrlParsing] = useState(false)
     const [playlistShow, setPlaylistShow] = useState(false)
-    // const [playlist, setPlaylist] = useState<PlayingMusic[]>([])
     const [repeat, setRepeat] = useState<RepeatMode>(RepeatMode.All)
 
-    const [playlist, setPlaylist] = useLocalStorage<PlayingMusic[]>('__playlist', [])
+    const [playlist, setPlaylist] = useState<PlayingMusic[]>([])
+    const [storage, setStorage] = useLocalStorage<PlayingMusic[]>('__playlist', [])
+
+    const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLButtonElement>(null)
+    const editingMusic = useRef<PlayingMusic>()
 
     const handleClose = (_event?: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
@@ -88,11 +98,60 @@ export default function MusicSearch() {
         setSearchComplete(true)
     }
 
+    const playIndex = useMemo(
+        () => {
+            if (!activeMusic || playlist.length === 0) {
+                return null;
+            }
+            return playlist.findIndex(
+                music => music.id === activeMusic.id
+            )
+        },
+        [activeMusic, playlist]
+    )
+
     useEffect(() => {
-        if (playlist.length > 0) {
-            setActiveMusic(playlist[0])
+        const storageList = storage || [];
+        setPlaylist(storageList)
+        if (storageList.length > 0) {
+            setActiveMusic(storageList[0])
         }
     }, [])
+
+    useEffect(() => {
+        setStorage(playlist)
+    }, [playlist])
+
+    const pinToTop = () => {
+        const music = editingMusic.current;
+        setPlaylist(
+            list => list.sort(
+                (prev) => prev.id === music.id ? -1 : 0
+            )
+        )
+        setMenuAnchorEl(null)
+    }
+
+    const removeSong = () => {
+        const music = editingMusic.current;
+        if (music.id === activeMusic.id) {
+            if (playlist.length > 1) {
+                setActiveMusic(
+                    playlist[playIndex > 0 ? playIndex - 1 : playIndex + 1]
+                )
+            }
+            else {
+                setActiveMusic(null)
+                setPlaying(false)
+            }
+        }
+        setPlaylist(
+            list => list.filter(
+                item => item.id !== activeMusic.id
+            )
+        )
+        setMenuAnchorEl(null)
+    }
 
     return (
         <Stack sx={{
@@ -278,9 +337,6 @@ export default function MusicSearch() {
                         onRepeatChange={setRepeat}
                         onPlayEnd={
                             () => {
-                                const playIndex = playlist.findIndex(
-                                    music => music.id === activeMusic.id
-                                )
                                 switch (repeat) {
                                     case RepeatMode.Random:
                                         if (playlist.length > 1) {
@@ -320,58 +376,92 @@ export default function MusicSearch() {
                                                         <ListItem
                                                             key={music.id}
                                                             divider={index < playlist.length - 1}
+                                                            disablePadding
                                                             secondaryAction={
-                                                                <PlayOrPauseButton
-                                                                    playing={isCurrentPlaying && playing}
-                                                                    onTogglePlay={
-                                                                        () => {
-                                                                            if (activeMusic && isCurrentPlaying) {
-                                                                                setPlaying(
-                                                                                    state => !state
-                                                                                )
-                                                                            }
-                                                                            else {
-                                                                                setActiveMusic(music)
-                                                                            }
+                                                                <>
+                                                                    <IconButton onClick={
+                                                                        (event: React.MouseEvent<HTMLButtonElement>) => {
+                                                                            editingMusic.current = music;
+                                                                            setMenuAnchorEl(event.currentTarget);
                                                                         }
-                                                                    }
-                                                                />
+                                                                    }>
+                                                                        <MoreVertIcon />
+                                                                    </IconButton>
+                                                                    <Menu
+                                                                        anchorEl={menuAnchorEl}
+                                                                        open={Boolean(menuAnchorEl)}
+                                                                        anchorOrigin={{
+                                                                            vertical: 'top',
+                                                                            horizontal: 'left',
+                                                                        }}
+                                                                        transformOrigin={{
+                                                                            vertical: 'top',
+                                                                            horizontal: 'right',
+                                                                        }}
+                                                                        onClose={
+                                                                            () => setMenuAnchorEl(null)
+                                                                        }
+                                                                    >
+                                                                        <MenuItem onClick={pinToTop}>
+                                                                            <ListItemIcon>
+                                                                                <PublishIcon />
+                                                                            </ListItemIcon>
+                                                                            <ListItemText>置顶</ListItemText>
+                                                                        </MenuItem>
+                                                                        <MenuItem onClick={removeSong}>
+                                                                            <ListItemIcon>
+                                                                                <DeleteOutlineIcon />
+                                                                            </ListItemIcon>
+                                                                            <ListItemText>移除</ListItemText>
+                                                                        </MenuItem>
+                                                                    </Menu>
+                                                                </>
                                                             }
                                                         >
-                                                            <Box sx={{
-                                                                position: 'relative',
-                                                                width: 40,
-                                                                height: 40,
-                                                                mr: 2
-                                                            }}>
-                                                                <MusicPoster
-                                                                    src={music.poster}
-                                                                    placeholder={
-                                                                        !music.poster && !isCurrentPlaying && <MusicNoteIcon />
+                                                            <ListItemButton
+                                                                onClick={
+                                                                    () => {
+                                                                        if (!isCurrentPlaying) {
+                                                                            setActiveMusic(music)
+                                                                        }
                                                                     }
-                                                                />
-                                                                {
-                                                                    isCurrentPlaying && (
-                                                                        <Box sx={{
-                                                                            position: 'absolute',
-                                                                            left: '50%',
-                                                                            top: '50%',
-                                                                            transform: 'translate(-50%, -50%)'
-                                                                        }}>
-                                                                            <MusicPlayIcon
-                                                                                sx={{
-                                                                                    display: 'block',
-                                                                                    fontSize: 18
-                                                                                }}
-                                                                            />
-                                                                        </Box>
-                                                                    )
                                                                 }
-                                                            </Box>
-                                                            <ListItemText
-                                                                primary={music.name}
-                                                                secondary={music.artist}
-                                                            />
+                                                            >
+                                                                <Box sx={{
+                                                                    position: 'relative',
+                                                                    width: 45,
+                                                                    height: 45,
+                                                                    mr: 2
+                                                                }}>
+                                                                    <MusicPoster
+                                                                        src={music.poster}
+                                                                        placeholder={
+                                                                            !music.poster && !isCurrentPlaying && <MusicNoteIcon />
+                                                                        }
+                                                                    />
+                                                                    {
+                                                                        isCurrentPlaying && (
+                                                                            <Box sx={{
+                                                                                position: 'absolute',
+                                                                                left: '50%',
+                                                                                top: '50%',
+                                                                                transform: 'translate(-50%, -50%)'
+                                                                            }}>
+                                                                                <MusicPlayIcon
+                                                                                    sx={{
+                                                                                        display: 'block',
+                                                                                        fontSize: 18
+                                                                                    }}
+                                                                                />
+                                                                            </Box>
+                                                                        )
+                                                                    }
+                                                                </Box>
+                                                                <ListItemText
+                                                                    primary={music.name}
+                                                                    secondary={music.artist}
+                                                                />
+                                                            </ListItemButton>
                                                         </ListItem>
                                                     )
                                                 }
