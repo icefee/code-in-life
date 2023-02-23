@@ -14,7 +14,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
 import Slide from '@mui/material/Slide';
 import Typography from '@mui/material/Typography';
-// import MusicNoteIcon from '@mui/icons-material/MusicNote';
+import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import DownloadIcon from '@mui/icons-material/Download';
 import SearchForm from '../../components/search/Form';
 import { Api } from '../../util/config';
@@ -281,50 +281,67 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
                                                 } disablePadding dense>
                                                     {
                                                         playlist.map(
-                                                            (music, index) => (
-                                                                <ListItem
-                                                                    key={music.id}
-                                                                    divider={index < playlist.length - 1}
-                                                                    secondaryAction={
-                                                                        <PlayOrPauseButton
-                                                                            playing={music.id === activeMusic.id}
-                                                                            onTogglePlay={
-                                                                                () => {
-                                                                                    if (activeMusic && music.id === activeMusic.id) {
-                                                                                        setPlaying(
-                                                                                            state => !state
-                                                                                        )
-                                                                                    }
-                                                                                    else {
-                                                                                        setActiveMusic(music)
+                                                            (music, index) => {
+                                                                const isCurrentPlaying = music.id === activeMusic.id;
+                                                                return (
+                                                                    <ListItem
+                                                                        key={music.id}
+                                                                        divider={index < playlist.length - 1}
+                                                                        secondaryAction={
+                                                                            <PlayOrPauseButton
+                                                                                playing={isCurrentPlaying}
+                                                                                onTogglePlay={
+                                                                                    () => {
+                                                                                        if (activeMusic && isCurrentPlaying) {
+                                                                                            setPlaying(
+                                                                                                state => !state
+                                                                                            )
+                                                                                        }
+                                                                                        else {
+                                                                                            setActiveMusic(music)
+                                                                                        }
                                                                                     }
                                                                                 }
+                                                                            />
+                                                                        }
+                                                                    >
+                                                                        <Box sx={{
+                                                                            position: 'relative',
+                                                                            width: 40,
+                                                                            height: 40,
+                                                                            mr: 2
+                                                                        }}>
+                                                                            <MusicPoster
+                                                                                src={music.poster}
+                                                                                placeholder={
+                                                                                    !music.poster && !isCurrentPlaying && <MusicNoteIcon />
+                                                                                }
+                                                                            />
+                                                                            {
+                                                                                isCurrentPlaying && (
+                                                                                    <Box sx={{
+                                                                                        position: 'absolute',
+                                                                                        left: '50%',
+                                                                                        top: '50%',
+                                                                                        transform: 'translate(-50%, -50%)'
+                                                                                    }}>
+                                                                                        <MusicPlayIcon
+                                                                                            sx={{
+                                                                                                display: 'block',
+                                                                                                fontSize: 18
+                                                                                            }}
+                                                                                        />
+                                                                                    </Box>
+                                                                                )
                                                                             }
+                                                                        </Box>
+                                                                        <ListItemText
+                                                                            primary={music.name}
+                                                                            secondary={music.artist}
                                                                         />
-                                                                    }
-                                                                >
-                                                                    <Box sx={{
-                                                                        width: 40,
-                                                                        height: 40,
-                                                                        mr: 2
-                                                                    }}>
-                                                                        <MusicPoster
-                                                                            src={music.poster}
-                                                                            placeholder={
-                                                                                <MusicPlayIcon
-                                                                                    sx={{
-                                                                                        fontSize: 18
-                                                                                    }}
-                                                                                />
-                                                                            }
-                                                                        />
-                                                                    </Box>
-                                                                    <ListItemText
-                                                                        primary={music.name}
-                                                                        secondary={music.artist}
-                                                                    />
-                                                                </ListItem>
-                                                            )
+                                                                    </ListItem>
+                                                                )
+                                                            }
                                                         )
                                                     }
                                                 </List>
