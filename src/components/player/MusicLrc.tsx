@@ -22,7 +22,7 @@ function MusicLrc({ lrc, currentTime }: MusicLrcProps) {
         return '';
     }, [lrc, currentTime])
     return (
-        <Typography variant="caption">{lrcLine}</Typography>
+        <Typography variant="caption" display="block" maxWidth={250} noWrap>{lrcLine}</Typography>
     )
 }
 

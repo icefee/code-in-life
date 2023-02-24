@@ -40,7 +40,7 @@ export enum RepeatMode {
 export interface PlayingMusic extends SearchMusic, MusicInfo { }
 
 interface MusicPlayerProps {
-    music: PlayingMusic;
+    music?: PlayingMusic;
     playing: boolean;
     repeat: RepeatMode;
     onRepeatChange(mode: RepeatMode): void;
@@ -64,14 +64,14 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
         return () => {
             setCurrentTime(0)
         }
-    }, [music.id])
+    }, [music?.id])
 
     useEffect(() => {
         if (playing) {
-            audioRef.current.play()
+            audioRef.current?.play()
         }
         else {
-            audioRef.current.pause()
+            audioRef.current?.pause()
         }
     }, [playing])
 
@@ -119,8 +119,8 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                 }
             })} justifyContent="center" alignItems="center" flexShrink={0}>
                 <MusicPoster
-                    alt={`${music.name}-${music.artist}`}
-                    src={music.poster}
+                    alt={music ? `${music.name}-${music.artist}` : null}
+                    src={music?.poster}
                     playing={playing}
                 />
                 <Box sx={{
@@ -163,13 +163,13 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                             maxWidth: 300
                         }
                     })}>
-                        <Typography variant="button" noWrap textOverflow="ellipsis">{music.name}</Typography>
+                        <Typography variant="button" noWrap textOverflow="ellipsis">{music?.name}</Typography>
                     </Stack>
                     <Stack>
-                        <Typography variant="overline" color="#ffffffcc" noWrap>{music.artist}</Typography>
+                        <Typography variant="overline" color="#ffffffcc" noWrap>{music?.artist}</Typography>
                     </Stack>
                     {
-                        music.lrc && (
+                        music?.lrc && (
                             <Box sx={{
                                 position: 'absolute',
                                 right: 0,
@@ -302,72 +302,76 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                     </Tooltip>
                 </Stack>
             </Stack>
-            <audio
-                style={{
-                    position: 'absolute',
-                    zIndex: -100,
-                    width: 0,
-                    height: 0
-                }}
-                ref={audioRef}
-                preload="auto"
-                onLoadStart={
-                    () => setLoading(true)
-                }
-                onLoadedMetadata={
-                    () => {
-                        setDuration(audioRef.current.duration)
-                    }
-                }
-                onCanPlay={
-                    () => {
-                        setLoading(false)
-                        if (audioRef.current.paused) {
-                            tryToAutoPlay()
+            {
+                music && (
+                    <audio
+                        style={{
+                            position: 'absolute',
+                            zIndex: -100,
+                            width: 0,
+                            height: 0
+                        }}
+                        ref={audioRef}
+                        preload="auto"
+                        onLoadStart={
+                            () => setLoading(true)
                         }
-                    }
-                }
-                onCanPlayThrough={
-                    () => {
-                        setLoading(false)
-                    }
-                }
-                onPlay={
-                    () => {
-                        onPlayStateChange(true)
-                    }
-                }
-                onPause={
-                    () => {
-                        onPlayStateChange(false)
-                    }
-                }
-                onWaiting={
-                    () => {
-                        setLoading(true)
-                    }
-                }
-                onTimeUpdate={
-                    () => {
-                        setCurrentTime(audioRef.current.currentTime)
-                    }
-                }
-                onEnded={
-                    () => {
-                        audioRef.current.currentTime = 0
-                        if (repeat !== RepeatMode.One) {
-                            onPlayEnd?.()
+                        onLoadedMetadata={
+                            () => {
+                                setDuration(audioRef.current.duration)
+                            }
                         }
-                    }
-                }
-                onVolumeChange={
-                    () => {
-                        const volume = audioRef.current.volume;
-                        setVolume(volume);
-                    }
-                }
-                src={music.url}
-            />
+                        onCanPlay={
+                            () => {
+                                setLoading(false)
+                                if (audioRef.current.paused) {
+                                    tryToAutoPlay()
+                                }
+                            }
+                        }
+                        onCanPlayThrough={
+                            () => {
+                                setLoading(false)
+                            }
+                        }
+                        onPlay={
+                            () => {
+                                onPlayStateChange(true)
+                            }
+                        }
+                        onPause={
+                            () => {
+                                onPlayStateChange(false)
+                            }
+                        }
+                        onWaiting={
+                            () => {
+                                setLoading(true)
+                            }
+                        }
+                        onTimeUpdate={
+                            () => {
+                                setCurrentTime(audioRef.current.currentTime)
+                            }
+                        }
+                        onEnded={
+                            () => {
+                                audioRef.current.currentTime = 0
+                                if (repeat !== RepeatMode.One) {
+                                    onPlayEnd?.()
+                                }
+                            }
+                        }
+                        onVolumeChange={
+                            () => {
+                                const volume = audioRef.current.volume;
+                                setVolume(volume);
+                            }
+                        }
+                        src={music.url}
+                    />
+                )
+            }
         </Stack>
     )
 }

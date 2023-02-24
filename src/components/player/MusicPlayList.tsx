@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState } from 'react';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -23,25 +23,23 @@ interface MusicPlayListProps {
     onChange: React.Dispatch<React.SetStateAction<PlayingMusic[]>>;
     current: PlayingMusic;
     onPlay(music: PlayingMusic): void;
+    onTogglePlay?: VoidFunction;
 }
 
-function MusicPlayList({ data, onChange, current, onPlay }: MusicPlayListProps) {
+function MusicPlayList({ data, onChange, current, onPlay, onTogglePlay }: MusicPlayListProps) {
 
-    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null)
-    const editingMusic = useRef<PlayingMusic>()
-
-    const pinToTop = () => {
-        const music = editingMusic.current;
+    const pinToTop = (music: PlayingMusic) => {
         onChange(
-            list => list.sort(
-                (prev) => prev.id === music.id ? -1 : 0
-            )
+            list => [
+                music,
+                ...list.filter(
+                    (item) => item.id !== music.id
+                )
+            ]
         )
-        setAnchorEl(null)
     }
 
-    const removeSong = () => {
-        const music = editingMusic.current;
+    const removeSong = (music: PlayingMusic) => {
         if (music.id === current.id) {
             if (data.length > 1) {
                 const playIndex = data.findIndex(
@@ -60,7 +58,6 @@ function MusicPlayList({ data, onChange, current, onPlay }: MusicPlayListProps) 
                 item => item.id !== music.id
             )
         )
-        setAnchorEl(null)
     }
 
     return (
@@ -80,99 +77,36 @@ function MusicPlayList({ data, onChange, current, onPlay }: MusicPlayListProps) 
                             (music, index) => {
                                 const isCurrentPlaying = music.id === current.id;
                                 return (
-                                    <ListItem
+                                    <PlayListItem
                                         key={music.id}
                                         divider={index < data.length - 1}
-                                        disablePadding
-                                        secondaryAction={
-                                            <>
-                                                <IconButton onClick={
-                                                    (event: React.MouseEvent<HTMLButtonElement>) => {
-                                                        editingMusic.current = music;
-                                                        setAnchorEl(event.currentTarget);
-                                                    }
-                                                }>
-                                                    <MoreVertIcon />
-                                                </IconButton>
-                                                <Menu
-                                                    anchorEl={anchorEl}
-                                                    open={Boolean(anchorEl)}
-                                                    anchorOrigin={{
-                                                        vertical: 'top',
-                                                        horizontal: 'left',
-                                                    }}
-                                                    transformOrigin={{
-                                                        vertical: 'top',
-                                                        horizontal: 'right',
-                                                    }}
-                                                    onClose={
-                                                        () => {
-                                                            setAnchorEl(null)
-                                                            editingMusic.current = null
-                                                        }
-                                                    }
-                                                >
-                                                    <MenuItem onClick={pinToTop}>
-                                                        <ListItemIcon>
-                                                            <PublishIcon />
-                                                        </ListItemIcon>
-                                                        <ListItemText>置顶</ListItemText>
-                                                    </MenuItem>
-                                                    <MenuItem onClick={removeSong}>
-                                                        <ListItemIcon>
-                                                            <DeleteOutlineIcon />
-                                                        </ListItemIcon>
-                                                        <ListItemText>移除</ListItemText>
-                                                    </MenuItem>
-                                                </Menu>
-                                            </>
-                                        }
-                                    >
-                                        <ListItemButton
-                                            onClick={
-                                                () => {
-                                                    if (!isCurrentPlaying) {
-                                                        onPlay(music)
-                                                    }
+                                        music={music}
+                                        isCurrent={isCurrentPlaying}
+                                        onClick={
+                                            () => {
+                                                if (isCurrentPlaying) {
+                                                    onTogglePlay?.()
+                                                }
+                                                else {
+                                                    onPlay(music)
                                                 }
                                             }
-                                        >
-                                            <Box sx={{
-                                                position: 'relative',
-                                                width: 45,
-                                                height: 45,
-                                                mr: 2
-                                            }}>
-                                                <MusicPoster
-                                                    src={music.poster}
-                                                    placeholder={
-                                                        !music.poster && !isCurrentPlaying && <MusicNoteIcon />
-                                                    }
-                                                />
-                                                {
-                                                    isCurrentPlaying && (
-                                                        <Box sx={{
-                                                            position: 'absolute',
-                                                            left: '50%',
-                                                            top: '50%',
-                                                            transform: 'translate(-50%, -50%)'
-                                                        }}>
-                                                            <MusicPlayIcon
-                                                                sx={{
-                                                                    display: 'block',
-                                                                    fontSize: 18
-                                                                }}
-                                                            />
-                                                        </Box>
-                                                    )
+                                        }
+                                        onAction={
+                                            (cmd: MenuAction, music: PlayingMusic) => {
+                                                switch (cmd) {
+                                                    case 'pin':
+                                                        pinToTop(music);
+                                                        break;
+                                                    case 'remove':
+                                                        removeSong(music);
+                                                        break;
+                                                    default:
+                                                        break;
                                                 }
-                                            </Box>
-                                            <ListItemText
-                                                primary={music.name}
-                                                secondary={music.artist}
-                                            />
-                                        </ListItemButton>
-                                    </ListItem>
+                                            }
+                                        }
+                                    />
                                 )
                             }
                         )
@@ -180,6 +114,114 @@ function MusicPlayList({ data, onChange, current, onPlay }: MusicPlayListProps) 
                 </List>
             </Box>
         </DarkThemed>
+    )
+}
+
+type MenuAction = 'pin' | 'remove';
+
+interface PlayListItemProps {
+    music: PlayingMusic;
+    isCurrent: boolean;
+    divider: boolean;
+    onClick: React.MouseEventHandler<HTMLDivElement>;
+    onAction(cmd: MenuAction, music: PlayingMusic): void;
+}
+
+function PlayListItem({ music, isCurrent, divider, onAction, onClick }: PlayListItemProps) {
+
+    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null)
+
+    const handleMenuAction = (cmd: MenuAction) => {
+        return (_event: React.SyntheticEvent) => {
+            onAction(cmd, music)
+            setAnchorEl(null)
+        }
+    }
+
+    return (
+        <ListItem
+            key={music.id}
+            divider={divider}
+            disablePadding
+            secondaryAction={
+                <>
+                    <IconButton onClick={
+                        (event: React.MouseEvent<HTMLButtonElement>) => {
+                            setAnchorEl(event.currentTarget);
+                        }
+                    }>
+                        <MoreVertIcon />
+                    </IconButton>
+                    <Menu
+                        anchorEl={anchorEl}
+                        open={Boolean(anchorEl)}
+                        anchorOrigin={{
+                            vertical: 'top',
+                            horizontal: 'left',
+                        }}
+                        transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right',
+                        }}
+                        onClose={
+                            () => {
+                                setAnchorEl(null)
+                            }
+                        }
+                    >
+                        <MenuItem onClick={handleMenuAction('pin')}>
+                            <ListItemIcon>
+                                <PublishIcon />
+                            </ListItemIcon>
+                            <ListItemText>置顶</ListItemText>
+                        </MenuItem>
+                        <MenuItem onClick={handleMenuAction('remove')}>
+                            <ListItemIcon>
+                                <DeleteOutlineIcon />
+                            </ListItemIcon>
+                            <ListItemText>移除</ListItemText>
+                        </MenuItem>
+                    </Menu>
+                </>
+            }
+        >
+            <ListItemButton onClick={onClick}>
+                <Box sx={{
+                    position: 'relative',
+                    width: 45,
+                    height: 45,
+                    mr: 2
+                }}>
+                    <MusicPoster
+                        src={music.poster}
+                        placeholder={
+                            !music.poster && !isCurrent && <MusicNoteIcon />
+                        }
+                    />
+                    {
+                        isCurrent && (
+                            <Box sx={{
+                                position: 'absolute',
+                                left: '50%',
+                                top: '50%',
+                                transform: 'translate(-50%, -50%)'
+                            }}>
+                                <MusicPlayIcon
+                                    sx={{
+                                        display: 'block',
+                                        fontSize: 18
+                                    }}
+                                />
+                            </Box>
+                        )
+                    }
+                </Box>
+                <ListItemText
+                    primary={music.name}
+                    secondary={music.artist}
+                />
+            </ListItemButton>
+        </ListItem>
     )
 }
 
