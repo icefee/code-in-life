@@ -1,40 +1,72 @@
-import React, { useState, useMemo } from 'react';
-import type { GetServerDataProps, HeadProps, PageProps } from 'gatsby';
-import fetch from 'node-fetch';
+import React, { useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import Snackbar from '@mui/material/Snackbar';
+import Alert, { AlertProps } from '@mui/material/Alert';
 import SearchResult from '../../../components/search/Result';
 import SearchForm from '../../../components/search/Form';
 import { SearchVideo } from '../../../components/search/api';
 import BackgroundContainer from '../../../components/layout/BackgroundContainer';
-import { Api } from '../../../util/config';
-import { jsonBase64 } from '../../../util/parser';
+import { LoadingOverlay } from '../../../components/loading';
 
-interface VideoSearchProps {
-    s?: string;
-    prefer?: string;
-    list: SearchVideo[];
+const getSearch = async (s: string) => {
+    try {
+        const { code, data } = await fetch(
+            `/api/video/list?s=${encodeURIComponent(s)}`
+        ).then<{
+            code: number;
+            data: SearchVideo[];
+        }>(response => response.json())
+        if (code === 0) {
+            return data;
+        }
+        else {
+            throw new Error('get search failed');
+        }
+    }
+    catch (err) {
+        return null;
+    }
 }
 
-export default function VideoSearch({ serverData }: PageProps<object, object, unknown, VideoSearchProps>) {
+interface ToastMsg {
+    msg: string;
+    type: AlertProps['severity'];
+}
 
-    const { s = '', prefer = '', list } = serverData;
-    const [keyword, setKeyword] = useState(s)
-    const prefer18 = useMemo(() => keyword.startsWith('$'), [keyword])
-    const actualKeyword = useMemo(() => {
-        if (prefer18) {
-            return keyword.slice(1)
+interface SearchTask {
+    keyword: string;
+    result: SearchVideo[];
+    pending: boolean;
+    completed: boolean;
+}
+
+export default function VideoSearch() {
+
+    const [keyword, setKeyword] = useState('')
+    const [task, setTask] = useState<SearchTask>({
+        keyword: '',
+        result: [],
+        pending: false,
+        completed: false
+    })
+    const [toastMsg, setToastMsg] = useState<ToastMsg>(null)
+
+    const handleClose = (_event?: React.SyntheticEvent | Event, reason?: string) => {
+        if (reason === 'clickaway') {
+            return;
         }
-        return keyword;
-    }, [prefer18, keyword])
+        setToastMsg(null);
+    }
 
     return (
-        <BackgroundContainer style={{
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden'
-        }} prefer18={prefer === '18'}>
+        <BackgroundContainer
+            style={{
+                display: 'flex',
+                flexDirection: 'column',
+                overflow: 'hidden'
+            }}>
             <Stack sx={{
                 position: 'relative',
                 zIndex: 100,
@@ -49,78 +81,88 @@ export default function VideoSearch({ serverData }: PageProps<object, object, un
                     })
                 }>
                     <SearchForm
-                        action="/video/search/"
-                        value={prefer === '18' ? actualKeyword : keyword}
+                        value={keyword}
                         onChange={setKeyword}
-                        staticFields={prefer18 ? {
-                            prefer: '18'
-                        } : null}
+                        onSubmit={
+                            async () => {
+                                setTask(t => ({
+                                    ...t,
+                                    pending: true
+                                }))
+                                const result = await getSearch(keyword)
+                                if (result) {
+                                    setTask(t => ({
+                                        ...t,
+                                        pending: false,
+                                        completed: true,
+                                        keyword,
+                                        result
+                                    }))
+                                }
+                                else {
+                                    setToastMsg({
+                                        type: 'error',
+                                        msg: '获取搜索结果失败, 可能是网络连接问题'
+                                    })
+                                    setTask(t => ({
+                                        ...t,
+                                        pending: false
+                                    }))
+                                }
+                            }
+                        }
                     />
                 </Box>
             </Stack>
             {
-                s === '' ? (
-                    <Stack sx={{
-                        position: 'relative',
-                        zIndex: 120
-                    }} flexGrow={1} justifyContent="center" alignItems="center">
-                        <Typography variant="body1" color="hsl(270, 64%, 84%)">🔍 输入关键词开始搜索</Typography>
-                    </Stack>
-                ) : (
+                task.completed ? (
                     <Box sx={{
                         flexGrow: 1,
                         overflowY: 'auto'
                     }}>
-                        <SearchResult keyword={actualKeyword} videoList={list} />
+                        <SearchResult
+                            keyword={task.keyword}
+                            videoList={task.result}
+                        />
                     </Box>
+                ) : (
+                    <Stack sx={{
+                        position: 'relative',
+                        zIndex: 120
+                    }} flexGrow={1} justifyContent="center" alignItems="center">
+                        <Typography variant="body1" color="hsl(270, 100%, 100%)">🔍 输入关键词开始搜索</Typography>
+                    </Stack>
                 )
             }
+            <LoadingOverlay
+                open={task.pending}
+                label="搜索中.."
+                withBackground
+                labelColor="#fff"
+            />
+            <Snackbar
+                open={Boolean(toastMsg)}
+                autoHideDuration={5000}
+                onClose={
+                    () => setToastMsg(null)
+                }
+                anchorOrigin={{
+                    horizontal: 'center',
+                    vertical: 'bottom'
+                }}
+            >
+                {
+                    toastMsg && (
+                        <Alert severity={toastMsg.type} onClose={handleClose}>{toastMsg.msg}</Alert>
+                    )
+                }
+            </Snackbar>
         </BackgroundContainer>
     )
 }
 
-export function Head({ serverData }: HeadProps<object, object, VideoSearchProps>) {
-    const { s } = serverData;
-    let title = '影视搜索';
-    if (s) {
-        title += ' - ' + s
-    }
+export function Head() {
     return (
-        <title>{title}</title>
+        <title>影视搜索</title>
     )
-}
-
-export async function getServerData({ query }: GetServerDataProps) {
-    const { s = '', prefer = '' } = query as Record<'s' | 'prefer', string>;
-    if (s === '') {
-        return {
-            props: {
-                list: []
-            }
-        }
-    }
-    const wd = s.startsWith('$') ? s.slice(1) : s;
-    const url = Api.site + `/video/search/api?s=${wd}&prefer=${prefer}`;
-    try {
-        const list = await fetch(url).then(
-            response => jsonBase64<SearchVideo[]>(response)
-        )
-        if (list) {
-            return {
-                props: {
-                    list,
-                    s: decodeURIComponent(s),
-                    prefer
-                }
-            }
-        }
-        else {
-            throw new Error('Get search error')
-        }
-    }
-    catch (err) {
-        return {
-            status: 404
-        }
-    }
 }

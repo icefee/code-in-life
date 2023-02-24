@@ -11,7 +11,7 @@ import MenuItem from '@mui/material/MenuItem';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import DownloadIcon from '@mui/icons-material/Download';
-import { PlayingMusic, SearchMusic } from '../player/MusicPlayer';
+import { SearchMusic } from '../player/MusicPlayer';
 
 type MenuAction = 'add' | 'download';
 
