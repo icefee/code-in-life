@@ -93,6 +93,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
     const tryToAutoPlay = async () => {
         try {
             await audioRef.current.play()
+            onPlayStateChange(true)
         }
         catch (err) {
             console.warn('auto play failed because of browser security policy.')
@@ -114,7 +115,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                 color: '#fff',
                 borderRadius: '50%',
                 [theme.breakpoints.up('sm')]: {
-                    width: 80
+                    width: 75
                 }
             })} justifyContent="center" alignItems="center" flexShrink={0}>
                 <MusicPoster
@@ -310,6 +311,9 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                 }}
                 ref={audioRef}
                 preload="auto"
+                onLoadStart={
+                    () => setLoading(true)
+                }
                 onLoadedMetadata={
                     () => {
                         setDuration(audioRef.current.duration)

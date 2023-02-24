@@ -37,7 +37,7 @@ async function parseLrc(id: string) {
                 const textMatch = line.match(/(?<=]).+(?=($|\r))/)
                 return {
                     time: parseDuration(timeMatch[0]),
-                    text: textMatch[0]
+                    text: textMatch ? textMatch[0] : ''
                 }
             }
         )
