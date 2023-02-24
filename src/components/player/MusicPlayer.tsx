@@ -121,7 +121,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                 <MusicPoster
                     alt={music ? `${music.name}-${music.artist}` : null}
                     src={music?.poster}
-                    playing={playing}
+                    spinning={playing && !loading}
                 />
                 <Box sx={{
                     position: 'absolute',

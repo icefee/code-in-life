@@ -4,13 +4,13 @@ import Avatar from '@mui/material/Avatar';
 import type { SxProps, Theme } from '@mui/material/styles';
 
 interface MusicPosterProps {
-    playing?: boolean;
+    spinning?: boolean;
     src?: string;
     alt?: string;
     placeholder?: React.ReactNode;
 }
 
-function MusicPoster({ playing = false, src, alt, placeholder }: MusicPosterProps) {
+function MusicPoster({ spinning = false, src, alt, placeholder }: MusicPosterProps) {
     const style: SxProps<Theme> = {
         width: '100%',
         height: '100%'
@@ -26,7 +26,7 @@ function MusicPoster({ playing = false, src, alt, placeholder }: MusicPosterProp
                 animationIterationCount: 'infinite',
                 animationDuration: '12s',
                 animationTimingFunction: 'linear',
-                animationPlayState: playing ? 'running' : 'paused'
+                animationPlayState: spinning ? 'running' : 'paused'
             }}
         />
     ) : (

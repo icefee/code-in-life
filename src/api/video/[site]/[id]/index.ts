@@ -23,13 +23,23 @@ async function getVideoInfo(api: string, id: string): Promise<VideoInfo> {
 
 export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
     const { site, id } = req.params;
+    const { type } = req.query;
     const data = await getVideoInfo(site, id)
     if (data) {
-        res.json({
-            code: 0,
-            data,
-            msg: '成功'
-        })
+        if (type === 'jsonp') {
+            res.setHeader('Content-Type', 'application/javascript; charset=utf-8')
+            res.setHeader('Accept-Ranges', 'bytes')
+            res.send(
+                `windoow.__getVideo && window.__getVideo(${JSON.stringify(data)})`
+            )
+        }
+        else {
+            res.json({
+                code: 0,
+                data,
+                msg: '成功'
+            })
+        }
     }
     else {
         res.json({
