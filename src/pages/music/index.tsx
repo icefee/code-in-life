@@ -107,14 +107,12 @@ export default function MusicSearch() {
                 zIndex: 150,
                 p: 1
             }} direction="row" justifyContent="center">
-                <Box sx={
-                    (theme) => ({
-                        width: '100%',
-                        [theme.breakpoints.up('sm')]: {
-                            width: 300
-                        }
-                    })
-                }>
+                <Box sx={(theme) => ({
+                    width: '100%',
+                    [theme.breakpoints.up('sm')]: {
+                        maxWidth: 320
+                    }
+                })}>
                     <SearchForm
                         value={keyword}
                         onChange={setKeyword}
