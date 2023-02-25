@@ -169,8 +169,7 @@ export default function MusicSearch() {
                                                                         if (musicInfo) {
                                                                             const nextPlay = {
                                                                                 ...music,
-                                                                                ...musicInfo,
-                                                                                url: `/api/music?id=${btoa(musicInfo.url)}`
+                                                                                ...musicInfo
                                                                             }
                                                                             setActiveMusic(nextPlay)
                                                                             const playIndex = playlist.findIndex(
@@ -204,8 +203,7 @@ export default function MusicSearch() {
                                                             case 'add':
                                                                 const nextPlay = {
                                                                     ...music,
-                                                                    ...musicInfo,
-                                                                    url: `/api/music?id=${btoa(musicInfo.url)}`
+                                                                    ...musicInfo
                                                                 }
                                                                 const playIndex = playlist.findIndex(
                                                                     music => music.id === nextPlay.id
@@ -229,7 +227,7 @@ export default function MusicSearch() {
                                                                 break;
                                                             case 'download':
                                                                 window.open(
-                                                                    `/api/music?name=${encodeURIComponent(`${music.artist}-${music.name}`)}&id=${btoa(musicInfo.url)}`
+                                                                    `/api/music/download?name=${encodeURIComponent(`${music.artist}-${music.name}`)}&id=${btoa(musicInfo.url)}`
                                                                 )
                                                                 break;
                                                             default:

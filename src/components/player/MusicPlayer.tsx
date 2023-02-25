@@ -96,6 +96,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
             onPlayStateChange(true)
         }
         catch (err) {
+            onPlayStateChange(false)
             console.warn('auto play failed because of browser security policy.')
         }
     }
