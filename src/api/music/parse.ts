@@ -1,6 +1,7 @@
 import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
 import fetch from 'node-fetch';
 import { Api } from '../../util/config';
+import { setCommonHeaders } from '../../util/pipe';
 
 function parseUrl(html: string) {
     const matchBlock = html.match(
@@ -70,6 +71,7 @@ async function getMusic(id: string) {
 export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
     const { id } = req.query;
     const music = await getMusic(id)
+    setCommonHeaders(res)
     if (music) {
         res.json({
             code: 0,

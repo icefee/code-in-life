@@ -2,6 +2,7 @@ import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
 import fetch from 'node-fetch';
 import { Api } from '../../../../util/config';
 import { image } from '../../../../util/parser';
+import { setCommonHeaders } from '../../../../util/pipe';
 
 async function getPosterUrl(api: string, id: string) {
     const url = `${Api.site}/video/${api}/${id}/poster`;
@@ -17,6 +18,7 @@ async function getPosterUrl(api: string, id: string) {
 export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
     const { site, id } = req.params;
     const posterUrl = await getPosterUrl(site, id);
+    setCommonHeaders(res);
     if (posterUrl) {
         res.json({
             code: 0,

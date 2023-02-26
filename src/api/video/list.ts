@@ -3,6 +3,7 @@ import { Api } from '../../util/config';
 import { jsonBase64 } from '../../util/parser';
 import type { SearchVideo } from '../../components/search/api';
 import fetch from 'node-fetch';
+import { setCommonHeaders } from '../../util/pipe';
 
 async function getSearch(s: string): Promise<SearchVideo[]> {
     const searchParams = new URLSearchParams()
@@ -27,7 +28,8 @@ async function getSearch(s: string): Promise<SearchVideo[]> {
 
 export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
     const { s = '' } = req.query;
-    const data = await getSearch(s)
+    const data = await getSearch(s);
+    setCommonHeaders(res);
     if (data) {
         res.json({
             code: 0,

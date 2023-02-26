@@ -1,5 +1,6 @@
 import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
 import fetch from 'node-fetch';
+import { setCommonHeaders } from '../../util/pipe';
 // import { createReadStream } from 'node:fs';
 
 export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
@@ -7,6 +8,7 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
     const url = Buffer.from(id, 'base64').toString();
     const response = await fetch(url);
     const headers = response.headers;
+    setCommonHeaders(res);
     res.setHeader('Content-Type', headers.get('Content-Type')!);
     if (name) {
         res.setHeader('Content-Disposition', `attachment; filename* = UTF-8''${encodeURI(name)}.mp3`);

@@ -134,12 +134,9 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                 }}>
                     {
                         loading ? (
-                            <Box sx={{
-                                width: 40,
-                                height: 40
-                            }}>
-                                <CircularProgress color="inherit" />
-                            </Box>
+                            <CircularProgress sx={{
+                                display: 'block'
+                            }} color="inherit" />
                         ) : (
                             <PlayOrPauseButton
                                 playing={playing}
