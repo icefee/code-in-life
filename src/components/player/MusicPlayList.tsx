@@ -12,6 +12,7 @@ import MenuItem from '@mui/material/MenuItem';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PublishIcon from '@mui/icons-material/Publish';
+import DownloadIcon from '@mui/icons-material/Download';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { type PlayingMusic } from './MusicPlayer';
 import { DarkThemed } from '../../components/theme';
@@ -24,9 +25,10 @@ interface MusicPlayListProps {
     current: PlayingMusic;
     onPlay(music: PlayingMusic): void;
     onTogglePlay?: VoidFunction;
+    onDownload?(music: PlayingMusic): void;
 }
 
-function MusicPlayList({ data, onChange, current, onPlay, onTogglePlay }: MusicPlayListProps) {
+function MusicPlayList({ data, onChange, current, onPlay, onTogglePlay, onDownload }: MusicPlayListProps) {
 
     const pinToTop = (music: PlayingMusic) => {
         onChange(
@@ -98,6 +100,9 @@ function MusicPlayList({ data, onChange, current, onPlay, onTogglePlay }: MusicP
                                                     case 'pin':
                                                         pinToTop(music);
                                                         break;
+                                                    case 'download':
+                                                        onDownload?.(music);
+                                                        break;
                                                     case 'remove':
                                                         removeSong(music);
                                                         break;
@@ -117,7 +122,7 @@ function MusicPlayList({ data, onChange, current, onPlay, onTogglePlay }: MusicP
     )
 }
 
-type MenuAction = 'pin' | 'remove';
+type MenuAction = 'pin' | 'download' | 'remove';
 
 interface PlayListItemProps {
     music: PlayingMusic;
@@ -174,6 +179,12 @@ function PlayListItem({ music, isCurrent, divider, onAction, onClick }: PlayList
                                 <PublishIcon />
                             </ListItemIcon>
                             <ListItemText>置顶</ListItemText>
+                        </MenuItem>
+                        <MenuItem onClick={handleMenuAction('download')}>
+                            <ListItemIcon>
+                                <DownloadIcon />
+                            </ListItemIcon>
+                            <ListItemText>下载</ListItemText>
                         </MenuItem>
                         <MenuItem onClick={handleMenuAction('remove')}>
                             <ListItemIcon>

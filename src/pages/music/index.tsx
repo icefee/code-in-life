@@ -96,6 +96,12 @@ export default function MusicSearch() {
         setStorage(playlist)
     }, [playlist])
 
+    const downloadSong = (music: SearchMusic & Pick<MusicInfo, 'url'>) => {
+        window.open(
+            `/api/music/download?name=${encodeURIComponent(`${music.artist}-${music.name}`)}&id=${btoa(music.url)}`
+        )
+    }
+
     return (
         <Stack sx={{
             height: '100%',
@@ -154,47 +160,50 @@ export default function MusicSearch() {
                                         <SongList
                                             data={songList}
                                             playButton={
-                                                (music) => (
-                                                    <Tooltip title={playing ? '暂停当前播放的音乐' : '试听歌曲'}>
-                                                        <PlayOrPauseButton
-                                                            playing={activeMusic && activeMusic.id === music.id && playing}
-                                                            onTogglePlay={
-                                                                async () => {
-                                                                    if (activeMusic && music.id === activeMusic.id) {
-                                                                        setPlaying(
-                                                                            state => !state
-                                                                        )
-                                                                    }
-                                                                    else {
-                                                                        const musicInfo = await getMusicUrl(music.id)
-                                                                        if (musicInfo) {
-                                                                            const nextPlay = {
-                                                                                ...music,
-                                                                                ...musicInfo
-                                                                            }
-                                                                            setActiveMusic(nextPlay)
-                                                                            const playIndex = playlist.findIndex(
-                                                                                music => music.id === nextPlay.id
+                                                (music) => {
+                                                    const isCurrentPlaying = activeMusic && activeMusic.id === music.id && playing;
+                                                    return (
+                                                        <Tooltip title={isCurrentPlaying ? '暂停当前播放的音乐' : '试听歌曲'}>
+                                                            <PlayOrPauseButton
+                                                                playing={isCurrentPlaying}
+                                                                onTogglePlay={
+                                                                    async () => {
+                                                                        if (activeMusic && music.id === activeMusic.id) {
+                                                                            setPlaying(
+                                                                                state => !state
                                                                             )
-                                                                            if (playIndex !== -1) {
-                                                                                setActiveMusic(playlist[playIndex])
-                                                                            }
-                                                                            else {
-                                                                                setPlaylist(list => [nextPlay, ...list])
-                                                                            }
                                                                         }
                                                                         else {
-                                                                            setToastMsg({
-                                                                                type: 'error',
-                                                                                msg: '解析歌曲失败, 可能是网络连接问题'
-                                                                            })
+                                                                            const musicInfo = await getMusicUrl(music.id)
+                                                                            if (musicInfo) {
+                                                                                const nextPlay = {
+                                                                                    ...music,
+                                                                                    ...musicInfo
+                                                                                }
+                                                                                setActiveMusic(nextPlay)
+                                                                                const playIndex = playlist.findIndex(
+                                                                                    music => music.id === nextPlay.id
+                                                                                )
+                                                                                if (playIndex !== -1) {
+                                                                                    setActiveMusic(playlist[playIndex])
+                                                                                }
+                                                                                else {
+                                                                                    setPlaylist(list => [nextPlay, ...list])
+                                                                                }
+                                                                            }
+                                                                            else {
+                                                                                setToastMsg({
+                                                                                    type: 'error',
+                                                                                    msg: '解析歌曲失败, 可能是网络连接问题'
+                                                                                })
+                                                                            }
                                                                         }
                                                                     }
                                                                 }
-                                                            }
-                                                        />
-                                                    </Tooltip>
-                                                )
+                                                            />
+                                                        </Tooltip>
+                                                    )
+                                                }
                                             }
                                             onAction={
                                                 async (cmd, music) => {
@@ -227,9 +236,10 @@ export default function MusicSearch() {
                                                                 }
                                                                 break;
                                                             case 'download':
-                                                                window.open(
-                                                                    `/api/music/download?name=${encodeURIComponent(`${music.artist}-${music.name}`)}&id=${btoa(musicInfo.url)}`
-                                                                )
+                                                                downloadSong({
+                                                                    ...music,
+                                                                    url: musicInfo.url
+                                                                })
                                                                 break;
                                                             default:
                                                                 break;
@@ -328,6 +338,7 @@ export default function MusicSearch() {
                                             setPlaying(playing => !playing)
                                         }
                                     }
+                                    onDownload={downloadSong}
                                 />
                             )
                         }
