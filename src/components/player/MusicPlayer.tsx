@@ -371,6 +371,9 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                         onError={
                             () => {
                                 // audioRef.current.src = music.url;
+                                const url = new URL(music.url);
+                                url.searchParams.append('ts', `+${new Date}`);
+                                audioRef.current.src = url.toString();
                                 audioRef.current.load()
                             }
                         }
