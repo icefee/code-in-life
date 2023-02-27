@@ -59,10 +59,12 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
     const [loading, setLoading] = useState(false)
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null)
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)
+    const hasError = useRef(false)
 
     useEffect(() => {
         return () => {
             setCurrentTime(0)
+            hasError.current = false;
         }
     }, [music?.id])
 
@@ -371,10 +373,13 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                         onError={
                             () => {
                                 // audioRef.current.src = music.url;
-                                const url = new URL(music.url);
-                                url.searchParams.append('ts', `+${new Date}`);
-                                audioRef.current.src = url.toString();
-                                audioRef.current.load()
+                                if (!hasError.current) {
+                                    const url = new URL(music.url);
+                                    url.searchParams.append('ts', `${+new Date}`);
+                                    audioRef.current.src = url.toString();
+                                    audioRef.current.load()
+                                    hasError.current = true;
+                                }
                             }
                         }
                         src={music.url}
