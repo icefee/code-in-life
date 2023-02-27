@@ -17,12 +17,16 @@ function parsePoster(html: string) {
     return matchBlock ? matchBlock[0].match(/https?:\/\/[^"]+/)[0] : null
 }
 
+function toPrecision(n: number) {
+    return Math.round((n * 100)) / 100;
+}
+
 function parseDuration(time: string) {
     const timeStamp = time.match(/^\d{1,2}:\d{1,2}/)
     const [m, s] = timeStamp[0].split(':')
     const millsMatch = time.match(/\.\d*/)
     const mills = parseFloat(millsMatch[0])
-    return parseInt(m) * 60 + parseInt(s) + (Number.isNaN(mills) ? 0 : mills)
+    return toPrecision(parseInt(m) * 60 + parseInt(s) + (Number.isNaN(mills) ? 0 : mills))
 }
 
 async function parseLrc(id: string) {

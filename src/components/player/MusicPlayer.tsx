@@ -311,6 +311,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                             width: 0,
                             height: 0
                         }}
+                        key={music?.id}
                         ref={audioRef}
                         preload="auto"
                         onLoadStart={

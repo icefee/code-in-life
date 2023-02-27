@@ -43,7 +43,6 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
         res.json({
             code: 0,
             data: list,
-            ss: process.env.NODE_ENV,
             msg: '成功'
         })
     }
