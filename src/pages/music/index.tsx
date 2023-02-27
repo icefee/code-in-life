@@ -20,13 +20,22 @@ interface ToastMsg {
     type: AlertProps['severity'];
 }
 
+interface SearchTask {
+    pending: boolean;
+    complete: boolean;
+    success: boolean;
+}
+
 export default function MusicSearch() {
 
     const [keyword, setKeyword] = useState('')
     const [toastMsg, setToastMsg] = useState<ToastMsg>(null)
     const [songList, setSongList] = useState<SearchMusic[]>([])
-    const [searching, setSearching] = useState(false)
-    const [searchComplete, setSearchComplete] = useState(false)
+    const [searchTask, setSearchTask] = useState<SearchTask>({
+        pending: false,
+        complete: false,
+        success: false
+    })
 
     const [activeMusic, setActiveMusic] = useState<PlayingMusic>()
     const [playing, setPlaying] = useState(false)
@@ -69,10 +78,15 @@ export default function MusicSearch() {
     }
 
     const onSearch = async (s: string) => {
-        setSearching(true)
+        setSearchTask(t => ({
+            ...t,
+            pending: true
+        }))
+        let success = false
         const list = await getSearch(s)
         if (list) {
             setSongList(list)
+            success = true;
         }
         else {
             setToastMsg({
@@ -80,8 +94,11 @@ export default function MusicSearch() {
                 msg: '获取歌曲列表失败'
             })
         }
-        setSearching(false)
-        setSearchComplete(true)
+        setSearchTask({
+            pending: false,
+            complete: true,
+            success
+        })
     }
 
     useEffect(() => {
@@ -139,7 +156,7 @@ export default function MusicSearch() {
                 }
             })}>
                 {
-                    searchComplete ? (
+                    searchTask.success ? (
                         <Box sx={{
                             flexGrow: 1,
                             overflow: 'hidden',
@@ -345,7 +362,7 @@ export default function MusicSearch() {
                     </Stack>
                 </Slide>
                 <LoadingOverlay
-                    open={searching}
+                    open={searchTask.pending}
                     label="搜索中.."
                     withBackground
                     labelColor="#fff"
