@@ -311,7 +311,6 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                             width: 0,
                             height: 0
                         }}
-                        key={music?.id}
                         ref={audioRef}
                         preload="auto"
                         onLoadStart={
@@ -367,6 +366,12 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                             () => {
                                 const volume = audioRef.current.volume;
                                 setVolume(volume);
+                            }
+                        }
+                        onError={
+                            () => {
+                                // audioRef.current.src = music.url;
+                                audioRef.current.load()
                             }
                         }
                         src={music.url}
