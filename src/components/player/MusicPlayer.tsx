@@ -156,7 +156,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                     position: 'relative'
                 }} flexDirection="row" alignItems="center" rowGap={1} columnGap={1}>
                     <Stack sx={(theme) => ({
-                        maxWidth: 120,
+                        maxWidth: 150,
                         [theme.breakpoints.up('sm')]: {
                             maxWidth: 300
                         }
@@ -200,17 +200,19 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                     {
                         !isMobile && (
                             <>
-                                <IconButton
-                                    color="inherit"
-                                    size="small"
-                                    onClick={
-                                        (event: React.MouseEvent<HTMLButtonElement>) => {
-                                            setAnchorEl(event.currentTarget);
+                                <Tooltip title="音量">
+                                    <IconButton
+                                        color="inherit"
+                                        size="small"
+                                        onClick={
+                                            (event: React.MouseEvent<HTMLButtonElement>) => {
+                                                setAnchorEl(event.currentTarget);
+                                            }
                                         }
-                                    }
-                                >
-                                    {volumeIcon}
-                                </IconButton>
+                                    >
+                                        {volumeIcon}
+                                    </IconButton>
+                                </Tooltip>
                                 <Popover
                                     open={Boolean(anchorEl)}
                                     anchorEl={anchorEl}

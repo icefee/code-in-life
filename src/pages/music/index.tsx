@@ -120,15 +120,18 @@ export default function MusicSearch() {
                     />
                 </Box>
             </Stack>
-            <Box sx={{
+            <Box sx={(theme) => ({
                 position: 'relative',
                 display: 'flex',
                 flexDirection: 'column',
                 width: '100%',
                 height: '100%',
                 maxWidth: 600,
-                margin: '0 auto'
-            }}>
+                margin: '0 auto',
+                [theme.breakpoints.up('sm')]: {
+                    backgroundImage: activeMusic ? 'linear-gradient(0, #00000066, transparent)' : 'none'
+                }
+            })}>
                 {
                     searchComplete ? (
                         <Box sx={{
@@ -145,7 +148,7 @@ export default function MusicSearch() {
                                         overflowY: 'auto',
                                         pb: activeMusic ? 13 : 2,
                                         [theme.breakpoints.up('sm')]: {
-                                            pb: activeMusic ? 16 : 2
+                                            pb: activeMusic ? 14 : 2
                                         }
                                     })}>
                                         <SongList

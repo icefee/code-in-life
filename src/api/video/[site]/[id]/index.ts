@@ -39,7 +39,7 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
         res.setHeader('Content-Type', 'application/javascript; charset=utf-8')
         res.setHeader('Accept-Ranges', 'bytes')
         res.send(
-            `windoow.__getVideo && window.__getVideo(${JSON.stringify(data)})`
+            `window.__getVideo && window.__getVideo(${JSON.stringify(data)})`
         )
     }
     else {
