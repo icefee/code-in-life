@@ -206,7 +206,7 @@ export default function MusicSearch() {
                                                                                     music => music.id === nextPlay.id
                                                                                 )
                                                                                 if (playIndex !== -1) {
-                                                                                    setActiveMusic(playlist[playIndex])
+                                                                                    setActiveMusic(playlist.data[playIndex])
                                                                                 }
                                                                                 else {
                                                                                     setPlaylist(list => [nextPlay, ...list])
@@ -326,15 +326,15 @@ export default function MusicSearch() {
                                         case RepeatMode.Random:
                                             if (playlist.data.length > 1) {
                                                 const nextPlayIndex = generateRandomIndex(playlist.data.length - 1, playIndex)
-                                                setActiveMusic(playlist[nextPlayIndex])
+                                                setActiveMusic(playlist.data[nextPlayIndex])
                                             }
                                             break;
                                         case RepeatMode.All:
                                             if (playIndex < playlist.data.length - 1) {
-                                                setActiveMusic(playlist[playIndex + 1])
+                                                setActiveMusic(playlist.data[playIndex + 1])
                                             }
                                             else {
-                                                setActiveMusic(playlist[0])
+                                                setActiveMusic(playlist.data[0])
                                             }
                                     }
                                 }

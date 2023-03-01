@@ -1,5 +1,6 @@
 import DPlayer from 'dplayer';
-import Hls from 'hls.js'
+import Hls from 'hls.js';
+import { Api } from '../../util/config';
 
 export abstract class PlayerConfig {
 
@@ -14,7 +15,7 @@ export abstract class PlayerConfig {
     public static get hlsSupported() {
         return Hls.isSupported()
     }
-    public static poster = '/assets/poster.webp';
+    public static poster = `${Api.staticAsset}/assets/poster.webp`;
     public static customType = {
         hls(video: HTMLVideoElement, _player: DPlayer) {
             const hls = new Hls();

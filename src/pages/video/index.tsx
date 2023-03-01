@@ -445,7 +445,7 @@ function VideoSummary({ video }: VideoSummaryProps) {
         () => (
             <ThumbLoader
                 src={video.pic}
-                retry={5}
+                alt={video.name}
             />
         ),
         [video.pic]

@@ -11,6 +11,7 @@ import CardActionArea from '@mui/material/CardActionArea';
 import ThumbLoader from './ThumbLoader';
 import RowClipTypography from '../layout/element/RowClipTypography';
 import type { VideoListItem } from './api';
+import { Api } from '../../util/config';
 
 type ListData = VideoListItem[];
 
@@ -60,7 +61,7 @@ function usePosterUrl(api: string, id: number) {
                 }
             }
             catch (err) {
-                setTimeout(getPoster, 2e3)
+                setPoster(`${Api.staticAsset}/assets/image_fail.jpg`)
             }
         }
         getPoster()
@@ -90,9 +91,7 @@ function VideoItem({ video, api, typed }: VideoItemProps) {
                             <ThumbLoader
                                 src={poster}
                                 aspectRatio="125 / 180"
-                                fill
                                 alt={video.name}
-                                errorText="缩略图加载失败"
                             />
                         ) : (
                             <Skeleton sx={{
