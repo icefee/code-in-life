@@ -14,6 +14,13 @@ export namespace M3u8 {
     }
 }
 
+export namespace Video {
+
+    export function isVideoUrl(url: string) {
+        return M3u8.isM3u8Url(url) || /\.(mp4|ogg)$/.test(url);
+    }
+}
+
 export namespace Base64 {
 
     export const match = /data:image\/(jpe|pn)g;base64,[a-zA-Z\d\/\+\=]+/g;

@@ -10,7 +10,6 @@ import Typography from '@mui/material/Typography';
 import CardActionArea from '@mui/material/CardActionArea';
 import ThumbLoader from './ThumbLoader';
 import RowClipTypography from '../layout/element/RowClipTypography';
-import { image } from '../../util/parser';
 import type { VideoListItem } from './api';
 
 type ListData = VideoListItem[];

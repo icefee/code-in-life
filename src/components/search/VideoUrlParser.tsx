@@ -6,19 +6,16 @@ import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import Typography from '@mui/material/Typography';
 import LoadingOverlay from '../loading/LoadingOverlay';
-import { M3u8 } from '../../util/RegExp';
+import { Video } from '../../util/RegExp';
 
-type M3u8UrlParserProps = {
+type VideoUrlParserProps = {
     url: string;
     children: (url: string) => React.ReactElement;
 }
 
 const parseUrl = async (url: string) => {
     try {
-        const { code, data } = await fetch('/api/video/parse?url=' + url).then<{
-            code: number;
-            data: string;
-        }>(
+        const { code, data } = await fetch('/api/video/parse?url=' + url).then<ApiJsonType<string>>(
             response => response.json()
         )
         if (code === 0) {
@@ -31,16 +28,16 @@ const parseUrl = async (url: string) => {
     }
 }
 
-function M3u8UrlParser({ url, children }: M3u8UrlParserProps) {
+function VideoUrlParser({ url, children }: VideoUrlParserProps) {
 
-    const [m3u8Url, setM3u8Url] = useState(null)
+    const [videoUrl, setVideoUrl] = useState(null)
     const [error, setError] = useState(false)
-    const isM3u8 = useMemo(() => M3u8.isM3u8Url(url), [url])
+    const isVideoUrl = useMemo(() => Video.isVideoUrl(url), [url])
 
     const _parseUrl = async () => {
-        const m3u8Url = await parseUrl(url)
-        if (m3u8Url) {
-            setM3u8Url(m3u8Url)
+        const parsedUrl = await parseUrl(url)
+        if (parsedUrl) {
+            setVideoUrl(parsedUrl)
         }
         else {
             setError(true)
@@ -48,13 +45,13 @@ function M3u8UrlParser({ url, children }: M3u8UrlParserProps) {
     }
 
     useEffect(() => {
-        if (!isM3u8) {
-            setM3u8Url(null)
+        if (!isVideoUrl) {
+            setVideoUrl(null)
             _parseUrl()
         }
     }, [url])
 
-    if (isM3u8) {
+    if (isVideoUrl) {
         return children(url)
     }
     return (
@@ -63,10 +60,10 @@ function M3u8UrlParser({ url, children }: M3u8UrlParserProps) {
             height: '100%'
         }}>
             {
-                m3u8Url && children(m3u8Url)
+                videoUrl && children(videoUrl)
             }
             <LoadingOverlay
-                open={m3u8Url === null && !error}
+                open={videoUrl === null && !error}
                 spinSize={28}
                 fixed={false}
                 label="地址解析中"
@@ -109,6 +106,6 @@ function M3u8UrlParser({ url, children }: M3u8UrlParserProps) {
     )
 }
 
-M3u8UrlParser.parseUrl = parseUrl;
+VideoUrlParser.parseUrl = parseUrl;
 
-export default M3u8UrlParser;
+export default VideoUrlParser;

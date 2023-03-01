@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -7,6 +7,7 @@ import Alert, { AlertProps } from '@mui/material/Alert';
 import SearchResult from '../../../components/search/Result';
 import SearchForm from '../../../components/search/Form';
 import { SearchVideo } from '../../../components/search/api';
+import NoData from '../../../components/search/NoData';
 import BackgroundContainer from '../../../components/layout/BackgroundContainer';
 import { LoadingOverlay } from '../../../components/loading';
 
@@ -14,10 +15,7 @@ const getSearch = async (s: string) => {
     try {
         const { code, data } = await fetch(
             `/api/video/list?s=${encodeURIComponent(s)}`
-        ).then<{
-            code: number;
-            data: SearchVideo[];
-        }>(response => response.json())
+        ).then<ApiJsonType<SearchVideo[]>>(response => response.json())
         if (code === 0) {
             return data;
         }
@@ -30,28 +28,17 @@ const getSearch = async (s: string) => {
     }
 }
 
-interface ToastMsg {
-    msg: string;
-    type: AlertProps['severity'];
-}
-
-interface SearchTask {
-    keyword: string;
-    result: SearchVideo[];
-    pending: boolean;
-    completed: boolean;
-}
-
 export default function VideoSearch() {
 
     const [keyword, setKeyword] = useState('')
-    const [task, setTask] = useState<SearchTask>({
+    const [searchTask, setSearchTask] = useState<SearchTask<SearchVideo>>({
         keyword: '',
-        result: [],
+        data: [],
         pending: false,
-        completed: false
+        complete: false,
+        success: false
     })
-    const [toastMsg, setToastMsg] = useState<ToastMsg>(null)
+    const [toastMsg, setToastMsg] = useState<ToastMsg<AlertProps['severity']>>(null)
 
     const handleClose = (_event?: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
@@ -60,6 +47,14 @@ export default function VideoSearch() {
         setToastMsg(null);
     }
 
+    const pageTitle = useMemo(() => {
+        let keyword = '影视搜索';
+        if (searchTask.keyword !== '') {
+            keyword += ' - ' + searchTask.keyword;
+        }
+        return keyword;
+    }, [searchTask.keyword])
+
     return (
         <BackgroundContainer
             style={{
@@ -67,6 +62,7 @@ export default function VideoSearch() {
                 flexDirection: 'column',
                 overflow: 'hidden'
             }}>
+            <title>{pageTitle}</title>
             <Stack sx={{
                 position: 'relative',
                 zIndex: 100,
@@ -85,28 +81,30 @@ export default function VideoSearch() {
                         onChange={setKeyword}
                         onSubmit={
                             async () => {
-                                setTask(t => ({
+                                setSearchTask(t => ({
                                     ...t,
+                                    completed: false,
                                     pending: true
                                 }))
-                                const result = await getSearch(keyword)
-                                if (result) {
-                                    setTask(t => ({
-                                        ...t,
+                                const data = await getSearch(keyword)
+                                if (data) {
+                                    setSearchTask({
                                         pending: false,
-                                        completed: true,
+                                        complete: true,
                                         keyword,
-                                        result
-                                    }))
+                                        success: true,
+                                        data
+                                    })
                                 }
                                 else {
                                     setToastMsg({
                                         type: 'error',
                                         msg: '获取搜索结果失败, 可能是网络连接问题'
                                     })
-                                    setTask(t => ({
+                                    setSearchTask(t => ({
                                         ...t,
-                                        pending: false
+                                        pending: false,
+                                        completed: true
                                     }))
                                 }
                             }
@@ -115,16 +113,20 @@ export default function VideoSearch() {
                 </Box>
             </Stack>
             {
-                task.completed ? (
-                    <Box sx={{
-                        flexGrow: 1,
-                        overflowY: 'auto'
-                    }}>
-                        <SearchResult
-                            keyword={task.keyword}
-                            videoList={task.result}
-                        />
-                    </Box>
+                searchTask.success ? (
+                    searchTask.data.length > 0 ? (
+                        <Box sx={{
+                            flexGrow: 1,
+                            overflowY: 'auto'
+                        }}>
+                            <SearchResult
+                                keyword={searchTask.keyword}
+                                videoList={searchTask.data}
+                            />
+                        </Box>
+                    ) : (
+                        <NoData text='💔 没有找到相关的内容, 换个关键词试试吧' />
+                    )
                 ) : (
                     <Stack sx={{
                         position: 'relative',
@@ -135,7 +137,7 @@ export default function VideoSearch() {
                 )
             }
             <LoadingOverlay
-                open={task.pending}
+                open={searchTask.pending}
                 label="搜索中.."
                 withBackground
                 labelColor="#fff"
@@ -158,11 +160,5 @@ export default function VideoSearch() {
                 }
             </Snackbar>
         </BackgroundContainer>
-    )
-}
-
-export function Head() {
-    return (
-        <title>影视搜索</title>
     )
 }

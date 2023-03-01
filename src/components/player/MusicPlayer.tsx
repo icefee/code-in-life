@@ -18,6 +18,7 @@ import MusicPoster from './MusicPoster';
 import MusicLrc, { type Lrc } from './MusicLrc';
 import PlayOrPauseButton from './PlayOrPauseButton';
 import { timeFormatter } from '../../util/date';
+import useLocalStorageState from '../hook/useLocalStorageState';
 
 export interface SearchMusic {
     id: number;
@@ -54,7 +55,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
     const audioRef = useRef<HTMLVideoElement>()
     const [duration, setDuration] = useState<number>()
     const [currentTime, setCurrentTime] = useState<number>(0)
-    const [volume, setVolume] = useState(1)
+    const [volume, setVolume] = useLocalStorageState<number>('__volume', 1)
     const cachedVolumeRef = useRef<number>(1)
     const [loading, setLoading] = useState(false)
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null)
@@ -77,7 +78,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
         }
     }, [playing])
 
-    const volumeIcon = useMemo(() => volume > 0 ? volume > .5 ? <VolumeUpIcon /> : <VolumeDownIcon /> : <VolumeOffIcon />, [volume])
+    const volumeIcon = useMemo(() => volume.data > 0 ? volume.data > .5 ? <VolumeUpIcon /> : <VolumeDownIcon /> : <VolumeOffIcon />, [volume])
 
     const repeatMeta = useMemo(() => {
         return repeat === RepeatMode.All ? {
@@ -91,6 +92,12 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
             icon: <ShuffleIcon />
         }
     }, [repeat])
+
+    useEffect(() => {
+        if (volume.init) {
+            audioRef.current.volume = volume.data;
+        }
+    }, [volume])
 
     const tryToAutoPlay = async () => {
         try {
@@ -236,7 +243,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                                     }} alignItems="center">
                                         <Slider
                                             size="small"
-                                            value={volume * 100}
+                                            value={volume.data * 100}
                                             onChange={
                                                 (_event, value: number) => {
                                                     if (duration) {
@@ -254,7 +261,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                                             size="small"
                                             onClick={
                                                 () => {
-                                                    if (volume > 0) {
+                                                    if (volume.data > 0) {
                                                         setVolume(0)
                                                         audioRef.current.volume = 0;
                                                     }

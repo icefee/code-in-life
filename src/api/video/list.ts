@@ -1,11 +1,10 @@
 import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
-import { Api } from '../../util/config';
-import { jsonBase64 } from '../../util/parser';
-import type { SearchVideo } from '../../components/search/api';
 import fetch from 'node-fetch';
+import { Api } from '../../util/config';
 import { setCommonHeaders } from '../../util/pipe';
 
-async function getSearch(s: string): Promise<SearchVideo[]> {
+export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
+    const { s = '' } = req.query;
     const searchParams = new URLSearchParams()
     if (s.startsWith('$')) {
         searchParams.set('s', s.slice(1))
@@ -14,34 +13,8 @@ async function getSearch(s: string): Promise<SearchVideo[]> {
     else {
         searchParams.set('s', s)
     }
-    const url = Api.site + `/video/search/api?${searchParams.toString()}`;
-    try {
-        const list = await fetch(url).then(
-            response => jsonBase64<SearchVideo[]>(response)
-        )
-        return list || [];
-    }
-    catch (err) {
-        return null
-    }
-}
-
-export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
-    const { s = '' } = req.query;
-    const data = await getSearch(s);
-    setCommonHeaders(res);
-    if (data) {
-        res.json({
-            code: 0,
-            data,
-            msg: '成功'
-        })
-    }
-    else {
-        res.json({
-            code: -1,
-            data: null,
-            msg: '失败'
-        })
-    }
+    const response = await fetch(`${Api.site}/api/video/list?${searchParams.toString()}`)
+    setCommonHeaders(res)
+    res.setHeader('Content-Type', 'application/json')
+    response.body.pipe(res)
 }

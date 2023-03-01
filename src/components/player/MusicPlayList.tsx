@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -135,6 +135,7 @@ interface PlayListItemProps {
 function PlayListItem({ music, isCurrent, divider, onAction, onClick }: PlayListItemProps) {
 
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null)
+    const listItemRef = useRef<HTMLLIElement>()
 
     const handleMenuAction = (cmd: MenuAction) => {
         return (_event: React.SyntheticEvent) => {
@@ -143,11 +144,21 @@ function PlayListItem({ music, isCurrent, divider, onAction, onClick }: PlayList
         }
     }
 
+    useEffect(() => {
+        if (isCurrent) {
+            listItemRef.current.scrollIntoView({
+                behavior: 'auto',
+                block: 'center'
+            })
+        }
+    }, [])
+
     return (
         <ListItem
             key={music.id}
             divider={divider}
             disablePadding
+            ref={listItemRef}
             secondaryAction={
                 <>
                     <IconButton onClick={

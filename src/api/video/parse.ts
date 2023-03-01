@@ -1,23 +1,12 @@
 import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
-import { getM3u8Url } from '../../components/search/api';
+import fetch from 'node-fetch';
 import { setCommonHeaders } from '../../util/pipe';
+import { Api } from '../../util/config';
 
 export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
-    const { url } = req.query;
-    const parsedUrl = await getM3u8Url(url);
-    setCommonHeaders(res);
-    if (parsedUrl) {
-        res.json({
-            code: 0,
-            data: parsedUrl,
-            msg: '成功'
-        })
-    }
-    else {
-        res.json({
-            code: -1,
-            data: null,
-            msg: '失败'
-        })
-    }
+    const { url } = req.query as Record<'url', string>
+    const response = await fetch(`${Api.site}/api/video/parse?url=${url}`)
+    setCommonHeaders(res)
+    res.setHeader('Content-Type', 'application/json')
+    response.body.pipe(res)
 }

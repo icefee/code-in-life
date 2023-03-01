@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Stack from '@mui/material/Stack';
 import Snackbar from '@mui/material/Snackbar';
 import Alert, { AlertProps } from '@mui/material/Alert';
@@ -6,7 +6,6 @@ import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
 import Slide from '@mui/material/Slide';
 import Typography from '@mui/material/Typography';
-import { useLocalStorage } from 'react-use';
 import SearchForm from '../../components/search/Form';
 import { LoadingOverlay } from '../../components/loading';
 import MusicPlayer, { type SearchMusic, type MusicInfo, type PlayingMusic, RepeatMode } from '../../components/player/MusicPlayer';
@@ -14,24 +13,14 @@ import PlayOrPauseButton from '../../components/player/PlayOrPauseButton';
 import NoData from '../../components/search/NoData';
 import SongList from '../../components/search/SongList';
 import MusicPlayList from '../../components/player/MusicPlayList';
-
-interface ToastMsg {
-    msg: string;
-    type: AlertProps['severity'];
-}
-
-interface SearchTask {
-    pending: boolean;
-    complete: boolean;
-    success: boolean;
-}
+import useLocalStorageState from '../../components/hook/useLocalStorageState';
 
 export default function MusicSearch() {
 
     const [keyword, setKeyword] = useState('')
-    const [toastMsg, setToastMsg] = useState<ToastMsg>(null)
-    const [songList, setSongList] = useState<SearchMusic[]>([])
-    const [searchTask, setSearchTask] = useState<SearchTask>({
+    const [toastMsg, setToastMsg] = useState<ToastMsg<AlertProps['severity']>>(null)
+    const [searchTask, setSearchTask] = useState<SearchTask<SearchMusic>>({
+        data: [],
         pending: false,
         complete: false,
         success: false
@@ -43,10 +32,10 @@ export default function MusicSearch() {
 
     const [urlParsing, setUrlParsing] = useState(false)
     const [playlistShow, setPlaylistShow] = useState(false)
-    const [repeat, setRepeat] = useState<RepeatMode>(RepeatMode.All)
+    const [repeat, setRepeat] = useLocalStorageState<RepeatMode>('__repeat_mode', RepeatMode.All)
 
-    const [playlist, setPlaylist] = useState<PlayingMusic[]>([])
-    const [storage, setStorage] = useLocalStorage<PlayingMusic[]>('__playlist', [])
+    const [playlist, setPlaylist] = useLocalStorageState<PlayingMusic[]>('__playlist', [])
+    const songListWrapRef = useRef<HTMLDivElement>()
 
     const handleClose = (_event?: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
@@ -80,15 +69,18 @@ export default function MusicSearch() {
     const onSearch = async (s: string) => {
         setSearchTask(t => ({
             ...t,
+            complete: false,
             pending: true
         }))
-        let success = false
+        let success = false;
+        let data = null;
         const list = await getSearch(s)
         if (list) {
-            setSongList(list)
+            data = list;
             success = true;
         }
         else {
+            success = false;
             setToastMsg({
                 type: 'error',
                 msg: '获取歌曲列表失败'
@@ -97,21 +89,25 @@ export default function MusicSearch() {
         setSearchTask({
             pending: false,
             complete: true,
-            success
+            success,
+            data
         })
     }
 
     useEffect(() => {
-        const storageList = storage || [];
-        setPlaylist(storageList)
-        if (storageList.length > 0) {
-            setActiveMusic(storageList[0])
+        if (playlist.init && playlist.data.length > 0) {
+            setActiveMusic(playlist.data[0])
         }
-    }, [])
+    }, [playlist])
 
     useEffect(() => {
-        setStorage(playlist)
-    }, [playlist])
+        if (searchTask.success && searchTask.data.length > 0) {
+            songListWrapRef.current.scrollTo({
+                top: 0,
+                behavior: 'auto'
+            })
+        }
+    }, [searchTask.success, searchTask.data])
 
     const downloadSong = (music: SearchMusic & Pick<MusicInfo, 'url'>) => {
         window.open(
@@ -119,11 +115,19 @@ export default function MusicSearch() {
         )
     }
 
+    const pageTitle = useMemo(() => {
+        if (activeMusic) {
+            return `🎵 ${activeMusic.name} - ${activeMusic.artist} ${playing ? '⏸' : '▶'}`;
+        }
+        return '音乐搜索';
+    }, [activeMusic, playing])
+
     return (
         <Stack sx={{
             height: '100%',
             backgroundImage: 'var(--linear-gradient-image)'
         }} direction="column">
+            <title>{pageTitle}</title>
             <Stack sx={{
                 position: 'absolute',
                 width: '100%',
@@ -163,7 +167,7 @@ export default function MusicSearch() {
                             pt: 8
                         }}>
                             {
-                                songList.length > 0 ? (
+                                searchTask.data.length > 0 ? (
                                     <Box sx={(theme) => ({
                                         height: '100%',
                                         pt: 1,
@@ -173,9 +177,9 @@ export default function MusicSearch() {
                                         [theme.breakpoints.up('sm')]: {
                                             pb: activeMusic ? 14 : 2
                                         }
-                                    })}>
+                                    })} ref={songListWrapRef}>
                                         <SongList
-                                            data={songList}
+                                            data={searchTask.data}
                                             playButton={
                                                 (music) => {
                                                     const isCurrentPlaying = activeMusic && activeMusic.id === music.id && playing;
@@ -198,7 +202,7 @@ export default function MusicSearch() {
                                                                                     ...musicInfo
                                                                                 }
                                                                                 setActiveMusic(nextPlay)
-                                                                                const playIndex = playlist.findIndex(
+                                                                                const playIndex = playlist.data.findIndex(
                                                                                     music => music.id === nextPlay.id
                                                                                 )
                                                                                 if (playIndex !== -1) {
@@ -232,12 +236,12 @@ export default function MusicSearch() {
                                                                     ...music,
                                                                     ...musicInfo
                                                                 }
-                                                                const playIndex = playlist.findIndex(
+                                                                const playIndex = playlist.data.findIndex(
                                                                     music => music.id === nextPlay.id
                                                                 )
                                                                 if (playIndex === -1) {
                                                                     setPlaylist(list => [...list, nextPlay])
-                                                                    if (playlist.length === 0) {
+                                                                    if (playlist.data.length === 0) {
                                                                         setActiveMusic(nextPlay)
                                                                     }
                                                                     setToastMsg({
@@ -300,7 +304,7 @@ export default function MusicSearch() {
                         bottom: 0,
                         boxShadow: '0px -4px 12px 0px rgb(0 0 0 / 80%)',
                         maxHeight: '60%',
-                        zIndex: 200
+                        zIndex: 1250
                     }}>
                         <MusicPlayer
                             music={activeMusic}
@@ -311,22 +315,22 @@ export default function MusicSearch() {
                                     show => !show
                                 )
                             }
-                            repeat={repeat}
+                            repeat={repeat.data}
                             onRepeatChange={setRepeat}
                             onPlayEnd={
                                 () => {
-                                    const playIndex = playlist.findIndex(
+                                    const playIndex = playlist.data.findIndex(
                                         music => music.id === activeMusic.id
                                     );
-                                    switch (repeat) {
+                                    switch (repeat.data) {
                                         case RepeatMode.Random:
-                                            if (playlist.length > 1) {
-                                                const nextPlayIndex = generateRandomIndex(playlist.length - 1, playIndex)
+                                            if (playlist.data.length > 1) {
+                                                const nextPlayIndex = generateRandomIndex(playlist.data.length - 1, playIndex)
                                                 setActiveMusic(playlist[nextPlayIndex])
                                             }
                                             break;
                                         case RepeatMode.All:
-                                            if (playIndex < playlist.length - 1) {
+                                            if (playIndex < playlist.data.length - 1) {
                                                 setActiveMusic(playlist[playIndex + 1])
                                             }
                                             else {
@@ -339,7 +343,7 @@ export default function MusicSearch() {
                         {
                             playlistShow && (
                                 <MusicPlayList
-                                    data={playlist}
+                                    data={playlist.data}
                                     onChange={setPlaylist}
                                     current={activeMusic}
                                     onPlay={
@@ -393,10 +397,7 @@ async function getSearch(s: string): Promise<SearchMusic[] | null> {
     try {
         const { code, data } = await fetch(
             `/api/music/list?s=${encodeURIComponent(s)}`
-        ).then<{
-            code: number;
-            data: SearchMusic[];
-        }>(
+        ).then<ApiJsonType<SearchMusic[]>>(
             response => response.json()
         );
         if (code === 0) {
@@ -415,10 +416,7 @@ async function parseMusic<T extends MusicInfo = MusicInfo>(id: number): Promise<
     try {
         const { code, data } = await fetch(
             `/api/music/parse?id=${id}`
-        ).then<{
-            code: number;
-            data: T;
-        }>(
+        ).then<ApiJsonType<T>>(
             response => response.json()
         );
         if (code === 0) {
@@ -431,10 +429,4 @@ async function parseMusic<T extends MusicInfo = MusicInfo>(id: number): Promise<
     catch (err) {
         return null;
     }
-}
-
-export function Head() {
-    return (
-        <title>音乐搜索</title>
-    )
 }

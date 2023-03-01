@@ -18,7 +18,7 @@ import { type VideoItem, type VideoSource, type VideoInfo } from '../../componen
 import NoData from '../../components/search/NoData';
 import VideoPlayer, { type VideoParams } from '../../components/player/PlayerBase';
 import { utf82utf16 } from '../../util/parser';
-import M3u8UrlParser from '../../components/search/M3u8UrlParser';
+import VideoUrlParser from '../../components/search/VideoUrlParser';
 import * as css from './style.module.css';
 
 interface TabPanelProps extends React.PropsWithChildren<{
@@ -240,7 +240,7 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                             maxHeight: '100vh'
                                         }
                                     })}>
-                                        <M3u8UrlParser url={this.playingUrl}>
+                                        <VideoUrlParser url={this.playingUrl}>
                                             {
                                                 url => (
                                                     <VideoPlayer
@@ -251,7 +251,7 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                                     />
                                                 )
                                             }
-                                        </M3u8UrlParser>
+                                        </VideoUrlParser>
                                     </Box>
                                     {
                                         this.activeSource.urls.length > 1 && (
@@ -518,10 +518,7 @@ export default function Page({ location }: PageProps<object, object, unknown, un
         const getVideoInfo = async () => {
             setLoading(true)
             try {
-                const { code, data } = await fetch(`/api/video/${api}/${id}/`).then<{
-                    code: number;
-                    data: VideoInfo;
-                }>(
+                const { code, data } = await fetch(`/api/video/${api}/${id}/`).then<ApiJsonType<VideoInfo>>(
                     response => response.json()
                 )
                 if (code === 0) {
