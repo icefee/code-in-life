@@ -6,7 +6,6 @@ import Snackbar from '@mui/material/Snackbar';
 import Alert, { AlertProps } from '@mui/material/Alert';
 import SearchResult from '../../../components/search/Result';
 import SearchForm from '../../../components/search/Form';
-import { SearchVideo } from '../../../components/search/api';
 import NoData from '../../../components/search/NoData';
 import BackgroundContainer from '../../../components/layout/BackgroundContainer';
 import { LoadingOverlay } from '../../../components/loading';

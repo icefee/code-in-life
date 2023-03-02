@@ -232,10 +232,9 @@ function Proxy({ serverData }: PageProps<object, object, unknown, ProxyProps>) {
                                                                 flexShrink: 0
                                                             }}>
                                                                 <ThumbLoader
+                                                                    aspectRatio="125 / 180"
                                                                     src={getPosterUrl(video.videoImgUrl)}
-                                                                    fill
                                                                     alt={video.videoTitle}
-                                                                    errorText="缩略图加载失败"
                                                                 />
                                                             </Box>
                                                             <Box sx={{

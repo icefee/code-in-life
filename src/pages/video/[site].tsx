@@ -14,7 +14,6 @@ import Typography from '@mui/material/Typography';
 import { SearchList } from '../../components/search/List';
 import BackgroundContainer from '../../components/layout/BackgroundContainer';
 import NoData from '../../components/search/NoData';
-import type { ResponsePagination, VideoListItem, VideoType } from '../../components/search/api';
 import { Api } from '../../util/config';
 
 interface SearchResultProps {

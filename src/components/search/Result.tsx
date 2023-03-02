@@ -10,7 +10,6 @@ import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { SearchList } from './List';
 import NoData from './NoData';
-import type { SearchVideo } from './api';
 
 interface SearchResultProps {
     keyword: string;
@@ -29,26 +28,27 @@ function SearchResult({ keyword, videoList }: SearchResultProps) {
                         <List key={key} sx={{
                             bgcolor: 'transparent'
                         }} component="div" subheader={
-                            <ListSubheader component="div" sx={
-                                (theme) => ({
+                            <ListSubheader
+                                component="div"
+                                sx={{
                                     display: 'flex',
                                     justifyContent: 'space-between',
                                     alignItems: 'center',
                                     bgcolor: 'transparent',
+                                    color: '#fff',
                                     pl: 4,
                                     py: 1,
                                     backdropFilter: 'blur(2px)',
                                     '&::before': {
                                         content: '""',
-                                        bgcolor: theme.palette.primary.main,
+                                        bgcolor: '#fff',
                                         position: 'absolute',
                                         left: 12,
                                         top: 'calc(50% - 8px)',
                                         width: 5,
                                         height: 16
                                     }
-                                })
-                            } color="primary">
+                                }} color="primary">
                                 <Stack direction="row" alignItems="center" columnGap={1}>
                                     <Typography>{name}</Typography>
                                     <Rating
@@ -58,15 +58,16 @@ function SearchResult({ keyword, videoList }: SearchResultProps) {
                                         readOnly
                                     />
                                 </Stack>
-                                {/* <Button
+                                <Button
                                     LinkComponent="a"
-                                    href={`/video/${key}`}
+                                    href={`/video/${key}/`}
                                     target="_blank"
                                     size="small"
+                                    color="inherit"
                                     startIcon={
                                         <ManageSearchIcon />
                                     }
-                                >站内查询</Button> */}
+                                >站内查询</Button>
                             </ListSubheader>
                         }>
                             <Box sx={(theme) => ({
