@@ -18,29 +18,27 @@ import type { ResponsePagination, VideoListItem, VideoType } from '../../compone
 import { Api } from '../../util/config';
 
 interface SearchResultProps {
-    siteName: string;
-    keyword: string;
     api: string;
-    videoData: {
+    data: {
+        name: string;
         page: ResponsePagination;
         video: VideoListItem[];
         types: VideoType[];
-    };
-    prefer18: boolean;
-    type: number | null;
+        type: number | null;
+        s: string;
+        prefer18: boolean;
+    }
 }
 
 const SiteSearch: React.FunctionComponent<PageProps<object, object, unknown, SearchResultProps>> = ({ serverData }) => {
 
-    const hasListData = useMemo(() => {
-        const { videoData } = serverData;
-        return videoData && videoData.video.length > 0;
-    }, [serverData])
+    const { data, api } = serverData;
+    const responseError = data.video === undefined;
+    const hasListData = !responseError && data.video.length > 0;
 
     const headTitle = useMemo(() => {
-        const { siteName, videoData } = serverData;
-        return siteName + '站内查询到' + videoData.page.recordcount + '条记录';
-    }, [serverData])
+        return data.name + '站内查询到' + data.page.recordcount + '条记录';
+    }, [data])
 
     return (
         <NoSsr>
@@ -48,145 +46,150 @@ const SiteSearch: React.FunctionComponent<PageProps<object, object, unknown, Sea
                 height: '100%',
                 backgroundImage: 'var(--linear-gradient-image)'
             }}>
-                <BackgroundContainer prefer18={serverData.prefer18}>
-                    <Box sx={{
-                        position: 'relative',
-                        height: '100%',
-                        backdropFilter: 'contrast(.5)',
-                        zIndex: 1
-                    }}>
-                        <Box sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            height: '100%',
-                            pr: .5
-                        }}>
-                            <Paper sx={(theme) => ({
-                                m: theme.spacing(2, 2, 1, 2),
-                                p: 1
-                            })}>
-                                <Typography variant="subtitle1">
-                                    {headTitle}
-                                </Typography>
-                            </Paper>
-                            <Tabs
-                                value={serverData.type ? String(serverData.type) : ''}
-                                variant="scrollable"
-                                scrollButtons="auto"
-                                allowScrollButtonsMobile
-                            >
-                                <Tab
-                                    label="综合"
-                                    value=""
-                                    href={`/video/${serverData.api}` + (serverData.keyword !== '' ? `?s=${serverData.keyword}` : '')}
-                                    component="a"
-                                />
-                                {
-                                    serverData.videoData.types.map(
-                                        type => (
-                                            <Tab
-                                                key={type.tid}
-                                                label={type.tname}
-                                                value={type.tid}
-                                                href={`/video/${serverData.api}?t=` + type.tid + (serverData.keyword !== '' ? `&s=${serverData.keyword}` : '')}
-                                                component="a"
-                                            />
+                {
+                    responseError ? (
+                        <NoData text="💔 数据获取失败." />
+                    ) : (
+                        <BackgroundContainer prefer18={data.prefer18}>
+                            <Box sx={{
+                                position: 'relative',
+                                height: '100%',
+                                backdropFilter: 'contrast(.5)',
+                                zIndex: 1
+                            }}>
+                                <Box sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    height: '100%',
+                                    pr: .5
+                                }}>
+                                    <Paper sx={(theme) => ({
+                                        m: theme.spacing(2, 2, 1, 2),
+                                        p: 1
+                                    })}>
+                                        <Typography variant="subtitle1">
+                                            {headTitle}
+                                        </Typography>
+                                    </Paper>
+                                    <Tabs
+                                        value={data.type ? String(data.type) : ''}
+                                        variant="scrollable"
+                                        scrollButtons="auto"
+                                        allowScrollButtonsMobile
+                                    >
+                                        <Tab
+                                            label="综合"
+                                            value=""
+                                            href={`/video/${api}` + (data.s !== '' ? `?s=${data.s}` : '')}
+                                            component="a"
+                                        />
+                                        {
+                                            data.types.map(
+                                                type => (
+                                                    <Tab
+                                                        key={type.tid}
+                                                        label={type.tname}
+                                                        value={type.tid}
+                                                        href={`/video/${serverData.api}?t=` + type.tid + (data.s !== '' ? `&s=${data.s}` : '')}
+                                                        component="a"
+                                                    />
+                                                )
+                                            )
+                                        }
+                                    </Tabs>
+                                    {
+                                        hasListData ? (
+                                            <>
+                                                <Box sx={{
+                                                    flexGrow: 1,
+                                                    py: 1,
+                                                    px: 2,
+                                                    overflowY: 'auto'
+                                                }}>
+                                                    <SearchList
+                                                        data={data.video}
+                                                        api={api}
+                                                        typed={Boolean(data.type)}
+                                                    />
+                                                </Box>
+                                                <Stack sx={{
+                                                    my: 1
+                                                }} direction="row" justifyContent="center">
+                                                    <Pagination
+                                                        page={data.page.page}
+                                                        count={data.page.pagecount}
+                                                        variant="outlined"
+                                                        color="primary"
+                                                        renderItem={(item) => {
+                                                            const searchParams = new URLSearchParams(window.location.search);
+                                                            searchParams.set('page', String(item.page));
+                                                            const href = `/video/${api}?` + searchParams.toString();
+                                                            const current = item.page === data.page.page;
+                                                            return (
+                                                                <PaginationItem
+                                                                    component={Link}
+                                                                    href={current ? null : href}
+                                                                    disabled={current}
+                                                                    {...item}
+                                                                />
+                                                            )
+                                                        }}
+                                                    />
+                                                </Stack>
+                                            </>
+                                        ) : (
+                                            <NoData />
                                         )
-                                    )
-                                }
-                            </Tabs>
-                            {
-                                hasListData ? (
-                                    <>
-                                        <Box sx={{
-                                            flexGrow: 1,
-                                            py: 1,
-                                            px: 2,
-                                            overflowY: 'auto'
-                                        }}>
-                                            <SearchList
-                                                data={serverData.videoData.video}
-                                                api={serverData.api}
-                                                typed={Boolean(serverData.type)}
-                                            />
-                                        </Box>
-                                        <Stack sx={{
-                                            my: 1
-                                        }} direction="row" justifyContent="center">
-                                            <Pagination
-                                                page={serverData.videoData.page.page}
-                                                count={serverData.videoData.page.pagecount}
-                                                variant="outlined"
-                                                color="primary"
-                                                renderItem={(item) => {
-                                                    const { videoData, api } = serverData;
-                                                    const searchParams = new URLSearchParams(window.location.search);
-                                                    searchParams.set('page', String(item.page));
-                                                    const href = `/video/${api}?` + searchParams.toString();
-                                                    const current = item.page === videoData.page.page;
-                                                    return (
-                                                        <PaginationItem
-                                                            component={Link}
-                                                            href={current ? null : href}
-                                                            disabled={current}
-                                                            {...item}
-                                                        />
-                                                    )
-                                                }}
-                                            />
-                                        </Stack>
-                                    </>
-                                ) : (
-                                    <NoData />
-                                )
-                            }
-                        </Box>
-                    </Box>
-                </BackgroundContainer>
+                                    }
+                                </Box>
+                            </Box>
+                        </BackgroundContainer>
+                    )
+                }
             </Box>
         </NoSsr>
     )
 }
 
 export function Head({ serverData }: HeadProps<object, object, SearchResultProps>) {
-    console.log(serverData)
-
+    const { data } = serverData;
+    const responseError = data.video === undefined;
     const typeName = useMemo(() => {
-        const { videoData, type } = serverData;
-        const activeType = videoData.types.find(
-            t => t.tid === String(type)
+        const activeType = data.types.find(
+            t => t.tid === String(data.type)
         )
         return activeType ? activeType.tname : null;
-    }, [serverData.videoData, serverData.type])
+    }, [data.video, data.type])
 
     const pageTitle = useMemo(() => {
-        const { siteName, keyword } = serverData;
-        let title = siteName + ' - 站内搜索';
+        let title = data.name + ' - 站内搜索';
         if (typeName) {
             title += ' - ' + typeName;
         }
-        if (keyword === '') {
+        if (data.s === '') {
             return title;
         }
-        return title + ` - ${keyword}`;
+        return title + ` - ${data.s}`;
     }, [typeName, serverData])
-
     return (
-        <title>{pageTitle}</title>
+        <title>{responseError ? '数据获取失败' : pageTitle}</title>
     )
 }
 
 export async function getServerData({ query, params }: GetServerDataProps) {
     const searchParams = new URLSearchParams(query as Record<string, string>)
     const { site } = params as Record<'site', string>;
-    searchParams.set('site', site);
+    searchParams.set('api', site);
     try {
-        const { code, data } = await fetch(`${Api.site}/api/video/list?${searchParams}`).then<ApiJsonType<SearchResultProps['videoData']>>(
+        const { code, data } = await fetch(`${Api.site}/api/video/list?${searchParams}`).then<ApiJsonType<SearchResultProps['data']>>(
             response => response.json()
         )
         if (code === 0) {
             return {
-                props: data
+                props: {
+                    data,
+                    api: site
+                }
             }
         }
         else {

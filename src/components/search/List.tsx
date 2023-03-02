@@ -47,7 +47,7 @@ function usePosterUrl(api: string, id: number) {
     useEffect(() => {
         const getPoster = async () => {
             try {
-                const { code, data } = await fetch(`/api/video/${api}/${id}/poster`).then<{
+                const { code, data } = await fetch(`/api/video/${api}/${id}?type=poster`).then<{
                     code: number;
                     data: string;
                 }>(
