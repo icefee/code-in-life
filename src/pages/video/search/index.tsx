@@ -7,13 +7,20 @@ import Alert, { AlertProps } from '@mui/material/Alert';
 import SearchResult from '../../../components/search/Result';
 import SearchForm from '../../../components/search/Form';
 import NoData from '../../../components/search/NoData';
-import BackgroundContainer from '../../../components/layout/BackgroundContainer';
 import { LoadingOverlay } from '../../../components/loading';
 
 const getSearch = async (s: string) => {
     try {
+        const searchParams = new URLSearchParams()
+        if (s.startsWith('$')) {
+            searchParams.set('s', parseKeyword(s))
+            searchParams.set('prefer', '18')
+        }
+        else {
+            searchParams.set('s', s)
+        }
         const { code, data } = await fetch(
-            `/api/video/list?s=${encodeURIComponent(s)}`
+            `/api/video/list?${searchParams}`
         ).then<ApiJsonType<SearchVideo[]>>(response => response.json())
         if (code === 0) {
             return data;
@@ -25,6 +32,10 @@ const getSearch = async (s: string) => {
     catch (err) {
         return null;
     }
+}
+
+const parseKeyword = (s: string) => {
+    return s.startsWith('$') ? s.slice(1) : s;
 }
 
 export default function VideoSearch() {
@@ -49,17 +60,16 @@ export default function VideoSearch() {
     const pageTitle = useMemo(() => {
         let keyword = '影视搜索';
         if (searchTask.keyword !== '') {
-            keyword += ' - ' + searchTask.keyword;
+            keyword += ' - ' + parseKeyword(searchTask.keyword);
         }
         return keyword;
     }, [searchTask.keyword])
 
     return (
-        <BackgroundContainer
+        <Stack
             style={{
-                display: 'flex',
-                flexDirection: 'column',
-                overflow: 'hidden'
+                height: '100%',
+                backgroundImage: 'var(--linear-gradient-image)'
             }}>
             <title>{pageTitle}</title>
             <Stack sx={{
@@ -158,6 +168,6 @@ export default function VideoSearch() {
                     )
                 }
             </Snackbar>
-        </BackgroundContainer>
+        </Stack>
     )
 }

@@ -45,7 +45,7 @@ function ThumbLoader({ src, alt, aspectRatio = '2 / 3' }: ThumbLoaderProps) {
                             left: 0,
                             top: 0,
                             right: 0,
-                            bottom: 0
+                            height: '100%'
                         }}
                         animation="wave"
                         variant="rectangular"
