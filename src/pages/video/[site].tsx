@@ -16,7 +16,6 @@ import BackgroundContainer from '../../components/layout/BackgroundContainer';
 import NoData from '../../components/search/NoData';
 import type { ResponsePagination, VideoListItem, VideoType } from '../../components/search/api';
 import { Api } from '../../util/config';
-import { jsonBase64 } from '../../util/parser';
 
 interface SearchResultProps {
     siteName: string;
@@ -178,26 +177,20 @@ export function Head({ serverData }: HeadProps<object, object, SearchResultProps
 }
 
 export async function getServerData({ query, params }: GetServerDataProps) {
-    const { page, s = '', t } = query as Record<string, string>;
+    const searchParams = new URLSearchParams(query as Record<string, string>)
     const { site } = params as Record<'site', string>;
-    let url = Api.site + `/video/${site}/api?s=${s}`;
-    if (t) {
-        url += `&t=${t}`;
-    }
-    if (page) {
-        url += `&page=${page}`;
-    }
+    searchParams.set('site', site);
     try {
-        const data = await fetch(url).then(
-            response => jsonBase64<SearchResultProps>(response)
+        const { code, data } = await fetch(`${Api.site}/api/video/list?${searchParams}`).then<ApiJsonType<SearchResultProps['videoData']>>(
+            response => response.json()
         )
-        if (data) {
+        if (code === 0) {
             return {
                 props: data
             }
         }
         else {
-            throw new Error(`Get data from ${url} error.`)
+            throw new Error(`Get data from ${site} error.`)
         }
     }
     catch (err) {

@@ -4,17 +4,17 @@ import { Api } from '../../util/config';
 import { setCommonHeaders } from '../../util/pipe';
 
 export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
-    const { s = '' } = req.query;
-    const searchParams = new URLSearchParams()
-    if (s.startsWith('$')) {
-        searchParams.set('s', s.slice(1))
-        searchParams.set('prefer', '18')
+    const searchParams = new URLSearchParams(req.query as Record<string, string>)
+    try {
+        const response = await fetch(`${Api.site}/api/video/list?${searchParams}`)
+        setCommonHeaders(res)
+        res.setHeader('Content-Type', 'application/json')
+        response.body.pipe(res)
     }
-    else {
-        searchParams.set('s', s)
+    catch (err) {
+        res.json({
+            code: -1,
+            msg: String(err)
+        })
     }
-    const response = await fetch(`${Api.site}/api/video/list?${searchParams.toString()}`)
-    setCommonHeaders(res)
-    res.setHeader('Content-Type', 'application/json')
-    response.body.pipe(res)
 }

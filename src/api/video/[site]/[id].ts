@@ -1,7 +1,7 @@
 import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
 import fetch from 'node-fetch';
-import { Api } from '../../../../util/config';
-import { setCommonHeaders } from '../../../../util/pipe';
+import { Api } from '../../../util/config';
+import { setCommonHeaders } from '../../../util/pipe';
 
 export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
     const { site, id } = req.params;
@@ -10,8 +10,16 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
     if (type) {
         api += `?type=${type}`;
     }
-    const response = await fetch(api)
-    setCommonHeaders(res)
-    res.setHeader('Content-Type', 'application/json')
-    response.body.pipe(res)
+    try {
+        const response = await fetch(api)
+        setCommonHeaders(res)
+        res.setHeader('Content-Type', 'application/json')
+        response.body.pipe(res)
+    }
+    catch (err) {
+        res.json({
+            code: -1,
+            msg: String(err)
+        })
+    }
 }

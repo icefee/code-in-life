@@ -1,5 +1,5 @@
 import React, { Component, useState, useEffect, useMemo } from 'react';
-import { PageProps } from 'gatsby';
+import type { PageProps } from 'gatsby';
 import fetch from 'node-fetch';
 import NoSsr from '@mui/material/NoSsr';
 import Box from '@mui/material/Box';
@@ -515,28 +515,27 @@ export default function Page({ location }: PageProps<object, object, unknown, un
     const [video, setVideo] = useState<VideoInfo>()
 
     useEffect(() => {
-        const getVideoInfo = async () => {
-            setLoading(true)
-            try {
-                const { code, data } = await fetch(`/api/video/${api}/${id}/`).then<ApiJsonType<VideoInfo>>(
-                    response => response.json()
-                )
-                if (code === 0) {
-                    setVideo(data)
-                }
-            }
-            catch (err) {
-                getVideoInfo()
-            }
-            setLoading(false)
-        }
         if (fromApi) {
-            getVideoInfo()
+            (async function getVideoInfo() {
+                setLoading(true)
+                try {
+                    const { code, data } = await fetch(`/api/video/${api}/${id}`).then<ApiJsonType<VideoInfo>>(
+                        response => response.json()
+                    )
+                    if (code === 0) {
+                        setVideo(data)
+                    }
+                }
+                catch (err) {
+                    console.error('💔 Get data error: ' + err)
+                }
+                setLoading(false)
+            })()
         }
     }, [])
 
-    if (fromApi) {
-        return loading ? (
+    return fromApi ? (
+        loading ? (
             <LoadingScreen />
         ) : (
             <NoSsr>
@@ -547,14 +546,11 @@ export default function Page({ location }: PageProps<object, object, unknown, un
                 />
             </NoSsr>
         )
-    }
-    else {
-        return (
-            <NoSsr>
-                <VideoDetail
-                    {...parseDataUrl(location.hash.slice(1))}
-                />
-            </NoSsr>
-        )
-    }
+    ) : (
+        <NoSsr>
+            <VideoDetail
+                {...parseDataUrl(location.hash.slice(1))}
+            />
+        </NoSsr>
+    )
 }
