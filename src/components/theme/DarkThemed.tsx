@@ -1,5 +1,5 @@
 import React from 'react';
-import { ThemeProvider, createTheme } from '@mui/material/styles'
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 const DarkThemed = ({ children }: React.PropsWithChildren<unknown>) => {
     return (
