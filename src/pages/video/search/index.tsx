@@ -73,9 +73,7 @@ export default function VideoSearch() {
             }}>
             <title>{pageTitle}</title>
             <Stack sx={{
-                position: 'relative',
-                zIndex: 100,
-                p: 2
+                p: 1.5
             }} direction="row" justifyContent="center">
                 <Box sx={
                     (theme) => ({
@@ -121,36 +119,44 @@ export default function VideoSearch() {
                     />
                 </Box>
             </Stack>
-            {
-                searchTask.success ? (
-                    searchTask.data.length > 0 ? (
-                        <Box sx={{
-                            flexGrow: 1,
-                            overflowY: 'auto'
-                        }}>
-                            <SearchResult
-                                keyword={searchTask.keyword}
-                                videoList={searchTask.data}
-                            />
-                        </Box>
+            <Stack sx={{
+                position: 'relative',
+                overflow: 'hidden'
+            }} flexGrow={1}>
+                {
+                    searchTask.success ? (
+                        searchTask.data.length > 0 ? (
+                            <Box sx={{
+                                flexGrow: 1,
+                                overflowY: 'auto'
+                            }}>
+                                <SearchResult
+                                    keyword={searchTask.keyword}
+                                    videoList={searchTask.data}
+                                />
+                            </Box>
+                        ) : (
+                            <NoData text='💔 没有找到相关的内容, 换个关键词试试吧' />
+                        )
                     ) : (
-                        <NoData text='💔 没有找到相关的内容, 换个关键词试试吧' />
+                        !searchTask.pending && (
+                            <Stack sx={{
+                                position: 'relative',
+                                zIndex: 120
+                            }} flexGrow={1} justifyContent="center" alignItems="center">
+                                <Typography variant="body1" color="hsl(270, 100%, 100%)">🔍 输入关键词开始搜索</Typography>
+                            </Stack>
+                        )
                     )
-                ) : (
-                    <Stack sx={{
-                        position: 'relative',
-                        zIndex: 120
-                    }} flexGrow={1} justifyContent="center" alignItems="center">
-                        <Typography variant="body1" color="hsl(270, 100%, 100%)">🔍 输入关键词开始搜索</Typography>
-                    </Stack>
-                )
-            }
-            <LoadingOverlay
-                open={searchTask.pending}
-                label="搜索中.."
-                withBackground
-                labelColor="#fff"
-            />
+                }
+                <LoadingOverlay
+                    open={searchTask.pending}
+                    label="搜索中.."
+                    withoutBackdrop
+                    withBackground
+                    labelColor="#fff"
+                />
+            </Stack>
             <Snackbar
                 open={Boolean(toastMsg)}
                 autoHideDuration={5000}

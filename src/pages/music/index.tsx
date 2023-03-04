@@ -132,7 +132,7 @@ export default function MusicSearch() {
                 position: 'absolute',
                 width: '100%',
                 zIndex: 150,
-                p: 1
+                p: 1.5
             }} direction="row" justifyContent="center">
                 <Box sx={(theme) => ({
                     width: '100%',
@@ -164,13 +164,12 @@ export default function MusicSearch() {
                         <Box sx={{
                             flexGrow: 1,
                             overflow: 'hidden',
-                            pt: 8
+                            pt: 9
                         }}>
                             {
                                 searchTask.data.length > 0 ? (
                                     <Box sx={(theme) => ({
                                         height: '100%',
-                                        pt: 1,
                                         px: 1,
                                         overflowY: 'auto',
                                         pb: activeMusic ? 13 : 2,
@@ -284,16 +283,19 @@ export default function MusicSearch() {
                                 open={urlParsing}
                                 label="地址解析中.."
                                 withBackground
+                                withoutBackdrop
                                 labelColor="#fff"
                             />
                         </Box>
                     ) : (
-                        <Stack sx={{
-                            position: 'relative',
-                            zIndex: 120
-                        }} flexGrow={1} justifyContent="center" alignItems="center">
-                            <Typography variant="body1" color="hsl(270, 100%, 100%)">🔍 输入歌名/歌手名开始搜索</Typography>
-                        </Stack>
+                        !searchTask.pending && (
+                            <Stack sx={{
+                                position: 'relative',
+                                zIndex: 120
+                            }} flexGrow={1} justifyContent="center" alignItems="center">
+                                <Typography variant="body1" color="hsl(270, 100%, 100%)">🔍 输入歌名/歌手名开始搜索</Typography>
+                            </Stack>
+                        )
                     )
                 }
                 <Slide direction="up" in={Boolean(activeMusic)} mountOnEnter unmountOnExit>
