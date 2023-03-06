@@ -320,7 +320,13 @@ export default function MusicSearch() {
                             repeat={repeat.data}
                             onRepeatChange={setRepeat}
                             onPlayEnd={
-                                () => {
+                                (end) => {
+                                    if (!end) {
+                                        setToastMsg({
+                                            type: 'error',
+                                            msg: `${activeMusic.name}播放错误`
+                                        })
+                                    }
                                     const playIndex = playlist.data.findIndex(
                                         music => music.id === activeMusic.id
                                     );

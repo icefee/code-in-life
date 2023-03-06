@@ -47,7 +47,7 @@ interface MusicPlayerProps {
     onRepeatChange(mode: RepeatMode): void;
     onPlayStateChange(state: boolean): void;
     onTogglePlayList?: VoidFunction;
-    onPlayEnd?: VoidFunction;
+    onPlayEnd?(end: boolean): void;
 }
 
 function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayList, onRepeatChange, onPlayEnd }: MusicPlayerProps) {
@@ -61,6 +61,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null)
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)
     const hasError = useRef(false)
+    const seekingRef = useRef(false)
 
     useEffect(() => {
         return () => {
@@ -360,14 +361,27 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                         }
                         onTimeUpdate={
                             () => {
-                                setCurrentTime(audioRef.current.currentTime)
+                                if (!seekingRef.current) {
+                                    setCurrentTime(audioRef.current.currentTime)
+                                }
+                            }
+                        }
+                        onSeeking={
+                            () => {
+                                seekingRef.current = true;
+                                setCurrentTime(audioRef.current.currentTime);
+                            }
+                        }
+                        onSeeked={
+                            () => {
+                                seekingRef.current = false
                             }
                         }
                         onEnded={
                             () => {
                                 audioRef.current.currentTime = 0
                                 if (repeat !== RepeatMode.One) {
-                                    onPlayEnd?.()
+                                    onPlayEnd?.(true)
                                 }
                             }
                         }
@@ -380,7 +394,10 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                         onError={
                             () => {
                                 // audioRef.current.src = music.url;
-                                if (!hasError.current) {
+                                if (hasError.current) {
+                                    onPlayEnd?.(false)
+                                }
+                                else {
                                     const url = new URL(music.url);
                                     url.searchParams.append('ts', `${+new Date}`);
                                     audioRef.current.src = url.toString();
