@@ -1,314 +1,338 @@
-import React, { useState, useMemo } from 'react';
-import type { GetServerDataProps, PageProps } from 'gatsby';
-import fetch from 'node-fetch';
+import React, { useState, useEffect, useRef } from 'react';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
 import CardActionArea from '@mui/material/CardActionArea';
 import Pagination from '@mui/material/Pagination';
-import PaginationItem from '@mui/material/PaginationItem';
-import Link from '@mui/material/Link';
+import Dialog from '@mui/material/Dialog';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
-import BackgroundContainer from '../../../components/layout/BackgroundContainer';
+import CloseIcon from '@mui/icons-material/Close';
+import { StaticTheme } from '../../../components/theme';
 import SearchForm from '../../../components/search/Form';
+import BackgroundContainer from '../../../components/layout/BackgroundContainer';
+import { LoadingOverlay } from '../../../components/loading';
 import ThumbLoader from '../../../components/search/ThumbLoader';
 import RowClipTypography from '../../../components/layout/element/RowClipTypography';
+import VideoPlayer from '../../../components/player/PlayerBase';
+import useErrorMessage, { SnackbarProvider } from '../../../components/hook/useErrorMessage';
 import NoData from '../../../components/search/NoData';
 
-interface SearchResult {
-    data: SearchVideo[];
-    totalPage: number;
+interface PagedSearchTask<T> extends SearchTask<T> {
+    total: number;
     page: number;
 }
 
-interface SearchVideo {
-    videoInfoId: number;
-    videoTitle: string;
-    pageUrl: string;
-    createTime: string;
-    videoImgUrl: string;
-}
+function Proxy() {
 
-const posterUrl = 'https://2e68cq.8gosimg.top:8443';
+    const [keyword, setKeyword] = useState('')
+    const [searchTask, setSearchTask] = useState<PagedSearchTask<ProxyVideo.ParsedVideo>>({
+        keyword: '',
+        data: [],
+        pending: false,
+        complete: false,
+        success: false,
+        total: 0,
+        page: 1
+    })
+    const scrollerRef = useRef<HTMLDivElement>()
+    const [playingVideo, setPlayingVideo] = useState<{
+        title: string;
+        url: string;
+    }>(null)
+    const showErrorMessage = useErrorMessage()
 
-const checkUrl = 'https://8xx.live';
-
-async function getLatest(page: number, host: string) {
-    let api = `https://${host}/video`;
-    if (page > 1) {
-        api += '/page/' + page
-    }
-    try {
-        const html = await fetch(api).then(
-            response => response.text()
-        )
-        let total = html.match(
-            /<a href=\"\/video\/page\/\d{1,9}\/\" aria-label=\"末页\">/g
-        )?.[0].match(/[1-9]\d{1,8}/g)?.[0]
-
-        if (!total) {
-            total = html.match(
-                /<a aria-label=\"第 [1-9]\d{1,8} 页\">[1-9]\d{1,8}<\/a>/g
-            )?.[0].match(/[1-9]\d{1,8}/g)?.[0]
-
-            if (!total) {
-                throw new Error('page match error')
-            }
-        }
-
-        const posters = html.match( // https://img1.ng8wu.com/p2/7dac5bff19ca1d98da20a378c2bfd198.webp
-            new RegExp('https://.+?\.webp', 'g')
-        )
-        const data = html.match(
-            /<a href=\"\/video\/\d{1,9}\/\">.+?<\/a>/g
-        )?.map(
-            (link, index) => {
-                const pageUrl = link.match(
-                    /\/video\/\d{1,9}\//g
-                )?.[0];
-                const videoId = pageUrl?.match(
-                    /\d{1,9}/
-                )?.[0]
-
-                const videoTitle = link.match(
-                    /(?<=<a href=\"\/video\/\d{1,9}\/\">).+?(?=<\/a>)/g
-                )?.[0]
-
-                return {
-                    videoInfoId: parseInt(videoId),
-                    videoTitle,
-                    pageUrl,
-                    createTime: '',
-                    videoImgUrl: posters[index]
-                }
-            }
-        )
-
-        return {
-            data,
-            totalPage: parseInt(total),
-            page
-        }
-    }
-    catch (err) {
-        return null;
-    }
-}
-
-async function getSearch(title: string, page: number, host: string) {
-    try {
-        const url = `https://s.${host}/search`;
-        const data = await fetch(url, {
-            method: 'POST',
-            body: new URLSearchParams({
-                title,
-                current: String(page),
-                source: 'v1',
-                size: '16'
+    const handleSubmit = (keyword: string) => {
+        setSearchTask(
+            t => ({
+                ...t,
+                keyword,
+                page: 1
             })
-        }).then<SearchResult | null>(
-            response => response.json()
         )
-        return data;
     }
-    catch (err) {
-        return null
-    }
-}
 
-async function getMatch(url: string, reg: RegExp) {
-    try {
-        const html = await fetch(url).then(
-            response => response.text()
+    const parseVideo = async ({ id, title }: ProxyVideo.ParsedVideo) => {
+        setSearchTask(
+            t => ({
+                ...t,
+                pending: true
+            })
         )
-        const matchedResult = html.match(reg);
-        if (matchedResult) {
-            return matchedResult[0];
+        try {
+            const { code, data, msg } = await fetch(`/api/video/proxy/parse?id=${id}`).then<ApiJsonType<string>>(
+                response => response.json()
+            )
+            if (code === 0) {
+                setPlayingVideo({
+                    title,
+                    url: data
+                })
+                window.location.href = window.location.pathname + window.location.search + '#pop'
+            }
+            else {
+                throw new Error(`Error: ${msg}`)
+            }
         }
-        return null;
-    }
-    catch (err) {
-        return null;
-    }
-}
-
-async function checkHost() {
-    const redirectUrl = await getMatch(checkUrl, /https?:\/\/.+?\/redirect\//g)
-    if (redirectUrl) {
-        const host = await getMatch(redirectUrl, /[a-z\d]{3,}\.(xyz|buzz|top|com|io|live)/g)
-        return host;
-    }
-    return null;
-}
-
-interface ProxyProps {
-    s?: string;
-    p?: string;
-    host?: string;
-    list?: SearchResult;
-}
-
-function Proxy({ serverData }: PageProps<object, object, unknown, ProxyProps>) {
-
-    const { s = '', p, host, list } = serverData;
-    const [keyword, setKeyword] = useState(s);
-
-    const refreshUrl = useMemo(() => `/video/proxy/?s=${s}&pg=${p}`, [s, p])
-
-    const layerWrapper: (child: React.ReactNode) => React.ReactNode = child => (
-        <Stack sx={{
-            position: 'relative',
-            height: '100%',
-            zIndex: 40
-        }} justifyContent="center" alignItems="center">
-            {child}
-        </Stack>
-    )
-
-    const getPosterUrl = (url: string) => {
-        if (url.startsWith('http')) {
-            return url;
+        catch (err) {
+            showErrorMessage({
+                message: '视频地址解析失败'
+            })
         }
-        return posterUrl + url;
+        setSearchTask(
+            t => ({
+                ...t,
+                pending: false
+            })
+        )
     }
 
-    return (
-        <BackgroundContainer style={{
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden'
-        }} prefer18>
-            <Stack sx={{
-                position: 'relative',
-                zIndex: 100,
-                p: 2
-            }} direction="row" justifyContent="center">
-                <Box sx={
-                    (theme) => ({
-                        width: '100%',
-                        [theme.breakpoints.up('sm')]: {
-                            width: 300
-                        }
+    const getSearch = async () => {
+        const searchParams = new URLSearchParams()
+        if (keyword !== '') {
+            searchParams.set('s', keyword)
+        }
+        if (searchTask.page > 1) {
+            searchParams.set('p', String(searchTask.page))
+        }
+        setSearchTask(
+            t => ({
+                ...t,
+                pending: true
+            })
+        )
+        try {
+            const { code, data, msg } = await fetch(`/api/video/proxy?${searchParams}`).then<ApiJsonType<ProxyVideo.ParsedResult>>(
+                response => response.json()
+            )
+            if (code === 0) {
+                const { list, total } = data;
+                setSearchTask(
+                    t => ({
+                        ...t,
+                        data: list,
+                        total
                     })
-                }>
-                    <SearchForm
-                        action="/video/proxy/"
-                        value={keyword}
-                        onChange={setKeyword}
-                        staticFields={{
-                            host
-                        }}
-                    />
-                </Box>
-            </Stack>
-            {
-                list ? list.data.length > 0 ? (
-                    <Stack sx={{
-                        position: 'relative',
-                        zIndex: 90,
-                        overflow: 'hidden'
-                    }} flexGrow={1}>
-                        <Box sx={{
-                            flexGrow: 1,
-                            px: 2,
-                            overflowY: 'auto'
-                        }}>
-                            <Grid spacing={2} container>
-                                {
-                                    list.data.map(
-                                        (video) => (
-                                            <Grid xs={12} sm={6} lg={3} key={video.videoInfoId} item>
-                                                <Card sx={{
-                                                    bgcolor: 'background.paper'
-                                                }} elevation={2}>
-                                                    <CardActionArea href={'/video/proxy/player/?url=https://' + host + video.pageUrl} target="_blank">
-                                                        <Stack direction="row">
-                                                            <Box sx={{
-                                                                width: 125,
-                                                                height: 180,
-                                                                flexShrink: 0
-                                                            }}>
-                                                                <ThumbLoader
-                                                                    aspectRatio="125 / 180"
-                                                                    src={getPosterUrl(video.videoImgUrl)}
-                                                                    alt={video.videoTitle}
-                                                                />
-                                                            </Box>
-                                                            <Box sx={{
-                                                                flexGrow: 1,
-                                                                p: 1.5,
-                                                                overflow: 'hidden'
-                                                            }}>
-                                                                <Stack sx={{
-                                                                    height: '100%',
-                                                                    justifyContent: 'space-between'
-                                                                }}>
-                                                                    <Tooltip title={video.videoTitle}>
-                                                                        <Box>
-                                                                            <RowClipTypography
-                                                                                lineHeight={1.2}
-                                                                                rows={4}
-                                                                                variant="h5"
-                                                                                paragraph
-                                                                            >{video.videoTitle}</RowClipTypography>
-                                                                        </Box>
-                                                                    </Tooltip>
-                                                                    <Typography variant="subtitle2" color="text.secondary" align="right">{video.createTime}</Typography>
-                                                                </Stack>
-                                                            </Box>
-                                                        </Stack>
-                                                    </CardActionArea>
-                                                </Card>
-                                            </Grid>
-                                        )
-                                    )
-                                }
-                            </Grid>
-                        </Box>
-                        <Stack sx={{
-                            px: 1,
-                            py: 2
-                        }} direction="row" justifyContent="center">
-                            <Pagination
-                                page={list.page}
-                                count={list.totalPage}
-                                variant="outlined"
-                                color="primary"
-                                renderItem={(item) => {
-                                    const searchParams = new URLSearchParams({
-                                        s: keyword,
-                                        host
-                                    })
-                                    searchParams.set('p', String(item.page));
-                                    const href = `/video/proxy/?` + searchParams.toString();
-                                    const current = item.page === list.page;
-                                    return (
-                                        <PaginationItem
-                                            component={Link}
-                                            href={current ? null : href}
-                                            disabled={current}
-                                            {...item}
-                                        />
-                                    )
-                                }}
-                            />
-                        </Stack>
-                    </Stack>
-                ) : layerWrapper(
-                    <NoData />
-                ) : layerWrapper(
-                    <>
-                        <Typography sx={{
-                            mb: 2
-                        }} color="text.secondary">当前链接已失效, 请尝试重新获取</Typography>
-                        <Button variant="outlined" href={refreshUrl}>重新获取</Button>
-                    </>
                 )
             }
-        </BackgroundContainer>
+            else {
+                throw new Error(`Error: ${msg}`)
+            }
+        }
+        catch (err) {
+            showErrorMessage({
+                message: '数据获取失败'
+            })
+        }
+        setSearchTask(
+            t => ({
+                ...t,
+                pending: false
+            })
+        )
+    }
+
+    useEffect(() => {
+        getSearch()
+    }, [searchTask.keyword, searchTask.page])
+
+    const handlePopState = (_ev: PopStateEvent) => {
+        setPlayingVideo(null)
+    }
+
+    useEffect(() => {
+
+        if (playingVideo) {
+            window.addEventListener('popstate', handlePopState)
+        }
+
+        return () => {
+            if (playingVideo) {
+                window.removeEventListener('popstate', handlePopState)
+            }
+        }
+    }, [playingVideo])
+
+    useEffect(() => {
+        scrollerRef.current?.scrollTo(0, 0)
+    }, [searchTask.data])
+
+    return (
+        <StaticTheme>
+            <BackgroundContainer style={{
+                display: 'flex',
+                flexDirection: 'column',
+                overflow: 'hidden'
+            }} prefer18>
+                <Stack sx={{
+                    position: 'relative',
+                    zIndex: 100,
+                    p: 1.5
+                }} direction="row" justifyContent="center">
+                    <Box sx={
+                        (theme) => ({
+                            width: '100%',
+                            [theme.breakpoints.up('sm')]: {
+                                width: 300
+                            }
+                        })
+                    }>
+                        <SearchForm
+                            value={keyword}
+                            onChange={setKeyword}
+                            onSubmit={handleSubmit}
+                        />
+                    </Box>
+                </Stack>
+                {
+                    searchTask.data.length > 0 ? (
+                        <Stack sx={{
+                            position: 'relative',
+                            zIndex: 90,
+                            overflow: 'hidden'
+                        }} flexGrow={1}>
+                            <Box ref={scrollerRef} sx={{
+                                flexGrow: 1,
+                                px: 1.5,
+                                overflowY: 'auto'
+                            }}>
+                                <Grid spacing={2} container>
+                                    {
+                                        searchTask.data.map(
+                                            (video) => (
+                                                <Grid xs={12} sm={6} lg={3} key={video.id} item>
+                                                    <Card sx={{
+                                                        bgcolor: 'background.paper'
+                                                    }} elevation={2}>
+                                                        <CardActionArea onClick={
+                                                            () => parseVideo(video)
+                                                        }>
+                                                            <Stack direction="row">
+                                                                <Box sx={{
+                                                                    width: 125,
+                                                                    height: 180,
+                                                                    flexShrink: 0
+                                                                }}>
+                                                                    <ThumbLoader
+                                                                        src={video.poster}
+                                                                        aspectRatio="125 / 180"
+                                                                        alt={video.title}
+                                                                    />
+                                                                </Box>
+                                                                <Box sx={{
+                                                                    flexGrow: 1,
+                                                                    p: 1.5,
+                                                                    overflow: 'hidden'
+                                                                }}>
+                                                                    <Stack sx={{
+                                                                        height: '100%',
+                                                                        justifyContent: 'space-between'
+                                                                    }}>
+                                                                        <Tooltip title={video.title}>
+                                                                            <Box>
+                                                                                <RowClipTypography
+                                                                                    lineHeight={1.2}
+                                                                                    rows={4}
+                                                                                    variant="h5"
+                                                                                    paragraph
+                                                                                >{video.title}</RowClipTypography>
+                                                                            </Box>
+                                                                        </Tooltip>
+                                                                        <Typography variant="subtitle2" color="text.secondary" align="right">{video.createTime}</Typography>
+                                                                    </Stack>
+                                                                </Box>
+                                                            </Stack>
+                                                        </CardActionArea>
+                                                    </Card>
+                                                </Grid>
+                                            )
+                                        )
+                                    }
+                                </Grid>
+                            </Box>
+                            <Stack sx={{
+                                px: 1,
+                                py: 2
+                            }} direction="row" justifyContent="center">
+                                <Pagination
+                                    page={searchTask.page}
+                                    count={searchTask.total}
+                                    variant="outlined"
+                                    color="primary"
+                                    onChange={
+                                        (_event: React.ChangeEvent<unknown>, page: number) => {
+                                            setSearchTask(
+                                                t => ({
+                                                    ...t,
+                                                    page
+                                                })
+                                            );
+                                        }
+                                    }
+                                />
+                            </Stack>
+                        </Stack>
+                    ) : (
+                        <Stack sx={{
+                            position: 'relative',
+                            zIndex: 5,
+                            flexGrow: 1
+                        }}>
+                            <NoData />
+                        </Stack>
+                    )
+                }
+                <Dialog
+                    fullScreen
+                    open={Boolean(playingVideo)}
+                >
+                    <AppBar color="transparent" elevation={0}>
+                        <Toolbar sx={{
+                            color: '#fff'
+                        }}>
+                            <IconButton
+                                edge="start"
+                                color="inherit"
+                                onClick={() => history.back()}
+                                aria-label="close"
+                            >
+                                <CloseIcon />
+                            </IconButton>
+                            <Typography
+                                sx={{
+                                    ml: 2,
+                                    flex: 1,
+                                    width: '100%',
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis'
+                                }}
+                                color="#fff"
+                                variant="h6"
+                                component="div">{playingVideo?.title}</Typography>
+                        </Toolbar>
+                    </AppBar>
+                    {
+                        playingVideo && (
+                            <VideoPlayer
+                                url={playingVideo.url}
+                                onEnd={() => history.back()}
+                            />
+                        )
+                    }
+                </Dialog>
+                <LoadingOverlay
+                    open={searchTask.pending}
+                    label="加载中..."
+                    labelColor="#fff"
+                    withBackground
+                />
+            </BackgroundContainer>
+        </StaticTheme>
     )
 }
 
@@ -318,47 +342,10 @@ export function Head() {
     )
 }
 
-export async function getServerData({ query }: GetServerDataProps) {
-    try {
-        let { host, s, p } = query as Record<string, string>;
-        if (!host) {
-            const latestHost = await checkHost();
-            if (latestHost) {
-                host = latestHost;
-            }
-            else {
-                throw new Error('Get latest host faild.')
-            }
-        }
-        const pg = p ? Number(p) : 1;
-        if (s && s.trim().length > 0) {
-            const wd = decodeURIComponent(s).trim();
-            const list = await getSearch(wd, pg, host)
-            return {
-                props: {
-                    s: wd,
-                    p: pg,
-                    host,
-                    list
-                }
-            }
-        }
-        else {
-            const list = await getLatest(pg, host)
-            return {
-                props: {
-                    p: pg,
-                    host,
-                    list
-                }
-            }
-        }
-    }
-    catch (err) {
-        return {
-            status: 404
-        }
-    }
+export default function Page() {
+    return (
+        <SnackbarProvider>
+            <Proxy />
+        </SnackbarProvider>
+    )
 }
-
-export default Proxy;

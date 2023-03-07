@@ -2,7 +2,6 @@ import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
 import fetch from 'node-fetch';
 import { Api } from '../../util/config';
 import { setCommonHeaders } from '../../util/pipe';
-import { createReadStream } from 'node:fs';
 
 function parsePoster(html: string) {
     const matchBlock = html.match(
