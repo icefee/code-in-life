@@ -44,16 +44,15 @@ export default function MusicSearch() {
         setToastMsg(null);
     }
 
-    const getMusicInfo = async (id: SearchMusic['id'], callback: (music: MusicInfo) => void) => {
+    const getMusicInfo = async (id: SearchMusic['id']) => {
         const cachedMusicUrl = musicUrlMap.current.get(id);
         if (cachedMusicUrl) {
             return cachedMusicUrl;
         }
         setUrlParsing(true);
-        const musicInfo = await parseMusic(id);
+        let musicInfo = await parseMusic(id);
         if (musicInfo) {
             musicUrlMap.current.set(id, musicInfo);
-            callback(musicInfo)
         }
         else {
             setToastMsg({
@@ -201,7 +200,8 @@ export default function MusicSearch() {
                                                                             )
                                                                         }
                                                                         else {
-                                                                            getMusicInfo(music.id, (musicInfo) => {
+                                                                            const musicInfo = await getMusicInfo(music.id);
+                                                                            if (musicInfo) {
                                                                                 const playIndex = playlist.data.findIndex(
                                                                                     m => m.id === music.id
                                                                                 )
@@ -216,7 +216,7 @@ export default function MusicSearch() {
                                                                                 else {
                                                                                     setActiveMusic(playlist.data[playIndex])
                                                                                 }
-                                                                            })
+                                                                            }
                                                                         }
                                                                     }
                                                                 }
@@ -237,7 +237,8 @@ export default function MusicSearch() {
                                                         })
                                                         return;
                                                     }
-                                                    getMusicInfo(music.id, (musicInfo) => {
+                                                    const musicInfo = await getMusicInfo(music.id);
+                                                    if (musicInfo) {
                                                         switch (cmd) {
                                                             case 'add':
                                                                 const nextPlay = {
@@ -262,7 +263,7 @@ export default function MusicSearch() {
                                                             default:
                                                                 break;
                                                         }
-                                                    })
+                                                    }
                                                 }
                                             }
                                         />

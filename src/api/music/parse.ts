@@ -63,7 +63,7 @@ async function getMusic(id: string) {
         const lrc = await parseLrc(id)
         return {
             url,
-            poster,
+            poster: poster ?? `/api/music/poster?id=${id}`,
             lrc
         }
     }

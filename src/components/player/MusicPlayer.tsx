@@ -28,7 +28,7 @@ export interface SearchMusic {
 
 export interface MusicInfo {
     url: string;
-    poster?: string;
+    poster: string;
     lrc?: Lrc[];
 }
 
@@ -131,7 +131,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
             })} justifyContent="center" alignItems="center" flexShrink={0}>
                 <MusicPoster
                     alt={music ? `${music.name}-${music.artist}` : null}
-                    src={music?.poster}
+                    src={music.poster}
                     spinning={playing && !loading}
                 />
                 <Box sx={{
