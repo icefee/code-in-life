@@ -44,15 +44,22 @@ export default function MusicSearch() {
         setToastMsg(null);
     }
 
-    const getMusicUrl = async (id: SearchMusic['id']) => {
+    const getMusicInfo = async (id: SearchMusic['id'], callback: (music: MusicInfo) => void) => {
         const cachedMusicUrl = musicUrlMap.current.get(id);
         if (cachedMusicUrl) {
             return cachedMusicUrl;
         }
-        setUrlParsing(true)
-        const musicInfo = await parseMusic(id)
+        setUrlParsing(true);
+        const musicInfo = await parseMusic(id);
         if (musicInfo) {
             musicUrlMap.current.set(id, musicInfo);
+            callback(musicInfo)
+        }
+        else {
+            setToastMsg({
+                type: 'error',
+                msg: '解析歌曲失败, 可能是网络连接问题'
+            })
         }
         setUrlParsing(false)
         return musicInfo;
@@ -170,7 +177,7 @@ export default function MusicSearch() {
                                 searchTask.data.length > 0 ? (
                                     <Box sx={(theme) => ({
                                         height: '100%',
-                                        px: 1,
+                                        px: 1.5,
                                         overflowY: 'auto',
                                         pb: activeMusic ? 13 : 2,
                                         [theme.breakpoints.up('sm')]: {
@@ -194,29 +201,22 @@ export default function MusicSearch() {
                                                                             )
                                                                         }
                                                                         else {
-                                                                            const musicInfo = await getMusicUrl(music.id)
-                                                                            if (musicInfo) {
-                                                                                const nextPlay = {
-                                                                                    ...music,
-                                                                                    ...musicInfo
-                                                                                }
-                                                                                setActiveMusic(nextPlay)
+                                                                            getMusicInfo(music.id, (musicInfo) => {
                                                                                 const playIndex = playlist.data.findIndex(
-                                                                                    music => music.id === nextPlay.id
+                                                                                    m => m.id === music.id
                                                                                 )
-                                                                                if (playIndex !== -1) {
-                                                                                    setActiveMusic(playlist.data[playIndex])
-                                                                                }
-                                                                                else {
+                                                                                if (playIndex === -1) {
+                                                                                    const nextPlay = {
+                                                                                        ...music,
+                                                                                        ...musicInfo
+                                                                                    }
+                                                                                    setActiveMusic(nextPlay)
                                                                                     setPlaylist(list => [nextPlay, ...list])
                                                                                 }
-                                                                            }
-                                                                            else {
-                                                                                setToastMsg({
-                                                                                    type: 'error',
-                                                                                    msg: '解析歌曲失败, 可能是网络连接问题'
-                                                                                })
-                                                                            }
+                                                                                else {
+                                                                                    setActiveMusic(playlist.data[playIndex])
+                                                                                }
+                                                                            })
                                                                         }
                                                                     }
                                                                 }
@@ -227,33 +227,31 @@ export default function MusicSearch() {
                                             }
                                             onAction={
                                                 async (cmd, music) => {
-                                                    const musicInfo = await getMusicUrl(music.id)
-                                                    if (musicInfo) {
+                                                    const playIndex = playlist.data.findIndex(
+                                                        m => m.id === music.id
+                                                    )
+                                                    if (playIndex !== -1 && cmd === 'add') {
+                                                        setToastMsg({
+                                                            type: 'warning',
+                                                            msg: '当前歌曲已经在播放列表中'
+                                                        })
+                                                        return;
+                                                    }
+                                                    getMusicInfo(music.id, (musicInfo) => {
                                                         switch (cmd) {
                                                             case 'add':
                                                                 const nextPlay = {
                                                                     ...music,
                                                                     ...musicInfo
                                                                 }
-                                                                const playIndex = playlist.data.findIndex(
-                                                                    music => music.id === nextPlay.id
-                                                                )
-                                                                if (playIndex === -1) {
-                                                                    setPlaylist(list => [...list, nextPlay])
-                                                                    if (playlist.data.length === 0) {
-                                                                        setActiveMusic(nextPlay)
-                                                                    }
-                                                                    setToastMsg({
-                                                                        type: 'success',
-                                                                        msg: '已加入播放列表'
-                                                                    })
+                                                                setPlaylist(list => [...list, nextPlay])
+                                                                if (playlist.data.length === 0) {
+                                                                    setActiveMusic(nextPlay)
                                                                 }
-                                                                else {
-                                                                    setToastMsg({
-                                                                        type: 'warning',
-                                                                        msg: '当前歌曲已经在播放列表中'
-                                                                    })
-                                                                }
+                                                                setToastMsg({
+                                                                    type: 'success',
+                                                                    msg: '已加入播放列表'
+                                                                })
                                                                 break;
                                                             case 'download':
                                                                 downloadSong({
@@ -264,13 +262,7 @@ export default function MusicSearch() {
                                                             default:
                                                                 break;
                                                         }
-                                                    }
-                                                    else {
-                                                        setToastMsg({
-                                                            type: 'error',
-                                                            msg: '歌曲解析失败, 可能是网络连接问题'
-                                                        })
-                                                    }
+                                                    })
                                                 }
                                             }
                                         />

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
@@ -51,6 +51,19 @@ interface SongListItemProps extends Omit<SongListProps, 'data'> {
 function SongListItem({ current, divider, playButton, onAction }: SongListItemProps) {
 
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null)
+    const [poster, setPoster] = useState('var(--linear-gradient-image)')
+
+    useEffect(() => {
+        const posterUrl = `/api/music/poster?id=${current.id}`;
+        const loadPoster = () => {
+            const image = new Image()
+            image.src = posterUrl;
+            image.onload = () => {
+                setPoster(`url(${posterUrl})`)
+            }
+        }
+        loadPoster()
+    }, [current.id])
 
     const handleMenuAction = (cmd: MenuAction) => {
         return (_event: React.SyntheticEvent) => {
@@ -106,7 +119,8 @@ function SongListItem({ current, divider, playButton, onAction }: SongListItemPr
         >
             <ListItemAvatar>
                 <Avatar sx={{
-                    backgroundImage: 'var(--linear-gradient-image)'
+                    backgroundImage: poster,
+                    backgroundSize: 'cover'
                 }}>{typeof playButton === 'function' ? playButton(current) : playButton}</Avatar>
             </ListItemAvatar>
             <ListItemText
