@@ -19,6 +19,7 @@ import MusicLrc, { type Lrc } from './MusicLrc';
 import PlayOrPauseButton from './PlayOrPauseButton';
 import { timeFormatter } from '../../util/date';
 import useLocalStorageState from '../hook/useLocalStorageState';
+import { generate } from '../../util/url';
 
 export interface SearchMusic {
     id: number;
@@ -109,6 +110,11 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
             onPlayStateChange(false)
             console.warn('auto play failed because of browser security policy.')
         }
+    }
+
+    const reloadSong = () => {
+        audioRef.current.src = generate(music.url);
+        audioRef.current.load();
     }
 
     return (
@@ -328,7 +334,13 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                         }
                         onLoadedMetadata={
                             () => {
-                                setDuration(audioRef.current.duration)
+                                const duration = audioRef.current.duration;
+                                if (duration < 20) {
+                                    reloadSong()
+                                }
+                                else {
+                                    setDuration(duration)
+                                }
                             }
                         }
                         onCanPlay={
@@ -398,10 +410,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                                     onPlayEnd?.(false)
                                 }
                                 else {
-                                    const url = new URL(music.url);
-                                    url.searchParams.append('ts', `${+new Date}`);
-                                    audioRef.current.src = url.toString();
-                                    audioRef.current.load()
+                                    reloadSong();
                                     hasError.current = true;
                                 }
                             }
