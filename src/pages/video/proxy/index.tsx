@@ -115,6 +115,7 @@ function Proxy() {
                     t => ({
                         ...t,
                         data: list,
+                        complete: true,
                         total
                     })
                 )
@@ -189,101 +190,103 @@ function Proxy() {
                     </Box>
                 </Stack>
                 {
-                    searchTask.data.length > 0 ? (
-                        <Stack sx={{
-                            position: 'relative',
-                            zIndex: 90,
-                            overflow: 'hidden'
-                        }} flexGrow={1}>
-                            <Box ref={scrollerRef} sx={{
-                                flexGrow: 1,
-                                px: 1.5,
-                                overflowY: 'auto'
-                            }}>
-                                <Grid spacing={2} container>
-                                    {
-                                        searchTask.data.map(
-                                            (video) => (
-                                                <Grid xs={12} sm={6} lg={3} key={video.id} item>
-                                                    <Card sx={{
-                                                        bgcolor: 'background.paper'
-                                                    }} elevation={2}>
-                                                        <CardActionArea onClick={
-                                                            () => parseVideo(video)
-                                                        }>
-                                                            <Stack direction="row">
-                                                                <Box sx={{
-                                                                    width: 125,
-                                                                    height: 180,
-                                                                    flexShrink: 0
-                                                                }}>
-                                                                    <ThumbLoader
-                                                                        src={video.poster}
-                                                                        aspectRatio="125 / 180"
-                                                                        alt={video.title}
-                                                                    />
-                                                                </Box>
-                                                                <Box sx={{
-                                                                    flexGrow: 1,
-                                                                    p: 1.5,
-                                                                    overflow: 'hidden'
-                                                                }}>
-                                                                    <Stack sx={{
-                                                                        height: '100%',
-                                                                        justifyContent: 'space-between'
-                                                                    }}>
-                                                                        <Tooltip title={video.title}>
-                                                                            <Box>
-                                                                                <RowClipTypography
-                                                                                    lineHeight={1.2}
-                                                                                    rows={4}
-                                                                                    variant="h5"
-                                                                                    paragraph
-                                                                                >{video.title}</RowClipTypography>
-                                                                            </Box>
-                                                                        </Tooltip>
-                                                                        <Typography variant="subtitle2" color="text.secondary" align="right">{video.createTime}</Typography>
-                                                                    </Stack>
-                                                                </Box>
-                                                            </Stack>
-                                                        </CardActionArea>
-                                                    </Card>
-                                                </Grid>
-                                            )
-                                        )
-                                    }
-                                </Grid>
-                            </Box>
+                    searchTask.complete && (
+                        searchTask.data.length > 0 ? (
                             <Stack sx={{
-                                px: 1,
-                                py: 2
-                            }} direction="row" justifyContent="center">
-                                <Pagination
-                                    page={searchTask.page}
-                                    count={searchTask.total}
-                                    variant="outlined"
-                                    color="primary"
-                                    onChange={
-                                        (_event: React.ChangeEvent<unknown>, page: number) => {
-                                            setSearchTask(
-                                                t => ({
-                                                    ...t,
-                                                    page
-                                                })
-                                            );
+                                position: 'relative',
+                                zIndex: 90,
+                                overflow: 'hidden'
+                            }} flexGrow={1}>
+                                <Box ref={scrollerRef} sx={{
+                                    flexGrow: 1,
+                                    px: 1.5,
+                                    overflowY: 'auto'
+                                }}>
+                                    <Grid spacing={2} container>
+                                        {
+                                            searchTask.data.map(
+                                                (video) => (
+                                                    <Grid xs={12} sm={6} lg={3} key={video.id} item>
+                                                        <Card sx={{
+                                                            bgcolor: 'background.paper'
+                                                        }} elevation={2}>
+                                                            <CardActionArea onClick={
+                                                                () => parseVideo(video)
+                                                            }>
+                                                                <Stack direction="row">
+                                                                    <Box sx={{
+                                                                        width: 125,
+                                                                        height: 180,
+                                                                        flexShrink: 0
+                                                                    }}>
+                                                                        <ThumbLoader
+                                                                            src={video.poster}
+                                                                            aspectRatio="125 / 180"
+                                                                            alt={video.title}
+                                                                        />
+                                                                    </Box>
+                                                                    <Box sx={{
+                                                                        flexGrow: 1,
+                                                                        p: 1.5,
+                                                                        overflow: 'hidden'
+                                                                    }}>
+                                                                        <Stack sx={{
+                                                                            height: '100%',
+                                                                            justifyContent: 'space-between'
+                                                                        }}>
+                                                                            <Tooltip title={video.title}>
+                                                                                <Box>
+                                                                                    <RowClipTypography
+                                                                                        lineHeight={1.2}
+                                                                                        rows={4}
+                                                                                        variant="h5"
+                                                                                        paragraph
+                                                                                    >{video.title}</RowClipTypography>
+                                                                                </Box>
+                                                                            </Tooltip>
+                                                                            <Typography variant="subtitle2" color="text.secondary" align="right">{video.createTime}</Typography>
+                                                                        </Stack>
+                                                                    </Box>
+                                                                </Stack>
+                                                            </CardActionArea>
+                                                        </Card>
+                                                    </Grid>
+                                                )
+                                            )
                                         }
-                                    }
-                                />
+                                    </Grid>
+                                </Box>
+                                <Stack sx={{
+                                    px: 1,
+                                    py: 2
+                                }} direction="row" justifyContent="center">
+                                    <Pagination
+                                        page={searchTask.page}
+                                        count={searchTask.total}
+                                        variant="outlined"
+                                        color="primary"
+                                        onChange={
+                                            (_event: React.ChangeEvent<unknown>, page: number) => {
+                                                setSearchTask(
+                                                    t => ({
+                                                        ...t,
+                                                        page
+                                                    })
+                                                );
+                                            }
+                                        }
+                                    />
+                                </Stack>
                             </Stack>
-                        </Stack>
-                    ) : (
-                        <Stack sx={{
-                            position: 'relative',
-                            zIndex: 5,
-                            flexGrow: 1
-                        }}>
-                            <NoData />
-                        </Stack>
+                        ) : (
+                            <Stack sx={{
+                                position: 'relative',
+                                zIndex: 5,
+                                flexGrow: 1
+                            }}>
+                                <NoData />
+                            </Stack>
+                        )
                     )
                 }
                 <Dialog

@@ -19,7 +19,6 @@ import MusicLrc, { type Lrc } from './MusicLrc';
 import PlayOrPauseButton from './PlayOrPauseButton';
 import { timeFormatter } from '../../util/date';
 import useLocalStorageState from '../hook/useLocalStorageState';
-import { generate } from '../../util/url';
 
 export interface SearchMusic {
     id: number;
@@ -61,13 +60,13 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
     const [loading, setLoading] = useState(false)
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null)
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)
-    const hasError = useRef(false)
+    // const hasError = useRef(false)
     const seekingRef = useRef(false)
 
     useEffect(() => {
         return () => {
             setCurrentTime(0)
-            hasError.current = false;
+            // hasError.current = false;
         }
     }, [music?.id])
 
@@ -112,11 +111,6 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
         }
     }
 
-    const reloadSong = () => {
-        audioRef.current.src = generate(music.url);
-        audioRef.current.load();
-    }
-
     return (
         <Stack sx={{
             position: 'relative',
@@ -137,7 +131,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
             })} justifyContent="center" alignItems="center" flexShrink={0}>
                 <MusicPoster
                     alt={music ? `${music.name}-${music.artist}` : null}
-                    src={music.poster}
+                    src={music?.poster}
                     spinning={playing && !loading}
                 />
                 <Box sx={{
@@ -335,12 +329,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                         onLoadedMetadata={
                             () => {
                                 const duration = audioRef.current.duration;
-                                if (duration < 20) {
-                                    reloadSong()
-                                }
-                                else {
-                                    setDuration(duration)
-                                }
+                                setDuration(duration)
                             }
                         }
                         onCanPlay={
@@ -406,13 +395,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                         onError={
                             () => {
                                 // audioRef.current.src = music.url;
-                                if (hasError.current) {
-                                    onPlayEnd?.(false)
-                                }
-                                else {
-                                    reloadSong();
-                                    hasError.current = true;
-                                }
+                                onPlayEnd?.(false)
                             }
                         }
                         src={music.url}

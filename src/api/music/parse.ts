@@ -58,7 +58,7 @@ async function getMusic(id: string) {
         const html = await fetch(`${Api.music}/music/${id}`).then(
             response => response.text()
         )
-        const url = parseUrl(html)
+        const url = `/api/music/download?id=${id}` // parseUrl(html)
         const poster = parsePoster(html)
         const lrc = await parseLrc(id)
         return {

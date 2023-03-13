@@ -117,7 +117,7 @@ export default function MusicSearch() {
 
     const downloadSong = (music: SearchMusic & Pick<MusicInfo, 'url'>) => {
         window.open(
-            `/api/music/download?name=${encodeURIComponent(`${music.artist}-${music.name}`)}&id=${btoa(music.url)}`
+            `/api/music/download?name=${encodeURIComponent(`${music.artist}-${music.name}`)}&id=${music.id}`
         )
     }
 
