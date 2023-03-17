@@ -139,6 +139,12 @@ export default function MusicSearch() {
         return '音乐搜索';
     }, [activeMusic, playing])
 
+    useEffect(() => {
+        if (!activeMusic) {
+            setPlaylistShow(false)
+        }
+    }, [activeMusic])
+
     return (
         <Stack sx={{
             height: '100%',
