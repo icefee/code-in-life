@@ -123,8 +123,12 @@ export default function MusicSearch() {
     }, [searchTask.success, searchTask.data])
 
     const downloadSong = (music: SearchMusic & Pick<MusicInfo, 'url'>) => {
+        const searchParams = new URLSearchParams({
+            name: encodeURIComponent(`${music.artist}-${music.name}`),
+            id: btoa(music.url)
+        });
         window.open(
-            `/api/music/download?name=${encodeURIComponent(`${music.artist}-${music.name}`)}&id=${music.id}`
+            `/api/music/download?${searchParams}`
         )
     }
 
