@@ -5,8 +5,8 @@ export abstract class MapConfig {
 }
 
 export abstract class Api {
-    public static site = isDev ? 'http://localhost:420' : 'http://code-in-life.netlify.app'
-    public static assetSite = 'https://code-in-life.onrender.com'
+    public static site = isDev ? 'http://localhost:420' : 'http://cik.netlify.app'
+    public static assetSite = 'https://cil.onrender.com'
     public static music = 'https://www.gequbao.com'
     public static staticAsset = 'https://c.stormkit.dev'
 }

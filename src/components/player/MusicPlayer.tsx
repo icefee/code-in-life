@@ -19,6 +19,7 @@ import MusicLrc, { type Lrc } from './MusicLrc';
 import PlayOrPauseButton from './PlayOrPauseButton';
 import { timeFormatter } from '../../util/date';
 import useLocalStorageState from '../hook/useLocalStorageState';
+import { generate } from '../../util/url';
 
 export interface SearchMusic {
     id: number;
@@ -60,13 +61,13 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
     const [loading, setLoading] = useState(false)
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null)
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)
-    // const hasError = useRef(false)
+    const hasError = useRef(false)
     const seekingRef = useRef(false)
 
     useEffect(() => {
         return () => {
             setCurrentTime(0)
-            // hasError.current = false;
+            hasError.current = false
         }
     }, [music?.id])
 
@@ -109,6 +110,11 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
             onPlayStateChange(false)
             console.warn('auto play failed because of browser security policy.')
         }
+    }
+
+    const reloadSong = () => {
+        audioRef.current.src = generate(music.url);
+        audioRef.current.load();
     }
 
     return (
@@ -395,7 +401,13 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                         onError={
                             () => {
                                 // audioRef.current.src = music.url;
-                                onPlayEnd?.(false)
+                                if (hasError.current) {
+                                    onPlayEnd?.(false)
+                                }
+                                else {
+                                    hasError.current = true;
+                                    reloadSong()
+                                }
                             }
                         }
                         src={music.url}
