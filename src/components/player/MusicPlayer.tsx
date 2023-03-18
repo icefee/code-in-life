@@ -67,6 +67,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
     useEffect(() => {
         return () => {
             setCurrentTime(0)
+            seekingRef.current = false
             hasError.current = false
         }
     }, [music?.id])
@@ -374,9 +375,9 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                             }
                         }
                         onSeeking={
-                            () => {
+                            (event) => {
                                 seekingRef.current = true;
-                                setCurrentTime(audioRef.current.currentTime);
+                                setCurrentTime((event.target as HTMLAudioElement).currentTime);
                             }
                         }
                         onSeeked={
