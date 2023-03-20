@@ -11,14 +11,12 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
-import ThumbLoader from '../../components/search/ThumbLoader';
-import { LoadingScreen } from '../../components/loading';
-import BackgroundContainer from '../../components/layout/BackgroundContainer';
-import { type VideoItem, type VideoSource, type VideoInfo } from '../../components/search/api';
-import NoData from '../../components/search/NoData';
-import VideoPlayer, { type VideoParams } from '../../components/player/PlayerBase';
-import { utf82utf16 } from '../../util/parser';
-import VideoUrlParser from '../../components/search/VideoUrlParser';
+import ThumbLoader from '../../../../components/search/ThumbLoader';
+import { LoadingScreen } from '../../../../components/loading';
+import BackgroundContainer from '../../../../components/layout/BackgroundContainer';
+import NoData from '../../../../components/search/NoData';
+import VideoPlayer, { type VideoParams } from '../../../../components/player/PlayerBase';
+import VideoUrlParser from '../../../../components/search/VideoUrlParser';
 import * as css from './style.module.css';
 
 interface TabPanelProps extends React.PropsWithChildren<{
@@ -494,62 +492,37 @@ function VideoSummary({ video }: VideoSummaryProps) {
     )
 }
 
-function parseDataUrl(s: string): VideoDetailProps {
-    try {
-        return JSON.parse(utf82utf16(atob(decodeURIComponent(s)))) as VideoDetailProps;
-    }
-    catch (err) {
-        return {
-            api: '',
-            id: '',
-            video: null
-        } as VideoDetailProps;
-    }
-}
-
-export default function Page({ location }: PageProps<object, object, unknown, unknown>) {
-    const query = new URLSearchParams(location.search)
-    const api = query.get('api'), id = query.get('id');
-    const fromApi = api && id;
+export default function Page({ params }: PageProps<object, object, unknown, unknown>) {
+    const { site, id } = params as Record<'site' | 'id', string>;
     const [loading, setLoading] = useState(false)
     const [video, setVideo] = useState<VideoInfo>()
 
     useEffect(() => {
-        if (fromApi) {
-            (async function getVideoInfo() {
-                setLoading(true)
-                try {
-                    const { code, data } = await fetch(`/api/video/${api}/${id}`).then<ApiJsonType<VideoInfo>>(
-                        response => response.json()
-                    )
-                    if (code === 0) {
-                        setVideo(data)
-                    }
+        (async function getVideoInfo() {
+            setLoading(true)
+            try {
+                const { code, data } = await fetch(`/api/video/${site}/${id}`).then<ApiJsonType<VideoInfo>>(
+                    response => response.json()
+                )
+                if (code === 0) {
+                    setVideo(data)
                 }
-                catch (err) {
-                    console.error('💔 Get data error: ' + err)
-                }
-                setLoading(false)
-            })()
-        }
+            }
+            catch (err) {
+                console.error('💔 Get data error: ' + err)
+                setTimeout(getVideoInfo, 1e3);
+            }
+            setLoading(false)
+        })()
     }, [])
-
-    return fromApi ? (
-        loading ? (
-            <LoadingScreen />
-        ) : (
-            <NoSsr>
-                <VideoDetail
-                    api={api}
-                    id={id}
-                    video={video}
-                />
-            </NoSsr>
-        )
+    return loading ? (
+        <LoadingScreen />
     ) : (
         <NoSsr>
             <VideoDetail
-                {...parseDataUrl(location.hash.slice(1))}
+                api={site}
+                id={id}
+                video={video}
             />
         </NoSsr>
     )

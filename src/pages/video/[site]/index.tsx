@@ -11,10 +11,10 @@ import Pagination from '@mui/material/Pagination';
 import PaginationItem from '@mui/material/PaginationItem';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
-import { SearchList } from '../../components/search/List';
-import BackgroundContainer from '../../components/layout/BackgroundContainer';
-import NoData from '../../components/search/NoData';
-import { Api } from '../../util/config';
+import { SearchList } from '../../../components/search/List';
+import BackgroundContainer from '../../../components/layout/BackgroundContainer';
+import NoData from '../../../components/search/NoData';
+import { Api } from '../../../util/config';
 
 interface SearchResultProps {
     api: string;

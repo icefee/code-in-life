@@ -5,7 +5,6 @@ import Alert, { AlertProps } from '@mui/material/Alert';
 import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
 import Slide from '@mui/material/Slide';
-import Collapse from '@mui/material/Collapse';
 import Typography from '@mui/material/Typography';
 import SearchForm from '../../components/search/Form';
 import { LoadingOverlay } from '../../components/loading';
@@ -359,33 +358,35 @@ export default function MusicSearch() {
                                 }
                             }
                         />
-                        <Collapse in={playlistShow}>
-                            <MusicPlayList
-                                data={playlist.data}
-                                onChange={setPlaylist}
-                                current={activeMusic}
-                                onPlay={
-                                    (music) => {
-                                        if (!music) {
-                                            setPlaying(false)
+                        {
+                            playlistShow && (
+                                <MusicPlayList
+                                    data={playlist.data}
+                                    onChange={setPlaylist}
+                                    current={activeMusic}
+                                    onPlay={
+                                        (music) => {
+                                            if (!music) {
+                                                setPlaying(false)
+                                            }
+                                            setActiveMusic(music)
                                         }
-                                        setActiveMusic(music)
                                     }
-                                }
-                                onTogglePlay={
-                                    () => {
-                                        setPlaying(playing => !playing)
+                                    onTogglePlay={
+                                        () => {
+                                            setPlaying(playing => !playing)
+                                        }
                                     }
-                                }
-                                onSearch={
-                                    (s) => {
-                                        setKeyword(s)
-                                        onSearch(s)
+                                    onSearch={
+                                        (s) => {
+                                            setKeyword(s)
+                                            onSearch(s)
+                                        }
                                     }
-                                }
-                                onDownload={downloadSong}
-                            />
-                        </Collapse>
+                                    onDownload={downloadSong}
+                                />
+                            )
+                        }
                     </Stack>
                 </Slide>
                 <LoadingOverlay
