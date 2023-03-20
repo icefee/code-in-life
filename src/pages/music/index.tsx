@@ -5,6 +5,7 @@ import Alert, { AlertProps } from '@mui/material/Alert';
 import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
 import Slide from '@mui/material/Slide';
+import Collapse from '@mui/material/Collapse';
 import Typography from '@mui/material/Typography';
 import SearchForm from '../../components/search/Form';
 import { LoadingOverlay } from '../../components/loading';
@@ -334,7 +335,7 @@ export default function MusicSearch() {
                                     if (!end) {
                                         setToastMsg({
                                             type: 'error',
-                                            msg: `${activeMusic.name}播放错误`
+                                            msg: `“${activeMusic.name}”播放错误`
                                         })
                                     }
                                     const playIndex = playlist.data.findIndex(
@@ -358,29 +359,33 @@ export default function MusicSearch() {
                                 }
                             }
                         />
-                        {
-                            playlistShow && (
-                                <MusicPlayList
-                                    data={playlist.data}
-                                    onChange={setPlaylist}
-                                    current={activeMusic}
-                                    onPlay={
-                                        (music) => {
-                                            if (!music) {
-                                                setPlaying(false)
-                                            }
-                                            setActiveMusic(music)
+                        <Collapse in={playlistShow}>
+                            <MusicPlayList
+                                data={playlist.data}
+                                onChange={setPlaylist}
+                                current={activeMusic}
+                                onPlay={
+                                    (music) => {
+                                        if (!music) {
+                                            setPlaying(false)
                                         }
+                                        setActiveMusic(music)
                                     }
-                                    onTogglePlay={
-                                        () => {
-                                            setPlaying(playing => !playing)
-                                        }
+                                }
+                                onTogglePlay={
+                                    () => {
+                                        setPlaying(playing => !playing)
                                     }
-                                    onDownload={downloadSong}
-                                />
-                            )
-                        }
+                                }
+                                onSearch={
+                                    (s) => {
+                                        setKeyword(s)
+                                        onSearch(s)
+                                    }
+                                }
+                                onDownload={downloadSong}
+                            />
+                        </Collapse>
                     </Stack>
                 </Slide>
                 <LoadingOverlay

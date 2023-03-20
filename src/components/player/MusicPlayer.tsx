@@ -72,13 +72,25 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
         }
     }, [music?.id])
 
+    const togglePlay = async (play: boolean) => {
+        try {
+            if (play) {
+                await audioRef.current?.play()
+            }
+            else {
+                audioRef.current?.pause()
+            }
+        }
+        catch (err) {
+            if (hasError.current) {
+                onPlayEnd?.(false)
+                onPlayStateChange(false)
+            }
+        }
+    }
+
     useEffect(() => {
-        if (playing) {
-            audioRef.current?.play()
-        }
-        else {
-            audioRef.current?.pause()
-        }
+        togglePlay(playing)
     }, [playing])
 
     const volumeIcon = useMemo(() => volume.data > 0 ? volume.data > .5 ? <VolumeUpIcon /> : <VolumeDownIcon /> : <VolumeOffIcon />, [volume])
@@ -404,6 +416,8 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                                 // audioRef.current.src = music.url;
                                 if (hasError.current) {
                                     onPlayEnd?.(false)
+                                    setLoading(false)
+                                    onPlayStateChange(false)
                                 }
                                 else {
                                     hasError.current = true;

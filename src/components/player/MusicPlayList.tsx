@@ -9,7 +9,7 @@ import ListSubheader from '@mui/material/ListSubheader';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import MusicNoteIcon from '@mui/icons-material/MusicNote';
+import SearchIcon from '@mui/icons-material/Search';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PublishIcon from '@mui/icons-material/Publish';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -26,9 +26,10 @@ interface MusicPlayListProps {
     onPlay(music: PlayingMusic): void;
     onTogglePlay?: VoidFunction;
     onDownload?(music: PlayingMusic): void;
+    onSearch?(keyword: string): void;
 }
 
-function MusicPlayList({ data, onChange, current, onPlay, onTogglePlay, onDownload }: MusicPlayListProps) {
+function MusicPlayList({ data, onChange, current, onPlay, onTogglePlay, onSearch, onDownload }: MusicPlayListProps) {
 
     const pinToTop = (music: PlayingMusic) => {
         onChange(
@@ -100,6 +101,9 @@ function MusicPlayList({ data, onChange, current, onPlay, onTogglePlay, onDownlo
                                                     case 'pin':
                                                         pinToTop(music);
                                                         break;
+                                                    case 'search':
+                                                        onSearch?.(music.artist)
+                                                        break;
                                                     case 'download':
                                                         onDownload?.(music);
                                                         break;
@@ -122,7 +126,7 @@ function MusicPlayList({ data, onChange, current, onPlay, onTogglePlay, onDownlo
     )
 }
 
-type MenuAction = 'pin' | 'download' | 'remove';
+type MenuAction = 'pin' | 'search' | 'download' | 'remove';
 
 interface PlayListItemProps {
     music: PlayingMusic;
@@ -191,6 +195,12 @@ function PlayListItem({ music, isCurrent, divider, onAction, onClick }: PlayList
                             </ListItemIcon>
                             <ListItemText>置顶</ListItemText>
                         </MenuItem>
+                        <MenuItem onClick={handleMenuAction('search')}>
+                            <ListItemIcon>
+                                <SearchIcon />
+                            </ListItemIcon>
+                            <ListItemText>搜索“{music.artist}”</ListItemText>
+                        </MenuItem>
                         <MenuItem onClick={handleMenuAction('download')}>
                             <ListItemIcon>
                                 <DownloadIcon />
@@ -216,9 +226,7 @@ function PlayListItem({ music, isCurrent, divider, onAction, onClick }: PlayList
                 }}>
                     <MusicPoster
                         src={music.poster}
-                        placeholder={
-                            !music.poster && !isCurrent && <MusicNoteIcon />
-                        }
+                        alt={`${music.name}-${music.artist}`}
                     />
                     {
                         isCurrent && (
