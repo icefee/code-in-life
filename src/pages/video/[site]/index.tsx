@@ -183,7 +183,7 @@ export async function getServerData({ query, params }: GetServerDataProps) {
         const { code, data } = await fetch(`${Api.site}/api/video/list?${searchParams}`).then<ApiJsonType<SearchResultProps['data']>>(
             response => response.json()
         )
-        if (code === 0) {
+        if (code === 0 && 'video' in data) {
             return {
                 props: {
                     data,

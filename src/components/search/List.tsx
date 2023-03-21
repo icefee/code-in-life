@@ -10,7 +10,6 @@ import Typography from '@mui/material/Typography';
 import CardActionArea from '@mui/material/CardActionArea';
 import ThumbLoader from './ThumbLoader';
 import RowClipTypography from '../layout/element/RowClipTypography';
-import type { VideoListItem } from './api';
 import { Api } from '../../util/config';
 
 type ListData = VideoListItem[];
@@ -76,7 +75,7 @@ interface VideoItemProps extends Pick<ListProps, 'api' | 'typed'> {
 function VideoItem({ video, api, typed }: VideoItemProps) {
 
     const poster = usePosterUrl(api, video.id)
-    const videoUrl = useMemo(() => `/video/?api=${api}&id=${video.id}`, [api, video.id])
+    const videoUrl = useMemo(() => `/video/${api}/${video.id}/`, [api, video.id])
 
     return (
         <Card elevation={2}>
