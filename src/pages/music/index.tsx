@@ -28,7 +28,6 @@ export default function MusicSearch() {
 
     const [activeMusic, setActiveMusic] = useState<PlayingMusic>()
     const [playing, setPlaying] = useState(false)
-    const musicUrlMap = useRef<Map<number, MusicInfo>>(new Map())
 
     const [urlParsing, setUrlParsing] = useState(false)
     const [playlistShow, setPlaylistShow] = useState(false)
@@ -45,16 +44,9 @@ export default function MusicSearch() {
     }
 
     const getMusicInfo = async (id: SearchMusic['id']) => {
-        const cachedMusicUrl = musicUrlMap.current.get(id);
-        if (cachedMusicUrl) {
-            return cachedMusicUrl;
-        }
         setUrlParsing(true);
         let musicInfo = await parseMusic(id);
-        if (musicInfo) {
-            musicUrlMap.current.set(id, musicInfo);
-        }
-        else {
+        if (!musicInfo) {
             setToastMsg({
                 type: 'error',
                 msg: '解析歌曲失败, 可能是网络连接问题'
