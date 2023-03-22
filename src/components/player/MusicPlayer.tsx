@@ -190,10 +190,10 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                             maxWidth: 300
                         }
                     })}>
-                        <Typography variant="button" noWrap textOverflow="ellipsis">{music?.name}</Typography>
+                        <Typography variant="body2" noWrap textOverflow="ellipsis">{music?.name}</Typography>
                     </Stack>
                     <Stack>
-                        <Typography variant="overline" color="#ffffffcc" noWrap>{music?.artist}</Typography>
+                        <Typography variant="caption" color="#ffffffcc" noWrap>{music?.artist}</Typography>
                     </Stack>
                     {
                         music?.lrc && (

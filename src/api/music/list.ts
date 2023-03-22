@@ -10,19 +10,19 @@ async function getMusicSearch(s: string): Promise<SearchMusic[]> {
         const html = await fetch(url).then(
             response => response.text()
         )
-        const matchBlocks = html.replace(/[\n\s\r]+/g, '').replace(new RegExp('&amp;', 'g'), '&').match(
-            /<tr><td><ahref="\/music\/\d+"class="text-primaryfont-weight-bold"target="_blank">[^<]+<\/a><\/td><tdclass="text-success">[^<]+<\/td><td><ahref="\/music\/\d+"target="_blank"><u>下载<\/u><\/a><\/td><\/tr>/g
+        const matchBlocks = html.replace(/[\n\r]+/g, '').replace(new RegExp('&amp;', 'g'), '&').match(
+            /<tr>\s*<td><a href="\/music\/\d+"\s*class="text-primary font-weight-bold"\s+target="_blank">[^<]+<\/a>\s*<\/td>\s*<td class="text-success">[^<]+<\/td>\s*<td><a href="\/music\/\d+" target="_blank"><u>下载<\/u><\/a><\/td>\s*<\/tr>/g
         )
         if (matchBlocks) {
             return matchBlocks.map(
                 (block) => {
                     const url = block.match(/music\/\d+/)[0]
                     const id = url.match(/\d+/)
-                    const nameBlock = block.match(/(?<=<ahref="\/music\/\d+"class="text-primaryfont-weight-bold"target="_blank">)[^<]+(?=<\/a>)/)
-                    const artistBlock = block.match(/(?<=<tdclass="text-success">)[^<]+(?=<\/td>)/)
+                    const nameBlock = block.match(/(?<=<a href="\/music\/\d+"\s*class="text-primary font-weight-bold" target="_blank">)[^<]+(?=<\/a>)/)
+                    const artistBlock = block.match(/(?<=<td class="text-success">)[^<]+(?=<\/td>)/)
                     return {
                         id: parseInt(id[0]),
-                        name: nameBlock[0],
+                        name: nameBlock[0].trimStart().trimEnd(),
                         artist: artistBlock[0]
                     }
                 }
