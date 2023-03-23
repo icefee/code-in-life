@@ -45,7 +45,7 @@ export default function MusicSearch() {
 
     const getMusicInfo = async (id: SearchMusic['id']) => {
         setUrlParsing(true);
-        let musicInfo = await parseMusic(id);
+        const musicInfo = await parseMusic(id);
         if (!musicInfo) {
             setToastMsg({
                 type: 'error',
@@ -122,6 +122,28 @@ export default function MusicSearch() {
         window.open(
             `/api/music/download?${searchParams}`
         )
+    }
+
+    const repairParse = async (id: SearchMusic['id']) => {
+        const musicInfo = await parseMusic(id);
+        if (musicInfo) {
+            setActiveMusic(
+                active => ({
+                    ...active,
+                    ...musicInfo
+                })
+            )
+            setPlaylist(
+                list => list.map(
+                    song => song.id === id ? ({
+                        ...song,
+                        ...musicInfo
+                    }) : song
+                )
+            )
+            return true;
+        }
+        return false;
     }
 
     const pageTitle = useMemo(() => {
@@ -322,12 +344,16 @@ export default function MusicSearch() {
                             repeat={repeat.data}
                             onRepeatChange={setRepeat}
                             onPlayEnd={
-                                (end) => {
+                                async (end) => {
                                     if (!end) {
                                         setToastMsg({
                                             type: 'error',
-                                            msg: `“${activeMusic.name}”播放错误`
+                                            msg: `“${activeMusic.name}”播放错误, 正在重新解析..`
                                         })
+                                        const repair = await repairParse(activeMusic.id)
+                                        if (repair) {
+                                            return;
+                                        }
                                     }
                                     const playIndex = playlist.data.findIndex(
                                         music => music.id === activeMusic.id

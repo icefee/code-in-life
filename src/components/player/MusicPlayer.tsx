@@ -67,10 +67,11 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
     useEffect(() => {
         return () => {
             setCurrentTime(0)
+            audioRef.current.currentTime = 0
             seekingRef.current = false
             hasError.current = false
         }
-    }, [music?.id])
+    }, [music?.url])
 
     const togglePlay = async (play: boolean) => {
         try {
@@ -348,15 +349,13 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                         onLoadedMetadata={
                             () => {
                                 const duration = audioRef.current.duration;
-                                setDuration(duration)
+                                setDuration(duration);
+                                tryToAutoPlay();
                             }
                         }
                         onCanPlay={
                             () => {
                                 setLoading(false)
-                                if (audioRef.current.paused) {
-                                    tryToAutoPlay()
-                                }
                             }
                         }
                         onCanPlayThrough={
@@ -389,7 +388,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                         onSeeking={
                             (event) => {
                                 seekingRef.current = true;
-                                setCurrentTime((event.target as HTMLAudioElement).currentTime);
+                                setCurrentTime(audioRef.current.currentTime);
                             }
                         }
                         onSeeked={
@@ -400,7 +399,10 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                         onEnded={
                             () => {
                                 audioRef.current.currentTime = 0
-                                if (repeat !== RepeatMode.One) {
+                                if (repeat === RepeatMode.One) {
+                                    tryToAutoPlay()
+                                }
+                                else {
                                     onPlayEnd?.(true)
                                 }
                             }
