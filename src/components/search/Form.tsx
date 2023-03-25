@@ -11,23 +11,46 @@ interface SearchFormProps {
     onChange: (value: string) => void;
     onSubmit?: (value: string) => void;
     staticFields?: Record<string, string>;
+    loading?: boolean;
+    placeholder?: string;
+    submitText?: string;
+    loadingSubmitText?: string;
 }
 
 class SearchForm extends Component<SearchFormProps, {}> {
 
+    public static defaultProps = {
+        loading: false,
+        placeholder: '输入关键词搜索...',
+        submitText: '搜索',
+        loadingSubmitText: '搜索中'
+    }
+
     public render(): React.ReactNode {
+
+        const {
+            action,
+            value,
+            onChange,
+            onSubmit,
+            placeholder,
+            submitText,
+            loadingSubmitText,
+            loading,
+            staticFields
+        } = this.props;
+
         return (
             <Paper
                 component="form"
-                action={this.props.action}
-                sx={(theme) => ({
+                action={action}
+                sx={{
                     display: 'flex',
                     width: '100%',
-                    backgroundColor: alpha(theme.palette.background.paper, .75)
-                })}
+                    backgroundColor: (theme) => alpha(theme.palette.background.paper, .75)
+                }}
                 onSubmit={
                     (event: React.SyntheticEvent<HTMLFormElement>) => {
-                        const { value, onSubmit } = this.props;
                         if (onSubmit) {
                             event.preventDefault();
                             onSubmit(value);
@@ -38,17 +61,17 @@ class SearchForm extends Component<SearchFormProps, {}> {
                 <InputBase
                     sx={{ ml: 1, flex: 1 }}
                     name="s"
-                    placeholder="输入关键词搜索..."
-                    value={this.props.value}
+                    placeholder={placeholder}
+                    value={value}
                     onChange={
                         (event: React.ChangeEvent<HTMLInputElement>) => {
-                            this.props.onChange(event.target.value)
+                            onChange(event.target.value)
                         }
                     }
                     autoFocus
                 />
                 {
-                    this.props.staticFields && Object.entries(this.props.staticFields).map(
+                    staticFields && Object.entries(staticFields).map(
                         ([key, value]) => (
                             <input key={key} type="hidden" name={key} defaultValue={value} />
                         )
@@ -59,9 +82,10 @@ class SearchForm extends Component<SearchFormProps, {}> {
                     startIcon={
                         <SearchIcon />
                     }
+                    loading={loading}
                     type="submit"
                     sx={{ p: 1.5 }}
-                >搜索</LoadingButton>
+                >{loading ? loadingSubmitText : submitText}</LoadingButton>
             </Paper>
         )
     }

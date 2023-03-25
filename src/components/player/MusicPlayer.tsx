@@ -63,6 +63,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)
     const hasError = useRef(false)
     const seekingRef = useRef(false)
+    const [buffered, setBuffered] = useState(0)
 
     useEffect(() => {
         return () => {
@@ -218,7 +219,28 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                         <Slider
                             size="small"
                             value={duration ? (currentTime * 100 / duration) : 0}
+                            sx={{
+                                '& .MuiSlider-rail::before': {
+                                    content: '""',
+                                    position: 'absolute',
+                                    height: 'inherit',
+                                    width: buffered * 100 + '%',
+                                    transition: (theme) => theme.transitions.create('width'),
+                                    bgcolor: '#fff',
+                                    top: 'inherit',
+                                    transform: 'inherit',
+                                    opacity: .75
+                                }
+                            }}
                             onChange={
+                                (_event, value: number) => {
+                                    if (duration) {
+                                        seekingRef.current = true;
+                                        setCurrentTime(value * duration / 100)
+                                    }
+                                }
+                            }
+                            onChangeCommitted={
                                 (_event, value: number) => {
                                     if (duration) {
                                         audioRef.current.currentTime = value * duration / 100;
@@ -385,10 +407,18 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                                 }
                             }
                         }
-                        onSeeking={
-                            (event) => {
-                                seekingRef.current = true;
-                                setCurrentTime(audioRef.current.currentTime);
+                        onProgress={
+                            () => {
+                                const audio = audioRef.current;
+                                const buffered = audio.buffered;
+                                let bufferedEnd: number;
+                                try {
+                                    bufferedEnd = buffered.end(buffered.length - 1);
+                                }
+                                catch (err) {
+                                    bufferedEnd = 0;
+                                }
+                                setBuffered(bufferedEnd / audio.duration)
                             }
                         }
                         onSeeked={

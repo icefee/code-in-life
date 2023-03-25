@@ -29,13 +29,18 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
     const { id } = req.query;
     const poster = await getPoster(id);
     setCommonHeaders(res)
-    if (poster) {
-        const response = await fetch(poster)
-        const headers = response.headers;
-        res.setHeader('Content-Type', headers.get('Content-Type'));
-        response.body.pipe(res)
+    try {
+        if (poster) {
+            const response = await fetch(poster)
+            const headers = response.headers;
+            res.setHeader('Content-Type', headers.get('Content-Type'));
+            response.body.pipe(res)
+        }
+        else {
+            throw new Error('can not find poster')
+        }
     }
-    else {
+    catch (err) {
         res.setHeader('Content-Type', 'image/svg+xml')
         res.send(svg)
     }

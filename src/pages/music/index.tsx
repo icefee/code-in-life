@@ -181,6 +181,7 @@ export default function MusicSearch() {
                         value={keyword}
                         onChange={setKeyword}
                         onSubmit={onSearch}
+                        loading={searchTask.pending}
                     />
                 </Box>
             </Stack>
