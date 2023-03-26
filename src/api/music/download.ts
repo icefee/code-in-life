@@ -1,8 +1,6 @@
 import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
 import fetch from 'node-fetch';
 import { setCommonHeaders } from '../../util/pipe';
-import { Api } from '../../util/config';
-// import { createReadStream } from 'node:fs';
 
 export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
     const { id, name } = req.query;

@@ -220,16 +220,31 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                             size="small"
                             value={duration ? (currentTime * 100 / duration) : 0}
                             sx={{
+                                '& .MuiSlider-rail': {
+                                    opacity: 1,
+                                    bgcolor: 'currentcolor',
+                                    backgroundImage: 'linear-gradient(0, #000, #000)'
+                                },
                                 '& .MuiSlider-rail::before': {
+                                    content: '""',
+                                    position: 'absolute',
+                                    height: 'inherit',
+                                    width: '100%',
+                                    bgcolor: 'inherit',
+                                    top: 'inherit',
+                                    transform: 'inherit',
+                                    opacity: .38
+                                },
+                                '& .MuiSlider-rail::after': {
                                     content: '""',
                                     position: 'absolute',
                                     height: 'inherit',
                                     width: buffered * 100 + '%',
                                     transition: (theme) => theme.transitions.create('width'),
-                                    bgcolor: '#fff',
+                                    bgcolor: 'inherit',
                                     top: 'inherit',
                                     transform: 'inherit',
-                                    opacity: .75
+                                    opacity: .5
                                 }
                             }}
                             onChange={
