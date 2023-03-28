@@ -67,10 +67,12 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
 
     useEffect(() => {
         return () => {
-            setCurrentTime(0)
-            audioRef.current.currentTime = 0
-            seekingRef.current = false
-            hasError.current = false
+            if (audioRef.current) {
+                audioRef.current.currentTime = 0;
+                setCurrentTime(0);
+                seekingRef.current = false;
+                hasError.current = false;
+            }
         }
     }, [music?.url])
 

@@ -7,7 +7,7 @@ function parseUrl(html: string) {
     const matchBlock = html.match(
         /const url = 'https?:\/\/[^']+'/
     )
-    return matchBlock[0].match(/https?:\/\/[^']+/)[0].replace(new RegExp('&amp;', 'g'), '&')
+    return matchBlock[0].match(/https?:\/\/[^']+/)[0]
 }
 
 function parsePoster(html: string) {
