@@ -31,10 +31,10 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
     setCommonHeaders(res)
     try {
         if (poster) {
-            const response = await fetch(poster)
-            const headers = response.headers;
-            res.setHeader('Content-Type', headers.get('Content-Type'));
-            response.body.pipe(res)
+            res.writeHead(301, {
+                'location': poster
+            })
+            res.end()
         }
         else {
             throw new Error('can not find poster')

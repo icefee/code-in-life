@@ -8,5 +8,5 @@ export abstract class Api {
     public static site = isDev ? 'http://localhost:420' : 'http://cik.netlify.app'
     public static assetSite = 'https://cil.onrender.com'
     public static music = 'https://www.gequbao.com'
-    public static staticAsset = 'https://www.stormkit.dev'
+    public static assetUrl = 'https://www.stormkit.dev'
 }

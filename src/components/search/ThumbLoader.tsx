@@ -31,7 +31,7 @@ function ThumbLoader({ src, alt, aspectRatio = '2 / 3' }: ThumbLoaderProps) {
                 onError={
                     () => {
                         setLoading(false);
-                        imageRef.current.src = `${Api.staticAsset}/assets/image_fail.jpg`;
+                        imageRef.current.src = `${Api.assetUrl}/assets/image_fail.jpg`;
                     }
                 }
                 hidden={loading}

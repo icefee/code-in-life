@@ -11,6 +11,11 @@ export async function jsonBase64<T extends any>(response: Response) {
     return matchedBase64 ? JSON.parse(Buffer.from(matchedBase64[0], 'base64').toString('utf-8')) as T : null;
 }
 
+export async function json(response: Response) {
+    const data = await response.json()
+    return data;
+}
+
 export async function image(response: Response) {
     const text = await response.text()
     const matchedImage = text.match(/https?:\/\/.+?\.((jpe?|pn)g|webp)/g)

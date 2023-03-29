@@ -1,16 +1,14 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Chip from '@mui/material/Chip';
 import Link from '@mui/material/Link';
-import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
 import CardActionArea from '@mui/material/CardActionArea';
 import ThumbLoader from './ThumbLoader';
 import RowClipTypography from '../layout/element/RowClipTypography';
-import { Api } from '../../util/config';
 
 type ListData = VideoListItem[];
 
@@ -41,40 +39,12 @@ export function SearchList({ data, api, typed = false }: ListProps) {
     )
 }
 
-function usePosterUrl(api: string, id: number) {
-    const [poster, setPoster] = useState(null)
-    useEffect(() => {
-        const getPoster = async () => {
-            try {
-                const { code, data } = await fetch(`/api/video/${api}/${id}?type=poster`).then<{
-                    code: number;
-                    data: string;
-                }>(
-                    response => response.json()
-                )
-                if (code === 0) {
-                    setPoster(data)
-                }
-                else {
-                    throw new Error(`Get poster failed through api=${api}&id=${id}`)
-                }
-            }
-            catch (err) {
-                setPoster(`${Api.staticAsset}/assets/image_fail.jpg`)
-            }
-        }
-        getPoster()
-    }, [])
-    return poster;
-}
-
 interface VideoItemProps extends Pick<ListProps, 'api' | 'typed'> {
     video: VideoListItem;
 }
 
 function VideoItem({ video, api, typed }: VideoItemProps) {
 
-    const poster = usePosterUrl(api, video.id)
     const videoUrl = useMemo(() => `/video/${api}/${video.id}/`, [api, video.id])
 
     return (
@@ -85,20 +55,11 @@ function VideoItem({ video, api, typed }: VideoItemProps) {
                     height: 180,
                     flexShrink: 0
                 }} href={videoUrl} target="_blank">
-                    {
-                        poster ? (
-                            <ThumbLoader
-                                src={poster}
-                                aspectRatio="125 / 180"
-                                alt={video.name}
-                            />
-                        ) : (
-                            <Skeleton sx={{
-                                width: '100%',
-                                height: '100%'
-                            }} animation="wave" variant="rectangular" />
-                        )
-                    }
+                    <ThumbLoader
+                        src={`/api/video/${api}/${video.id}?type=poster`}
+                        aspectRatio="125 / 180"
+                        alt={video.name}
+                    />
                 </CardActionArea>
                 <Box sx={{
                     flexGrow: 1,

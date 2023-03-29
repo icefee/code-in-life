@@ -15,7 +15,7 @@ export abstract class PlayerConfig {
     public static get hlsSupported() {
         return Hls.isSupported()
     }
-    public static poster = `${Api.staticAsset}/assets/poster.webp`;
+    public static poster = `${Api.assetUrl}/assets/poster.webp`;
     public static customType = {
         hls(video: HTMLVideoElement, _player: DPlayer) {
             const hls = new Hls();
