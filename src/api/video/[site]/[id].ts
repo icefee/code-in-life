@@ -27,6 +27,14 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
     }
     else {
         setCommonHeaders(res)
-        res.json(data)
+        res.json(data ? {
+            code: 0,
+            data,
+            msg: '成功'
+        } : {
+            code: -1,
+            data: null,
+            msg: '失败'
+        })
     }
 }
