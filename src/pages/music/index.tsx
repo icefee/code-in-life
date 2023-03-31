@@ -383,6 +383,7 @@ export default function MusicSearch() {
                                     data={playlist.data}
                                     onChange={setPlaylist}
                                     current={activeMusic}
+                                    playing={playing}
                                     onPlay={
                                         (music) => {
                                             if (!music) {

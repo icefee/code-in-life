@@ -1,9 +1,20 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import SvgIcon, { SvgIconProps } from '@mui/material/SvgIcon';
 
-function MusicPlay(props: SvgIconProps) {
+export interface MusicPlayProps extends SvgIconProps {
+    animating?: boolean;
+}
+
+function MusicPlay({ animating = true, ...props }: MusicPlayProps) {
+
+    const svgRef = useRef<SVGSVGElement>()
+
+    useEffect(() => {
+        animating ? svgRef.current?.unpauseAnimations() : svgRef.current?.pauseAnimations()
+    }, [animating])
+
     return (
-        <SvgIcon {...props}>
+        <SvgIcon ref={svgRef} {...props}>
             <rect x={0} y={0} width={6} height={24}>
                 <animate attributeName="y"
                     begin="0"

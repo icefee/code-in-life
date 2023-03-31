@@ -23,13 +23,14 @@ interface MusicPlayListProps {
     data: PlayingMusic[];
     onChange: React.Dispatch<React.SetStateAction<PlayingMusic[]>>;
     current: PlayingMusic;
+    playing: boolean;
     onPlay(music: PlayingMusic): void;
     onTogglePlay?: VoidFunction;
     onDownload?(music: PlayingMusic): void;
     onSearch?(keyword: string): void;
 }
 
-function MusicPlayList({ data, onChange, current, onPlay, onTogglePlay, onSearch, onDownload }: MusicPlayListProps) {
+function MusicPlayList({ data, onChange, current, playing, onPlay, onTogglePlay, onSearch, onDownload }: MusicPlayListProps) {
 
     const pinToTop = (music: PlayingMusic) => {
         onChange(
@@ -85,6 +86,7 @@ function MusicPlayList({ data, onChange, current, onPlay, onTogglePlay, onSearch
                                         divider={index < data.length - 1}
                                         music={music}
                                         isCurrent={isCurrentPlaying}
+                                        playing={playing}
                                         onClick={
                                             () => {
                                                 if (isCurrentPlaying) {
@@ -130,13 +132,14 @@ type MenuAction = 'pin' | 'search' | 'download' | 'remove';
 
 interface PlayListItemProps {
     music: PlayingMusic;
+    playing: boolean;
     isCurrent: boolean;
     divider: boolean;
     onClick: React.MouseEventHandler<HTMLDivElement>;
     onAction(cmd: MenuAction, music: PlayingMusic): void;
 }
 
-function PlayListItem({ music, isCurrent, divider, onAction, onClick }: PlayListItemProps) {
+function PlayListItem({ music, playing, isCurrent, divider, onAction, onClick }: PlayListItemProps) {
 
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null)
     const listItemRef = useRef<HTMLLIElement>()
@@ -237,6 +240,7 @@ function PlayListItem({ music, isCurrent, divider, onAction, onClick }: PlayList
                                 transform: 'translate(-50%, -50%)'
                             }}>
                                 <MusicPlayIcon
+                                    animating={playing}
                                     sx={{
                                         display: 'block',
                                         fontSize: 18
