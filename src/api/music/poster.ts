@@ -5,9 +5,9 @@ import { setCommonHeaders } from '../../util/pipe';
 
 function parsePoster(html: string) {
     const matchBlock = html.match(
-        /<img id="cover" src="https?:\/\/[^"]+"/
+        /cover:\s'https?:\/\/[^']+'/
     )
-    return matchBlock ? matchBlock[0].match(/https?:\/\/[^"]+/)[0] : null
+    return matchBlock ? matchBlock[0].match(/https?:\/\/[^']+/)[0] : null
 }
 
 async function getPoster(id: string) {

@@ -12,9 +12,9 @@ function parseUrl(html: string) {
 
 function parsePoster(html: string) {
     const matchBlock = html.match(
-        /<img id="cover" src="https?:\/\/[^"]+"/
+        /cover:\s'https?:\/\/[^']+'/
     )
-    return matchBlock ? matchBlock[0].match(/https?:\/\/[^"]+/)[0] : null
+    return matchBlock ? matchBlock[0].match(/https?:\/\/[^']+/)[0] : null
 }
 
 function toPrecision(n: number) {
@@ -60,6 +60,7 @@ async function getMusic(id: string) {
         )
         const url = parseUrl(html)
         const poster = parsePoster(html)
+        console.log(poster)
         const lrc = await parseLrc(id)
         return {
             url,
