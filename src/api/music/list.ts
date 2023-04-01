@@ -17,13 +17,15 @@ async function getMusicSearch(s: string): Promise<SearchMusic[]> {
             return matchBlocks.map(
                 (block) => {
                     const url = block.match(/music\/\d+/)[0]
-                    const id = url.match(/\d+/)
+                    const idBlock = url.match(/\d+/)
                     const nameBlock = block.match(/(?<=<a href="\/music\/\d+"\s*class="text-primary font-weight-bold" target="_blank">)[^<]+(?=<\/a>)/)
                     const artistBlock = block.match(/(?<=<td class="text-success">)[^<]+(?=<\/td>)/)
+                    const id = parseInt(idBlock[0])
                     return {
-                        id: parseInt(id[0]),
+                        id,
                         name: nameBlock[0].trimStart().trimEnd(),
-                        artist: artistBlock[0]
+                        artist: artistBlock[0],
+                        poster: `${Api.hosting}/api/music/poster?id=${id}`
                     }
                 }
             )

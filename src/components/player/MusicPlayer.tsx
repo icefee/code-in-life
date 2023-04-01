@@ -25,6 +25,7 @@ export interface SearchMusic {
     id: number;
     name: string;
     artist: string;
+    poster: string;
 }
 
 export interface MusicInfo {
@@ -149,7 +150,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                 color: '#fff',
                 borderRadius: '50%',
                 [theme.breakpoints.up('sm')]: {
-                    width: 75
+                    width: 72
                 }
             })} justifyContent="center" alignItems="center" flexShrink={0}>
                 <MusicPoster

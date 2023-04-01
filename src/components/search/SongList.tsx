@@ -54,16 +54,15 @@ function SongListItem({ current, divider, playButton, onAction }: SongListItemPr
     const [poster, setPoster] = useState('var(--linear-gradient-image)')
 
     useEffect(() => {
-        const posterUrl = `/api/music/poster?id=${current.id}`;
         const loadPoster = () => {
             const image = new Image()
-            image.src = posterUrl;
+            image.src = current.poster;
             image.onload = () => {
-                setPoster(`url(${posterUrl})`)
+                setPoster(`url(${current.poster})`)
             }
         }
         loadPoster()
-    }, [current.id])
+    }, [current.poster])
 
     const handleMenuAction = (cmd: MenuAction) => {
         return (_event: React.SyntheticEvent) => {
@@ -120,7 +119,8 @@ function SongListItem({ current, divider, playButton, onAction }: SongListItemPr
             <ListItemAvatar>
                 <Avatar sx={{
                     backgroundImage: poster,
-                    backgroundSize: 'cover'
+                    backgroundSize: 'cover',
+                    color: '#fff'
                 }}>{typeof playButton === 'function' ? playButton(current) : playButton}</Avatar>
             </ListItemAvatar>
             <ListItemText

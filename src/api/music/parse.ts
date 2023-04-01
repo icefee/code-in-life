@@ -60,7 +60,6 @@ async function getMusic(id: string) {
         )
         const url = parseUrl(html)
         const poster = parsePoster(html)
-        console.log(poster)
         const lrc = await parseLrc(id)
         return {
             url,
