@@ -98,7 +98,7 @@ export default function VideoSearch() {
                                     setSearchTask({
                                         pending: false,
                                         complete: true,
-                                        keyword,
+                                        keyword: parseKeyword(keyword),
                                         success: true,
                                         data
                                     })

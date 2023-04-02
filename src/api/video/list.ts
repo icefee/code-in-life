@@ -14,6 +14,7 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
     catch (err) {
         res.json({
             code: -1,
+            data: null,
             msg: String(err)
         })
     }

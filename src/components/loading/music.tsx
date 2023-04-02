@@ -1,11 +1,12 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, CSSProperties } from 'react';
 import SvgIcon, { SvgIconProps } from '@mui/material/SvgIcon';
+import './music.css';
 
 export interface MusicPlayProps extends SvgIconProps {
     animating?: boolean;
 }
 
-function MusicPlay({ animating = true, ...props }: MusicPlayProps) {
+function MusicPlaySvg({ animating = true, ...props }: MusicPlayProps) {
 
     const svgRef = useRef<SVGSVGElement>()
 
@@ -40,6 +41,43 @@ function MusicPlay({ animating = true, ...props }: MusicPlayProps) {
                 />
             </rect>
         </SvgIcon>
+    )
+}
+
+function MusicPlay({ animating = false }: MusicPlayProps) {
+    return (
+        <div style={{
+            width: '1em',
+            height: '1em',
+            aspectRatio: '1 / 1',
+            color: 'inherit',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-end',
+            '--bar-width': '22%'
+        } as CSSProperties}>
+            <div style={{
+                width: 'var(--bar-width)',
+                height: '100%',
+                backgroundColor: 'currentcolor',
+                animation: '.8s linear .4s infinite alternate none scale-y',
+                animationPlayState: animating ? 'running' : 'paused'
+            }} />
+            <div style={{
+                width: 'var(--bar-width)',
+                height: '100%',
+                backgroundColor: 'currentcolor',
+                animation: '.8s linear -.2s infinite alternate none scale-y',
+                animationPlayState: animating ? 'running' : 'paused'
+            }} />
+            <div style={{
+                width: 'var(--bar-width)',
+                height: '100%',
+                backgroundColor: 'currentcolor',
+                animation: '.8s linear -.4s infinite alternate none scale-y',
+                animationPlayState: animating ? 'running' : 'paused'
+            }} />
+        </div>
     )
 }
 
