@@ -1,7 +1,6 @@
 import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
 import fetch from 'node-fetch';
 import { Api } from '../../util/config';
-import { setCommonHeaders } from '../../util/pipe';
 
 function parsePoster(html: string) {
     const matchBlock = html.match(
@@ -28,7 +27,6 @@ const svg = `<svg t="1677728469768" class="icon" viewBox="0 0 1024 1024" version
 export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
     const { id } = req.query;
     const poster = await getPoster(id);
-    setCommonHeaders(res)
     try {
         if (poster) {
             res.writeHead(301, {

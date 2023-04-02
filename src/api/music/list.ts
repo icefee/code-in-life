@@ -2,7 +2,6 @@ import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
 import fetch from 'node-fetch';
 import { Api } from '../../util/config';
 import { SearchMusic } from '../../components/player/MusicPlayer';
-import { setCommonHeaders } from '../../util/pipe';
 
 async function getMusicSearch(s: string): Promise<SearchMusic[]> {
     const url = `${Api.music}/s/${s}`;
@@ -25,6 +24,7 @@ async function getMusicSearch(s: string): Promise<SearchMusic[]> {
                         id,
                         name: nameBlock[0].trimStart().trimEnd(),
                         artist: artistBlock[0],
+                        url: `${Api.hosting}/api/music/play?id=${id}`,
                         poster: `${Api.hosting}/api/music/poster?id=${id}`
                     }
                 }
@@ -39,8 +39,7 @@ async function getMusicSearch(s: string): Promise<SearchMusic[]> {
 
 export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
     const { s } = req.query;
-    const list = await getMusicSearch(s)
-    setCommonHeaders(res)
+    const list = await getMusicSearch(s);
     if (list) {
         res.json({
             code: 0,

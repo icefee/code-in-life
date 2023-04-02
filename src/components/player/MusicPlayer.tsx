@@ -15,7 +15,7 @@ import LoopIcon from '@mui/icons-material/Loop';
 import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import MusicPoster from './MusicPoster';
-import MusicLrc, { type Lrc } from './MusicLrc';
+import MusicLrc from './MusicLrc';
 import PlayOrPauseButton from './PlayOrPauseButton';
 import { timeFormatter } from '../../util/date';
 import useLocalStorageState from '../hook/useLocalStorageState';
@@ -25,13 +25,8 @@ export interface SearchMusic {
     id: number;
     name: string;
     artist: string;
-    poster: string;
-}
-
-export interface MusicInfo {
     url: string;
     poster: string;
-    lrc?: Lrc[];
 }
 
 export enum RepeatMode {
@@ -40,7 +35,7 @@ export enum RepeatMode {
     Random
 }
 
-export interface PlayingMusic extends SearchMusic, MusicInfo { }
+export interface PlayingMusic extends SearchMusic { }
 
 interface MusicPlayerProps {
     music?: PlayingMusic;
@@ -202,7 +197,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                         <Typography variant="caption" color="#ffffffcc" noWrap>{music?.artist}</Typography>
                     </Stack>
                     {
-                        music?.lrc && (
+                        music && (
                             <Box sx={{
                                 position: 'absolute',
                                 right: 0,
@@ -210,7 +205,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                                 transform: 'translate(0, -50%)',
                                 pr: 1
                             }}>
-                                <MusicLrc lrc={music.lrc} currentTime={currentTime} />
+                                <MusicLrc id={music.id} currentTime={currentTime} />
                             </Box>
                         )
                     }

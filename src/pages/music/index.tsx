@@ -8,7 +8,7 @@ import Slide from '@mui/material/Slide';
 import Typography from '@mui/material/Typography';
 import SearchForm from '../../components/search/Form';
 import { LoadingOverlay } from '../../components/loading';
-import MusicPlayer, { type SearchMusic, type MusicInfo, type PlayingMusic, RepeatMode } from '../../components/player/MusicPlayer';
+import MusicPlayer, { type SearchMusic, type PlayingMusic, RepeatMode } from '../../components/player/MusicPlayer';
 import PlayOrPauseButton from '../../components/player/PlayOrPauseButton';
 import NoData from '../../components/search/NoData';
 import SongList from '../../components/search/SongList';
@@ -29,7 +29,6 @@ export default function MusicSearch() {
     const [activeMusic, setActiveMusic] = useState<PlayingMusic>()
     const [playing, setPlaying] = useState(false)
 
-    const [urlParsing, setUrlParsing] = useState(false)
     const [playlistShow, setPlaylistShow] = useState(false)
     const [repeat, setRepeat] = useLocalStorageState<RepeatMode>('__repeat_mode', RepeatMode.All)
 
@@ -41,19 +40,6 @@ export default function MusicSearch() {
             return;
         }
         setToastMsg(null);
-    }
-
-    const getMusicInfo = async (id: SearchMusic['id']) => {
-        setUrlParsing(true);
-        const musicInfo = await parseMusic(id);
-        if (!musicInfo) {
-            setToastMsg({
-                type: 'error',
-                msg: '解析歌曲失败, 可能是网络连接问题'
-            })
-        }
-        setUrlParsing(false)
-        return musicInfo;
     }
 
     const generateRandomIndex = (max: number, current: number) => {
@@ -114,7 +100,7 @@ export default function MusicSearch() {
         }
     }, [searchTask.success, searchTask.data])
 
-    const downloadSong = (music: SearchMusic & Pick<MusicInfo, 'url'>) => {
+    const downloadSong = (music: SearchMusic) => {
         const searchParams = new URLSearchParams({
             name: encodeURIComponent(`${music.artist}-${music.name}`),
             id: btoa(music.url)
@@ -122,28 +108,6 @@ export default function MusicSearch() {
         window.open(
             `/api/music/download?${searchParams}`
         )
-    }
-
-    const repairParse = async (id: SearchMusic['id']) => {
-        const musicInfo = await parseMusic(id);
-        if (musicInfo) {
-            setActiveMusic(
-                active => ({
-                    ...active,
-                    ...musicInfo
-                })
-            )
-            setPlaylist(
-                list => list.map(
-                    song => song.id === id ? ({
-                        ...song,
-                        ...musicInfo
-                    }) : song
-                )
-            )
-            return true;
-        }
-        return false;
     }
 
     const pageTitle = useMemo(() => {
@@ -232,22 +196,15 @@ export default function MusicSearch() {
                                                                             )
                                                                         }
                                                                         else {
-                                                                            const musicInfo = await getMusicInfo(music.id);
-                                                                            if (musicInfo) {
-                                                                                const playIndex = playlist.data.findIndex(
-                                                                                    m => m.id === music.id
-                                                                                )
-                                                                                if (playIndex === -1) {
-                                                                                    const nextPlay = {
-                                                                                        ...music,
-                                                                                        ...musicInfo
-                                                                                    }
-                                                                                    setActiveMusic(nextPlay)
-                                                                                    setPlaylist(list => [nextPlay, ...list])
-                                                                                }
-                                                                                else {
-                                                                                    setActiveMusic(playlist.data[playIndex])
-                                                                                }
+                                                                            const playIndex = playlist.data.findIndex(
+                                                                                m => m.id === music.id
+                                                                            )
+                                                                            if (playIndex === -1) {
+                                                                                setActiveMusic(music)
+                                                                                setPlaylist(list => [music, ...list])
+                                                                            }
+                                                                            else {
+                                                                                setActiveMusic(playlist.data[playIndex])
                                                                             }
                                                                         }
                                                                     }
@@ -269,32 +226,22 @@ export default function MusicSearch() {
                                                         })
                                                         return;
                                                     }
-                                                    const musicInfo = await getMusicInfo(music.id);
-                                                    if (musicInfo) {
-                                                        switch (cmd) {
-                                                            case 'add':
-                                                                const nextPlay = {
-                                                                    ...music,
-                                                                    ...musicInfo
-                                                                }
-                                                                setPlaylist(list => [...list, nextPlay])
-                                                                if (playlist.data.length === 0) {
-                                                                    setActiveMusic(nextPlay)
-                                                                }
-                                                                setToastMsg({
-                                                                    type: 'success',
-                                                                    msg: '已加入播放列表'
-                                                                })
-                                                                break;
-                                                            case 'download':
-                                                                downloadSong({
-                                                                    ...music,
-                                                                    url: musicInfo.url
-                                                                })
-                                                                break;
-                                                            default:
-                                                                break;
-                                                        }
+                                                    switch (cmd) {
+                                                        case 'add':
+                                                            setPlaylist(list => [...list, music])
+                                                            if (playlist.data.length === 0) {
+                                                                setActiveMusic(music)
+                                                            }
+                                                            setToastMsg({
+                                                                type: 'success',
+                                                                msg: '已加入播放列表'
+                                                            })
+                                                            break;
+                                                        case 'download':
+                                                            downloadSong(music)
+                                                            break;
+                                                        default:
+                                                            break;
                                                     }
                                                 }
                                             }
@@ -304,13 +251,6 @@ export default function MusicSearch() {
                                     <NoData text='💔 没有找到相关的音乐, 换个关键词试试吧' />
                                 )
                             }
-                            <LoadingOverlay
-                                open={urlParsing}
-                                label="地址解析中.."
-                                withBackground
-                                withoutBackdrop
-                                labelColor="#fff"
-                            />
                         </Box>
                     ) : (
                         !searchTask.pending && (
@@ -349,12 +289,8 @@ export default function MusicSearch() {
                                     if (!end) {
                                         setToastMsg({
                                             type: 'error',
-                                            msg: `“${activeMusic.name}”播放错误, 正在重新解析..`
+                                            msg: `“${activeMusic.name}”播放错误`
                                         })
-                                        const repair = await repairParse(activeMusic.id)
-                                        if (repair) {
-                                            return;
-                                        }
                                     }
                                     const playIndex = playlist.data.findIndex(
                                         music => music.id === activeMusic.id
@@ -449,25 +385,6 @@ async function getSearch(s: string): Promise<SearchMusic[] | null> {
         }
         else {
             throw new Error('search failed');
-        }
-    }
-    catch (err) {
-        return null;
-    }
-}
-
-async function parseMusic<T extends MusicInfo = MusicInfo>(id: number): Promise<T | null> {
-    try {
-        const { code, data } = await fetch(
-            `/api/music/parse?id=${id}`
-        ).then<ApiJsonType<T>>(
-            response => response.json()
-        );
-        if (code === 0) {
-            return data;
-        }
-        else {
-            throw new Error('url parse error');
         }
     }
     catch (err) {
