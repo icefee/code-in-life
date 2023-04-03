@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Typography from '@mui/material/Typography';
 
 interface Lrc {
@@ -13,7 +13,7 @@ interface MusicLrcProps {
 
 async function downloadLrc(id: MusicLrcProps['id']): Promise<Lrc[] | null> {
     try {
-        const { code, data } = await fetch('/api/music/lrc?id=' + id).then<ApiJsonType<Lrc[]>>(
+        const { code, data } = await fetch(`/api/music/lrc/${id}`).then<ApiJsonType<Lrc[]>>(
             response => response.json()
         )
         if (code === 0) {
@@ -32,14 +32,21 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
 
     const [lrc, setLrc] = useState<Lrc[]>([])
     const [downloading, setDownloading] = useState(false)
+    const lrcCache = useRef(new Map<number, Lrc[]>())
 
     const getLrc = async (id: MusicLrcProps['id']) => {
-        setDownloading(true)
-        const data = await downloadLrc(id)
-        if (data) {
-            setLrc(data)
+        if (lrcCache.current.has(id)) {
+            setLrc(lrcCache.current.get(id))
         }
-        setDownloading(false)
+        else {
+            setDownloading(true)
+            const data = await downloadLrc(id)
+            if (data) {
+                setLrc(data)
+                lrcCache.current.set(id, data)
+            }
+            setDownloading(false)
+        }
     }
 
     useEffect(() => {

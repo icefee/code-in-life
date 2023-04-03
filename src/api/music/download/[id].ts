@@ -1,15 +1,11 @@
 import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
 import fetch from 'node-fetch';
+import { Api } from '../../../util/config';
 
 export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
-    const { id, name } = req.query;
-    const parsedUrl = Buffer.from(id, 'base64').toString('utf-8');
-    const url = new URL(parsedUrl);
-    const response = await fetch(url, {
-        headers: {
-            Referer: url.origin
-        }
-    });
+    const { id } = req.params;
+    const { name } = req.query;
+    const response = await fetch(`${Api.hosting}/api/music/play/${id}`);
     const headers = response.headers;
     const contentType = headers.get('Content-Type');
     if (contentType === 'text/html') {

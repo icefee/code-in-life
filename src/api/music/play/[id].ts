@@ -1,6 +1,6 @@
 import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
 import fetch from 'node-fetch';
-import { Api } from '../../util/config';
+import { Api } from '../../../util/config';
 
 async function parseMusicUrl(id: string) {
     try {
@@ -18,7 +18,7 @@ async function parseMusicUrl(id: string) {
 }
 
 export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
-    const { id } = req.query;
+    const { id } = req.params;
     const url = await parseMusicUrl(id);
     if (url) {
         res.writeHead(301, {

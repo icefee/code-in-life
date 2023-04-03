@@ -1,20 +1,6 @@
 import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
 import fetch from 'node-fetch';
-import { Api } from '../../util/config';
-
-function parseUrl(html: string) {
-    const matchBlock = html.match(
-        /const url = 'https?:\/\/[^']+'/
-    )
-    return matchBlock[0].match(/https?:\/\/[^']+/)[0]
-}
-
-function parsePoster(html: string) {
-    const matchBlock = html.match(
-        /cover:\s'https?:\/\/[^']+'/
-    )
-    return matchBlock ? matchBlock[0].match(/https?:\/\/[^']+/)[0] : null
-}
+import { Api } from '../../../util/config';
 
 function toPrecision(n: number) {
     return Math.round((n * 100)) / 100;
@@ -52,32 +38,13 @@ async function parseLrc(id: string) {
     }
 }
 
-async function getMusic(id: string) {
-    try {
-        const html = await fetch(`${Api.music}/music/${id}`).then(
-            response => response.text()
-        )
-        const url = parseUrl(html)
-        const poster = parsePoster(html)
-        const lrc = await parseLrc(id)
-        return {
-            url,
-            poster: poster ?? '/poster.svg',
-            lrc
-        }
-    }
-    catch (err) {
-        return null
-    }
-}
-
 export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
-    const { id } = req.query;
-    const music = await getMusic(id);
-    if (music) {
+    const { id } = req.params;
+    const lrc = await parseLrc(id);
+    if (lrc) {
         res.json({
             code: 0,
-            data: music,
+            data: lrc,
             msg: '成功'
         })
     }

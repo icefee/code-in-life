@@ -100,13 +100,12 @@ export default function MusicSearch() {
         }
     }, [searchTask.success, searchTask.data])
 
-    const downloadSong = (music: SearchMusic) => {
+    const downloadSong = ({ id, name, artist }: SearchMusic) => {
         const searchParams = new URLSearchParams({
-            name: encodeURIComponent(`${music.artist}-${music.name}`),
-            id: btoa(music.url)
-        });
+            name: encodeURIComponent(`${artist}-${name}`)
+        })
         window.open(
-            `/api/music/download?${searchParams}`
+            `/api/music/download/${id}?${searchParams}`
         )
     }
 

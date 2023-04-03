@@ -150,7 +150,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                 }
             })} justifyContent="center" alignItems="center" flexShrink={0}>
                 <MusicPoster
-                    alt={music ? `${music.name}-${music.artist}` : null}
+                    alt={music ? `${music.artist}-${music.name}` : null}
                     src={music?.poster}
                     spinning={playing && !loading}
                 />
