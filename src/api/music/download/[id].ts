@@ -4,7 +4,6 @@ import { Api } from '../../../util/config';
 
 export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
     const { id } = req.params;
-    const { name } = req.query;
     const response = await fetch(`${Api.hosting}/api/music/play/${id}`);
     const headers = response.headers;
     const contentType = headers.get('Content-Type');
@@ -16,6 +15,7 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
     }
     else {
         res.setHeader('Content-Type', headers.get('Content-Type'));
+        const { name } = req.query;
         if (name) {
             res.setHeader('Content-Disposition', `attachment; filename* = UTF-8''${name}.mp3`);
         }
