@@ -54,7 +54,7 @@ function MusicPlay({ animating = false }: MusicPlayProps) {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'flex-end',
-            '--bar-width': '22%'
+            '--bar-width': '15%'
         } as CSSProperties}>
             <div style={{
                 width: 'var(--bar-width)',
@@ -67,14 +67,21 @@ function MusicPlay({ animating = false }: MusicPlayProps) {
                 width: 'var(--bar-width)',
                 height: '100%',
                 backgroundColor: 'currentcolor',
-                animation: '.8s linear -.2s infinite alternate none scale-y',
+                animation: '.8s linear 0s infinite alternate none scale-y',
                 animationPlayState: animating ? 'running' : 'paused'
             }} />
             <div style={{
                 width: 'var(--bar-width)',
                 height: '100%',
                 backgroundColor: 'currentcolor',
-                animation: '.8s linear -.4s infinite alternate none scale-y',
+                animation: '.8s linear .2s infinite alternate none scale-y',
+                animationPlayState: animating ? 'running' : 'paused'
+            }} />
+            <div style={{
+                width: 'var(--bar-width)',
+                height: '100%',
+                backgroundColor: 'currentcolor',
+                animation: '.8s linear -.3s infinite alternate none scale-y',
                 animationPlayState: animating ? 'running' : 'paused'
             }} />
         </div>
