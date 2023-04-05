@@ -2,14 +2,12 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Stack from '@mui/material/Stack';
 import Snackbar from '@mui/material/Snackbar';
 import Alert, { AlertProps } from '@mui/material/Alert';
-import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
 import Slide from '@mui/material/Slide';
 import Typography from '@mui/material/Typography';
 import SearchForm from '../../components/search/Form';
 import { LoadingOverlay } from '../../components/loading';
 import MusicPlayer, { type SearchMusic, type PlayingMusic, RepeatMode } from '../../components/player/MusicPlayer';
-import PlayOrPauseButton from '../../components/player/PlayOrPauseButton';
 import NoData from '../../components/search/NoData';
 import SongList from '../../components/search/SongList';
 import MusicPlayList from '../../components/player/MusicPlayList';
@@ -180,37 +178,29 @@ export default function MusicSearch() {
                                     })} ref={songListWrapRef}>
                                         <SongList
                                             data={searchTask.data}
-                                            playButton={
-                                                (music) => {
-                                                    const isCurrentPlaying = activeMusic && activeMusic.id === music.id && playing;
-                                                    return (
-                                                        <Tooltip title={isCurrentPlaying ? '暂停当前播放的音乐' : '试听歌曲'}>
-                                                            <PlayOrPauseButton
-                                                                playing={isCurrentPlaying}
-                                                                onTogglePlay={
-                                                                    async () => {
-                                                                        if (activeMusic && music.id === activeMusic.id) {
-                                                                            setPlaying(
-                                                                                state => !state
-                                                                            )
-                                                                        }
-                                                                        else {
-                                                                            const playIndex = playlist.data.findIndex(
-                                                                                m => m.id === music.id
-                                                                            )
-                                                                            if (playIndex === -1) {
-                                                                                setActiveMusic(music)
-                                                                                setPlaylist(list => [music, ...list])
-                                                                            }
-                                                                            else {
-                                                                                setActiveMusic(playlist.data[playIndex])
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-                                                            />
-                                                        </Tooltip>
-                                                    )
+                                            isCurrentPlaying={(music: SearchMusic) => ({
+                                                isCurrent: activeMusic && activeMusic.id === music.id,
+                                                playing
+                                            })}
+                                            onTogglePlay={
+                                                async (music: SearchMusic) => {
+                                                    if (activeMusic && music.id === activeMusic.id) {
+                                                        setPlaying(
+                                                            state => !state
+                                                        )
+                                                    }
+                                                    else {
+                                                        const playIndex = playlist.data.findIndex(
+                                                            m => m.id === music.id
+                                                        )
+                                                        if (playIndex === -1) {
+                                                            setActiveMusic(music)
+                                                            setPlaylist(list => [music, ...list])
+                                                        }
+                                                        else {
+                                                            setActiveMusic(playlist.data[playIndex])
+                                                        }
+                                                    }
                                                 }
                                             }
                                             onAction={
