@@ -103,8 +103,11 @@ function MusicPlayList({ data, onChange, current, playing, onPlay, onTogglePlay,
                                                     case 'pin':
                                                         pinToTop(music);
                                                         break;
-                                                    case 'search':
+                                                    case 'search-artist':
                                                         onSearch?.(music.artist)
+                                                        break;
+                                                    case 'search-name':
+                                                        onSearch?.(music.name)
                                                         break;
                                                     case 'download':
                                                         onDownload?.(music);
@@ -128,7 +131,7 @@ function MusicPlayList({ data, onChange, current, playing, onPlay, onTogglePlay,
     )
 }
 
-type MenuAction = 'pin' | 'search' | 'download' | 'remove';
+type MenuAction = 'pin' | 'search-artist' | 'search-name' | 'download' | 'remove';
 
 interface PlayListItemProps {
     music: PlayingMusic;
@@ -198,11 +201,17 @@ function PlayListItem({ music, playing, isCurrent, divider, onAction, onClick }:
                             </ListItemIcon>
                             <ListItemText>置顶</ListItemText>
                         </MenuItem>
-                        <MenuItem onClick={handleMenuAction('search')}>
+                        <MenuItem onClick={handleMenuAction('search-artist')}>
                             <ListItemIcon>
                                 <SearchIcon />
                             </ListItemIcon>
                             <ListItemText>搜索“{music.artist}”</ListItemText>
+                        </MenuItem>
+                        <MenuItem onClick={handleMenuAction('search-name')}>
+                            <ListItemIcon>
+                                <SearchIcon />
+                            </ListItemIcon>
+                            <ListItemText>搜索“{music.name}”</ListItemText>
                         </MenuItem>
                         <MenuItem onClick={handleMenuAction('download')}>
                             <ListItemIcon>
@@ -227,10 +236,15 @@ function PlayListItem({ music, playing, isCurrent, divider, onAction, onClick }:
                     height: 45,
                     mr: 2
                 }}>
-                    <MusicPoster
-                        src={music.poster}
-                        alt={`${music.name}-${music.artist}`}
-                    />
+                    <Box sx={{
+                        height: '100%',
+                        opacity: isCurrent ? .75 : 1
+                    }}>
+                        <MusicPoster
+                            src={music.poster}
+                            alt={`${music.name}-${music.artist}`}
+                        />
+                    </Box>
                     {
                         isCurrent && (
                             <Box sx={{
