@@ -2,11 +2,11 @@ import React, { useEffect, useRef, CSSProperties } from 'react';
 import SvgIcon, { SvgIconProps } from '@mui/material/SvgIcon';
 import './music.css';
 
-export interface MusicPlayProps extends SvgIconProps {
+interface MusicPlaySvgProps extends SvgIconProps {
     animating?: boolean;
 }
 
-function MusicPlaySvg({ animating = true, ...props }: MusicPlayProps) {
+function MusicPlaySvg({ animating = true, ...props }: MusicPlaySvgProps) {
 
     const svgRef = useRef<SVGSVGElement>()
 
@@ -44,7 +44,12 @@ function MusicPlaySvg({ animating = true, ...props }: MusicPlayProps) {
     )
 }
 
-function MusicPlay({ animating = false }: MusicPlayProps) {
+interface MusicPlayProps {
+    animating?: boolean;
+    fontSize: number;
+}
+
+function MusicPlay({ animating = false, fontSize = 18 }: MusicPlayProps) {
 
     const bars = [
         .4,
@@ -62,6 +67,7 @@ function MusicPlay({ animating = false }: MusicPlayProps) {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'flex-end',
+            fontSize,
             '--bar-width': '15%'
         } as CSSProperties}>
             {
