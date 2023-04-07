@@ -136,7 +136,6 @@ function SongListItem({ current, divider, isCurrentPlaying, onTogglePlay, onActi
                             }}>
                                 <MusicPlayIcon
                                     animating={playing}
-                                    fontSize={20}
                                 />
                             </Box>
                         )

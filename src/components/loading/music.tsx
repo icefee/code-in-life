@@ -46,7 +46,7 @@ function MusicPlaySvg({ animating = true, ...props }: MusicPlaySvgProps) {
 
 interface MusicPlayProps {
     animating?: boolean;
-    fontSize: number;
+    fontSize?: number;
 }
 
 function MusicPlay({ animating = false, fontSize = 18 }: MusicPlayProps) {

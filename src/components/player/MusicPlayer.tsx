@@ -147,16 +147,20 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                     width: 72
                 }
             })} justifyContent="center" alignItems="center" flexShrink={0}>
-                <Box sx={{
-                    height: '100%',
-                    opacity: .75
-                }}>
-                    <MusicPoster
-                        alt={music ? `${music.name}-${music.artist}` : null}
-                        src={music?.poster}
-                        spinning={playing && !loading}
-                    />
-                </Box>
+                {
+                    music && (
+                        <Box sx={{
+                            height: '100%',
+                            opacity: .75
+                        }}>
+                            <MusicPoster
+                                alt={`${music.name}-${music.artist}`}
+                                src={music.poster}
+                                spinning={playing && !loading}
+                            />
+                        </Box>
+                    )
+                }
                 <Box sx={{
                     position: 'absolute',
                     left: '50%',

@@ -255,7 +255,6 @@ function PlayListItem({ music, playing, isCurrent, divider, onAction, onClick }:
                             }}>
                                 <MusicPlayIcon
                                     animating={playing}
-                                    fontSize={20}
                                 />
                             </Box>
                         )
