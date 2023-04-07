@@ -14,25 +14,25 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PublishIcon from '@mui/icons-material/Publish';
 import DownloadIcon from '@mui/icons-material/Download';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import { type PlayingMusic } from './MusicPlayer';
+import { type SearchMusic } from './MusicPlayer';
 import { DarkThemed } from '../../components/theme';
 import MusicPoster from './MusicPoster';
 import MusicPlayIcon from '../../components/loading/music';
 
 interface MusicPlayListProps {
-    data: PlayingMusic[];
-    onChange: React.Dispatch<React.SetStateAction<PlayingMusic[]>>;
-    current: PlayingMusic;
+    data: SearchMusic[];
+    onChange: React.Dispatch<React.SetStateAction<SearchMusic[]>>;
+    current: SearchMusic;
     playing: boolean;
-    onPlay(music: PlayingMusic): void;
+    onPlay(music: SearchMusic): void;
     onTogglePlay?: VoidFunction;
-    onDownload?(music: PlayingMusic): void;
+    onDownload?(music: SearchMusic): void;
     onSearch?(keyword: string): void;
 }
 
 function MusicPlayList({ data, onChange, current, playing, onPlay, onTogglePlay, onSearch, onDownload }: MusicPlayListProps) {
 
-    const pinToTop = (music: PlayingMusic) => {
+    const pinToTop = (music: SearchMusic) => {
         onChange(
             list => [
                 music,
@@ -43,7 +43,7 @@ function MusicPlayList({ data, onChange, current, playing, onPlay, onTogglePlay,
         )
     }
 
-    const removeSong = (music: PlayingMusic) => {
+    const removeSong = (music: SearchMusic) => {
         if (music.id === current.id) {
             if (data.length > 1) {
                 const playIndex = data.findIndex(
@@ -98,7 +98,7 @@ function MusicPlayList({ data, onChange, current, playing, onPlay, onTogglePlay,
                                             }
                                         }
                                         onAction={
-                                            (cmd: MenuAction, music: PlayingMusic) => {
+                                            (cmd: MenuAction, music: SearchMusic) => {
                                                 switch (cmd) {
                                                     case 'pin':
                                                         pinToTop(music);
@@ -134,12 +134,12 @@ function MusicPlayList({ data, onChange, current, playing, onPlay, onTogglePlay,
 type MenuAction = 'pin' | 'search-artist' | 'search-name' | 'download' | 'remove';
 
 interface PlayListItemProps {
-    music: PlayingMusic;
+    music: SearchMusic;
     playing: boolean;
     isCurrent: boolean;
     divider: boolean;
     onClick: React.MouseEventHandler<HTMLDivElement>;
-    onAction(cmd: MenuAction, music: PlayingMusic): void;
+    onAction(cmd: MenuAction, music: SearchMusic): void;
 }
 
 function PlayListItem({ music, playing, isCurrent, divider, onAction, onClick }: PlayListItemProps) {

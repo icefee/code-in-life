@@ -7,7 +7,7 @@ import Slide from '@mui/material/Slide';
 import Typography from '@mui/material/Typography';
 import SearchForm from '../../components/search/Form';
 import { LoadingOverlay } from '../../components/loading';
-import MusicPlayer, { type SearchMusic, type PlayingMusic, RepeatMode } from '../../components/player/MusicPlayer';
+import MusicPlayer, { type SearchMusic, RepeatMode } from '../../components/player/MusicPlayer';
 import NoData from '../../components/search/NoData';
 import SongList from '../../components/search/SongList';
 import MusicPlayList from '../../components/player/MusicPlayList';
@@ -24,13 +24,13 @@ export default function MusicSearch() {
         success: false
     })
 
-    const [activeMusic, setActiveMusic] = useState<PlayingMusic>()
+    const [activeMusic, setActiveMusic] = useState<SearchMusic>()
     const [playing, setPlaying] = useState(false)
 
     const [playlistShow, setPlaylistShow] = useState(false)
     const [repeat, setRepeat] = useLocalStorageState<RepeatMode>('__repeat_mode', RepeatMode.All)
 
-    const [playlist, setPlaylist] = useLocalStorageState<PlayingMusic[]>('__playlist', [])
+    const [playlist, setPlaylist] = useLocalStorageState<SearchMusic[]>('__playlist', [])
     const songListWrapRef = useRef<HTMLDivElement>()
 
     const handleClose = (_event?: React.SyntheticEvent | Event, reason?: string) => {

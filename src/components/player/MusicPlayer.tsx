@@ -35,10 +35,8 @@ export enum RepeatMode {
     Random
 }
 
-export interface PlayingMusic extends SearchMusic { }
-
 interface MusicPlayerProps {
-    music?: PlayingMusic;
+    music?: SearchMusic;
     playing: boolean;
     repeat: RepeatMode;
     onRepeatChange(mode: RepeatMode): void;
