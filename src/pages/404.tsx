@@ -50,8 +50,7 @@ const Page404 = () => (
                 }}>
                     <img
                         alt="page not found"
-                        src={`${Api.staticAsset}/assets/page_not_found.svg`}
-                        // priority
+                        src={`${Api.assetUrl}/assets/page_not_found.svg`}
                         width={537}
                         height={292}
                         style={{

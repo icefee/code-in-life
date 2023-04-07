@@ -45,6 +45,14 @@ function MusicPlaySvg({ animating = true, ...props }: MusicPlayProps) {
 }
 
 function MusicPlay({ animating = false }: MusicPlayProps) {
+
+    const bars = [
+        .4,
+        -.4,
+        -.2,
+        -.5
+    ];
+
     return (
         <div style={{
             width: '1em',
@@ -56,34 +64,19 @@ function MusicPlay({ animating = false }: MusicPlayProps) {
             alignItems: 'flex-end',
             '--bar-width': '15%'
         } as CSSProperties}>
-            <div style={{
-                width: 'var(--bar-width)',
-                height: '100%',
-                backgroundColor: 'currentcolor',
-                animation: '.8s linear .4s infinite alternate none scale-y',
-                animationPlayState: animating ? 'running' : 'paused'
-            }} />
-            <div style={{
-                width: 'var(--bar-width)',
-                height: '100%',
-                backgroundColor: 'currentcolor',
-                animation: '.8s linear -.4s infinite alternate none scale-y',
-                animationPlayState: animating ? 'running' : 'paused'
-            }} />
-            <div style={{
-                width: 'var(--bar-width)',
-                height: '100%',
-                backgroundColor: 'currentcolor',
-                animation: '.8s linear -.2s infinite alternate none scale-y',
-                animationPlayState: animating ? 'running' : 'paused'
-            }} />
-            <div style={{
-                width: 'var(--bar-width)',
-                height: '100%',
-                backgroundColor: 'currentcolor',
-                animation: '.8s linear -.5s infinite alternate none scale-y',
-                animationPlayState: animating ? 'running' : 'paused'
-            }} />
+            {
+                bars.map(
+                    (delay, index) => (
+                        <div style={{
+                            width: 'var(--bar-width)',
+                            height: '100%',
+                            backgroundColor: 'currentcolor',
+                            animation: `.8s linear ${delay}s infinite alternate none scale-y`,
+                            animationPlayState: animating ? 'running' : 'paused'
+                        }} key={index} />
+                    )
+                )
+            }
         </div>
     )
 }

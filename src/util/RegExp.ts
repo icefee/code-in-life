@@ -17,7 +17,7 @@ export namespace M3u8 {
 export namespace Video {
 
     export function isVideoUrl(url: string) {
-        return M3u8.isM3u8Url(url) || /\.(mp4|ogg)$/.test(url);
+        return M3u8.isM3u8Url(url) || /\.(mp4|ogg|webm)$/.test(url);
     }
 }
 
