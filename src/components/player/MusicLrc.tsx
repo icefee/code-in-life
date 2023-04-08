@@ -75,6 +75,15 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
         }
         return '';
     }, [downloading, lrc, currentTime])
+
+    const placeholder = (text: string) => (
+        <Box sx={{
+            p: 2
+        }}>
+            <Typography variant="subtitle2">{text}</Typography>
+        </Box>
+    )
+
     return (
         <>
             <Box sx={{
@@ -105,18 +114,12 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                 }}
             >
                 {
-                    downloading ? (
-                        <Box sx={{
-                            p: 2
-                        }}>
-                            <Typography variant="subtitle2">{downloadingPlaceholder}</Typography>
-                        </Box>
-                    ) : (
+                    downloading ? placeholder(downloadingPlaceholder) : lrc.length > 0 ? (
                         <ScrollingLrc
                             lrc={lrc}
                             currentTime={currentTime}
                         />
-                    )
+                    ) : placeholder('暂无可用歌词')
                 }
             </Popover>
         </>
