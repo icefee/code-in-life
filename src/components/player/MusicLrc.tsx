@@ -77,13 +77,16 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
     }, [downloading, lrc, currentTime])
     return (
         <>
-            <Typography sx={{
+            <Box sx={{
+                p: 1,
                 cursor: 'pointer'
             }} onClick={
-                (event: React.MouseEvent<HTMLButtonElement>) => {
+                (event: React.MouseEvent<HTMLDivElement>) => {
                     setAnchorEl(event.currentTarget);
                 }
-            } variant="caption" display="block" maxWidth={250} noWrap>{lrcLine}</Typography>
+            }>
+                <Typography variant="caption" display="block" maxWidth={250} noWrap>{lrcLine}</Typography>
+            </Box>
             <Popover
                 open={Boolean(anchorEl)}
                 anchorEl={anchorEl}
@@ -94,7 +97,11 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                 }}
                 transformOrigin={{
                     vertical: 'bottom',
-                    horizontal: 'center',
+                    horizontal: 'right',
+                }}
+                PaperProps={{
+                    elevation: 0,
+                    variant: 'outlined'
                 }}
             >
                 {
@@ -143,7 +150,7 @@ function ScrollingLrc({ lrc, currentTime }: ScrollingLrcProps) {
                 overflow: 'hidden',
                 '&::before': {
                     content: '""',
-                    background: (theme) => `linear-gradient(0deg, transparent, ${theme.palette.background.default})`,
+                    background: (theme) => `linear-gradient(0deg, transparent, ${theme.palette.background.paper})`,
                     position: 'absolute',
                     left: 0,
                     top: 0,
@@ -153,7 +160,7 @@ function ScrollingLrc({ lrc, currentTime }: ScrollingLrcProps) {
                 },
                 '&::after': {
                     content: '""',
-                    background: (theme) => `linear-gradient(0deg, ${theme.palette.background.default}, transparent)`,
+                    background: (theme) => `linear-gradient(0deg, ${theme.palette.background.paper}, transparent)`,
                     position: 'absolute',
                     left: 0,
                     bottom: 0,

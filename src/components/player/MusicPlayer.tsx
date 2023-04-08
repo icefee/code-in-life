@@ -143,6 +143,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                 aspectRatio: '1 / 1',
                 color: '#fff',
                 borderRadius: '50%',
+                flexShrink: 0,
                 [theme.breakpoints.up('sm')]: {
                     width: 72
                 }
@@ -203,19 +204,6 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                     <Stack>
                         <Typography variant="caption" color="#ffffffcc" noWrap>{music?.artist}</Typography>
                     </Stack>
-                    {
-                        music && (
-                            <Box sx={{
-                                position: 'absolute',
-                                right: 0,
-                                top: '50%',
-                                transform: 'translate(0, -50%)',
-                                pr: 1
-                            }}>
-                                <MusicLrc id={music.id} currentTime={currentTime} />
-                            </Box>
-                        )
-                    }
                 </Stack>
                 <Stack direction="row" alignItems="center">
                     <Typography variant="button">{timeFormatter(currentTime)} / {duration ? timeFormatter(duration) : '--:--'}</Typography>
@@ -375,6 +363,18 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                     </Tooltip>
                 </Stack>
             </Stack>
+            {
+                music && (
+                    <Box sx={{
+                        position: 'absolute',
+                        top: 0,
+                        right: 0,
+                        zIndex: 18
+                    }}>
+                        <MusicLrc id={music.id} currentTime={currentTime} />
+                    </Box>
+                )
+            }
             {
                 music && (
                     <audio
