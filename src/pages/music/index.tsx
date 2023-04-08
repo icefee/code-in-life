@@ -98,12 +98,21 @@ export default function MusicSearch() {
         }
     }, [searchTask.success, searchTask.data])
 
-    const downloadSong = ({ id, name, artist }: SearchMusic) => {
-        const searchParams = new URLSearchParams({
+    const generateSearchParams = ({ name, artist }: SearchMusic) => {
+        return new URLSearchParams({
             name: encodeURIComponent(`${artist}-${name}`)
         })
+    }
+
+    const downloadSong = (music: SearchMusic) => {
         window.open(
-            `/api/music/download/${id}?${searchParams}`
+            `/api/music/download/${music.id}?${generateSearchParams(music)}`
+        )
+    }
+
+    const downloadLrc = (music: SearchMusic) => {
+        window.open(
+            `/api/music/lrc/download/${music.id}?${generateSearchParams(music)}`
         )
     }
 
@@ -226,8 +235,11 @@ export default function MusicSearch() {
                                                                 msg: '已加入播放列表'
                                                             })
                                                             break;
-                                                        case 'download':
+                                                        case 'download-song':
                                                             downloadSong(music)
+                                                            break;
+                                                        case 'download-lrc':
+                                                            downloadLrc(music)
                                                             break;
                                                         default:
                                                             break;

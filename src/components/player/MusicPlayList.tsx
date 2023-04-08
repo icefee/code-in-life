@@ -9,7 +9,8 @@ import ListSubheader from '@mui/material/ListSubheader';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import SearchIcon from '@mui/icons-material/Search';
+import ManageSearchOutlinedIcon from '@mui/icons-material/ManageSearchOutlined';
+import PersonSearchOutlinedIcon from '@mui/icons-material/PersonSearchOutlined';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PublishIcon from '@mui/icons-material/Publish';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -203,13 +204,13 @@ function PlayListItem({ music, playing, isCurrent, divider, onAction, onClick }:
                         </MenuItem>
                         <MenuItem onClick={handleMenuAction('search-artist')}>
                             <ListItemIcon>
-                                <SearchIcon />
+                                <PersonSearchOutlinedIcon />
                             </ListItemIcon>
                             <ListItemText>搜索“{music.artist}”</ListItemText>
                         </MenuItem>
                         <MenuItem onClick={handleMenuAction('search-name')}>
                             <ListItemIcon>
-                                <SearchIcon />
+                                <ManageSearchOutlinedIcon />
                             </ListItemIcon>
                             <ListItemText>搜索“{music.name}”</ListItemText>
                         </MenuItem>

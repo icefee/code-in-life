@@ -14,7 +14,7 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
         })
     }
     else {
-        res.setHeader('Content-Type', headers.get('Content-Type'));
+        res.setHeader('Content-Type', contentType);
         const { name } = req.query;
         if (name) {
             res.setHeader('Content-Disposition', `attachment; filename* = UTF-8''${name}.mp3`);

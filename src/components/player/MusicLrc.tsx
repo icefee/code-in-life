@@ -1,4 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import Popover from '@mui/material/Popover';
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 interface Lrc {
@@ -33,6 +36,11 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
     const [lrc, setLrc] = useState<Lrc[]>([])
     const [downloading, setDownloading] = useState(false)
     const lrcCache = useRef(new Map<number, Lrc[]>())
+    const [anchorEl, setAnchorEl] = useState<HTMLSpanElement | null>(null);
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    }
 
     const getLrc = async (id: MusicLrcProps['id']) => {
         if (lrcCache.current.has(id)) {
@@ -53,9 +61,11 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
         getLrc(id)
     }, [id])
 
+    const downloadingPlaceholder = '正在下载歌词..';
+
     const lrcLine = useMemo(() => {
         if (downloading) {
-            return '正在下载歌词..'
+            return downloadingPlaceholder
         }
         const playedLines = lrc.filter(
             ({ time }) => time <= currentTime
@@ -66,7 +76,111 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
         return '';
     }, [downloading, lrc, currentTime])
     return (
-        <Typography variant="caption" display="block" maxWidth={250} noWrap>{lrcLine}</Typography>
+        <>
+            <Typography sx={{
+                cursor: 'pointer'
+            }} onClick={
+                (event: React.MouseEvent<HTMLButtonElement>) => {
+                    setAnchorEl(event.currentTarget);
+                }
+            } variant="caption" display="block" maxWidth={250} noWrap>{lrcLine}</Typography>
+            <Popover
+                open={Boolean(anchorEl)}
+                anchorEl={anchorEl}
+                onClose={handleClose}
+                anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                transformOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                }}
+            >
+                {
+                    downloading ? (
+                        <Box sx={{
+                            p: 2
+                        }}>
+                            <Typography variant="subtitle2">{downloadingPlaceholder}</Typography>
+                        </Box>
+                    ) : (
+                        <ScrollingLrc
+                            lrc={lrc}
+                            currentTime={currentTime}
+                        />
+                    )
+                }
+            </Popover>
+        </>
+    )
+}
+
+interface ScrollingLrcProps extends Pick<MusicLrcProps, 'currentTime'> {
+    lrc: Lrc[];
+}
+
+function ScrollingLrc({ lrc, currentTime }: ScrollingLrcProps) {
+
+    const activeIndex = useMemo(() => {
+        const matchIndex = lrc.findIndex(
+            l => l.time > currentTime
+        )
+        if (matchIndex > -1) {
+            return matchIndex - 1
+        }
+        return lrc.length - 1;
+    }, [lrc, currentTime])
+
+    return (
+        <Box sx={{
+            height: '40vh',
+            p: 1.5
+        }}>
+            <Box sx={{
+                position: 'relative',
+                height: '100%',
+                overflow: 'hidden',
+                '&::before': {
+                    content: '""',
+                    background: (theme) => `linear-gradient(0deg, transparent, ${theme.palette.background.default})`,
+                    position: 'absolute',
+                    left: 0,
+                    top: 0,
+                    right: 0,
+                    height: 96,
+                    zIndex: 2
+                },
+                '&::after': {
+                    content: '""',
+                    background: (theme) => `linear-gradient(0deg, ${theme.palette.background.default}, transparent)`,
+                    position: 'absolute',
+                    left: 0,
+                    bottom: 0,
+                    right: 0,
+                    height: 96,
+                    zIndex: 2
+                }
+            }}>
+                <Box sx={{
+                    transition: (theme) => theme.transitions.create('transform'),
+                    transform: `translate(0, calc(20vh - 24px - ${28 * activeIndex}px))`
+                }}>
+                    {
+                        lrc.map(
+                            ({ text }, index) => (
+                                <Stack sx={{
+                                    height: 28,
+                                    color: activeIndex === index ? 'primary.main' : 'text.primary'
+                                }} alignItems="center" justifyContent="center" key={index}>
+                                    <Typography variant="subtitle2" color="inherit">{text}</Typography>
+                                </Stack>
+                            )
+                        )
+                    }
+                </Box>
+            </Box>
+        </Box>
     )
 }
 

@@ -11,11 +11,12 @@ import MenuItem from '@mui/material/MenuItem';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import DownloadIcon from '@mui/icons-material/Download';
+import RttOutlinedIcon from '@mui/icons-material/RttOutlined';
 import MusicPoster from '../player/MusicPoster';
 import { SearchMusic } from '../player/MusicPlayer';
 import MusicPlayIcon from '../loading/music';
 
-type MenuAction = 'add' | 'download';
+type MenuAction = 'add' | 'download-song' | 'download-lrc';
 
 interface SongListProps {
     data: SearchMusic[];
@@ -100,11 +101,17 @@ function SongListItem({ current, divider, isCurrentPlaying, onTogglePlay, onActi
                             </ListItemIcon>
                             <ListItemText>加入播放列表</ListItemText>
                         </MenuItem>
-                        <MenuItem onClick={handleMenuAction('download')}>
+                        <MenuItem onClick={handleMenuAction('download-song')}>
                             <ListItemIcon>
                                 <DownloadIcon />
                             </ListItemIcon>
-                            <ListItemText>下载</ListItemText>
+                            <ListItemText>下载歌曲</ListItemText>
+                        </MenuItem>
+                        <MenuItem onClick={handleMenuAction('download-lrc')}>
+                            <ListItemIcon>
+                                <RttOutlinedIcon />
+                            </ListItemIcon>
+                            <ListItemText>下载歌词</ListItemText>
                         </MenuItem>
                     </Menu>
                 </React.Fragment>
@@ -120,6 +127,7 @@ function SongListItem({ current, divider, isCurrentPlaying, onTogglePlay, onActi
                     width: 48,
                     height: 48,
                     mr: 2,
+                    flexShrink: 0,
                     color: '#fff'
                 }}>
                     <MusicPoster
