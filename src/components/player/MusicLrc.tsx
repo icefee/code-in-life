@@ -73,7 +73,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
         if (playedLines.length > 0) {
             return playedLines[playedLines.length - 1].text
         }
-        return '';
+        return '🎵🎵...';
     }, [downloading, lrc, currentTime])
 
     const placeholder = (text: string) => (
@@ -109,9 +109,11 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                     horizontal: 'right',
                 }}
                 PaperProps={{
-                    elevation: 0,
-                    variant: 'outlined'
+                    sx: {
+                        backgroundImage: 'none'
+                    }
                 }}
+                marginThreshold={32}
             >
                 {
                     downloading ? placeholder(downloadingPlaceholder) : lrc.length > 0 ? (
@@ -145,7 +147,10 @@ function ScrollingLrc({ lrc, currentTime }: ScrollingLrcProps) {
     return (
         <Box sx={{
             height: '40vh',
-            p: 1.5
+            maxHeight: 400,
+            maxWidth: 'var(--max-width)',
+            px: 3,
+            py: 2
         }}>
             <Box sx={{
                 position: 'relative',
@@ -183,7 +188,7 @@ function ScrollingLrc({ lrc, currentTime }: ScrollingLrcProps) {
                                     height: 28,
                                     color: activeIndex === index ? 'primary.main' : 'text.primary'
                                 }} alignItems="center" justifyContent="center" key={index}>
-                                    <Typography variant="subtitle2" color="inherit">{text}</Typography>
+                                    <Typography variant="subtitle2" color="inherit" textOverflow="ellipsis" noWrap>{text}</Typography>
                                 </Stack>
                             )
                         )

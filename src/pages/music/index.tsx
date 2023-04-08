@@ -161,7 +161,8 @@ export default function MusicSearch() {
                 flexDirection: 'column',
                 width: '100%',
                 height: '100%',
-                maxWidth: 600,
+                '--max-width': '600px',
+                maxWidth: 'var(--max-width)',
                 margin: '0 auto',
                 [theme.breakpoints.up('sm')]: {
                     backgroundImage: activeMusic ? 'linear-gradient(0, #00000066, transparent)' : 'none'
