@@ -230,7 +230,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                             size="small"
                             value={duration ? (currentTime * 100 / duration) : 0}
                             buffered={buffered}
-                            showTooltip
+                            showTooltip={!isMobile}
                             tooltipFormatter={
                                 (value) => timeFormatter(value * duration)
                             }

@@ -1,5 +1,6 @@
-import React, { useState, useRef, PropsWithChildren, forwardRef, useImperativeHandle } from 'react';
-import Slider, { SliderProps, SliderRail, SliderOwnerState } from '@mui/material/Slider';
+import React, { useState, useRef, useMemo } from 'react';
+import Slider, { SliderProps } from '@mui/material/Slider';
+import { SxProps, Theme } from '@mui/material/styles';
 import Tooltip from '@mui/material/Tooltip';
 import { Instance } from '@popperjs/core';
 
@@ -28,6 +29,35 @@ function MediaSlider({ buffered, components, sx, showTooltip = false, tooltipFor
         const rate = (positionRef.current.x - rootRect.x) / rootRect.width;
         setHoverRate(rate);
     }
+
+    const commonSx = useMemo<SxProps<Theme>>(
+        () => ({
+            ...sx,
+            '& .MuiSlider-rail': {
+                opacity: 1,
+                bgcolor: 'currentcolor',
+                backgroundImage: 'linear-gradient(0, #000, #000)',
+                '&:before, &:after': {
+                    content: '""',
+                    position: 'absolute',
+                    height: 'inherit',
+                    bgcolor: 'inherit',
+                    top: 'inherit',
+                    transform: 'inherit'
+                },
+                '&:before': {
+                    width: '100%',
+                    opacity: .38
+                },
+                '&:after': {
+                    width: buffered * 100 + '%',
+                    opacity: .5,
+                    transition: (theme) => theme.transitions.create('width')
+                }
+            }
+        }),
+        [sx]
+    )
 
     /*
     const RootElement = forwardRef<HTMLSpanElement, PropsWithChildren<{
@@ -84,63 +114,50 @@ function MediaSlider({ buffered, components, sx, showTooltip = false, tooltipFor
     });
     */
 
-    return (
-        <Tooltip
-            title={
-                tooltipFormatter ? tooltipFormatter(hoverRate) : hoverRate
-            }
-            placement="top"
-            arrow
-            PopperProps={{
-                popperRef,
-                anchorEl: {
-                    getBoundingClientRect: () => {
-                        return new DOMRect(
-                            positionRef.current.x,
-                            rootRef.current?.getBoundingClientRect()?.y,
-                            0,
-                            0,
-                        )
-                    },
+    if (showTooltip) {
+        return (
+            <Tooltip
+                title={
+                    tooltipFormatter ? tooltipFormatter(hoverRate) : hoverRate
                 }
-            }}
-        >
-            <Slider
-                ref={rootRef}
-                onMouseMove={handleMouseMove}
-                sx={{
-                    '& .MuiSlider-rail': {
-                        opacity: 1,
-                        bgcolor: 'currentcolor',
-                        backgroundImage: 'linear-gradient(0, #000, #000)',
-                        '&:before, &:after': {
-                            content: '""',
-                            position: 'absolute',
-                            height: 'inherit',
-                            bgcolor: 'inherit',
-                            top: 'inherit',
-                            transform: 'inherit'
+                placement="top"
+                arrow
+                PopperProps={{
+                    popperRef,
+                    anchorEl: {
+                        getBoundingClientRect: () => {
+                            return new DOMRect(
+                                positionRef.current.x,
+                                rootRef.current?.getBoundingClientRect()?.y,
+                                0,
+                                0,
+                            )
                         },
-                        '&:before': {
-                            width: '100%',
-                            opacity: .38
-                        },
-                        '&:after': {
-                            width: buffered * 100 + '%',
-                            opacity: .5,
-                            transition: (theme) => theme.transitions.create('width')
-                        }
-                    },
-                    '& .MuiSlider-thumb': {
-                        '&:after': {
-                            display: 'none',
-                        }
-                    },
-                    ...sx
+                    }
                 }}
-                {...props}
-            />
-        </Tooltip>
+            >
+                <Slider
+                    ref={rootRef}
+                    onMouseMove={handleMouseMove}
+                    sx={{
+                        ...commonSx,
+                        '& .MuiSlider-thumb': {
+                            '&:after': {
+                                display: 'none',
+                            }
+                        }
+                    }}
+                    {...props}
+                />
+            </Tooltip>
+        )
+    }
+
+    return (
+        <Slider
+            sx={commonSx}
+            {...props}
+        />
     )
 }
 
