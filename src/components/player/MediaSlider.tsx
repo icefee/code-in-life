@@ -56,7 +56,7 @@ function MediaSlider({ buffered, components, sx, showTooltip = false, tooltipFor
                 }
             }
         }),
-        [sx]
+        [buffered, sx]
     )
 
     /*
