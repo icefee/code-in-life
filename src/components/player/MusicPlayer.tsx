@@ -159,7 +159,6 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                 aspectRatio: '1 / 1',
                 color: '#fff',
                 borderRadius: '50%',
-                flexShrink: 0,
                 [theme.breakpoints.up('sm')]: {
                     width: 72
                 }
@@ -167,6 +166,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                 {
                     music && (
                         <Box sx={{
+                            width: '100%',
                             height: '100%',
                             opacity: .75
                         }}>
