@@ -14,12 +14,14 @@ import RepeatOneIcon from '@mui/icons-material/RepeatOne';
 import LoopIcon from '@mui/icons-material/Loop';
 import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
+import { Instance } from '@popperjs/core';
 import MusicPoster from './MusicPoster';
 import MusicLrc from './MusicLrc';
 import PlayOrPauseButton from './PlayOrPauseButton';
 import { timeFormatter } from '../../util/date';
 import useLocalStorageState from '../hook/useLocalStorageState';
 import { generate } from '../../util/url';
+import MediaSlider from './MediaSlider';
 
 export interface SearchMusic {
     id: number;
@@ -58,6 +60,20 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
     const hasError = useRef(false)
     const seekingRef = useRef(false)
     const [buffered, setBuffered] = useState(0)
+
+    const positionRef = useRef<{ x: number; y: number }>({
+        x: 0,
+        y: 0,
+    })
+    const popperRef = useRef<Instance>(null)
+    const railRef = useRef<HTMLSpanElement>(null)
+
+    const handleMouseMove = (event: React.MouseEvent) => {
+        positionRef.current = { x: event.clientX, y: event.clientY };
+        if (popperRef.current != null) {
+            popperRef.current.update();
+        }
+    }
 
     useEffect(() => {
         return () => {
@@ -210,37 +226,14 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                     <Stack sx={{
                         mx: 2
                     }} flexGrow={1}>
-                        <Slider
+                        <MediaSlider
                             size="small"
                             value={duration ? (currentTime * 100 / duration) : 0}
-                            sx={{
-                                '& .MuiSlider-rail': {
-                                    opacity: 1,
-                                    bgcolor: 'currentcolor',
-                                    backgroundImage: 'linear-gradient(0, #000, #000)'
-                                },
-                                '& .MuiSlider-rail::before': {
-                                    content: '""',
-                                    position: 'absolute',
-                                    height: 'inherit',
-                                    width: '100%',
-                                    bgcolor: 'inherit',
-                                    top: 'inherit',
-                                    transform: 'inherit',
-                                    opacity: .38
-                                },
-                                '& .MuiSlider-rail::after': {
-                                    content: '""',
-                                    position: 'absolute',
-                                    height: 'inherit',
-                                    width: buffered * 100 + '%',
-                                    transition: (theme) => theme.transitions.create('width'),
-                                    bgcolor: 'inherit',
-                                    top: 'inherit',
-                                    transform: 'inherit',
-                                    opacity: .5
-                                }
-                            }}
+                            buffered={buffered}
+                            showTooltip
+                            tooltipFormatter={
+                                (value) => timeFormatter(value * duration)
+                            }
                             onChange={
                                 (_event, value: number) => {
                                     if (duration) {

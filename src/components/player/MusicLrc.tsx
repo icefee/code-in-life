@@ -36,10 +36,12 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
     const [lrc, setLrc] = useState<Lrc[]>([])
     const [downloading, setDownloading] = useState(false)
     const lrcCache = useRef(new Map<number, Lrc[]>())
-    const [anchorEl, setAnchorEl] = useState<HTMLSpanElement | null>(null);
+    const [anchorEl, setAnchorEl] = useState<HTMLSpanElement | null>(null)
+    const downloadingPlaceholder = '正在下载歌词..'
+    const emptyPlaceholder = '🎵🎵...'
 
     const handleClose = () => {
-        setAnchorEl(null);
+        setAnchorEl(null)
     }
 
     const getLrc = async (id: MusicLrcProps['id']) => {
@@ -61,8 +63,6 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
         getLrc(id)
     }, [id])
 
-    const downloadingPlaceholder = '正在下载歌词..';
-
     const lrcLine = useMemo(() => {
         if (downloading) {
             return downloadingPlaceholder
@@ -73,7 +73,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
         if (playedLines.length > 0) {
             return playedLines[playedLines.length - 1].text
         }
-        return '🎵🎵...';
+        return '';
     }, [downloading, lrc, currentTime])
 
     const placeholder = (text: string) => (
@@ -83,6 +83,13 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
             <Typography variant="subtitle2">{text}</Typography>
         </Box>
     )
+
+    const displayLrc = useMemo(() => {
+        if (lrcLine.trimStart().trimEnd().length > 0) {
+            return lrcLine;
+        }
+        return emptyPlaceholder;
+    }, [lrcLine])
 
     return (
         <>
@@ -94,12 +101,13 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                     setAnchorEl(event.currentTarget);
                 }
             }>
-                <Typography variant="caption" display="block" maxWidth={250} noWrap>{lrcLine}</Typography>
+                <Typography variant="caption" display="block" maxWidth={250} noWrap>{displayLrc}</Typography>
             </Box>
             <Popover
                 open={Boolean(anchorEl)}
                 anchorEl={anchorEl}
                 onClose={handleClose}
+                disablePortal
                 anchorOrigin={{
                     vertical: 'top',
                     horizontal: 'right',
@@ -148,6 +156,7 @@ function ScrollingLrc({ lrc, currentTime }: ScrollingLrcProps) {
         <Box sx={{
             height: '40vh',
             maxHeight: 400,
+            minWidth: 240,
             maxWidth: 'var(--max-width)',
             px: 3,
             py: 2
