@@ -61,6 +61,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
     const hasError = useRef(false)
     const seekingRef = useRef(false)
     const [buffered, setBuffered] = useState(0)
+    const durationPlaceholder = '--:--';
 
     useEffect(() => {
         return () => {
@@ -212,7 +213,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                         </Stack>
                     </Stack>
                     <Stack direction="row" alignItems="center">
-                        <Typography variant="button">{timeFormatter(currentTime)} / {duration ? timeFormatter(duration) : '--:--'}</Typography>
+                        <Typography variant="button">{timeFormatter(currentTime)} / {duration ? timeFormatter(duration) : durationPlaceholder}</Typography>
                         <Stack sx={{
                             mx: 2
                         }} flexGrow={1}>
@@ -222,7 +223,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                                 buffered={buffered}
                                 showTooltip={!isMobile}
                                 tooltipFormatter={
-                                    (value) => timeFormatter(value * duration)
+                                    (value) => duration ? timeFormatter(value * duration) : durationPlaceholder
                                 }
                                 onChange={
                                     (_event, value: number) => {
