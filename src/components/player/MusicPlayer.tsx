@@ -14,14 +14,14 @@ import RepeatOneIcon from '@mui/icons-material/RepeatOne';
 import LoopIcon from '@mui/icons-material/Loop';
 import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
-import { Instance } from '@popperjs/core';
 import MusicPoster from './MusicPoster';
 import MusicLrc from './MusicLrc';
 import PlayOrPauseButton from './PlayOrPauseButton';
 import { timeFormatter } from '../../util/date';
 import useLocalStorageState from '../hook/useLocalStorageState';
-import { generate } from '../../util/url';
 import MediaSlider from './MediaSlider';
+import AudioVisual from './AudioVisual';
+import { generate } from '../../util/url';
 
 export interface SearchMusic {
     id: number;
@@ -49,7 +49,7 @@ interface MusicPlayerProps {
 
 function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayList, onRepeatChange, onPlayEnd }: MusicPlayerProps) {
 
-    const audioRef = useRef<HTMLVideoElement>()
+    const audioRef = useRef<HTMLAudioElement>()
     const [duration, setDuration] = useState<number>()
     const [currentTime, setCurrentTime] = useState<number>(0)
     const [volume, setVolume] = useLocalStorageState<number>('__volume', 1)
@@ -60,20 +60,6 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
     const hasError = useRef(false)
     const seekingRef = useRef(false)
     const [buffered, setBuffered] = useState(0)
-
-    const positionRef = useRef<{ x: number; y: number }>({
-        x: 0,
-        y: 0,
-    })
-    const popperRef = useRef<Instance>(null)
-    const railRef = useRef<HTMLSpanElement>(null)
-
-    const handleMouseMove = (event: React.MouseEvent) => {
-        positionRef.current = { x: event.clientX, y: event.clientY };
-        if (popperRef.current != null) {
-            popperRef.current.update();
-        }
-    }
 
     useEffect(() => {
         return () => {
@@ -147,334 +133,348 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
 
     return (
         <Stack sx={{
-            position: 'relative',
-            p: 1,
-            bgcolor: '#111',
-            color: '#fff',
-            columnGap: 2
-        }} direction="row" alignItems="center">
-            <Stack sx={(theme) => ({
+            position: 'relative'
+        }}>
+            <Stack sx={{
                 position: 'relative',
-                width: 60,
-                aspectRatio: '1 / 1',
+                p: 1,
+                bgcolor: '#111',
                 color: '#fff',
-                borderRadius: '50%',
-                [theme.breakpoints.up('sm')]: {
-                    width: 72
-                }
-            })} justifyContent="center" alignItems="center" flexShrink={0}>
-                {
-                    music && (
-                        <Box sx={{
-                            width: '100%',
-                            height: '100%',
-                            opacity: .75
-                        }}>
-                            <MusicPoster
-                                alt={`${music.name}-${music.artist}`}
-                                src={music.poster}
-                                spinning={playing && !loading}
-                            />
-                        </Box>
-                    )
-                }
-                <Box sx={{
-                    position: 'absolute',
-                    left: '50%',
-                    top: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    opacity: .8,
-                    zIndex: 20
-                }}>
+                zIndex: 5
+            }} direction="row" alignItems="stretch" columnGap={2}>
+                <Stack sx={(theme) => ({
+                    position: 'relative',
+                    width: 60,
+                    aspectRatio: '1 / 1',
+                    color: '#fff',
+                    borderRadius: '50%',
+                    [theme.breakpoints.up('sm')]: {
+                        width: 72
+                    }
+                })} justifyContent="center" alignItems="center" flexShrink={0}>
                     {
-                        loading ? (
-                            <CircularProgress sx={{
-                                display: 'block'
-                            }} color="inherit" />
-                        ) : (
-                            <PlayOrPauseButton
-                                playing={playing}
-                                onTogglePlay={
-                                    (nextState) => {
-                                        onPlayStateChange(nextState)
-                                    }
-                                }
-                                size="large"
-                            />
+                        music && (
+                            <Box sx={{
+                                width: '100%',
+                                height: '100%',
+                                opacity: .75
+                            }}>
+                                <MusicPoster
+                                    alt={`${music.name}-${music.artist}`}
+                                    src={music.poster}
+                                    spinning={playing && !loading}
+                                />
+                            </Box>
                         )
                     }
-                </Box>
-            </Stack>
-            <Stack flexGrow={1}>
-                <Stack sx={{
-                    position: 'relative'
-                }} flexDirection="row" alignItems="center" rowGap={1} columnGap={1}>
-                    <Stack sx={(theme) => ({
-                        maxWidth: 150,
-                        [theme.breakpoints.up('sm')]: {
-                            maxWidth: 300
-                        }
-                    })}>
-                        <Typography variant="body2" noWrap textOverflow="ellipsis">{music?.name}</Typography>
-                    </Stack>
-                    <Stack>
-                        <Typography variant="caption" color="#ffffffcc" noWrap>{music?.artist}</Typography>
-                    </Stack>
-                </Stack>
-                <Stack direction="row" alignItems="center">
-                    <Typography variant="button">{timeFormatter(currentTime)} / {duration ? timeFormatter(duration) : '--:--'}</Typography>
-                    <Stack sx={{
-                        mx: 2
-                    }} flexGrow={1}>
-                        <MediaSlider
-                            size="small"
-                            value={duration ? (currentTime * 100 / duration) : 0}
-                            buffered={buffered}
-                            showTooltip={!isMobile}
-                            tooltipFormatter={
-                                (value) => timeFormatter(value * duration)
-                            }
-                            onChange={
-                                (_event, value: number) => {
-                                    if (duration) {
-                                        seekingRef.current = true;
-                                        setCurrentTime(value * duration / 100)
-                                    }
-                                }
-                            }
-                            onChangeCommitted={
-                                (_event, value: number) => {
-                                    if (duration) {
-                                        audioRef.current.currentTime = value * duration / 100;
-                                    }
-                                }
-                            }
-                        />
-                    </Stack>
-                    {
-                        !isMobile && (
-                            <>
-                                <Tooltip title="音量">
-                                    <IconButton
-                                        color="inherit"
-                                        size="small"
-                                        onClick={
-                                            (event: React.MouseEvent<HTMLButtonElement>) => {
-                                                setAnchorEl(event.currentTarget);
-                                            }
+                    <Box sx={{
+                        position: 'absolute',
+                        left: '50%',
+                        top: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        opacity: .8,
+                        zIndex: 20
+                    }}>
+                        {
+                            loading ? (
+                                <CircularProgress sx={{
+                                    display: 'block'
+                                }} color="inherit" />
+                            ) : (
+                                <PlayOrPauseButton
+                                    playing={playing}
+                                    onTogglePlay={
+                                        (nextState) => {
+                                            onPlayStateChange(nextState)
                                         }
-                                    >
-                                        {volumeIcon}
-                                    </IconButton>
-                                </Tooltip>
-                                <Popover
-                                    open={Boolean(anchorEl)}
-                                    anchorEl={anchorEl}
-                                    onClose={
-                                        () => setAnchorEl(null)
                                     }
-                                    anchorOrigin={{
-                                        vertical: 'top',
-                                        horizontal: 'center',
-                                    }}
-                                    transformOrigin={{
-                                        vertical: 'bottom',
-                                        horizontal: 'center',
-                                    }}
-                                >
-                                    <Stack sx={{
-                                        height: 120,
-                                        pt: 2
-                                    }} alignItems="center">
-                                        <Slider
-                                            size="small"
-                                            value={volume.data * 100}
-                                            onChange={
-                                                (_event, value: number) => {
-                                                    if (duration) {
-                                                        // setVolume(value / 100)
-                                                        const actualVolume = value / 100;
-                                                        audioRef.current.volume = actualVolume;
-                                                        cachedVolumeRef.current = actualVolume;
-                                                    }
-                                                }
-                                            }
-                                            orientation="vertical"
-                                        />
+                                    size="large"
+                                />
+                            )
+                        }
+                    </Box>
+                </Stack>
+                <Stack justifyContent="space-around" flexGrow={1}>
+                    <Stack sx={{
+                        position: 'relative'
+                    }} flexDirection="row" alignItems="center" rowGap={1} columnGap={1}>
+                        <Stack sx={(theme) => ({
+                            maxWidth: 150,
+                            [theme.breakpoints.up('sm')]: {
+                                maxWidth: 300
+                            }
+                        })}>
+                            <Typography variant="body2" noWrap textOverflow="ellipsis">{music?.name}</Typography>
+                        </Stack>
+                        <Stack>
+                            <Typography variant="caption" color="#ffffffcc" noWrap>{music?.artist}</Typography>
+                        </Stack>
+                    </Stack>
+                    <Stack direction="row" alignItems="center">
+                        <Typography variant="button">{timeFormatter(currentTime)} / {duration ? timeFormatter(duration) : '--:--'}</Typography>
+                        <Stack sx={{
+                            mx: 2
+                        }} flexGrow={1}>
+                            <MediaSlider
+                                size="small"
+                                value={duration ? (currentTime * 100 / duration) : 0}
+                                buffered={buffered}
+                                showTooltip={!isMobile}
+                                tooltipFormatter={
+                                    (value) => timeFormatter(value * duration)
+                                }
+                                onChange={
+                                    (_event, value: number) => {
+                                        if (duration) {
+                                            seekingRef.current = true;
+                                            setCurrentTime(value * duration / 100)
+                                        }
+                                    }
+                                }
+                                onChangeCommitted={
+                                    (_event, value: number) => {
+                                        if (duration) {
+                                            audioRef.current.currentTime = value * duration / 100;
+                                        }
+                                    }
+                                }
+                            />
+                        </Stack>
+                        {
+                            !isMobile && (
+                                <>
+                                    <Tooltip title="音量">
                                         <IconButton
                                             color="inherit"
                                             size="small"
                                             onClick={
-                                                () => {
-                                                    if (volume.data > 0) {
-                                                        setVolume(0)
-                                                        audioRef.current.volume = 0;
-                                                    }
-                                                    else {
-                                                        const targetVolume = cachedVolumeRef.current > 0 ? cachedVolumeRef.current : .5;
-                                                        setVolume(targetVolume)
-                                                        audioRef.current.volume = targetVolume;
-                                                    }
+                                                (event: React.MouseEvent<HTMLButtonElement>) => {
+                                                    setAnchorEl(event.currentTarget);
                                                 }
                                             }
                                         >
                                             {volumeIcon}
                                         </IconButton>
-                                    </Stack>
-                                </Popover>
-                            </>
-                        )
-                    }
-                    <Tooltip title="播放列表">
-                        <IconButton
-                            color="inherit"
-                            onClick={onTogglePlayList}
-                        >
-                            <PlaylistPlayIcon />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title={repeatMeta.label}>
-                        <IconButton
-                            color="inherit"
-                            size="small"
-                            onClick={
-                                () => {
-                                    if (repeat === RepeatMode.All) {
-                                        onRepeatChange(RepeatMode.One)
-                                    }
-                                    else if (repeat === RepeatMode.One) {
-                                        onRepeatChange(RepeatMode.Random)
-                                    }
-                                    else {
-                                        onRepeatChange(RepeatMode.All)
+                                    </Tooltip>
+                                    <Popover
+                                        open={Boolean(anchorEl)}
+                                        anchorEl={anchorEl}
+                                        onClose={
+                                            () => setAnchorEl(null)
+                                        }
+                                        anchorOrigin={{
+                                            vertical: 'top',
+                                            horizontal: 'center',
+                                        }}
+                                        transformOrigin={{
+                                            vertical: 'bottom',
+                                            horizontal: 'center',
+                                        }}
+                                    >
+                                        <Stack sx={{
+                                            height: 120,
+                                            pt: 2
+                                        }} alignItems="center">
+                                            <Slider
+                                                size="small"
+                                                value={volume.data * 100}
+                                                onChange={
+                                                    (_event, value: number) => {
+                                                        if (duration) {
+                                                            // setVolume(value / 100)
+                                                            const actualVolume = value / 100;
+                                                            audioRef.current.volume = actualVolume;
+                                                            cachedVolumeRef.current = actualVolume;
+                                                        }
+                                                    }
+                                                }
+                                                orientation="vertical"
+                                            />
+                                            <IconButton
+                                                color="inherit"
+                                                size="small"
+                                                onClick={
+                                                    () => {
+                                                        if (volume.data > 0) {
+                                                            setVolume(0)
+                                                            audioRef.current.volume = 0;
+                                                        }
+                                                        else {
+                                                            const targetVolume = cachedVolumeRef.current > 0 ? cachedVolumeRef.current : .5;
+                                                            setVolume(targetVolume)
+                                                            audioRef.current.volume = targetVolume;
+                                                        }
+                                                    }
+                                                }
+                                            >
+                                                {volumeIcon}
+                                            </IconButton>
+                                        </Stack>
+                                    </Popover>
+                                </>
+                            )
+                        }
+                        <Tooltip title="播放列表">
+                            <IconButton
+                                color="inherit"
+                                onClick={onTogglePlayList}
+                            >
+                                <PlaylistPlayIcon />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title={repeatMeta.label}>
+                            <IconButton
+                                color="inherit"
+                                size="small"
+                                onClick={
+                                    () => {
+                                        if (repeat === RepeatMode.All) {
+                                            onRepeatChange(RepeatMode.One)
+                                        }
+                                        else if (repeat === RepeatMode.One) {
+                                            onRepeatChange(RepeatMode.Random)
+                                        }
+                                        else {
+                                            onRepeatChange(RepeatMode.All)
+                                        }
                                     }
                                 }
-                            }
-                        >
-                            {repeatMeta.icon}
-                        </IconButton>
-                    </Tooltip>
+                            >
+                                {repeatMeta.icon}
+                            </IconButton>
+                        </Tooltip>
+                    </Stack>
                 </Stack>
-            </Stack>
-            {
-                music && (
-                    <Box sx={{
-                        position: 'absolute',
-                        top: 0,
-                        right: 0,
-                        zIndex: 18
-                    }}>
-                        <MusicLrc id={music.id} currentTime={currentTime} />
-                    </Box>
-                )
-            }
-            {
-                music && (
-                    <audio
-                        style={{
+                {
+                    music && (
+                        <Box sx={{
                             position: 'absolute',
-                            zIndex: -100,
-                            width: 0,
-                            height: 0
-                        }}
-                        ref={audioRef}
-                        preload="auto"
-                        onLoadStart={
-                            () => setLoading(true)
-                        }
-                        onLoadedMetadata={
-                            () => {
-                                const duration = audioRef.current.duration;
-                                setDuration(duration);
-                                tryToAutoPlay();
+                            top: 0,
+                            right: 0,
+                            zIndex: 18
+                        }}>
+                            <MusicLrc id={music.id} currentTime={currentTime} />
+                        </Box>
+                    )
+                }
+                {
+                    music && (
+                        <audio
+                            style={{
+                                position: 'absolute',
+                                zIndex: -100,
+                                width: 0,
+                                height: 0
+                            }}
+                            ref={audioRef}
+                            preload="auto"
+                            onLoadStart={
+                                () => setLoading(true)
                             }
-                        }
-                        onCanPlay={
-                            () => {
-                                setLoading(false)
-                            }
-                        }
-                        onCanPlayThrough={
-                            () => {
-                                setLoading(false)
-                            }
-                        }
-                        onPlay={
-                            () => {
-                                onPlayStateChange(true)
-                            }
-                        }
-                        onPause={
-                            () => {
-                                onPlayStateChange(false)
-                            }
-                        }
-                        onWaiting={
-                            () => {
-                                setLoading(true)
-                            }
-                        }
-                        onTimeUpdate={
-                            () => {
-                                if (!seekingRef.current) {
-                                    setCurrentTime(audioRef.current.currentTime)
+                            onLoadedMetadata={
+                                () => {
+                                    const duration = audioRef.current.duration;
+                                    setDuration(duration);
+                                    tryToAutoPlay();
                                 }
                             }
-                        }
-                        onProgress={
-                            () => {
-                                const audio = audioRef.current;
-                                const buffered = audio.buffered;
-                                let bufferedEnd: number;
-                                try {
-                                    bufferedEnd = buffered.end(buffered.length - 1);
-                                }
-                                catch (err) {
-                                    bufferedEnd = 0;
-                                }
-                                setBuffered(bufferedEnd / audio.duration)
-                            }
-                        }
-                        onSeeked={
-                            () => {
-                                seekingRef.current = false
-                            }
-                        }
-                        onEnded={
-                            () => {
-                                audioRef.current.currentTime = 0
-                                if (repeat === RepeatMode.One) {
-                                    tryToAutoPlay()
-                                }
-                                else {
-                                    onPlayEnd?.(true)
-                                }
-                            }
-                        }
-                        onVolumeChange={
-                            () => {
-                                const volume = audioRef.current.volume;
-                                setVolume(volume);
-                            }
-                        }
-                        onError={
-                            () => {
-                                // audioRef.current.src = music.url;
-                                if (hasError.current) {
-                                    onPlayEnd?.(false)
+                            onCanPlay={
+                                () => {
                                     setLoading(false)
+                                }
+                            }
+                            onCanPlayThrough={
+                                () => {
+                                    setLoading(false)
+                                }
+                            }
+                            onPlay={
+                                () => {
+                                    onPlayStateChange(true)
+                                }
+                            }
+                            onPause={
+                                () => {
                                     onPlayStateChange(false)
                                 }
-                                else {
-                                    hasError.current = true;
-                                    reloadSong()
+                            }
+                            onWaiting={
+                                () => {
+                                    setLoading(true)
                                 }
                             }
-                        }
-                        src={music.url}
-                    />
-                )
-            }
+                            onTimeUpdate={
+                                () => {
+                                    if (!seekingRef.current) {
+                                        setCurrentTime(audioRef.current.currentTime)
+                                    }
+                                }
+                            }
+                            onProgress={
+                                () => {
+                                    const audio = audioRef.current;
+                                    const buffered = audio.buffered;
+                                    let bufferedEnd: number;
+                                    try {
+                                        bufferedEnd = buffered.end(buffered.length - 1);
+                                    }
+                                    catch (err) {
+                                        bufferedEnd = 0;
+                                    }
+                                    setBuffered(bufferedEnd / audio.duration)
+                                }
+                            }
+                            onSeeked={
+                                () => {
+                                    seekingRef.current = false
+                                }
+                            }
+                            onEnded={
+                                () => {
+                                    audioRef.current.currentTime = 0
+                                    if (repeat === RepeatMode.One) {
+                                        tryToAutoPlay()
+                                    }
+                                    else {
+                                        onPlayEnd?.(true)
+                                    }
+                                }
+                            }
+                            onVolumeChange={
+                                () => {
+                                    const volume = audioRef.current.volume;
+                                    setVolume(volume);
+                                }
+                            }
+                            onError={
+                                () => {
+                                    // audioRef.current.src = music.url;
+                                    if (hasError.current) {
+                                        onPlayEnd?.(false)
+                                        setLoading(false)
+                                        onPlayStateChange(false)
+                                    }
+                                    else {
+                                        hasError.current = true;
+                                        reloadSong()
+                                    }
+                                }
+                            }
+                            src={music.url}
+                        />
+                    )
+                }
+            </Stack>
+            {/* <Box sx={{
+                position: 'absolute',
+                left: 0,
+                top: 0,
+                right: 0,
+                bottom: 0,
+                zIndex: 1
+            }}>
+                <AudioVisual audio={audioRef} />
+            </Box> */}
         </Stack>
     )
 }
