@@ -105,15 +105,19 @@ export default function MusicSearch() {
     }
 
     const downloadSong = (music: SearchMusic) => {
-        window.open(
+        downloaFile(
             `/api/music/download/${music.id}?${generateSearchParams(music)}`
         )
     }
 
     const downloadLrc = (music: SearchMusic) => {
-        window.open(
+        downloaFile(
             `/api/music/lrc/download/${music.id}?${generateSearchParams(music)}`
         )
+    }
+
+    const downloaFile = (url: string) => {
+        window.open(url)
     }
 
     const pageTitle = useMemo(() => {
@@ -135,26 +139,6 @@ export default function MusicSearch() {
             backgroundImage: 'var(--linear-gradient-image)'
         }} direction="column">
             <title>{pageTitle}</title>
-            <Stack sx={{
-                position: 'absolute',
-                width: '100%',
-                zIndex: 150,
-                p: 1.5
-            }} direction="row" justifyContent="center">
-                <Box sx={(theme) => ({
-                    width: '100%',
-                    [theme.breakpoints.up('sm')]: {
-                        maxWidth: 320
-                    }
-                })}>
-                    <SearchForm
-                        value={keyword}
-                        onChange={setKeyword}
-                        onSubmit={onSearch}
-                        loading={searchTask.pending}
-                    />
-                </Box>
-            </Stack>
             <Box sx={(theme) => ({
                 position: 'relative',
                 display: 'flex',
@@ -168,6 +152,26 @@ export default function MusicSearch() {
                     backgroundImage: activeMusic ? 'linear-gradient(0, #00000066, transparent)' : 'none'
                 }
             })}>
+                <Stack sx={{
+                    position: 'absolute',
+                    width: '100%',
+                    zIndex: 150,
+                    p: 1.5
+                }} direction="row" justifyContent="center">
+                    <Box sx={(theme) => ({
+                        width: '100%',
+                        [theme.breakpoints.up('sm')]: {
+                            maxWidth: 320
+                        }
+                    })}>
+                        <SearchForm
+                            value={keyword}
+                            onChange={setKeyword}
+                            onSubmit={onSearch}
+                            loading={searchTask.pending}
+                        />
+                    </Box>
+                </Stack>
                 {
                     searchTask.success ? (
                         <Box sx={{
