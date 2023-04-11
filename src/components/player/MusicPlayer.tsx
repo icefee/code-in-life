@@ -50,6 +50,7 @@ interface MusicPlayerProps {
 function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayList, onRepeatChange, onPlayEnd }: MusicPlayerProps) {
 
     const audioRef = useRef<HTMLAudioElement>()
+    const [audioReady, setAudioReady] = useState(false)
     const [duration, setDuration] = useState<number>()
     const [currentTime, setCurrentTime] = useState<number>(0)
     const [volume, setVolume] = useLocalStorageState<number>('__volume', 1)
@@ -278,10 +279,10 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                                             <Slider
                                                 size="small"
                                                 value={volume.data * 100}
+                                                disabled={!audioReady}
                                                 onChange={
                                                     (_event, value: number) => {
                                                         if (duration) {
-                                                            // setVolume(value / 100)
                                                             const actualVolume = value / 100;
                                                             audioRef.current.volume = actualVolume;
                                                             cachedVolumeRef.current = actualVolume;
@@ -375,6 +376,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                                 () => {
                                     const duration = audioRef.current.duration;
                                     setDuration(duration);
+                                    setAudioReady(true);
                                     tryToAutoPlay();
                                 }
                             }
