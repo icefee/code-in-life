@@ -1,7 +1,6 @@
 import React, { Component, useState, useEffect, useMemo } from 'react';
 import type { PageProps } from 'gatsby';
 import fetch from 'node-fetch';
-import NoSsr from '@mui/material/NoSsr';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -475,33 +474,37 @@ function VideoSummary({ video }: VideoSummaryProps) {
                 <Typography variant="body1">类别:{video.type}</Typography>
                 <Typography variant="body1">年份:{video.year}</Typography>
                 {
-                    video.area && <Typography variant="body1">地区:{video.area}</Typography>
+                    video.area && (
+                        <Typography variant="body1">地区:{video.area}</Typography>
+                    )
                 }
                 {
-                    video.director && <Typography variant="body1">导演:{video.director}</Typography>
+                    video.director && (
+                        <Typography variant="body1">导演:{video.director}</Typography>
+                    )
                 }
                 {
-                    video.actor && <Typography variant="body1">演员:{video.actor}</Typography>
+                    video.actor && (
+                        <Typography variant="body1">演员:{video.actor}</Typography>
+                    )
                 }
-                <div dangerouslySetInnerHTML={{
+                <Box dangerouslySetInnerHTML={{
                     __html: video.des
                 }} />
-                {/* <Typography variant="body1">最后更新:{video.last}</Typography> */}
             </Box>
         </Box>
     )
 }
 
 export default function Page({ params }: PageProps<object, object, unknown, unknown>) {
-    const { site, id } = params as Record<'site' | 'id', string>;
-    const [loading, setLoading] = useState(false)
-    const [video, setVideo] = useState<VideoInfo>()
+
+    const { api, id } = params as Record<'api' | 'id', string>;
+    const [video, setVideo] = useState<VideoInfo>();
 
     useEffect(() => {
         (async function getVideoInfo() {
-            setLoading(true)
             try {
-                const { code, data } = await fetch(`/api/video/${site}/${id}`).then<ApiJsonType<VideoInfo>>(
+                const { code, data } = await fetch(`/api/video/${api}/${id}`).then<ApiJsonType<VideoInfo>>(
                     response => response.json()
                 )
                 if (code === 0) {
@@ -512,18 +515,15 @@ export default function Page({ params }: PageProps<object, object, unknown, unkn
                 console.error('💔 Get data error: ' + err)
                 setTimeout(getVideoInfo, 1e3);
             }
-            setLoading(false)
         })()
     }, [])
-    return loading ? (
-        <LoadingScreen />
+    return video ? (
+        <VideoDetail
+            api={api}
+            id={id}
+            video={video}
+        />
     ) : (
-        <NoSsr>
-            <VideoDetail
-                api={site}
-                id={id}
-                video={video}
-            />
-        </NoSsr>
+        <LoadingScreen />
     )
 }

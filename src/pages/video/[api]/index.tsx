@@ -177,8 +177,8 @@ export function Head({ serverData }: HeadProps<object, object, SearchResultProps
 
 export async function getServerData({ query, params }: GetServerDataProps) {
     const searchParams = new URLSearchParams(query as Record<string, string>)
-    const { site } = params as Record<'site', string>;
-    searchParams.set('api', site);
+    const { api } = params as Record<'api', string>;
+    searchParams.set('api', api);
     try {
         const { code, data } = await fetch(`${Api.site}/api/video/list?${searchParams}`).then<ApiJsonType<SearchResultProps['data']>>(
             response => response.json()
@@ -187,12 +187,12 @@ export async function getServerData({ query, params }: GetServerDataProps) {
             return {
                 props: {
                     data,
-                    api: site
+                    api
                 }
             }
         }
         else {
-            throw new Error(`Get data from ${site} error.`)
+            throw new Error(`Get data from ${api} error.`)
         }
     }
     catch (err) {

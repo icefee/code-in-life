@@ -15,9 +15,9 @@ const getVideoData = async (url: string) => {
 }
 
 export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
-    const { site, id } = req.params;
+    const { api, id } = req.params;
     const { type } = req.query;
-    const apiUrl = `${Api.site}/api/video/${site}/${id}`;
+    const apiUrl = `${Api.site}/api/video/${api}/${id}`;
     const data = await getVideoData(apiUrl);
     if (type === 'poster') {
         res.writeHead(301, {
