@@ -298,23 +298,26 @@ export default function MusicSearch() {
                                             msg: `“${activeMusic.name}”播放错误`
                                         })
                                     }
-                                    const playIndex = playlist.data.findIndex(
-                                        music => music.id === activeMusic.id
-                                    );
-                                    switch (repeat.data) {
-                                        case RepeatMode.Random:
-                                            if (playlist.data.length > 1) {
+                                    if (playlist.data.length > 1) {
+                                        const playIndex = playlist.data.findIndex(
+                                            music => music.id === activeMusic.id
+                                        );
+                                        switch (repeat.data) {
+                                            case RepeatMode.Random:
                                                 const nextPlayIndex = generateRandomIndex(playlist.data.length - 1, playIndex)
                                                 setActiveMusic(playlist.data[nextPlayIndex])
-                                            }
-                                            break;
-                                        case RepeatMode.All:
-                                            if (playIndex < playlist.data.length - 1) {
-                                                setActiveMusic(playlist.data[playIndex + 1])
-                                            }
-                                            else {
-                                                setActiveMusic(playlist.data[0])
-                                            }
+                                                break;
+                                            case RepeatMode.All:
+                                                if (playIndex < playlist.data.length - 1) {
+                                                    setActiveMusic(playlist.data[playIndex + 1])
+                                                }
+                                                else {
+                                                    setActiveMusic(playlist.data[0])
+                                                }
+                                        }
+                                    }
+                                    else {
+                                        setPlaying(true)
                                     }
                                 }
                             }

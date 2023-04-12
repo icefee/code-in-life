@@ -24,8 +24,8 @@ async function getMusicSearch(s: string): Promise<SearchMusic[]> {
                         id,
                         name: nameBlock[0].trimStart().trimEnd(),
                         artist: artistBlock[0],
-                        url: `${Api.hosting}/api/music/play/${id}`,
-                        poster: `${Api.hosting}/api/music/poster/${id}`
+                        url: `/api/music/play/${id}`,
+                        poster: `/api/music/poster/${id}`
                     }
                 }
             )

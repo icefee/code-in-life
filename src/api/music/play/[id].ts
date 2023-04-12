@@ -1,6 +1,7 @@
 import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
 import fetch from 'node-fetch';
 import { Api } from '../../../util/config';
+import { isDev } from '../../../util/env';
 
 async function parseMusicUrl(id: string) {
     try {
@@ -21,10 +22,20 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
     const { id } = req.params;
     const url = await parseMusicUrl(id);
     if (url) {
-        res.writeHead(301, {
-            location: url
-        })
-        res.end()
+        if (isDev) {
+            const response = await fetch(url);
+            const headers = response.headers;
+            for (let key of headers.keys()) {
+                res.setHeader(key, headers.get(key))
+            }
+            response.body.pipe(res);
+        }
+        else {
+            res.writeHead(301, {
+                location: url
+            })
+            res.end()
+        }
     }
     else {
         res.json({

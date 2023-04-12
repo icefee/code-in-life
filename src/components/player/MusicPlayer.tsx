@@ -22,6 +22,7 @@ import useLocalStorageState from '../hook/useLocalStorageState';
 import MediaSlider from './MediaSlider';
 import AudioVisual from './AudioVisual';
 import { generate } from '../../util/url';
+import { isDev } from '../../util/env';
 
 export interface SearchMusic {
     id: number;
@@ -135,23 +136,25 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
 
     return (
         <Stack sx={{
-            position: 'relative'
+            position: 'relative',
+            bgcolor: '#111',
+            color: '#fff'
         }}>
             <Stack sx={{
                 position: 'relative',
                 p: 1,
-                bgcolor: '#111',
-                color: '#fff',
                 zIndex: 5
             }} direction="row" alignItems="stretch" columnGap={2}>
                 <Stack sx={(theme) => ({
                     position: 'relative',
                     width: 60,
+                    height: 60,
                     aspectRatio: '1 / 1',
                     color: '#fff',
                     borderRadius: '50%',
                     [theme.breakpoints.up('sm')]: {
-                        width: 72
+                        width: 72,
+                        height: 72
                     }
                 })} justifyContent="center" alignItems="center" flexShrink={0}>
                     {
@@ -468,16 +471,20 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                     )
                 }
             </Stack>
-            {/* <Box sx={{
-                position: 'absolute',
-                left: 0,
-                top: 0,
-                right: 0,
-                bottom: 0,
-                zIndex: 1
-            }}>
-                <AudioVisual audio={audioRef} />
-            </Box> */}
+            {
+                isDev && (
+                    <Box sx={{
+                        position: 'absolute',
+                        left: 0,
+                        top: 0,
+                        right: 0,
+                        bottom: 0,
+                        zIndex: 1
+                    }}>
+                        <AudioVisual audio={audioRef} />
+                    </Box>
+                )
+            }
         </Stack>
     )
 }
