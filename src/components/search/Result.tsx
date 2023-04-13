@@ -83,16 +83,17 @@ function SearchResult({ keyword, videoList }: SearchResultProps) {
                                     <Box sx={(theme) => ({
                                         display: 'flex',
                                         justifyContent: 'flex-end',
-                                        p: theme.spacing(0, 2, 2)
+                                        p: theme.spacing(0, 2, 2),
+                                        color: '#fff'
                                     })}>
                                         <Button
                                             LinkComponent="a"
                                             variant="outlined"
-                                            color="primary"
+                                            color="inherit"
                                             endIcon={
                                                 <ArrowForwardIosIcon />
                                             }
-                                            href={'/video/' + key + '?s=' + keyword + '&page=2'}
+                                            href={'/video/' + key + '?s=' + keyword + '&p=2'}
                                             target="_blank"
                                         >更多</Button>
                                     </Box>

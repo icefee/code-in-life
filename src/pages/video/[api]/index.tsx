@@ -121,15 +121,14 @@ const SiteSearch: React.FunctionComponent<PageProps<object, object, unknown, Sea
                                                         color="primary"
                                                         renderItem={(item) => {
                                                             const searchParams = new URLSearchParams(window.location.search);
-                                                            searchParams.set('page', String(item.page));
-                                                            const href = `/video/${api}?` + searchParams.toString();
+                                                            searchParams.set('p', String(item.page));
+                                                            const href = `/video/${api}?${searchParams}`;
                                                             const current = item.page === data.page.page;
                                                             return (
                                                                 <PaginationItem
+                                                                    {...item}
                                                                     component={Link}
                                                                     href={current ? null : href}
-                                                                    disabled={current}
-                                                                    {...item}
                                                                 />
                                                             )
                                                         }}

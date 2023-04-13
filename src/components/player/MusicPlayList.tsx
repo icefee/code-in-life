@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo, ReactNode } from 'react';
+import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -6,9 +7,13 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListSubheader from '@mui/material/ListSubheader';
+import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Typography from '@mui/material/Typography';
+import { styled } from '@mui/material/styles';
+import SearchIcon from '@mui/icons-material/Search';
 import ManageSearchOutlinedIcon from '@mui/icons-material/ManageSearchOutlined';
 import PersonSearchOutlinedIcon from '@mui/icons-material/PersonSearchOutlined';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -16,9 +21,33 @@ import PublishIcon from '@mui/icons-material/Publish';
 import DownloadIcon from '@mui/icons-material/Download';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { type SearchMusic } from './MusicPlayer';
-import { DarkThemed } from '../../components/theme';
+import { DarkThemed } from '../theme';
 import MusicPoster from './MusicPoster';
-import MusicPlayIcon from '../../components/loading/music';
+import MusicPlayIcon from '../loading/music';
+
+const StyledInput = styled(InputBase)(({ theme }) => ({
+    fontSize: '.8em',
+    '& .MuiInputBase-input': {
+        width: 100,
+        transition: theme.transitions.create('width'),
+    },
+    '& .MuiInputBase-input:focus': {
+        width: 120
+    }
+}))
+
+const MatchText = styled('span')(({ theme }) => ({
+    backgroundColor: theme.palette.secondary.main
+}))
+
+type ListMatch = {
+    id: SearchMusic['id'];
+    name: ReactNode;
+    artist: ReactNode;
+    firstMatch: boolean;
+}
+
+type SearchMusicWithMatch = SearchMusic & { match?: Omit<ListMatch, 'id'> };
 
 interface MusicPlayListProps {
     data: SearchMusic[];
@@ -32,6 +61,8 @@ interface MusicPlayListProps {
 }
 
 function MusicPlayList({ data, onChange, current, playing, onPlay, onTogglePlay, onSearch, onDownload }: MusicPlayListProps) {
+
+    const [keyword, setKeyword] = useState('')
 
     const pinToTop = (music: SearchMusic) => {
         onChange(
@@ -65,6 +96,78 @@ function MusicPlayList({ data, onChange, current, playing, onPlay, onTogglePlay,
         )
     }
 
+    const validKeyword = useMemo(() => keyword.trimStart().trimEnd(), [keyword])
+
+    const getMatch = (text: string) => {
+        const pattern = new RegExp(validKeyword.replace(/\\/g, '\\\\'), 'gi');
+        return {
+            text,
+            pattern,
+            match: text.match(pattern)
+        }
+    }
+
+    const getMatchResult = (source: [string, string]) => {
+        return source.map(getMatch).map(
+            ({ text, pattern, match }) => {
+                if (match) {
+                    const fragments = text.split(pattern);
+                    const nodes: ReactNode[] = [];
+                    for (let i = 0; i < fragments.length + match.length; i++) {
+                        if (i % 2 === 0) {
+                            const fragment = fragments[i / 2]
+                            if (fragment !== '') {
+                                nodes.push(
+                                    <span key={i}>{fragment}</span>
+                                )
+                            }
+                        }
+                        else {
+                            nodes.push(
+                                <MatchText key={i}>{match[(i - 1) / 2]}</MatchText>
+                            )
+                        }
+                    }
+                    return {
+                        match: true,
+                        children: (
+                            <>
+                                {nodes}
+                            </>
+                        )
+                    }
+                }
+                return {
+                    match: false,
+                    children: text
+                }
+            }
+        )
+    }
+
+    const matchedList = useMemo<ListMatch[]>(() => {
+        if (validKeyword === '') {
+            return []
+        }
+        const matched = [];
+        let hasMatched = false;
+        for (const { id, name, artist } of data) {
+            const [_name, _artist] = getMatchResult([name, artist]);
+            let firstMatch = false;
+            if ((_name.match || _artist.match) && !hasMatched) {
+                firstMatch = true;
+                hasMatched = true;
+            }
+            matched.push({
+                id,
+                name: _name.children,
+                artist: _artist.children,
+                firstMatch
+            })
+        }
+        return matched;
+    }, [data, keyword])
+
     return (
         <DarkThemed>
             <Box sx={{
@@ -72,20 +175,50 @@ function MusicPlayList({ data, onChange, current, playing, onPlay, onTogglePlay,
                 bgcolor: 'background.paper',
                 color: '#fff',
                 overflowY: 'auto',
-                borderTop: '1px solid #333'
+                borderTop: (theme) => `1px solid ${theme.palette.divider}`
             }}>
                 <List subheader={
-                    <ListSubheader component="li">播放列表</ListSubheader>
+                    <ListSubheader disableGutters component="li">
+                        <Stack sx={{
+                            pl: 2,
+                            py: .5
+                        }} direction="row" justifyContent="space-between" alignItems="center">
+                            <Typography variant="subtitle2">播放列表</Typography>
+                            <Stack sx={{
+                                px: 1,
+                                py: .5,
+                                bgcolor: '#ffffff10',
+                                borderRadius: 1
+                            }} direction="row" alignItems="center" columnGap={1}>
+                                <SearchIcon fontSize="small" />
+                                <StyledInput
+                                    placeholder="输入关键词搜索.."
+                                    value={keyword}
+                                    onChange={
+                                        (event: React.ChangeEvent<HTMLInputElement>) => {
+                                            setKeyword(event.target.value)
+                                        }
+                                    }
+                                />
+                            </Stack>
+                        </Stack>
+                    </ListSubheader>
                 } disablePadding dense>
                     {
                         data.map(
                             (music, index) => {
                                 const isCurrentPlaying = music.id === current.id;
+                                const match = matchedList.find(
+                                    ({ id }) => id === music.id
+                                )
                                 return (
                                     <PlayListItem
                                         key={music.id}
                                         divider={index < data.length - 1}
-                                        music={music}
+                                        music={{
+                                            ...music,
+                                            match
+                                        }}
                                         isCurrent={isCurrentPlaying}
                                         playing={playing}
                                         onClick={
@@ -135,12 +268,12 @@ function MusicPlayList({ data, onChange, current, playing, onPlay, onTogglePlay,
 type MenuAction = 'pin' | 'search-artist' | 'search-name' | 'download' | 'remove';
 
 interface PlayListItemProps {
-    music: SearchMusic;
+    music: SearchMusicWithMatch;
     playing: boolean;
     isCurrent: boolean;
     divider: boolean;
     onClick: React.MouseEventHandler<HTMLDivElement>;
-    onAction(cmd: MenuAction, music: SearchMusic): void;
+    onAction(cmd: MenuAction, music: SearchMusicWithMatch): void;
 }
 
 function PlayListItem({ music, playing, isCurrent, divider, onAction, onClick }: PlayListItemProps) {
@@ -156,13 +289,13 @@ function PlayListItem({ music, playing, isCurrent, divider, onAction, onClick }:
     }
 
     useEffect(() => {
-        if (isCurrent) {
+        if (isCurrent || music.match?.firstMatch) {
             listItemRef.current.scrollIntoView({
                 behavior: 'auto',
                 block: 'center'
             })
         }
-    }, [])
+    }, [isCurrent, music.match])
 
     return (
         <ListItem
@@ -262,8 +395,8 @@ function PlayListItem({ music, playing, isCurrent, divider, onAction, onClick }:
                     }
                 </Box>
                 <ListItemText
-                    primary={music.name}
-                    secondary={music.artist}
+                    primary={music.match ? music.match.name : music.name}
+                    secondary={music.match ? music.match.artist : music.artist}
                 />
             </ListItemButton>
         </ListItem>
