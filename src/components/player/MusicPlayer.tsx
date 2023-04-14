@@ -22,7 +22,6 @@ import useLocalStorageState from '../hook/useLocalStorageState';
 import MediaSlider from './MediaSlider';
 import AudioVisual from './AudioVisual';
 import { generate } from '../../util/url';
-import { isDev } from '../../util/env';
 
 export interface SearchMusic {
     id: number;
@@ -471,20 +470,16 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                     )
                 }
             </Stack>
-            {
-                isDev && (
-                    <Box sx={{
-                        position: 'absolute',
-                        left: 0,
-                        top: 0,
-                        right: 0,
-                        bottom: 0,
-                        zIndex: 1
-                    }}>
-                        <AudioVisual audio={audioRef} />
-                    </Box>
-                )
-            }
+            <Box sx={{
+                position: 'absolute',
+                left: 0,
+                top: 0,
+                right: 0,
+                bottom: 0,
+                zIndex: 1
+            }}>
+                <AudioVisual audio={audioRef} />
+            </Box>
         </Stack>
     )
 }

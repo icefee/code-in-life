@@ -181,6 +181,7 @@ function MusicPlayList({ data, onChange, current, playing, onPlay, onTogglePlay,
                     <ListSubheader disableGutters component="li">
                         <Stack sx={{
                             pl: 2,
+                            pr: .5,
                             py: .5
                         }} direction="row" justifyContent="space-between" alignItems="center">
                             <Typography variant="subtitle2">播放列表</Typography>
