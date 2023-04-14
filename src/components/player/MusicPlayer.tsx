@@ -50,10 +50,7 @@ interface MusicPlayerProps {
 function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayList, onRepeatChange, onPlayEnd }: MusicPlayerProps) {
 
     const audioRef = useRef<HTMLAudioElement>()
-    const [playUrl, setPlayUrl] = useState({
-        catched: false,
-        url: music?.url
-    })
+    const [playUrl, setPlayUrl] = useState<string | null>(null)
     const [audioReady, setAudioReady] = useState(false)
     const [duration, setDuration] = useState<number>()
     const [currentTime, setCurrentTime] = useState<number>(0)
@@ -73,16 +70,10 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
         if (music) {
             const { id, url } = music;
             if (cachedSong.current.has(id)) {
-                setPlayUrl({
-                    catched: true,
-                    url: cachedSong.current.get(id)
-                })
+                setPlayUrl(cachedSong.current.get(id))
             }
             else {
-                setPlayUrl({
-                    catched: false,
-                    url
-                })
+                setPlayUrl(url)
             }
         }
     }, [music])
@@ -98,11 +89,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                     const blobUrl = URL.createObjectURL(blob);
                     if (music?.id === id) {
                         cachedPlayPostion.current = audioRef.current.currentTime;
-                        setPlayUrl({
-                            catched: true,
-                            url: blobUrl
-                        })
-                        setLoading(true)
+                        setPlayUrl(blobUrl);
                     }
                     cachedSong.current.set(id, blobUrl);
                 }
@@ -122,7 +109,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                 hasError.current = false;
             }
         }
-    }, [playUrl.url])
+    }, [playUrl])
 
     const togglePlay = async (play: boolean) => {
         try {
@@ -182,6 +169,16 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
         audioRef.current.src = generate(music.url);
         audioRef.current.load();
     }
+
+    const cached = useMemo(() => Boolean(playUrl && playUrl.startsWith('blob:')), [playUrl])
+
+    useEffect(() => {
+        return () => {
+            if (music && cached) {
+                setPlayUrl(null)
+            }
+        }
+    }, [music, cached])
 
     return (
         <Stack sx={{
@@ -421,6 +418,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                                 height: 0
                             }}
                             ref={audioRef}
+                            src={playUrl}
                             preload="auto"
                             onLoadStart={
                                 () => {
@@ -437,9 +435,9 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                                         cachedPlayPostion.current = null;
                                     }
                                     else {
-                                        tryToAutoPlay();
                                         catchSong(music);
                                     }
+                                    tryToAutoPlay();
                                 }
                             }
                             onCanPlay={
@@ -523,7 +521,6 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                                     }
                                 }
                             }
-                            src={playUrl.url}
                         />
                     )
                 }
@@ -536,7 +533,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                 bottom: 0,
                 zIndex: 1
             }}>
-                <AudioVisual audio={audioRef} enabled={playUrl.catched} />
+                <AudioVisual audio={audioRef} enabled={cached} />
             </Box>
         </Stack>
     )

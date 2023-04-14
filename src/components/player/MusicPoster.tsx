@@ -26,6 +26,9 @@ function MusicPoster({ spinning = false, src, alt }: MusicPosterProps) {
 
     useEffect(() => {
         loadImage(src)
+        return () => {
+            setPoster(null)
+        }
     }, [src])
 
     return (
@@ -34,23 +37,23 @@ function MusicPoster({ spinning = false, src, alt }: MusicPosterProps) {
             width: '100%',
             height: '100%'
         }}>
-            <Avatar
-                alt={alt}
-                src={poster}
-                sx={{
-                    width: '100%',
-                    height: '100%',
-                    opacity: poster ? 1 : 0,
-                    animationName: 'rotate',
-                    animationIterationCount: 'infinite',
-                    animationDuration: '12s',
-                    animationTimingFunction: 'linear',
-                    animationPlayState: spinning ? 'running' : 'paused',
-                    transition: (theme) => theme.transitions.create('opacity')
-                }}
-            />
             {
-                poster === null && (
+                poster ? (
+                    <Avatar
+                        alt={alt}
+                        src={poster}
+                        sx={{
+                            width: '100%',
+                            height: '100%',
+                            animationName: 'rotate',
+                            animationIterationCount: 'infinite',
+                            animationDuration: '12s',
+                            animationTimingFunction: 'linear',
+                            animationPlayState: spinning ? 'running' : 'paused',
+                            transition: (theme) => theme.transitions.create('opacity')
+                        }}
+                    />
+                ) : (
                     <Skeleton
                         variant="circular"
                         sx={{

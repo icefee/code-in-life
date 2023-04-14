@@ -48,6 +48,7 @@ function useAudioContext(audio: HTMLAudioElement | null, fftSize = 2048) {
     const analyser = useRef<AnalyserNode>()
     const [byteFrequency, setByteFrequency] = useState<Uint8Array>(new Uint8Array(fftSize))
     const [analysing, setAnalysing] = useState(false)
+    const { playing } = useMediaPlayState(audio)
     const ts = useRequestAnimationFrame()
 
     const startAnalyser = () => {
@@ -57,22 +58,21 @@ function useAudioContext(audio: HTMLAudioElement | null, fftSize = 2048) {
     }
 
     useEffect(() => {
-        if (analysing) {
+        if (playing && analysing) {
             startAnalyser()
         }
-    }, [ts, analysing])
+    }, [ts, playing, analysing])
 
-    const pause = async () => {
-        console.log('pause')
+    const pause = () => {
         if (audioContext.current) {
             setAnalysing(false);
             mediaSource.current.disconnect();
             analyser.current.disconnect();
-            await audioContext.current.suspend();
+            audioContext.current.suspend();
         }
     }
 
-    const resume = async () => {
+    const resume = () => {
         if (!audio) {
             return;
         }
@@ -82,20 +82,13 @@ function useAudioContext(audio: HTMLAudioElement | null, fftSize = 2048) {
             analyser.current = audioContext.current.createAnalyser();
         }
         analyser.current.fftSize = fftSize;
-        console.log('resume')
         setAnalysing(true);
         mediaSource.current.connect(analyser.current);
         analyser.current.connect(audioContext.current.destination);
-        await audioContext.current.resume();
+        audioContext.current.resume();
     }
 
-    useEffect(() => {
-        return () => {
-            audioContext.current.suspend();
-            mediaSource.current.disconnect();
-            analyser.current.disconnect();
-        }
-    }, [])
+    useEffect(() => pause, [])
 
     return { analysing, pause, resume, byteFrequency }
 }
@@ -114,8 +107,6 @@ function AudioVisual({ audio, enabled }: AudioVisualProps) {
     const capGap = 2;
 
     const caps = useRef<number[]>()
-
-    const { playing } = useMediaPlayState(audio.current)
     const { byteFrequency, pause, resume } = useAudioContext(audio.current, fftSize)
 
     const { ref, width, height } = useResizeObserver()
@@ -157,13 +148,15 @@ function AudioVisual({ audio, enabled }: AudioVisualProps) {
     }
 
     useEffect(() => {
-        if (enabled && playing) {
+        if (enabled) {
             resume()
         }
-        else {
-            pause()
+        return () => {
+            if (enabled) {
+                pause()
+            }
         }
-    }, [enabled, playing])
+    }, [enabled])
 
     useEffect(() => {
         drawCanvas(byteFrequency)
