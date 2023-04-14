@@ -95,6 +95,10 @@ function AudioVisual({ audio }: AudioVisualProps) {
     const fftSize = 512;
     const barWidth = 4;
     const barSpace = 1;
+    const capHeight = 2;
+    const capGap = 2;
+
+    const caps = useRef<number[]>()
 
     const { byteFrequency } = useAudioContext(audio.current, fftSize)
 
@@ -105,19 +109,34 @@ function AudioVisual({ audio }: AudioVisualProps) {
         const ctx = canvas.current.getContext('2d');
         const gradient = ctx.createLinearGradient(width / 2, 0, width / 2, height);
         gradient.addColorStop(0, '#ff000040');
+        gradient.addColorStop(.5, '#ffff0040');
         gradient.addColorStop(1, '#00ffff40');
         ctx.clearRect(0, 0, width, height);
         ctx.fillStyle = gradient;
-        const steps = Math.floor(
+        const step = Math.floor(
             (barWidth + barSpace) * fftSize / width
-        )
-        for (let i = 0; i < buffer.length; i++) {
+        );
+        const steps = Math.floor(fftSize / step);
+        if (!caps.current || caps.current && caps.current.length !== steps) {
+            caps.current = Array.from({ length: steps }, _ => 0)
+        }
+        else {
+            caps.current = caps.current.map(
+                v => v > 0 ? v - 1 : v
+            )
+        }
+        for (let i = 0; i < steps; i++) {
             const intensity = Math.round(
-                buffer.slice(i, i + steps).reduce(
+                buffer.slice(i, i + step).reduce(
                     (prev, current) => prev + current,
                     0
-                ) / steps)
-            ctx.fillRect(i * (barWidth + barSpace) + barSpace / 2, height - intensity * height / 255, barWidth, intensity * height / 255);
+                ) / step)
+            if (intensity > caps.current[i]) {
+                caps.current[i] = intensity;
+            }
+            const x = i * (barWidth + barSpace) + barSpace / 2;
+            ctx.fillRect(x, height - intensity * height / 255, barWidth, intensity * height / 255);
+            ctx.fillRect(x, height - caps.current[i] * height / 255 - capHeight - capGap, barWidth, capHeight);
         }
     }
 
