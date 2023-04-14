@@ -22,7 +22,6 @@ import useLocalStorageState from '../hook/useLocalStorageState';
 import MediaSlider from './MediaSlider';
 import AudioVisual from './AudioVisual';
 import { generate } from '../../util/url';
-import { isDev } from '../../util/env';
 
 export interface SearchMusic {
     id: number;
@@ -51,18 +50,68 @@ interface MusicPlayerProps {
 function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayList, onRepeatChange, onPlayEnd }: MusicPlayerProps) {
 
     const audioRef = useRef<HTMLAudioElement>()
+    const [playUrl, setPlayUrl] = useState({
+        catched: false,
+        url: music?.url
+    })
     const [audioReady, setAudioReady] = useState(false)
     const [duration, setDuration] = useState<number>()
     const [currentTime, setCurrentTime] = useState<number>(0)
+    const cachedPlayPostion = useRef<number | null>(null)
     const [volume, setVolume] = useLocalStorageState<number>('__volume', 1)
     const cachedVolumeRef = useRef<number>(1)
     const [loading, setLoading] = useState(false)
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null)
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)
+    const cachedSong = useRef<Map<SearchMusic['id'], string>>(new Map())
     const hasError = useRef(false)
     const seekingRef = useRef(false)
     const [buffered, setBuffered] = useState(0)
     const durationPlaceholder = '--:--';
+
+    useEffect(() => {
+        if (music) {
+            const { id, url } = music;
+            if (cachedSong.current.has(id)) {
+                setPlayUrl({
+                    catched: true,
+                    url: cachedSong.current.get(id)
+                })
+            }
+            else {
+                setPlayUrl({
+                    catched: false,
+                    url
+                })
+            }
+        }
+    }, [music])
+
+    const catchSong = async ({ id }: SearchMusic) => {
+        if (!cachedSong.current.has(id)) {
+            try {
+                const response = await fetch(`/api/music/download/${id}`)
+                const headers = response.headers;
+                const contentType = headers.get('Content-Type');
+                if (contentType.match(/audio\/*/)) {
+                    const blob = await response.blob();
+                    const blobUrl = URL.createObjectURL(blob);
+                    if (music?.id === id) {
+                        cachedPlayPostion.current = audioRef.current.currentTime;
+                        setPlayUrl({
+                            catched: true,
+                            url: blobUrl
+                        })
+                        setLoading(true)
+                    }
+                    cachedSong.current.set(id, blobUrl);
+                }
+            }
+            catch (err) {
+                console.warn(`cache song id=${id} error.`)
+            }
+        }
+    }
 
     useEffect(() => {
         return () => {
@@ -73,7 +122,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                 hasError.current = false;
             }
         }
-    }, [music?.url])
+    }, [playUrl.url])
 
     const togglePlay = async (play: boolean) => {
         try {
@@ -374,14 +423,23 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                             ref={audioRef}
                             preload="auto"
                             onLoadStart={
-                                () => setLoading(true)
+                                () => {
+                                    setLoading(true)
+                                }
                             }
                             onLoadedMetadata={
                                 () => {
                                     const duration = audioRef.current.duration;
                                     setDuration(duration);
                                     setAudioReady(true);
-                                    tryToAutoPlay();
+                                    if (cachedPlayPostion.current) {
+                                        audioRef.current.currentTime = cachedPlayPostion.current;
+                                        cachedPlayPostion.current = null;
+                                    }
+                                    else {
+                                        tryToAutoPlay();
+                                        catchSong(music);
+                                    }
                                 }
                             }
                             onCanPlay={
@@ -454,7 +512,6 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                             }
                             onError={
                                 () => {
-                                    // audioRef.current.src = music.url;
                                     if (hasError.current) {
                                         onPlayEnd?.(false)
                                         setLoading(false)
@@ -466,25 +523,21 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                                     }
                                 }
                             }
-                            src={music.url}
+                            src={playUrl.url}
                         />
                     )
                 }
             </Stack>
-            {
-                isDev && (
-                    <Box sx={{
-                        position: 'absolute',
-                        left: 0,
-                        top: 0,
-                        right: 0,
-                        bottom: 0,
-                        zIndex: 1
-                    }}>
-                        <AudioVisual audio={audioRef} />
-                    </Box>
-                )
-            }
+            <Box sx={{
+                position: 'absolute',
+                left: 0,
+                top: 0,
+                right: 0,
+                bottom: 0,
+                zIndex: 1
+            }}>
+                <AudioVisual audio={audioRef} enabled={playUrl.catched} />
+            </Box>
         </Stack>
     )
 }

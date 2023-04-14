@@ -295,7 +295,7 @@ function PlayListItem({ music, playing, isCurrent, divider, onAction, onClick }:
                 block: 'center'
             })
         }
-    }, [isCurrent, music.match])
+    }, [music.match])
 
     return (
         <ListItem
