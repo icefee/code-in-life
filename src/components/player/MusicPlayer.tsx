@@ -22,6 +22,7 @@ import useLocalStorageState from '../hook/useLocalStorageState';
 import MediaSlider from './MediaSlider';
 import AudioVisual from './AudioVisual';
 import { generate } from '../../util/url';
+import { isDev } from '../../util/env';
 
 export interface SearchMusic {
     id: number;
@@ -221,6 +222,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                         }} flexGrow={1}>
                             <MediaSlider
                                 size="small"
+                                color="secondary"
                                 value={duration ? (currentTime * 100 / duration) : 0}
                                 buffered={buffered}
                                 showTooltip={!isMobile}
@@ -417,16 +419,17 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                             }
                             onProgress={
                                 () => {
-                                    const audio = audioRef.current;
-                                    const buffered = audio.buffered;
-                                    let bufferedEnd: number;
-                                    try {
-                                        bufferedEnd = buffered.end(buffered.length - 1);
+                                    if (audioReady) {
+                                        const buffered = audioRef.current.buffered;
+                                        let bufferedEnd: number;
+                                        try {
+                                            bufferedEnd = buffered.end(buffered.length - 1);
+                                        }
+                                        catch (err) {
+                                            bufferedEnd = 0;
+                                        }
+                                        setBuffered(bufferedEnd / duration)
                                     }
-                                    catch (err) {
-                                        bufferedEnd = 0;
-                                    }
-                                    setBuffered(bufferedEnd / audio.duration)
                                 }
                             }
                             onSeeked={
@@ -470,16 +473,20 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                     )
                 }
             </Stack>
-            <Box sx={{
-                position: 'absolute',
-                left: 0,
-                top: 0,
-                right: 0,
-                bottom: 0,
-                zIndex: 1
-            }}>
-                <AudioVisual audio={audioRef} />
-            </Box>
+            {
+                isDev && (
+                    <Box sx={{
+                        position: 'absolute',
+                        left: 0,
+                        top: 0,
+                        right: 0,
+                        bottom: 0,
+                        zIndex: 1
+                    }}>
+                        <AudioVisual audio={audioRef} />
+                    </Box>
+                )
+            }
         </Stack>
     )
 }

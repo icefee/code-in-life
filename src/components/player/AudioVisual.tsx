@@ -92,9 +92,11 @@ interface AudioVisualProps {
 
 function AudioVisual({ audio }: AudioVisualProps) {
 
+    const dpr = window.devicePixelRatio;
+
     const fftSize = 512;
-    const barWidth = 4;
-    const barSpace = 1;
+    const barWidth = 4 * dpr;
+    const barSpace = 1 * dpr;
     const capHeight = 2;
     const capGap = 2;
 
@@ -102,7 +104,9 @@ function AudioVisual({ audio }: AudioVisualProps) {
 
     const { byteFrequency } = useAudioContext(audio.current, fftSize)
 
-    const { ref, width, height } = useResizeObserver()
+    const { ref, width: w, height: h } = useResizeObserver()
+    const width = w * dpr, height = h * dpr;
+
     const canvas = useRef<HTMLCanvasElement>()
 
     const drawCanvas = (buffer: Uint8Array) => {
@@ -154,7 +158,9 @@ function AudioVisual({ audio }: AudioVisualProps) {
                 height={height}
                 ref={canvas}
                 style={{
-                    display: 'block'
+                    display: 'block',
+                    width: '100%',
+                    height: '100%'
                 }}
             />
         </Box>
