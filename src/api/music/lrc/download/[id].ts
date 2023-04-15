@@ -8,7 +8,7 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
     const response = await fetch(`${Api.music}/download/lrc/${id}`);
     const headers = response.headers;
     if (name) {
-        res.setHeader('Content-Disposition', `attachment; filename* = UTF-8''${name}.lrc`);
+        res.setHeader('Content-Disposition', `attachment; filename* = UTF-8''${encodeURIComponent(name)}.lrc`);
     }
     res.setHeader('Content-Type', headers.get('Content-Type'));
     res.setHeader('Content-Length', headers.get('Content-Length'));

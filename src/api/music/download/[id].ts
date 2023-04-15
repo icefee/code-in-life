@@ -16,7 +16,7 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
     else {
         const { name } = req.query;
         if (name) {
-            headers.set('Content-Disposition', `attachment; filename* = UTF-8''${name}.mp3`)
+            headers.set('Content-Disposition', `attachment; filename* = UTF-8''${encodeURIComponent(name)}.mp3`)
         }
         for (let key of headers.keys()) {
             res.setHeader(key, headers.get(key))
