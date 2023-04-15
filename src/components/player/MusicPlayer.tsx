@@ -418,16 +418,17 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                             }
                             onProgress={
                                 () => {
-                                    const audio = audioRef.current;
-                                    const buffered = audio.buffered;
-                                    let bufferedEnd: number;
-                                    try {
-                                        bufferedEnd = buffered.end(buffered.length - 1);
+                                    if (audioReady) {
+                                        const buffered = audioRef.current.buffered;
+                                        let bufferedEnd: number;
+                                        try {
+                                            bufferedEnd = buffered.end(buffered.length - 1);
+                                        }
+                                        catch (err) {
+                                            bufferedEnd = 0;
+                                        }
+                                        setBuffered(bufferedEnd / duration)
                                     }
-                                    catch (err) {
-                                        bufferedEnd = 0;
-                                    }
-                                    setBuffered(bufferedEnd / audio.duration)
                                 }
                             }
                             onSeeked={
