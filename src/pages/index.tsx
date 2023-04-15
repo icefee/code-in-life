@@ -100,7 +100,7 @@ export default function MusicSearch() {
 
     const generateSearchParams = ({ name, artist }: SearchMusic) => {
         return new URLSearchParams({
-            name: encodeURIComponent(`${artist}-${name}`)
+            name: `${artist}-${name}`
         })
     }
 
