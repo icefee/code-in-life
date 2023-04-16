@@ -219,35 +219,52 @@ export default function MusicSearch() {
                                             }
                                             onAction={
                                                 async (cmd, music) => {
-                                                    const playIndex = playlist.data.findIndex(
-                                                        m => m.id === music.id
-                                                    )
-                                                    if (playIndex !== -1 && cmd === 'add') {
+                                                    if (cmd === 'add-all') {
+                                                        const dataList = searchTask.data.filter(
+                                                            m => !playlist.data.find(
+                                                                music => music.id === m.id
+                                                            )
+                                                        );
+                                                        setPlaylist(list => [...list, ...dataList])
+                                                        if (playlist.data.length === 0) {
+                                                            setActiveMusic(dataList[0])
+                                                        }
                                                         setToastMsg({
-                                                            type: 'warning',
-                                                            msg: '当前歌曲已经在播放列表中'
+                                                            type: 'success',
+                                                            msg: `已将${dataList.length}首歌曲加入播放列表`
                                                         })
-                                                        return;
                                                     }
-                                                    switch (cmd) {
-                                                        case 'add':
-                                                            setPlaylist(list => [...list, music])
-                                                            if (playlist.data.length === 0) {
-                                                                setActiveMusic(music)
-                                                            }
+                                                    else {
+                                                        const playIndex = playlist.data.findIndex(
+                                                            m => m.id === music.id
+                                                        )
+                                                        if (playIndex !== -1 && cmd === 'add') {
                                                             setToastMsg({
-                                                                type: 'success',
-                                                                msg: '已加入播放列表'
+                                                                type: 'warning',
+                                                                msg: '当前歌曲已经在播放列表中'
                                                             })
-                                                            break;
-                                                        case 'download-song':
-                                                            downloadSong(music)
-                                                            break;
-                                                        case 'download-lrc':
-                                                            downloadLrc(music)
-                                                            break;
-                                                        default:
-                                                            break;
+                                                            return;
+                                                        }
+                                                        switch (cmd) {
+                                                            case 'add':
+                                                                setPlaylist(list => [...list, music])
+                                                                if (playlist.data.length === 0) {
+                                                                    setActiveMusic(music)
+                                                                }
+                                                                setToastMsg({
+                                                                    type: 'success',
+                                                                    msg: '已加入播放列表'
+                                                                })
+                                                                break;
+                                                            case 'download-song':
+                                                                downloadSong(music)
+                                                                break;
+                                                            case 'download-lrc':
+                                                                downloadLrc(music)
+                                                                break;
+                                                            default:
+                                                                break;
+                                                        }
                                                     }
                                                 }
                                             }

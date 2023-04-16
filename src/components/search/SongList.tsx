@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
 import List from '@mui/material/List';
+import ListSubheader from '@mui/material/ListSubheader';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
@@ -8,6 +10,8 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -16,7 +20,7 @@ import MusicPoster from '../player/MusicPoster';
 import { SearchMusic } from '../player/MusicPlayer';
 import MusicPlayIcon from '../loading/music';
 
-type MenuAction = 'add' | 'download-song' | 'download-lrc';
+type MenuAction = 'add' | 'add-all' | 'download-song' | 'download-lrc';
 
 interface SongListProps {
     data: SearchMusic[];
@@ -25,7 +29,7 @@ interface SongListProps {
         isCurrent: boolean;
         playing: boolean;
     };
-    onAction(cmd: MenuAction, current: SearchMusic): void;
+    onAction(cmd: MenuAction, current?: SearchMusic): void;
 }
 
 function SongList({ data, ...rest }: SongListProps) {
@@ -33,7 +37,22 @@ function SongList({ data, ...rest }: SongListProps) {
     return (
         <List sx={{
             bgcolor: 'background.paper'
-        }}>
+        }} subheader={
+            <ListSubheader disableGutters component="li">
+                <Stack sx={{
+                    p: 1
+                }} direction="row" justifyContent="space-between" alignItems="center">
+                    <Typography variant="subtitle2">搜索到{data.length}首歌曲</Typography>
+                    <Button
+                        size="small"
+                        startIcon={<PlaylistAddIcon />}
+                        onClick={
+                            () => rest.onAction('add-all')
+                        }
+                    >加入播放列表</Button>
+                </Stack>
+            </ListSubheader>
+        }>
             {
                 data.map(
                     (music, index) => (
@@ -57,7 +76,7 @@ interface SongListItemProps extends Omit<SongListProps, 'data'> {
 
 function SongListItem({ current, divider, isCurrentPlaying, onTogglePlay, onAction }: SongListItemProps) {
 
-    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null)
+    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
     const { isCurrent, playing } = isCurrentPlaying(current)
 
     const handleMenuAction = (cmd: MenuAction) => {

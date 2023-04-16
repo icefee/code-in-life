@@ -86,11 +86,19 @@ declare namespace ProxyVideo {
     }
 }
 
-declare interface ApiJsonType<T = unknown> {
-    code: number;
-    data: T | null;
+interface ApiJsonSuccess<T = unknown> {
+    code: 0;
+    data: T;
     msg: string;
 }
+
+interface ApiJsonFail {
+    code: -1;
+    data: null;
+    msg: string;
+}
+
+declare type ApiJsonType<T = unknown> = ApiJsonSuccess<T> | ApiJsonFail;
 
 interface ToastMsg<T = unknown> {
     msg: string;

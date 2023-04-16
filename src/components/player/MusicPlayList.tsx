@@ -19,7 +19,7 @@ import PersonSearchOutlinedIcon from '@mui/icons-material/PersonSearchOutlined';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PublishIcon from '@mui/icons-material/Publish';
 import DownloadIcon from '@mui/icons-material/Download';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import PlaylistRemoveIcon from '@mui/icons-material/PlaylistRemove';
 import { type SearchMusic } from './MusicPlayer';
 import { DarkThemed } from '../theme';
 import MusicPoster from './MusicPoster';
@@ -356,9 +356,9 @@ function PlayListItem({ music, playing, isCurrent, divider, onAction, onClick }:
                         </MenuItem>
                         <MenuItem onClick={handleMenuAction('remove')}>
                             <ListItemIcon>
-                                <DeleteOutlineIcon />
+                                <PlaylistRemoveIcon />
                             </ListItemIcon>
-                            <ListItemText>移除</ListItemText>
+                            <ListItemText>移出播放列表</ListItemText>
                         </MenuItem>
                     </Menu>
                 </>
