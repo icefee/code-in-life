@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, type SyntheticEvent, type MouseEvent } from 'react';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import List from '@mui/material/List';
@@ -32,7 +32,7 @@ interface SongListProps {
     onAction(cmd: MenuAction, current?: SearchMusic): void;
 }
 
-function SongList({ data, ...rest }: SongListProps) {
+function SongList({ data, onAction, ...rest }: SongListProps) {
 
     return (
         <List sx={{
@@ -47,7 +47,7 @@ function SongList({ data, ...rest }: SongListProps) {
                         size="small"
                         startIcon={<PlaylistAddIcon />}
                         onClick={
-                            () => rest.onAction('add-all')
+                            () => onAction('add-all')
                         }
                     >加入播放列表</Button>
                 </Stack>
@@ -60,6 +60,7 @@ function SongList({ data, ...rest }: SongListProps) {
                             key={music.id}
                             divider={index < data.length - 1}
                             current={music}
+                            onAction={onAction}
                             {...rest}
                         />
                     )
@@ -76,11 +77,11 @@ interface SongListItemProps extends Omit<SongListProps, 'data'> {
 
 function SongListItem({ current, divider, isCurrentPlaying, onTogglePlay, onAction }: SongListItemProps) {
 
-    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
+    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null)
     const { isCurrent, playing } = isCurrentPlaying(current)
 
     const handleMenuAction = (cmd: MenuAction) => {
-        return (_event: React.SyntheticEvent) => {
+        return (_event: SyntheticEvent) => {
             onAction(cmd, current)
             setAnchorEl(null)
         }
@@ -91,7 +92,7 @@ function SongListItem({ current, divider, isCurrentPlaying, onTogglePlay, onActi
             secondaryAction={
                 <React.Fragment>
                     <IconButton onClick={
-                        (event: React.MouseEvent<HTMLButtonElement>) => {
+                        (event: MouseEvent<HTMLButtonElement>) => {
                             setAnchorEl(event.currentTarget);
                         }
                     }>

@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef, useMemo, ReactNode } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import type { ReactNode, MouseEvent, MouseEventHandler, SyntheticEvent } from 'react';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
@@ -239,10 +240,10 @@ function MusicPlayList({ data, onChange, current, playing, onPlay, onTogglePlay,
                                                         pinToTop(music);
                                                         break;
                                                     case 'search-artist':
-                                                        onSearch?.(music.artist)
+                                                        onSearch?.(music.artist);
                                                         break;
                                                     case 'search-name':
-                                                        onSearch?.(music.name)
+                                                        onSearch?.(music.name);
                                                         break;
                                                     case 'download':
                                                         onDownload?.(music);
@@ -273,7 +274,7 @@ interface PlayListItemProps {
     playing: boolean;
     isCurrent: boolean;
     divider: boolean;
-    onClick: React.MouseEventHandler<HTMLDivElement>;
+    onClick: MouseEventHandler<HTMLDivElement>;
     onAction(cmd: MenuAction, music: SearchMusicWithMatch): void;
 }
 
@@ -283,7 +284,7 @@ function PlayListItem({ music, playing, isCurrent, divider, onAction, onClick }:
     const listItemRef = useRef<HTMLLIElement>()
 
     const handleMenuAction = (cmd: MenuAction) => {
-        return (_event: React.SyntheticEvent) => {
+        return (_event: SyntheticEvent) => {
             onAction(cmd, music)
             setAnchorEl(null)
         }
@@ -307,7 +308,7 @@ function PlayListItem({ music, playing, isCurrent, divider, onAction, onClick }:
             secondaryAction={
                 <>
                     <IconButton onClick={
-                        (event: React.MouseEvent<HTMLButtonElement>) => {
+                        (event: MouseEvent<HTMLButtonElement>) => {
                             setAnchorEl(event.currentTarget);
                         }
                     }>
