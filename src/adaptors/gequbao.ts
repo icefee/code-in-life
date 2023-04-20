@@ -1,8 +1,13 @@
-import { getText } from './common';
+import { getText, parseDuration, isTextNotNull } from './common';
+import { timeFormatter } from '../util/date';
 
 export const key = 'g';
 
 export const baseUrl = 'https://www.gequbao.com';
+
+export const posterReferer = false;
+
+export const lrcFile = true;
 
 export async function getMusicSearch(s: string): Promise<SearchMusic[]> {
     const url = `${baseUrl}/s/${s}`;
@@ -67,23 +72,11 @@ export async function parseMusicUrl(id: string) {
     }
 }
 
-function toPrecision(n: number) {
-    return Math.round((n * 100)) / 100;
-}
-
-function parseDuration(time: string) {
-    const timeStamp = time.match(/^\d{1,2}:\d{1,2}/)
-    const [m, s] = timeStamp[0].split(':')
-    const millsMatch = time.match(/\.\d*/)
-    const mills = parseFloat(millsMatch[0])
-    return toPrecision(parseInt(m) * 60 + parseInt(s) + (Number.isNaN(mills) ? 0 : mills))
-}
-
 export async function parseLrc(id: string) {
     try {
         const lrc = await getText(`${baseUrl}/download/lrc/${id}`)
         const lines = lrc.split(/\n/).filter(
-            s => s.trim().length > 0
+            line => isTextNotNull(line)
         ).map(
             line => {
                 const timeMatch = line.match(/\d{1,2}:\d{1,2}\.\d*/)
@@ -101,6 +94,16 @@ export async function parseLrc(id: string) {
     }
 }
 
-export function getLrcUrl(id: SearchMusic['id']) {
+export async function getLrcText(id: string) {
+    const lrc = await parseLrc(id);
+    return lrc?.map(
+        ({ time, text }) => {
+            const seconds = Math.floor(time)
+            return `[${timeFormatter(seconds)}:${Math.round((time - seconds) * 1000)}]${text}`
+        }
+    ).join('\n');
+}
+
+export function getLrcUrl(id: string) {
     return `${baseUrl}/download/lrc/${id}`
 }

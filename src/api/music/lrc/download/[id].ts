@@ -3,16 +3,32 @@ import { createApiAdaptor, parseId, getResponse } from '../../../../adaptors';
 
 export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
     const { id: paramId } = req.params;
+    const { name } = req.query;
     const { key, id } = parseId(paramId);
     const adaptor = createApiAdaptor(key);
-    const { name } = req.query;
-    const response = await getResponse(adaptor.getLrcUrl(id));
-    const headers = response.headers;
     if (name) {
-        headers.set('Content-Disposition', `attachment; filename* = UTF-8''${encodeURIComponent(name)}.lrc`);
+        res.setHeader('Content-Disposition', `attachment; filename* = UTF-8''${encodeURIComponent(name)}.lrc`);
     }
-    for (let key of headers.keys()) {
-        res.setHeader(key, headers.get(key))
+    if (adaptor.lrcFile) {
+        const response = await getResponse(adaptor.getLrcUrl(id));
+        const headers = response.headers;
+        for (let key of headers.keys()) {
+            res.setHeader(key, headers.get(key))
+        }
+        response.body.pipe(res);
     }
-    response.body.pipe(res);
+    else {
+        const lrcText = await adaptor.getLrcText(id)
+        if (lrcText) {
+            res.setHeader('Content-Type', 'text/lrc')
+            res.send(lrcText)
+        }
+        else {
+            res.json({
+                code: -1,
+                data: null,
+                msg: 'lrc file not found.'
+            })
+        }
+    }
 }
