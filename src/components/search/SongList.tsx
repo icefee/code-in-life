@@ -17,7 +17,6 @@ import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import DownloadIcon from '@mui/icons-material/Download';
 import RttOutlinedIcon from '@mui/icons-material/RttOutlined';
 import MusicPoster from '../player/MusicPoster';
-import { SearchMusic } from '../player/MusicPlayer';
 import MusicPlayIcon from '../loading/music';
 
 type MenuAction = 'add' | 'add-all' | 'download-song' | 'download-lrc';
@@ -40,9 +39,9 @@ function SongList({ data, onAction, ...rest }: SongListProps) {
         }} subheader={
             <ListSubheader disableGutters component="li">
                 <Stack sx={{
-                    p: 1
+                    p: (theme) => theme.spacing(1, 1, 1, 1.5)
                 }} direction="row" justifyContent="space-between" alignItems="center">
-                    <Typography variant="subtitle2">搜索到{data.length}首歌曲</Typography>
+                    <Typography variant="button">搜索到{data.length}首歌曲</Typography>
                     <Button
                         size="small"
                         startIcon={<PlaylistAddIcon />}

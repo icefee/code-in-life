@@ -1,11 +1,12 @@
 import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
-import fetch from 'node-fetch';
-import { Api } from '../../../../util/config';
+import { createApiAdaptor, parseId, getResponse } from '../../../../adaptors';
 
 export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
-    const { id } = req.params;
+    const { id: paramId } = req.params;
+    const { key, id } = parseId(paramId);
+    const adaptor = createApiAdaptor(key);
     const { name } = req.query;
-    const response = await fetch(`${Api.music}/download/lrc/${id}`);
+    const response = await getResponse(adaptor.getLrcUrl(id));
     const headers = response.headers;
     if (name) {
         headers.set('Content-Disposition', `attachment; filename* = UTF-8''${encodeURIComponent(name)}.lrc`);

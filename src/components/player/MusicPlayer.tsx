@@ -24,14 +24,6 @@ import AudioVisual from './AudioVisual';
 import { generate } from '../../util/url';
 import { isDev } from '../../util/env';
 
-export interface SearchMusic {
-    id: number;
-    name: string;
-    artist: string;
-    url: string;
-    poster: string;
-}
-
 export enum RepeatMode {
     All,
     One,

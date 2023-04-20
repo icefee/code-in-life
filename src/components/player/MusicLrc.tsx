@@ -10,7 +10,7 @@ interface Lrc {
 }
 
 interface MusicLrcProps {
-    id: number;
+    id: SearchMusic['id'];
     currentTime: number;
 }
 
@@ -35,7 +35,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
 
     const [lrc, setLrc] = useState<Lrc[]>([])
     const [downloading, setDownloading] = useState(false)
-    const lrcCache = useRef(new Map<number, Lrc[]>())
+    const lrcCache = useRef(new Map<MusicLrcProps['id'], Lrc[]>())
     const [anchorEl, setAnchorEl] = useState<HTMLSpanElement | null>(null)
     const downloadingPlaceholder = '正在下载歌词..'
     const emptyPlaceholder = '🎵🎵...'

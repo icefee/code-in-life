@@ -100,15 +100,23 @@ interface ApiJsonFail {
 
 declare type ApiJsonType<T = unknown> = ApiJsonSuccess<T> | ApiJsonFail;
 
-interface ToastMsg<T = unknown> {
+declare interface ToastMsg<T = unknown> {
     msg: string;
     type: T;
 }
 
-interface SearchTask<T = unknown> {
+declare interface SearchTask<T = unknown> {
     keyword?: string;
     data: T[];
     pending: boolean;
     complete: boolean;
     success: boolean;
+}
+
+declare interface SearchMusic {
+    id: string;
+    name: string;
+    artist: string;
+    url: string;
+    poster: string;
 }

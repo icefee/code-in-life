@@ -7,7 +7,7 @@ import Slide from '@mui/material/Slide';
 import Typography from '@mui/material/Typography';
 import SearchForm from '../../components/search/Form';
 import { LoadingOverlay } from '../../components/loading';
-import MusicPlayer, { type SearchMusic, RepeatMode } from '../../components/player/MusicPlayer';
+import MusicPlayer, { RepeatMode } from '../../components/player/MusicPlayer';
 import NoData from '../../components/search/NoData';
 import SongList from '../../components/search/SongList';
 import MusicPlayList from '../../components/player/MusicPlayList';
@@ -132,6 +132,54 @@ export default function MusicSearch() {
             setPlaylistShow(false)
         }
     }, [activeMusic])
+
+    const checkPlayListState = () => {
+
+        const playListUpgradeKey = '__playlist_upgraded';
+        const playListUpgraded = localStorage.getItem(playListUpgradeKey)
+
+        if (!playListUpgraded) {
+            const cachedList = JSON.parse(localStorage.getItem('__playlist')) as (Omit<SearchMusic, 'id'> & { id: number | string; })[]
+
+            if (cachedList.some(
+                m => typeof m.id === 'number'
+            )) {
+                const upgradedList = cachedList.map(
+                    (m) => {
+                        const { id, poster, url, ...rest } = m;
+                        if (typeof m.id === 'number') {
+                            const regExp = new RegExp(
+                                String(m.id)
+                            )
+                            const newId = 'g' + m.id;
+                            return ({
+                                id: newId,
+                                poster: poster.replace(regExp, newId),
+                                url: url.replace(regExp, newId),
+                                ...rest
+                            })
+                        }
+                        return {
+                            ...m,
+                            id: String(id)
+                        }
+                    }
+                );
+                setPlaylist(upgradedList)
+                setToastMsg({
+                    type: 'success',
+                    msg: '播放列表已升级'
+                })
+                setActiveMusic(upgradedList[0])
+            }
+
+            localStorage.setItem(playListUpgradeKey, '1')
+        }
+    }
+
+    useEffect(() => {
+        checkPlayListState()
+    }, [])
 
     return (
         <Stack sx={{
