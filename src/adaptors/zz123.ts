@@ -95,7 +95,11 @@ export async function parsePoster(id: string) {
 export async function parseMusicUrl(id: string) {
     try {
         const info = await getMusicInfo(id);
-        return info?.mp3;
+        const url = info?.mp3;
+        if (url.startsWith('http')) {
+            return url;
+        }
+        return baseUrl + url;
     }
     catch (err) {
         return null

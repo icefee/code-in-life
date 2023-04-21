@@ -2,10 +2,9 @@ import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
 import { createApiAdaptor, parseId, getResponse } from '../../../../adaptors';
 
 export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
-    const { id: paramId } = req.params;
-    const { name } = req.query;
-    const { key, id } = parseId(paramId);
+    const { key, id } = parseId(req.params.id);
     const adaptor = createApiAdaptor(key);
+    const { name } = req.query;
     if (name) {
         res.setHeader('Content-Disposition', `attachment; filename* = UTF-8''${encodeURIComponent(name)}.lrc`);
     }

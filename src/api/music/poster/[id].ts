@@ -2,8 +2,7 @@ import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
 import { createApiAdaptor, defaultPoster, parseId, getResponse } from '../../../adaptors';
 
 export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
-    const { id: paramId } = req.params;
-    const { key, id } = parseId(paramId);
+    const { key, id } = parseId(req.params.id);
     const adaptor = createApiAdaptor(key)
     const poster = await adaptor.parsePoster(id);
     try {

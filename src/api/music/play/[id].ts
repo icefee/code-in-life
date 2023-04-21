@@ -3,10 +3,10 @@ import { createApiAdaptor, parseId, getResponse } from '../../../adaptors';
 import { isDev } from '../../../util/env';
 
 export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
-    const { id: paramId } = req.params;
-    const { key, id } = parseId(paramId);
+    const { key, id } = parseId(req.params.id);
     const adaptor = createApiAdaptor(key);
     const url = await adaptor.parseMusicUrl(id);
+    console.log(url);
     if (url) {
         if (isDev) {
             const response = await getResponse(url);

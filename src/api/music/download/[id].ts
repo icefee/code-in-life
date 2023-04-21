@@ -3,8 +3,7 @@ import { getResponse } from '../../../adaptors';
 import { Api } from '../../../util/config';
 
 export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
-    const { id: paramId } = req.params;
-    const response = await getResponse(`${Api.hosting}/api/music/play/${paramId}`);
+    const response = await getResponse(`${Api.hosting}/api/music/play/${req.params.id}`);
     const headers = response.headers;
     const contentType = headers.get('Content-Type');
     if (contentType === 'text/html') {
