@@ -105,31 +105,29 @@ export async function parseMusicUrl(id: string) {
 export async function parseLrc(id: string) {
     try {
         const info = await getMusicInfo(id);
-        const lines = info.lrc.split(/\r?\n/).filter(
-            line => isTextNotNull(line)
-        ).map(
-            line => {
-                const timeMatch = line.match(/\d{1,2}:\d{1,2}\.\d*/)
-                const textMatch = line.match(/(?<=]).+(?=($|\r))/)
-                const text = textMatch ? textMatch[0] : '';
-                if (timeMatch) {
-                    return {
-                        time: parseDuration(timeMatch[0]),
+        const lines = info.lrc.split(/\r?\n/);
+        const lrcs = [];
+        for (const line of lines) {
+            const timeMatchReg = /\[\d{1,2}:\d{1,2}\.\d*\]/g;
+            const timeMatchs = line.match(timeMatchReg)
+            const text = line.replace(timeMatchReg, '')
+            if (timeMatchs) {
+                for (const timeMatch of timeMatchs) {
+                    lrcs.push({
+                        time: parseDuration(timeMatch.replace(/(\[|\])/g, '')),
                         text
-                    }
-                }
-                return {
-                    time: 0,
-                    text
+                    })
                 }
             }
-        ).filter(
+        }
+        return lrcs.filter(
             ({ text }) => {
                 const hostname = new URL(baseUrl).hostname;
                 return isTextNotNull(text) && !text.match(new RegExp(hostname));
             }
+        ).sort(
+            (prev, next) => prev.time - next.time
         )
-        return lines;
     }
     catch (err) {
         return null;
