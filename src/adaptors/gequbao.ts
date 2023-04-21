@@ -1,4 +1,4 @@
-import { getText, getTextWithTimeout, parseDuration, isTextNotNull } from './common';
+import { getText, parseDuration, isTextNotNull } from './common';
 import { timeFormatter } from '../util/date';
 
 export const key = 'g';
@@ -12,7 +12,7 @@ export const lrcFile = true;
 export async function getMusicSearch(s: string): Promise<SearchMusic[]> {
     const url = `${baseUrl}/s/${s}`;
     try {
-        const html = await getTextWithTimeout(url)
+        const html = await getText(url)
         const matchBlocks = html.replace(/[\n\r]+/g, '').replace(new RegExp('&amp;', 'g'), '&').match(
             /<tr>\s*<td><a href="\/music\/\d+"\s*class="text-primary font-weight-bold"\s+target="_blank">[^<]+<\/a>\s*<\/td>\s*<td class="text-success">[^<]+<\/td>\s*<td><a href="\/music\/\d+" target="_blank"><u>下载<\/u><\/a><\/td>\s*<\/tr>/g
         )

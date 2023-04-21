@@ -6,7 +6,6 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
     const { key, id } = parseId(req.params.id);
     const adaptor = createApiAdaptor(key);
     const url = await adaptor.parseMusicUrl(id);
-    console.log(url);
     if (url) {
         if (isDev) {
             const response = await getResponse(url);
