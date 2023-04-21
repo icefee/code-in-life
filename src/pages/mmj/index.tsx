@@ -8,6 +8,7 @@ export function Head() {
             <link rel="icon" type="image/svg+xml" href="/mmj/vite.svg" />
             <link rel="stylesheet" type="text/css" href="/mmj/assets/index-cadd242c.css" />
             <title>音乐搜索</title>
+            <script type="module" defer src="/mmj/assets/index-8afe445e.js"></script>
         </>
     )
 }
@@ -15,7 +16,6 @@ export function Head() {
 function Page() {
     return (
         <NoSsr>
-            <script type="module" src="/mmj/assets/index-8afe445e.js"></script>
             <GlobalStyles
                 styles={
                     `
