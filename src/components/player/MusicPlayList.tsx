@@ -21,7 +21,6 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PublishIcon from '@mui/icons-material/Publish';
 import DownloadIcon from '@mui/icons-material/Download';
 import PlaylistRemoveIcon from '@mui/icons-material/PlaylistRemove';
-import { type SearchMusic } from './MusicPlayer';
 import { DarkThemed } from '../theme';
 import MusicPoster from './MusicPoster';
 import MusicPlayIcon from '../loading/music';
@@ -176,7 +175,13 @@ function MusicPlayList({ data, onChange, current, playing, onPlay, onTogglePlay,
                 bgcolor: 'background.paper',
                 color: '#fff',
                 overflowY: 'auto',
-                borderTop: (theme) => `1px solid ${theme.palette.divider}`
+                borderTop: (theme) => `1px solid ${theme.palette.divider}`,
+                '&::-webkit-scrollbar-thumb': {
+                    bgcolor: 'var(--scrollbar-thumb-dark-mode-color)'
+                },
+                '&::-webkit-scrollbar-thumb:hover': {
+                    bgcolor: 'var(--scrollbar-thumb-dark-mode-hover-color)'
+                }
             }}>
                 <List subheader={
                     <ListSubheader disableGutters component="li">

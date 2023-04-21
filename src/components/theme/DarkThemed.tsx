@@ -1,13 +1,20 @@
 import React from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 
-const DarkThemed = ({ children }: React.PropsWithChildren<unknown>) => {
+export const darkTheme = createTheme({
+    palette: {
+        mode: 'dark',
+    },
+})
+
+const DarkThemed = ({ children }: React.PropsWithChildren) => {
     return (
-        <ThemeProvider theme={createTheme({
-            palette: {
-                mode: 'dark',
-            },
-        })}>{children}</ThemeProvider>
+        <ThemeProvider theme={darkTheme}>
+            <CssBaseline enableColorScheme>
+                {children}
+            </CssBaseline>
+        </ThemeProvider>
     )
 }
 

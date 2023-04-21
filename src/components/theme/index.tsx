@@ -4,33 +4,12 @@ import { ThemeProvider, createTheme, useTheme } from '@mui/material/styles';
 import type { Theme } from '@mui/material/styles'
 import { useLocalStorage } from 'react-use';
 import CssBaseline from '@mui/material/CssBaseline';
+import { darkTheme } from './DarkThemed';
 export { default as DarkThemed } from './DarkThemed';
 
 export type ThemeMode = {
     themeMode?: boolean;
     setThemeMode?(arg: boolean | null): void;
-};
-
-const darkTheme = createTheme({
-    palette: {
-        mode: 'dark',
-    },
-});
-
-function customTheme(theme: Theme): Theme {
-    return createTheme(theme, {
-        palette: {
-            primary: {
-                main: '#881af5',
-            },
-            secondary: {
-                main: '#c61460',
-            },
-        },
-    });
-    // theme.palette.primary.main = '#881af5';
-    // theme.palette.secondary.main = '#c61460';
-    // return theme;
 }
 
 export interface ThemeStoragerProps {
@@ -72,9 +51,9 @@ export const ThemeStorager: React.FC<ThemeStoragerProps> = ({ children }) => {
     const displayTheme = useMemo<Theme>(() => {
         const isDark = themeMode === null ? osTheme : themeMode;
         if (isDark) {
-            return darkTheme; // customTheme(darkTheme)
+            return darkTheme;
         }
-        return theme; // customTheme(theme)
+        return theme;
     }, [theme, themeMode, osTheme])
 
     return (
@@ -102,11 +81,11 @@ export const StaticTheme: React.FC<{
                 },
             }),
         [osTheme],
-    );
+    )
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline enableColorScheme />
             {typeof children === 'function' ? children(osTheme) : children}
         </ThemeProvider>
-    );
+    )
 }
