@@ -12,7 +12,7 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
     if (adaptor.lrcFile) {
         const response = await getResponse(adaptor.getLrcUrl(id));
         const headers = response.headers;
-        for (let key of headers.keys()) {
+        for (const key of headers.keys()) {
             res.setHeader(key, headers.get(key))
         }
         response.body.pipe(res);

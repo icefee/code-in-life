@@ -11,7 +11,9 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
         if (isDev) {
             const response = await getResponse(url);
             const headers = response.headers;
-            for (let key of headers.keys()) {
+            headers.delete('content-disposition');
+            headers.set('content-type', 'audio/mpeg');
+            for (const key of headers.keys()) {
                 res.setHeader(key, headers.get(key))
             }
             response.body.pipe(res);

@@ -10,10 +10,13 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
         if (poster) {
             if (adaptor.posterReferer) {
                 const response = await getResponse(poster, {
-                    'Referer': adaptor.baseUrl
+                    headers: {
+                        'Referer': adaptor.baseUrl
+                    }
                 });
                 const headers = response.headers;
-                for (let key of headers.keys()) {
+                headers.delete('content-disposition');
+                for (const key of headers.keys()) {
                     res.setHeader(key, headers.get(key))
                 }
                 response.body.pipe(res);

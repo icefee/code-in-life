@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import { getText, parseDuration, isTextNotNull } from './common';
+import { getTextWithTimeout, parseDuration, isTextNotNull } from './common';
 import { timeFormatter } from '../util/date';
 
 export const key = 'z';
@@ -16,7 +16,7 @@ export async function getMusicSearch(s: string): Promise<SearchMusic[]> {
     })
     const url = `${baseUrl}/search/?${searchParams}`;
     try {
-        const html = await getText(url)
+        const html = await getTextWithTimeout(url)
         const matchBlocks = html.replace(/[\n\r]+/g, '').match(
             /<div class="songname text-ellipsis color-link-content-primary">\s*<a href="\/play\/\w+\.htm" title="[^"]+" data-pjax="">[^<]+<\/a>\s*<\/div>\s*<div class="singername text-ellipsis color-link-content-secondary">\s*<a href="\/singer\/\w+\.htm" title="[^"]+" data-pjax="">[^"]+<\/a>\s*<\/div>/g
         )
@@ -124,12 +124,14 @@ export async function parseLrc(id: string) {
                 }
             }
         ).filter(
-            line => isTextNotNull(line.text)
+            ({ text }) => {
+                const hostname = new URL(baseUrl).hostname;
+                return isTextNotNull(text) && !text.match(new RegExp(hostname));
+            }
         )
         return lines;
     }
     catch (err) {
-        console.log(err)
         return null;
     }
 }
