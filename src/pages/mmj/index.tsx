@@ -1,4 +1,5 @@
 import React from 'react';
+import NoSsr from '@mui/material/NoSsr';
 import GlobalStyles from '@mui/material/GlobalStyles';
 
 export function Head() {
@@ -16,7 +17,7 @@ export function Head() {
 
 function Page() {
     return (
-        <>
+        <NoSsr>
             <GlobalStyles
                 styles={
                     `
@@ -27,7 +28,7 @@ function Page() {
                 }
             />
             <div id="app"></div>
-        </>
+        </NoSsr>
     )
 }
 
