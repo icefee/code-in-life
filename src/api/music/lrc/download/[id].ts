@@ -1,21 +1,33 @@
 import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
-import fetch from 'node-fetch';
-import { Api } from '../../../../util/config';
+import { createApiAdaptor, parseId, getResponse } from '../../../../adaptors';
 
 export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
-    const { id } = req.params;
+    const { key, id } = parseId(req.params.id);
+    const adaptor = createApiAdaptor(key);
     const { name } = req.query;
-    const response = await fetch(`${Api.music}/download/lrc/${id}`);
-    const headers = response.headers;
     if (name) {
         res.setHeader('Content-Disposition', `attachment; filename* = UTF-8''${encodeURIComponent(name)}.lrc`);
     }
-    res.setHeader('Content-Type', headers.get('Content-Type'));
-    res.setHeader('Content-Length', headers.get('Content-Length'));
-    res.setHeader('Accept-Ranges', headers.get('Accept-Ranges'));
-    res.setHeader('Expires', headers.get('Expires'));
-    res.setHeader('Cache-Control', headers.get('Cache-Control'));
-    res.setHeader('Age', headers.get('Age'));
-    res.setHeader('Connection', 'keep-alive');
-    response.body.pipe(res);
+    if (adaptor.lrcFile) {
+        const response = await getResponse(adaptor.getLrcUrl(id));
+        const headers = response.headers;
+        for (const key of headers.keys()) {
+            res.setHeader(key, headers.get(key))
+        }
+        response.body.pipe(res);
+    }
+    else {
+        const lrcText = await adaptor.getLrcText(id)
+        if (lrcText) {
+            res.setHeader('Content-Type', 'text/lrc')
+            res.send(lrcText)
+        }
+        else {
+            res.json({
+                code: -1,
+                data: null,
+                msg: 'lrc file not found.'
+            })
+        }
+    }
 }

@@ -7,6 +7,7 @@ export function formatDate(dateString: string | number, format = 'YYYY-MM-DD HH:
         .set('H', date.getHours())
         .set('m', date.getMinutes())
         .set('s', date.getSeconds())
+        .set('x', String(date.getMilliseconds()).padStart(3, '0'))
     return format.replace(
         new RegExp('(' + [...Array.from(map.keys())].join('+|') + '+)', 'g'),
         (v, _w, x, y) => String(map.get(y[x])).padStart(v.length, '0')

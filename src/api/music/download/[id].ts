@@ -1,16 +1,16 @@
 import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
-import fetch from 'node-fetch';
+import { getResponse } from '../../../adaptors';
 import { Api } from '../../../util/config';
 
 export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
-    const { id } = req.params;
-    const response = await fetch(`${Api.hosting}/api/music/play/${id}`);
+    const response = await getResponse(`${Api.hosting}/api/music/play/${req.params.id}`);
     const headers = response.headers;
     const contentType = headers.get('Content-Type');
     if (contentType === 'text/html') {
         res.status(200).json({
             code: -1,
-            err: '文件不存在, 无法下载'
+            data: null,
+            msg: 'file not found.'
         })
     }
     else {
