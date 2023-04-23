@@ -1,7 +1,6 @@
 import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
 import fetch from 'node-fetch';
 import { Api } from '../../../util/config';
-import { setCommonHeaders } from '../../../util/pipe';
 
 const getVideoData = async (url: string) => {
     try {
@@ -27,7 +26,6 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
         res.end();
     }
     else {
-        setCommonHeaders(res)
         res.json(data ? {
             code: 0,
             data,

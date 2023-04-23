@@ -1,13 +1,12 @@
 import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
-import fetch from 'node-fetch';
-import { Api } from '../../util/config';
-
+import { getTextWithTimeout2 } from '../adaptors/common';
 export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
-    const { url } = req.query as Record<'url', string>
     try {
-        const response = await fetch(`${Api.site}/api/video/parse?url=${url}`)
-        res.setHeader('Content-Type', 'application/json')
-        response.body.pipe(res)
+        const text = await getTextWithTimeout2(`https://www.gequbao.com`)
+        res.json({
+            code: 0,
+            data: text
+        })
     }
     catch (err) {
         res.json({
