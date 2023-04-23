@@ -1,7 +1,7 @@
 {
   "name": "code-in-life",
   "private": true,
-  "description": "A simplified bare-bones starter for Gatsby",
+  "description": "A website hosted on gatsby cloud",
   "version": "0.1.0",
   "license": "0BSD",
   "scripts": {
