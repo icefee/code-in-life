@@ -20,7 +20,7 @@ import PlayOrPauseButton from './PlayOrPauseButton';
 import { timeFormatter } from '../../util/date';
 import useLocalStorageState from '../hook/useLocalStorageState';
 import MediaSlider from './MediaSlider';
-import AudioVisual from './AudioVisual';
+import AudioVisual from 'react-audio-visual';
 import { generate } from '../../util/url';
 import { isDev } from '../../util/env';
 
@@ -455,7 +455,6 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                             }
                             onError={
                                 () => {
-                                    // audioRef.current.src = music.url;
                                     if (hasError.current) {
                                         onPlayEnd?.(false)
                                         setLoading(false)
@@ -482,7 +481,14 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                         bottom: 0,
                         zIndex: 1
                     }}>
-                        <AudioVisual audio={audioRef} />
+                        <AudioVisual
+                            audio={audioRef}
+                            colors={[
+                                '#ff000040',
+                                '#ffff0040',
+                                '#00ffff40'
+                            ]}
+                        />
                     </Box>
                 )
             }
