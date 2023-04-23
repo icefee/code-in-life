@@ -19,6 +19,7 @@
     "@mui/icons-material": "^5.10.9",
     "@mui/lab": "^5.0.0-alpha.106",
     "@mui/material": "^5.10.12",
+    "abort-controller": "^3.0.0",
     "dplayer": "1.26.0",
     "gatsby": "^5.5.0",
     "hls.js": "^1.2.7",
