@@ -15,11 +15,13 @@ export async function getText(...args: Parameters<typeof fetch>): Promise<string
 
 export async function getTextWithTimeout(...args: Parameters<typeof fetch>): Promise<string> {
     const [url, init] = args;
+    const AbortController = globalThis.AbortController; // || await import('abort-controller')
+    const abortController = new AbortController();
+    const timeout = setTimeout(() => abortController.abort(), 5e3);
     try {
-        const abortSignal = AbortSignal.timeout(4e3);
         const text = await getResponse(url, {
             ...init,
-            signal: abortSignal
+            signal: abortController.signal
         }).then(
             response => response.text()
         )
@@ -27,6 +29,8 @@ export async function getTextWithTimeout(...args: Parameters<typeof fetch>): Pro
     }
     catch (err) {
         return null;
+    } finally {
+        clearTimeout(timeout);
     }
 }
 
