@@ -175,7 +175,13 @@ function MusicPlayList({ data, onChange, current, playing, onPlay, onTogglePlay,
                 bgcolor: 'background.paper',
                 color: '#fff',
                 overflowY: 'auto',
-                borderTop: (theme) => `1px solid ${theme.palette.divider}`
+                borderTop: (theme) => `1px solid ${theme.palette.divider}`,
+                '&::-webkit-scrollbar-thumb': {
+                    bgcolor: 'var(--scrollbar-thumb-dark-mode-color)'
+                },
+                '&::-webkit-scrollbar-thumb:hover': {
+                    bgcolor: 'var(--scrollbar-thumb-dark-mode-hover-color)'
+                }
             }}>
                 <List subheader={
                     <ListSubheader disableGutters component="li">
