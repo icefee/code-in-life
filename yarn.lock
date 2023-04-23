@@ -8069,6 +8069,11 @@ rc@1.2.8, rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
+react-audio-visual@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/react-audio-visual/-/react-audio-visual-1.0.2.tgz#aa7b10b7a1a061cde75a987a8d1929a58d69fdb7"
+  integrity sha512-bVcZ0yVpNNkYcWNHwlMYdCo+OQlbKkL5FubbnqAZKG6pNssdVYJsKL6Cw8IRt5wadT/HJQ0C+FIcI0NPUhDeUw==
+
 react-dev-utils@^12.0.1:
   version "12.0.1"
   resolved "https://registry.yarnpkg.com/react-dev-utils/-/react-dev-utils-12.0.1.tgz#ba92edb4a1f379bd46ccd6bcd4e7bc398df33e73"
