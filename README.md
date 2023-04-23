@@ -8,4 +8,4 @@
 
 #### online video search
 
-[https://cil.gatsbyjs.io/music/](https://cil.gatsbyjs.io/video/)
+[https://cil.gatsbyjs.io/video/](https://cil.gatsbyjs.io/video/)
