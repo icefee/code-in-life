@@ -7,7 +7,7 @@ import Slide from '@mui/material/Slide';
 import Typography from '@mui/material/Typography';
 import SearchForm from '../components/search/Form';
 import { LoadingOverlay } from '../components/loading';
-import MusicPlayer, { type SearchMusic, RepeatMode } from '../components/player/MusicPlayer';
+import MusicPlayer, { RepeatMode } from '../components/player/MusicPlayer';
 import NoData from '../components/search/NoData';
 import SongList from '../components/search/SongList';
 import MusicPlayList from '../components/player/MusicPlayList';
