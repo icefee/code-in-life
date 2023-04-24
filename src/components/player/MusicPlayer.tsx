@@ -198,9 +198,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                         overflow: 'hidden'
                     }}
                 >
-                    <Stack sx={{
-                        position: 'relative'
-                    }} flexDirection="row" alignItems="center" rowGap={1} columnGap={1}>
+                    <Stack flexDirection="row" alignItems="center" rowGap={1} columnGap={1}>
                         <Stack sx={(theme) => ({
                             maxWidth: 150,
                             [theme.breakpoints.up('sm')]: {
