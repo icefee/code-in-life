@@ -93,16 +93,24 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
 
     return (
         <>
-            <Box sx={{
-                p: 1,
-                cursor: 'pointer'
-            }} onClick={
-                (event: React.MouseEvent<HTMLDivElement>) => {
-                    setAnchorEl(event.currentTarget);
-                }
-            }>
-                <Typography variant="caption" display="block" maxWidth={250} noWrap>{displayLrc}</Typography>
-            </Box>
+            <Stack
+                direction="row"
+                justifyContent="flex-end"
+            >
+                <Typography
+                    variant="caption"
+                    noWrap
+                    sx={{
+                        display: 'block',
+                        cursor: 'pointer'
+                    }}
+                    onClick={
+                        (event: React.MouseEvent<HTMLDivElement>) => {
+                            setAnchorEl(event.currentTarget);
+                        }
+                    }
+                >{displayLrc}</Typography>
+            </Stack>
             <Popover
                 open={Boolean(anchorEl)}
                 anchorEl={anchorEl}
@@ -121,7 +129,6 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                         backgroundImage: 'none'
                     }
                 }}
-                marginThreshold={32}
             >
                 {
                     downloading ? placeholder(downloadingPlaceholder) : lrc.length > 0 ? (
@@ -153,18 +160,21 @@ function ScrollingLrc({ lrc, currentTime }: ScrollingLrcProps) {
     }, [lrc, currentTime])
 
     return (
-        <Box sx={{
+        <Box sx={(theme) => ({
             height: '40vh',
             maxHeight: 400,
             minWidth: 240,
             maxWidth: 'var(--max-width)',
-            px: 3,
-            py: 2
-        }}>
+            [theme.breakpoints.only('xs')]: {
+                maxWidth: '75vw'
+            }
+        })}>
             <Box sx={{
                 position: 'relative',
                 height: '100%',
                 overflow: 'hidden',
+                px: 2,
+                py: 1,
                 '&::before': {
                     content: '""',
                     background: (theme) => `linear-gradient(0deg, transparent, ${theme.palette.background.paper})`,
@@ -172,7 +182,7 @@ function ScrollingLrc({ lrc, currentTime }: ScrollingLrcProps) {
                     left: 0,
                     top: 0,
                     right: 0,
-                    height: 96,
+                    height: 120,
                     zIndex: 2
                 },
                 '&::after': {
@@ -182,7 +192,7 @@ function ScrollingLrc({ lrc, currentTime }: ScrollingLrcProps) {
                     left: 0,
                     bottom: 0,
                     right: 0,
-                    height: 96,
+                    height: 120,
                     zIndex: 2
                 }
             }}>
@@ -196,8 +206,14 @@ function ScrollingLrc({ lrc, currentTime }: ScrollingLrcProps) {
                                 <Stack sx={{
                                     height: 28,
                                     color: activeIndex === index ? 'primary.main' : 'text.primary'
-                                }} alignItems="center" justifyContent="center" key={index}>
-                                    <Typography variant="subtitle2" color="inherit" textOverflow="ellipsis" noWrap>{text}</Typography>
+                                }} justifyContent="center" key={index}>
+                                    <Typography
+                                        variant="subtitle2"
+                                        color="inherit"
+                                        textOverflow="ellipsis"
+                                        textAlign="center"
+                                        noWrap
+                                    >{text}</Typography>
                                 </Stack>
                             )
                         )

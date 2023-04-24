@@ -191,7 +191,13 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                         }
                     </Box>
                 </Stack>
-                <Stack justifyContent="space-around" flexGrow={1}>
+                <Stack
+                    justifyContent="space-around"
+                    flexGrow={1}
+                    sx={{
+                        overflow: 'hidden'
+                    }}
+                >
                     <Stack sx={{
                         position: 'relative'
                     }} flexDirection="row" alignItems="center" rowGap={1} columnGap={1}>
@@ -206,6 +212,16 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                         <Stack>
                             <Typography variant="caption" color="#ffffffcc" noWrap>{music?.artist}</Typography>
                         </Stack>
+                        {
+                            music && (
+                                <Box sx={{
+                                    flexGrow: 1,
+                                    overflow: 'hidden'
+                                }}>
+                                    <MusicLrc id={music.id} currentTime={currentTime} />
+                                </Box>
+                            )
+                        }
                     </Stack>
                     <Stack direction="row" alignItems="center">
                         <Typography variant="button">{timeFormatter(currentTime)} / {duration ? timeFormatter(duration) : durationPlaceholder}</Typography>
@@ -343,18 +359,6 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                         </Tooltip>
                     </Stack>
                 </Stack>
-                {
-                    music && (
-                        <Box sx={{
-                            position: 'absolute',
-                            top: 0,
-                            right: 0,
-                            zIndex: 18
-                        }}>
-                            <MusicLrc id={music.id} currentTime={currentTime} />
-                        </Box>
-                    )
-                }
                 {
                     music && (
                         <audio
