@@ -14,7 +14,8 @@
     bottom: 0;
     color: #fff;
     padding: 10px;
-    transition-property: all .5s;
+    transition-property: transform opacity;
+    will-change: transform opacity;
     transition-duration: .3s;
     transform: translateY(100%);
     opacity: 0;
