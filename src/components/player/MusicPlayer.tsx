@@ -200,15 +200,15 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                 >
                     <Stack flexDirection="row" alignItems="center" rowGap={1} columnGap={1}>
                         <Stack sx={(theme) => ({
-                            maxWidth: 150,
+                            maxWidth: 180,
                             [theme.breakpoints.up('sm')]: {
                                 maxWidth: 300
                             }
                         })}>
-                            <Typography variant="body2" noWrap textOverflow="ellipsis">{music?.name}</Typography>
+                            <Typography variant="body2" title={music?.name} noWrap>{music?.name}</Typography>
                         </Stack>
                         <Stack>
-                            <Typography variant="caption" color="#ffffffcc" noWrap>{music?.artist}</Typography>
+                            <Typography variant="caption" color="#ffffffcc" title={music?.artist} lineHeight={1} noWrap>{music?.artist}</Typography>
                         </Stack>
                         {
                             music && (

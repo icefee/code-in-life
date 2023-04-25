@@ -109,6 +109,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                             setAnchorEl(event.currentTarget);
                         }
                     }
+                    title={displayLrc}
                 >{displayLrc}</Typography>
             </Stack>
             <Popover
@@ -212,6 +213,7 @@ function ScrollingLrc({ lrc, currentTime }: ScrollingLrcProps) {
                                         color="inherit"
                                         textOverflow="ellipsis"
                                         textAlign="center"
+                                        title={text}
                                         noWrap
                                     >{text}</Typography>
                                 </Stack>
