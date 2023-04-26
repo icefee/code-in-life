@@ -1,5 +1,4 @@
-import fetch from 'node-fetch';
-import { parseDuration, isTextNotNull, getTextWithTimeout } from './common';
+import { getResponse, parseDuration, isTextNotNull, getTextWithTimeout } from './common';
 import { timeFormatter } from '../util/date';
 
 export const key = 'z';
@@ -62,7 +61,7 @@ interface MusicParseApiJson<T = unknown> {
 }
 
 async function getMusicInfo(id: string) {
-    const { status, data } = await fetch(`${baseUrl}/ajax/`, {
+    const { status, data } = await getResponse(`${baseUrl}/ajax/`, {
         method: 'POST',
         body: new URLSearchParams({
             act: 'songinfo',

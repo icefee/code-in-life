@@ -19,12 +19,10 @@ export async function getTextWithTimeout(...args: Parameters<typeof fetch>): Pro
     const abortController = new AbortController();
     const timeout = setTimeout(() => abortController.abort(), 5e3);
     try {
-        const text = await getResponse(url, {
+        const text = await getText(url, {
             ...init,
             signal: abortController.signal
-        }).then(
-            response => response.text()
-        )
+        })
         return text;
     }
     catch (err) {
