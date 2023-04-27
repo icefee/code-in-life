@@ -26,6 +26,9 @@ function MusicPoster({ spinning = false, src, alt }: MusicPosterProps) {
 
     useEffect(() => {
         loadImage(src)
+        return () => {
+            setPoster(null)
+        }
     }, [src])
 
     return (
