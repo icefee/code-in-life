@@ -6,7 +6,7 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
     const response = await getResponse(`${Api.hosting}/api/music/play/${req.params.id}`);
     const headers = response.headers;
     const contentType = headers.get('Content-Type');
-    if (contentType === 'text/html') {
+    if (contentType.match(/text\/html/)) {
         res.status(200).json({
             code: -1,
             data: null,
