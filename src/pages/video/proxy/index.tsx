@@ -186,6 +186,7 @@ function Proxy() {
                             value={keyword}
                             onChange={setKeyword}
                             onSubmit={handleSubmit}
+                            autocompleteKey="proxy_video"
                         />
                     </Box>
                 </Stack>

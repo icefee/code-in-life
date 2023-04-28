@@ -116,6 +116,7 @@ export default function VideoSearch() {
                                 }
                             }
                         }
+                        autocompleteKey="video"
                     />
                 </Box>
             </Stack>
