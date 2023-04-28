@@ -112,13 +112,16 @@ function AppIcon({ app }: AppIconProps) {
 
 function Index() {
   return (
-    <Stack sx={{
+    <Stack sx={(theme) => ({
       height: '100%',
       background: 'var(--linear-gradient-image)',
       p: 3,
       overflowY: 'auto',
-      '--icon-size': '96px'
-    }} direction="row" gap={3} flexWrap="wrap">
+      '--icon-size': '72px',
+      [theme.breakpoints.up('sm')]: {
+        '--icon-size': '96px',
+      }
+    })} direction="row" gap={3} flexWrap="wrap">
       {
         apps.map(
           (app) => (

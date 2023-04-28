@@ -5,7 +5,7 @@ import Alert, { AlertProps } from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Slide from '@mui/material/Slide';
 import Typography from '@mui/material/Typography';
-import SearchForm from '../../components/search/Form';
+import SearchForm, { type SearchFormInstance } from '../../components/search/Form';
 import { LoadingOverlay } from '../../components/loading';
 import MusicPlayer, { RepeatMode } from '../../components/player/MusicPlayer';
 import NoData from '../../components/search/NoData';
@@ -23,6 +23,7 @@ export default function MusicSearch() {
         complete: false,
         success: false
     })
+    const searchFormRef = useRef<SearchFormInstance>()
 
     const [activeMusic, setActiveMusic] = useState<SearchMusic>()
     const [playing, setPlaying] = useState(false)
@@ -213,6 +214,7 @@ export default function MusicSearch() {
                         }
                     })}>
                         <SearchForm
+                            ref={searchFormRef}
                             value={keyword}
                             onChange={setKeyword}
                             onSubmit={onSearch}
@@ -412,6 +414,7 @@ export default function MusicSearch() {
                                         (s) => {
                                             setKeyword(s)
                                             onSearch(s)
+                                            searchFormRef.current?.putSuggest(s)
                                         }
                                     }
                                     onDownload={downloadSong}

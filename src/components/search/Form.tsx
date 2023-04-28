@@ -1,6 +1,10 @@
-import React, { type SyntheticEvent, useRef, useMemo } from 'react';
+import React, { type SyntheticEvent, useState, useRef, useMemo, forwardRef, useImperativeHandle, ForwardedRef } from 'react';
 import Paper from '@mui/material/Paper';
 import Autocomplete from '@mui/material/Autocomplete';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 import InputBase from '@mui/material/InputBase';
 import { alpha } from '@mui/material/styles';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -21,9 +25,13 @@ interface SearchFormProps {
     autocompleteKey?: string;
 }
 
-interface Suggest {
+export interface Suggest {
     key: string | null;
     value: string;
+}
+
+export interface SearchFormInstance {
+    putSuggest(value: string): void;
 }
 
 function SearchForm({
@@ -37,21 +45,27 @@ function SearchForm({
     submitText = '搜索',
     loadingSubmitText = '搜索中',
     autocompleteKey = null
-}: SearchFormProps) {
+}: SearchFormProps, ref: ForwardedRef<SearchFormInstance>) {
 
     const [suggests, setSuggests] = useLocalStorageState<Suggest[]>('__autocomplete', [])
     const prevSubmitValue = useRef<string>()
+    const input = useRef<HTMLInputElement>(null)
+    const [autoCompleteOpen, setAutoCompleteOpen] = useState(false)
+
+    const putSuggest = (value: string) => {
+        setSuggests(
+            sugs => [{
+                key: autocompleteKey,
+                value
+            }, ...sugs.filter(
+                sug => sug.value !== value
+            )]
+        )
+    }
 
     const handleSubmit = (value: string) => {
         if (isTextNotNull(value)) {
-            setSuggests(
-                sugs => [{
-                    key: autocompleteKey,
-                    value
-                }, ...sugs.filter(
-                    sug => sug.value !== value
-                )]
-            )
+            putSuggest(value);
             prevSubmitValue.current = value;
         }
         onSubmit(value);
@@ -65,11 +79,35 @@ function SearchForm({
         )
     }, [autocompleteKey, suggests])
 
+    useImperativeHandle(ref, () => ({
+        putSuggest
+    }))
+
     return (
         <Autocomplete
             freeSolo
             options={relatedSuggests}
             value={value}
+            blurOnSelect
+            componentsProps={{
+                clearIndicator: {
+                    size: 'large'
+                },
+                paper: {
+                    sx: {
+                        borderTopLeftRadius: 0,
+                        borderTopRightRadius: 0,
+                        backgroundColor: (theme) => alpha(theme.palette.background.paper, .8),
+                        backdropFilter: 'blur(4px)'
+                    }
+                }
+            }}
+            onOpen={
+                () => setAutoCompleteOpen(true)
+            }
+            onClose={
+                () => setAutoCompleteOpen(false)
+            }
             onChange={
                 (_event: SyntheticEvent<Element, Event>, value: string | null) => {
                     if (value && value !== prevSubmitValue.current) {
@@ -77,19 +115,48 @@ function SearchForm({
                     }
                 }
             }
+            renderOption={(props, option) => (
+                <ListItem
+                    {...props}
+                    secondaryAction={
+                        <IconButton edge="end" onClick={
+                            (event) => {
+                                event.stopPropagation()
+                                setSuggests(
+                                    sugs => sugs.filter(
+                                        sug => sug.key !== autocompleteKey || sug.value !== option
+                                    )
+                                )
+                            }
+                        }>
+                            <CloseIcon fontSize="small" />
+                        </IconButton>
+                    }
+                    disablePadding
+                >
+                    <ListItemText primary={option} />
+                </ListItem>
+            )}
             renderInput={(params) => (
                 <Paper
                     component="form"
                     action={action}
+                    ref={params.InputProps.ref}
                     sx={{
                         display: 'flex',
                         width: '100%',
-                        backgroundColor: (theme) => alpha(theme.palette.background.paper, .75)
+                        backgroundColor: (theme) => alpha(theme.palette.background.paper, .8),
+                        ...(autoCompleteOpen && relatedSuggests.length > 0 ? {
+                            borderBottomLeftRadius: 0,
+                            borderBottomRightRadius: 0,
+                        } : null)
+
                     }}
                     onSubmit={
                         (event: React.SyntheticEvent<HTMLFormElement>) => {
                             if (onSubmit) {
                                 event.preventDefault();
+                                input.current.blur();
                                 handleSubmit(value);
                             }
                         }
@@ -97,16 +164,15 @@ function SearchForm({
                 >
                     <InputBase
                         sx={{ flex: 1 }}
-                        name="s"
                         placeholder={placeholder}
                         onChange={
                             (event: React.ChangeEvent<HTMLInputElement>) => {
                                 onChange(event.target.value)
                             }
                         }
-                        autoFocus
-                        ref={params.InputProps.ref}
+                        inputRef={input}
                         type="search"
+                        autoFocus
                         inputProps={{
                             style: {
                                 paddingLeft: 12
@@ -136,4 +202,4 @@ function SearchForm({
     )
 }
 
-export default SearchForm;
+export default forwardRef<SearchFormInstance, SearchFormProps>(SearchForm);

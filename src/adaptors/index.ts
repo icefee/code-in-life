@@ -6,8 +6,8 @@ export * from './common';
 export type Adaptor = typeof g.key | typeof z.key
 
 export const adaptors: Adaptor[] = [
-    g.key,
-    z.key
+    z.key,
+    g.key
 ]
 
 export function createApiAdaptor(key: Adaptor) {
