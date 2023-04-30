@@ -25,7 +25,7 @@ export default function MusicSearch() {
     })
     const searchFormRef = useRef<SearchFormInstance>()
 
-    const [activeMusic, setActiveMusic] = useState<SearchMusic>()
+    const [activeMusic, setActiveMusic] = useState<SearchMusic>(null)
     const [playing, setPlaying] = useState(false)
 
     const [playlistShow, setPlaylistShow] = useState(false)
@@ -344,7 +344,6 @@ export default function MusicSearch() {
                         right: 0,
                         bottom: 0,
                         boxShadow: '0px -4px 12px 0px rgb(0 0 0 / 80%)',
-                        maxHeight: '60%',
                         zIndex: 1250
                     }}>
                         <MusicPlayer

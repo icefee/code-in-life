@@ -102,6 +102,11 @@ function SearchForm({
                     }
                 }
             }}
+            ListboxProps={{
+                sx: {
+                    py: 0
+                }
+            }}
             onOpen={
                 () => setAutoCompleteOpen(true)
             }
@@ -119,7 +124,7 @@ function SearchForm({
                 <ListItem
                     {...props}
                     secondaryAction={
-                        <IconButton edge="end" onClick={
+                        <IconButton edge="end" size="small" onClick={
                             (event) => {
                                 event.stopPropagation()
                                 setSuggests(

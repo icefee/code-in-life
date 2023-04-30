@@ -1,4 +1,4 @@
-import React, { useState, type SyntheticEvent, type MouseEvent } from 'react';
+import React, { type MouseEvent } from 'react';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import List from '@mui/material/List';
@@ -6,10 +6,7 @@ import ListSubheader from '@mui/material/ListSubheader';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import ListItemIcon from '@mui/material/ListItemIcon';
 import IconButton from '@mui/material/IconButton';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -18,6 +15,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 import RttOutlinedIcon from '@mui/icons-material/RttOutlined';
 import MusicPoster from '../player/MusicPoster';
 import MusicPlayIcon from '../loading/music';
+import useMenu from '../hook/useMenu';
 
 type MenuAction = 'add' | 'add-all' | 'download-song' | 'download-lrc';
 
@@ -76,64 +74,45 @@ interface SongListItemProps extends Omit<SongListProps, 'data'> {
 
 function SongListItem({ current, divider, isCurrentPlaying, onTogglePlay, onAction }: SongListItemProps) {
 
-    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null)
+    const { outlet, showMenu, hideMenu } = useMenu()
     const { isCurrent, playing } = isCurrentPlaying(current)
 
     const handleMenuAction = (cmd: MenuAction) => {
-        return (_event: SyntheticEvent) => {
+        return () => {
             onAction(cmd, current)
-            setAnchorEl(null)
+            hideMenu()
         }
     }
 
     return (
         <ListItem
             secondaryAction={
-                <React.Fragment>
+                <>
                     <IconButton onClick={
                         (event: MouseEvent<HTMLButtonElement>) => {
-                            setAnchorEl(event.currentTarget);
+                            showMenu(event.currentTarget, [
+                                {
+                                    icon: <PlaylistAddIcon />,
+                                    text: '加入播放列表',
+                                    onClick: handleMenuAction('add')
+                                },
+                                {
+                                    icon: <DownloadIcon />,
+                                    text: '下载歌曲',
+                                    onClick: handleMenuAction('download-song')
+                                },
+                                {
+                                    icon: <RttOutlinedIcon />,
+                                    text: '下载歌词',
+                                    onClick: handleMenuAction('download-lrc')
+                                }
+                            ]);
                         }
                     }>
                         <MoreVertIcon />
                     </IconButton>
-                    <Menu
-                        anchorEl={anchorEl}
-                        open={Boolean(anchorEl)}
-                        anchorOrigin={{
-                            vertical: 'top',
-                            horizontal: 'left',
-                        }}
-                        transformOrigin={{
-                            vertical: 'top',
-                            horizontal: 'right',
-                        }}
-                        onClose={
-                            () => {
-                                setAnchorEl(null)
-                            }
-                        }
-                    >
-                        <MenuItem onClick={handleMenuAction('add')}>
-                            <ListItemIcon>
-                                <PlaylistAddIcon />
-                            </ListItemIcon>
-                            <ListItemText>加入播放列表</ListItemText>
-                        </MenuItem>
-                        <MenuItem onClick={handleMenuAction('download-song')}>
-                            <ListItemIcon>
-                                <DownloadIcon />
-                            </ListItemIcon>
-                            <ListItemText>下载歌曲</ListItemText>
-                        </MenuItem>
-                        <MenuItem onClick={handleMenuAction('download-lrc')}>
-                            <ListItemIcon>
-                                <RttOutlinedIcon />
-                            </ListItemIcon>
-                            <ListItemText>下载歌词</ListItemText>
-                        </MenuItem>
-                    </Menu>
-                </React.Fragment>
+                    {outlet}
+                </>
             }
             divider={divider}
             disablePadding

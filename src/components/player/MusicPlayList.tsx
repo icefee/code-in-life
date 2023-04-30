@@ -15,15 +15,18 @@ import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
+import ClearAllIcon from '@mui/icons-material/ClearAll';
 import ManageSearchOutlinedIcon from '@mui/icons-material/ManageSearchOutlined';
 import PersonSearchOutlinedIcon from '@mui/icons-material/PersonSearchOutlined';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PublishIcon from '@mui/icons-material/Publish';
 import DownloadIcon from '@mui/icons-material/Download';
+import RttOutlinedIcon from '@mui/icons-material/RttOutlined';
 import PlaylistRemoveIcon from '@mui/icons-material/PlaylistRemove';
 import { DarkThemed } from '../theme';
 import MusicPoster from './MusicPoster';
 import MusicPlayIcon from '../loading/music';
+import useMenu from '../hook/useMenu';
 
 const StyledInput = styled(InputBase)(({ theme }) => ({
     fontSize: '.8em',
@@ -56,13 +59,14 @@ interface MusicPlayListProps {
     playing: boolean;
     onPlay(music: SearchMusic): void;
     onTogglePlay?: VoidFunction;
-    onDownload?(music: SearchMusic): void;
+    onDownload?(music: SearchMusic, type: 'song' | 'lrc'): void;
     onSearch?(keyword: string): void;
 }
 
 function MusicPlayList({ data, onChange, current, playing, onPlay, onTogglePlay, onSearch, onDownload }: MusicPlayListProps) {
 
     const [keyword, setKeyword] = useState('')
+    const { outlet, showMenu, hideMenu } = useMenu()
 
     const pinToTop = (music: SearchMusic) => {
         onChange(
@@ -94,6 +98,11 @@ function MusicPlayList({ data, onChange, current, playing, onPlay, onTogglePlay,
                 item => item.id !== music.id
             )
         )
+    }
+
+    const clearPlayList = () => {
+        onPlay(null)
+        onChange([])
     }
 
     const validKeyword = useMemo(() => keyword.trimStart().trimEnd(), [keyword])
@@ -170,8 +179,8 @@ function MusicPlayList({ data, onChange, current, playing, onPlay, onTogglePlay,
 
     return (
         <DarkThemed>
-            <Box sx={{
-                flexGrow: 1,
+            <Stack sx={{
+                height: '50vh',
                 bgcolor: 'background.paper',
                 color: '#fff',
                 overflowY: 'auto',
@@ -187,26 +196,45 @@ function MusicPlayList({ data, onChange, current, playing, onPlay, onTogglePlay,
                     <ListSubheader disableGutters component="li">
                         <Stack sx={{
                             pl: 2,
-                            pr: .5,
+                            pr: 1,
                             py: .5
                         }} direction="row" justifyContent="space-between" alignItems="center">
                             <Typography variant="subtitle2">播放列表</Typography>
-                            <Stack sx={{
-                                px: 1,
-                                py: .5,
-                                bgcolor: '#ffffff10',
-                                borderRadius: 1
-                            }} direction="row" alignItems="center" columnGap={1}>
-                                <SearchIcon fontSize="small" />
-                                <StyledInput
-                                    placeholder="输入关键词搜索.."
-                                    value={keyword}
-                                    onChange={
-                                        (event: React.ChangeEvent<HTMLInputElement>) => {
-                                            setKeyword(event.target.value)
+                            <Stack direction="row" alignItems="center" columnGap={1}>
+                                <Stack sx={{
+                                    px: 1,
+                                    py: .5,
+                                    bgcolor: '#ffffff10',
+                                    borderRadius: 1
+                                }} direction="row" alignItems="center" columnGap={1}>
+                                    <SearchIcon fontSize="small" />
+                                    <StyledInput
+                                        placeholder="输入关键词搜索.."
+                                        value={keyword}
+                                        onChange={
+                                            (event: React.ChangeEvent<HTMLInputElement>) => {
+                                                setKeyword(event.target.value)
+                                            }
                                         }
+                                    />
+                                </Stack>
+                                <IconButton onClick={
+                                    (event: MouseEvent<HTMLButtonElement>) => {
+                                        showMenu(event.currentTarget, [
+                                            {
+                                                icon: <ClearAllIcon />,
+                                                text: '清空播放列表',
+                                                onClick: () => {
+                                                    clearPlayList()
+                                                    hideMenu()
+                                                }
+                                            }
+                                        ]);
                                     }
-                                />
+                                }>
+                                    <MoreVertIcon />
+                                </IconButton>
+                                {outlet}
                             </Stack>
                         </Stack>
                     </ListSubheader>
@@ -250,8 +278,11 @@ function MusicPlayList({ data, onChange, current, playing, onPlay, onTogglePlay,
                                                     case 'search-name':
                                                         onSearch?.(music.name);
                                                         break;
-                                                    case 'download':
-                                                        onDownload?.(music);
+                                                    case 'download-song':
+                                                        onDownload?.(music, 'song');
+                                                        break;
+                                                    case 'download-lrc':
+                                                        onDownload?.(music, 'lrc');
                                                         break;
                                                     case 'remove':
                                                         removeSong(music);
@@ -267,12 +298,12 @@ function MusicPlayList({ data, onChange, current, playing, onPlay, onTogglePlay,
                         )
                     }
                 </List>
-            </Box>
+            </Stack>
         </DarkThemed>
     )
 }
 
-type MenuAction = 'pin' | 'search-artist' | 'search-name' | 'download' | 'remove';
+type MenuAction = 'pin' | 'search-artist' | 'search-name' | 'download-song' | 'download-lrc' | 'remove';
 
 interface PlayListItemProps {
     music: SearchMusicWithMatch;
@@ -354,11 +385,17 @@ function PlayListItem({ music, playing, isCurrent, divider, onAction, onClick }:
                             </ListItemIcon>
                             <ListItemText>搜索“{music.name}”</ListItemText>
                         </MenuItem>
-                        <MenuItem onClick={handleMenuAction('download')}>
+                        <MenuItem onClick={handleMenuAction('download-song')}>
                             <ListItemIcon>
                                 <DownloadIcon />
                             </ListItemIcon>
-                            <ListItemText>下载</ListItemText>
+                            <ListItemText>下载歌曲</ListItemText>
+                        </MenuItem>
+                        <MenuItem onClick={handleMenuAction('download-lrc')}>
+                            <ListItemIcon>
+                                <RttOutlinedIcon />
+                            </ListItemIcon>
+                            <ListItemText>下载歌词</ListItemText>
                         </MenuItem>
                         <MenuItem onClick={handleMenuAction('remove')}>
                             <ListItemIcon>
