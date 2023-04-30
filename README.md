@@ -4,8 +4,8 @@
 
 #### online music search
 
-[https://cil.gatsbyjs.io/music/](https://cil.gatsbyjs.io/music/)
+[https://apps.gatsbyjs.io/music/](https://apps.gatsbyjs.io/music/)
 
 #### online video search
 
-[https://cil.gatsbyjs.io/video/](https://cil.gatsbyjs.io/video/)
+[https://apps.gatsbyjs.io/video/](https://apps.gatsbyjs.io/video/)
