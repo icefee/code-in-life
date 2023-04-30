@@ -87,18 +87,18 @@ export default function VideoSearch() {
                         value={keyword}
                         onChange={setKeyword}
                         onSubmit={
-                            async () => {
+                            async (s) => {
                                 setSearchTask(t => ({
                                     ...t,
                                     completed: false,
                                     pending: true
                                 }))
-                                const data = await getSearch(keyword)
+                                const data = await getSearch(s)
                                 if (data) {
                                     setSearchTask({
                                         pending: false,
                                         complete: true,
-                                        keyword: parseKeyword(keyword),
+                                        keyword: parseKeyword(s),
                                         success: true,
                                         data
                                     })
