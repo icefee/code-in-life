@@ -51,8 +51,8 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
         else {
             setDownloading(true)
             const data = await downloadLrc(id)
+            setLrc(data ?? [])
             if (data) {
-                setLrc(data)
                 lrcCache.current.set(id, data)
             }
             setDownloading(false)
