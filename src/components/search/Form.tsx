@@ -180,6 +180,11 @@ function SearchForm({
                             },
                             ...params.inputProps
                         }}
+                        onChange={
+                            (event: React.ChangeEvent<HTMLInputElement>) => {
+                                onChange(event.target.value)
+                            }
+                        }
                     />
                     {
                         staticFields && Object.entries(staticFields).map(
