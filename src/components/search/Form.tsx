@@ -118,6 +118,7 @@ function SearchForm({
                     if (value && value !== prevSubmitValue.current) {
                         handleSubmit(value)
                     }
+                    onChange(value ?? '')
                 }
             }
             renderOption={(props, option) => (
@@ -170,11 +171,6 @@ function SearchForm({
                     <InputBase
                         sx={{ flex: 1 }}
                         placeholder={placeholder}
-                        onChange={
-                            (event: React.ChangeEvent<HTMLInputElement>) => {
-                                onChange(event.target.value)
-                            }
-                        }
                         inputRef={input}
                         type="search"
                         autoFocus
