@@ -21,9 +21,7 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
                 response.body.pipe(res);
             }
             else {
-                res.writeHead(301, {
-                    'location': poster
-                })
+                res.redirect(poster)
                 res.end()
             }
         }
