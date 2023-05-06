@@ -496,6 +496,17 @@ function VideoSummary({ video }: VideoSummaryProps) {
     )
 }
 
+export async function getServerData() {
+    return {
+        status: 200,
+        headers: {
+            'Cross-Origin-Embedder-Policy': 'require-corp',
+            'Cross-Origin-Opener-Policy': 'same-origin'
+        },
+        props: {}
+    }
+}
+
 export default function Page({ params }: PageProps<object, object, unknown, unknown>) {
 
     const { api, id } = params as Record<'api' | 'id', string>;

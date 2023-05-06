@@ -18,9 +18,7 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
             response.body.pipe(res);
         }
         else {
-            res.writeHead(301, {
-                location: url
-            })
+            res.redirect(url)
             res.end()
         }
     }
