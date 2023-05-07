@@ -3,9 +3,11 @@ import Stack from '@mui/material/Stack';
 // import Paper from '@mui/material/Paper';
 import { SvgIconProps } from '@mui/material/SvgIcon';
 import AlbumIcon from '@mui/icons-material/Album';
+import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import TheatersIcon from '@mui/icons-material/Theaters';
-import ButtonBase from '@mui/material/ButtonBase';
+import ButtonBase, { ButtonBaseProps } from '@mui/material/ButtonBase';
 import Typography from '@mui/material/Typography';
+// import { Link } from 'gatsby';
 // import Alert from '@mui/material/Alert';
 // import { PlayerContainer, Player } from '../components/react-player';
 // import Hls from 'hls.js';
@@ -75,7 +77,15 @@ const apps: App[] = [
     icon: TheatersIcon,
     iconForeground: '#ffffffcf',
     iconBackground: 'linear-gradient(0, #9c27b0, #cddc39)'
-  }
+  },
+  {
+    id: 'music2',
+    name: '音乐搜索2',
+    url: '/mmj/',
+    icon: MusicNoteIcon,
+    iconForeground: '#222222bd',
+    iconBackground: 'linear-gradient(90deg, #ff5200, #00bcd4)'
+  },
 ];
 
 interface AppIconProps {
@@ -88,7 +98,7 @@ function AppIcon({ app }: AppIconProps) {
     <Stack sx={{
       width: 'var(--icon-size)',
     }}>
-      <ButtonBase href={app.url} target="_blank" disableRipple>
+      <ButtonBase href={app.url} disableRipple>
         <Stack style={{
           color: '#fff',
           alignItems: 'center'
