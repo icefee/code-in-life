@@ -373,10 +373,13 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                             onLoadStart={
                                 () => setLoading(true)
                             }
+                            onDurationChange={
+                                (event: React.SyntheticEvent<HTMLVideoElement>) => {
+                                    setDuration(event.currentTarget.duration);
+                                }
+                            }
                             onLoadedMetadata={
                                 () => {
-                                    const duration = audioRef.current.duration;
-                                    setDuration(duration);
                                     setAudioReady(true);
                                     tryToAutoPlay();
                                 }
