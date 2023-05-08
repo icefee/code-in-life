@@ -18,7 +18,7 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
         if (name) {
             headers.set('Content-Disposition', `attachment; filename* = UTF-8''${encodeURIComponent(name)}.mp3`)
         }
-        for (let key of headers.keys()) {
+        for (const key of headers.keys()) {
             res.setHeader(key, headers.get(key))
         }
         response.body.pipe(res);
