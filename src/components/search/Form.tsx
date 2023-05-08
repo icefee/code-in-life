@@ -4,6 +4,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import IconButton from '@mui/material/IconButton';
+import NoSsr from '@mui/material/NoSsr';
 import CloseIcon from '@mui/icons-material/Close';
 import InputBase from '@mui/material/InputBase';
 import { alpha } from '@mui/material/styles';
@@ -84,127 +85,129 @@ function SearchForm({
     }))
 
     return (
-        <Autocomplete
-            freeSolo
-            options={relatedSuggests}
-            value={value}
-            blurOnSelect
-            componentsProps={{
-                clearIndicator: {
-                    size: 'large'
-                },
-                paper: {
+        <NoSsr>
+            <Autocomplete
+                freeSolo
+                options={relatedSuggests}
+                value={value}
+                blurOnSelect
+                componentsProps={{
+                    clearIndicator: {
+                        size: 'large'
+                    },
+                    paper: {
+                        sx: {
+                            borderTopLeftRadius: 0,
+                            borderTopRightRadius: 0,
+                            backgroundColor: (theme) => alpha(theme.palette.background.paper, .8),
+                            backdropFilter: 'blur(4px)'
+                        }
+                    }
+                }}
+                ListboxProps={{
                     sx: {
-                        borderTopLeftRadius: 0,
-                        borderTopRightRadius: 0,
-                        backgroundColor: (theme) => alpha(theme.palette.background.paper, .8),
-                        backdropFilter: 'blur(4px)'
+                        py: 0
+                    }
+                }}
+                onOpen={
+                    () => setAutoCompleteOpen(true)
+                }
+                onClose={
+                    () => setAutoCompleteOpen(false)
+                }
+                onChange={
+                    (_event: SyntheticEvent<Element, Event>, value: string | null) => {
+                        if (value && value !== prevSubmitValue.current) {
+                            handleSubmit(value)
+                        }
+                        onChange(value ?? '')
                     }
                 }
-            }}
-            ListboxProps={{
-                sx: {
-                    py: 0
-                }
-            }}
-            onOpen={
-                () => setAutoCompleteOpen(true)
-            }
-            onClose={
-                () => setAutoCompleteOpen(false)
-            }
-            onChange={
-                (_event: SyntheticEvent<Element, Event>, value: string | null) => {
-                    if (value && value !== prevSubmitValue.current) {
-                        handleSubmit(value)
-                    }
-                    onChange(value ?? '')
-                }
-            }
-            renderOption={(props, option) => (
-                <ListItem
-                    {...props}
-                    secondaryAction={
-                        <IconButton edge="end" size="small" onClick={
-                            (event) => {
-                                event.stopPropagation()
-                                setSuggests(
-                                    sugs => sugs.filter(
-                                        sug => sug.key !== autocompleteKey || sug.value !== option
+                renderOption={(props, option) => (
+                    <ListItem
+                        {...props}
+                        secondaryAction={
+                            <IconButton edge="end" size="small" onClick={
+                                (event) => {
+                                    event.stopPropagation()
+                                    setSuggests(
+                                        sugs => sugs.filter(
+                                            sug => sug.key !== autocompleteKey || sug.value !== option
+                                        )
                                     )
-                                )
-                            }
-                        }>
-                            <CloseIcon fontSize="small" />
-                        </IconButton>
-                    }
-                    disablePadding
-                >
-                    <ListItemText primary={option} />
-                </ListItem>
-            )}
-            renderInput={(params) => (
-                <Paper
-                    component="form"
-                    action={action}
-                    ref={params.InputProps.ref}
-                    sx={{
-                        display: 'flex',
-                        width: '100%',
-                        backgroundColor: (theme) => alpha(theme.palette.background.paper, .8),
-                        ...(autoCompleteOpen && relatedSuggests.length > 0 ? {
-                            borderBottomLeftRadius: 0,
-                            borderBottomRightRadius: 0,
-                        } : null)
+                                }
+                            }>
+                                <CloseIcon fontSize="small" />
+                            </IconButton>
+                        }
+                        disablePadding
+                    >
+                        <ListItemText primary={option} />
+                    </ListItem>
+                )}
+                renderInput={(params) => (
+                    <Paper
+                        component="form"
+                        action={action}
+                        ref={params.InputProps.ref}
+                        sx={{
+                            display: 'flex',
+                            width: '100%',
+                            backgroundColor: (theme) => alpha(theme.palette.background.paper, .8),
+                            ...(autoCompleteOpen && relatedSuggests.length > 0 ? {
+                                borderBottomLeftRadius: 0,
+                                borderBottomRightRadius: 0,
+                            } : null)
 
-                    }}
-                    onSubmit={
-                        (event: React.SyntheticEvent<HTMLFormElement>) => {
-                            if (onSubmit) {
-                                event.preventDefault();
-                                input.current.blur();
-                                handleSubmit(value);
-                            }
-                        }
-                    }
-                >
-                    <InputBase
-                        sx={{ flex: 1 }}
-                        placeholder={placeholder}
-                        inputRef={input}
-                        type="search"
-                        autoFocus
-                        inputProps={{
-                            style: {
-                                paddingLeft: 12
-                            },
-                            ...params.inputProps
                         }}
-                        onChange={
-                            (event: React.ChangeEvent<HTMLInputElement>) => {
-                                onChange(event.target.value)
+                        onSubmit={
+                            (event: React.SyntheticEvent<HTMLFormElement>) => {
+                                if (onSubmit) {
+                                    event.preventDefault();
+                                    input.current.blur();
+                                    handleSubmit(value);
+                                }
                             }
                         }
-                    />
-                    {
-                        staticFields && Object.entries(staticFields).map(
-                            ([key, value]) => (
-                                <input key={key} type="hidden" name={key} defaultValue={value} />
+                    >
+                        <InputBase
+                            sx={{ flex: 1 }}
+                            placeholder={placeholder}
+                            inputRef={input}
+                            type="search"
+                            autoFocus
+                            inputProps={{
+                                style: {
+                                    paddingLeft: 12
+                                },
+                                ...params.inputProps
+                            }}
+                            onChange={
+                                (event: React.ChangeEvent<HTMLInputElement>) => {
+                                    onChange(event.target.value)
+                                }
+                            }
+                        />
+                        {
+                            staticFields && Object.entries(staticFields).map(
+                                ([key, value]) => (
+                                    <input key={key} type="hidden" name={key} defaultValue={value} />
+                                )
                             )
-                        )
-                    }
-                    <LoadingButton
-                        loadingPosition="start"
-                        startIcon={
-                            <SearchIcon />
                         }
-                        loading={loading}
-                        type="submit"
-                        sx={{ p: 1.5 }}
-                    >{loading ? loadingSubmitText : submitText}</LoadingButton>
-                </Paper>
-            )}
-        />
+                        <LoadingButton
+                            loadingPosition="start"
+                            startIcon={
+                                <SearchIcon />
+                            }
+                            loading={loading}
+                            type="submit"
+                            sx={{ p: 1.5 }}
+                        >{loading ? loadingSubmitText : submitText}</LoadingButton>
+                    </Paper>
+                )}
+            />
+        </NoSsr>
     )
 }
 

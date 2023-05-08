@@ -1,8 +1,21 @@
 import React from 'react';
 import { type PageProps } from 'gatsby';
 import Box from '@mui/material/Box';
+import loadable from '@loadable/component';
 import VideoUrlParser from '../../components/search/VideoUrlParser';
-import VideoPlayer from '../../components/player/PlayerBase';
+
+const VideoPlayer = loadable(() => import('../../components/player/VideoPlayer'))
+
+export async function getServerData() {
+    return {
+        status: 200,
+        headers: {
+            'Cross-Origin-Embedder-Policy': 'require-corp',
+            'Cross-Origin-Opener-Policy': 'same-origin'
+        },
+        props: {}
+    }
+}
 
 interface VideoParserPlayerProps {
     url: string;
@@ -19,7 +32,7 @@ const VideoParserPlayer: React.FC<PageProps<object, object, unknown, VideoParser
             <VideoUrlParser url={url}>
                 {
                     parsedUrl => (
-                        <VideoPlayer url={parsedUrl} />
+                        <VideoPlayer autoplay hls url={parsedUrl} />
                     )
                 }
             </VideoUrlParser>

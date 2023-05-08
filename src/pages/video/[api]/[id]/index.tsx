@@ -8,20 +8,27 @@ import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
+import loadable from '@loadable/component';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
 import ThumbLoader from '../../../../components/search/ThumbLoader';
 import { LoadingScreen } from '../../../../components/loading';
 import BackgroundContainer from '../../../../components/layout/BackgroundContainer';
 import NoData from '../../../../components/search/NoData';
-import VideoPlayer, { type VideoParams } from '../../../../components/player/PlayerBase';
 import VideoUrlParser from '../../../../components/search/VideoUrlParser';
+import { PlayState } from '../../../../components/player/VideoPlayer';
 import * as css from './style.module.css';
+
+const VideoPlayer = loadable(() => import('../../../../components/player/VideoPlayer'))
 
 interface TabPanelProps extends React.PropsWithChildren<{
     index: number;
     value: number;
 }> { }
+
+interface VideoParams {
+    seek: number;
+}
 
 function TabPanel({ index, value, children }: TabPanelProps) {
     if (index === value) {
@@ -156,12 +163,12 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
         return this.state.playingIndex === this.activeSource.urls.length - 1
     }
 
-    public onPlaying(time: number) {
+    public onPlaying({ duration, progress }: PlayState) {
         const nowTime = Date.now();
         if (nowTime - this.lastUpdateTime > 3e3) {
             const { activeSource, playingIndex } = this.state;
             const params = {
-                seek: time
+                seek: duration * progress
             };
             this.updateHistory({
                 params,
@@ -242,8 +249,10 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                                 url => (
                                                     <VideoPlayer
                                                         url={url}
-                                                        params={this.videoParams}
-                                                        onPlaying={this.onPlaying.bind(this)}
+                                                        hls
+                                                        autoplay
+                                                        initPlayTime={this.videoParams ? this.videoParams.seek : 0}
+                                                        onTimeUpdate={this.onPlaying.bind(this)}
                                                         onEnd={this.onPlayEnd.bind(this)}
                                                     />
                                                 )
@@ -496,20 +505,24 @@ function VideoSummary({ video }: VideoSummaryProps) {
     )
 }
 
-export async function getServerData() {
+export async function getServerData({ params }: PageProps<object, object, unknown, unknown>) {
+    const { api, id } = params as Record<'api' | 'id', string>;
     return {
         status: 200,
         headers: {
             'Cross-Origin-Embedder-Policy': 'require-corp',
             'Cross-Origin-Opener-Policy': 'same-origin'
         },
-        props: {}
+        props: {
+            api,
+            id
+        }
     }
 }
 
-export default function Page({ params }: PageProps<object, object, unknown, unknown>) {
+export default function Page({ serverData }: PageProps<object, object, unknown, { api: string; id: string }>) {
 
-    const { api, id } = params as Record<'api' | 'id', string>;
+    const { api, id } = serverData;
     const [video, setVideo] = useState<VideoInfo>();
 
     useEffect(() => {

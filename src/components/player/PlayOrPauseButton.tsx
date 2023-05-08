@@ -1,20 +1,24 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, createElement } from 'react';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 
-interface PlayOrPauseButtonProps {
+interface PlayOrPauseButtonProps extends Omit<IconButtonProps, 'color' | 'onClick' | 'children'> {
     playing: boolean;
     onTogglePlay(value: boolean): void;
-    size?: IconButtonProps['size'];
 }
 
-const PlayOrPauseButton = forwardRef<HTMLButtonElement, PlayOrPauseButtonProps>(({ playing, onTogglePlay, size, ...rest }, ref) => {
+const PlayOrPauseButton = forwardRef<HTMLButtonElement, PlayOrPauseButtonProps>(({ playing, onTogglePlay, ...rest }, ref) => {
     return (
-        <IconButton ref={ref} size={size} color="inherit" onClick={
-            () => onTogglePlay(!playing)
-        } {...rest}>
-            {React.createElement(playing ? PauseIcon : PlayArrowIcon, {
+        <IconButton
+            ref={ref}
+            color="inherit"
+            onClick={
+                () => onTogglePlay(!playing)
+            }
+            {...rest}
+        >
+            {createElement(playing ? PauseIcon : PlayArrowIcon, {
                 fontSize: 'inherit'
             })}
         </IconButton>

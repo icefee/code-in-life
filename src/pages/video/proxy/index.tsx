@@ -18,9 +18,14 @@ import BackgroundContainer from '../../../components/layout/BackgroundContainer'
 import { LoadingOverlay } from '../../../components/loading';
 import ThumbLoader from '../../../components/search/ThumbLoader';
 import RowClipTypography from '../../../components/layout/element/RowClipTypography';
-import VideoPlayer from '../../../components/player/PlayerBase';
 import useErrorMessage, { SnackbarProvider } from '../../../components/hook/useErrorMessage';
 import NoData from '../../../components/search/NoData';
+import createTransition from '../../../components/transition/Slide';
+import loadable from '@loadable/component';
+
+const Transition = createTransition()
+
+const VideoPlayer = loadable(() => import('../../../components/player/VideoPlayer'))
 
 interface PagedSearchTask<T> extends SearchTask<T> {
     total: number;
@@ -293,6 +298,7 @@ function Proxy() {
                 <Dialog
                     fullScreen
                     open={Boolean(playingVideo)}
+                    TransitionComponent={Transition}
                 >
                     <AppBar color="transparent" elevation={0}>
                         <Toolbar sx={{
@@ -324,6 +330,7 @@ function Proxy() {
                         playingVideo && (
                             <VideoPlayer
                                 url={playingVideo.url}
+                                autoplay
                                 onEnd={() => history.back()}
                             />
                         )

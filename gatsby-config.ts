@@ -2,7 +2,7 @@ import type { GatsbyConfig } from 'gatsby'
 
 const config: GatsbyConfig = {
   flags: {
-    DEV_SSR: false
+    DEV_SSR: true
   },
   plugins: []
 }

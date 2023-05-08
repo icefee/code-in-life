@@ -222,9 +222,11 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                             <MediaSlider
                                 size="small"
                                 color="secondary"
-                                value={duration ? (currentTime * 100 / duration) : 0}
+                                value={duration ? currentTime / duration : 0}
                                 buffered={buffered}
                                 showTooltip={!isMobile}
+                                max={1}
+                                step={.00001}
                                 tooltipFormatter={
                                     (value) => duration ? timeFormatter(value * duration) : durationPlaceholder
                                 }
@@ -232,14 +234,14 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                                     (_event, value: number) => {
                                         if (duration) {
                                             seekingRef.current = true;
-                                            setCurrentTime(value * duration / 100)
+                                            setCurrentTime(value * duration)
                                         }
                                     }
                                 }
                                 onChangeCommitted={
                                     (_event, value: number) => {
                                         if (duration) {
-                                            audioRef.current.currentTime = value * duration / 100;
+                                            audioRef.current.currentTime = value * duration;
                                         }
                                     }
                                 }
@@ -320,10 +322,13 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                             onLoadStart={
                                 () => setLoading(true)
                             }
+                            onDurationChange={
+                                (event: React.SyntheticEvent<HTMLVideoElement>) => {
+                                    setDuration(event.currentTarget.duration);
+                                }
+                            }
                             onLoadedMetadata={
                                 () => {
-                                    const duration = audioRef.current.duration;
-                                    setDuration(duration);
                                     setAudioReady(true);
                                     tryToAutoPlay();
                                 }

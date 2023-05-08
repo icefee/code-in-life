@@ -57,11 +57,13 @@ function VolumeSetter({ value, onChange, onMute, disabled = false, IconProps }: 
                 }} alignItems="center">
                     <Slider
                         size="small"
-                        value={value * 100}
+                        value={value}
+                        max={1}
+                        step={.00001}
                         disabled={disabled}
                         onChange={
                             (_event, value: number) => {
-                                onChange(value / 100)
+                                onChange(value)
                             }
                         }
                         orientation="vertical"

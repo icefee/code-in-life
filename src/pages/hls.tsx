@@ -1,6 +1,8 @@
 import React from 'react';
 import Box from '@mui/material/Box';
-import VideoPlayer from '../components/player/VideoPlayer';
+import loadable from '@loadable/component'
+
+const VideoPlayer = loadable(() => import('../components/player/VideoPlayer'))
 
 export async function getServerData() {
     return {
@@ -19,7 +21,7 @@ export default function Hls() {
             height: 400
         }}>
             <VideoPlayer
-                url="https://cdn12.yzzy-tv-cdn.com/20221217/11433_5e900683/index.m3u8"
+                url="https://cdn8.hdzyk-video.com/20220726/10883_8a84978f/index.m3u8"
                 hls
                 autoplay
             />

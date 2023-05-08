@@ -12,16 +12,15 @@ interface CancelMutedButtonProps {
 
 function CancelMutedButton({ show, left, bottom, onClick }: CancelMutedButtonProps) {
     return (
-        <Box sx={(theme) => ({
+        <Box sx={{
             position: 'absolute',
             transform: `scale(${show ? 1 : 0})`,
             opacity: show ? 1 : 0,
-            transition: 'all .3s',
-            color: `var(--status-color, ${theme.palette.primary.main})`,
+            transition: `all .5s`,
             left,
             bottom
-        })}>
-            <Button color="inherit" variant="outlined" size="small" startIcon={
+        }}>
+            <Button variant="outlined" size="small" startIcon={
                 <VolumeOffIcon />
             } onClick={onClick}>取消静音</Button>
         </Box>

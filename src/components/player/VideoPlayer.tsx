@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useMemo, useEffect } from 'react';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -6,15 +6,17 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Fade from '@mui/material/Fade';
 import CircularProgress from '@mui/material/CircularProgress';
+import Alert from '@mui/material/Alert';
 import { styled } from '@mui/material/styles';
 import Hls from 'hls.js';
 import Hls2Mp4 from 'hls2mp4';
 import PictureInPictureIcon from '@mui/icons-material/PictureInPicture';
 import PictureInPictureAltIcon from '@mui/icons-material/PictureInPictureAlt';
+import FullscreenIcon from '@mui/icons-material/Fullscreen';
+import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import FastRewindIcon from '@mui/icons-material/FastRewind';
 import FastForwardIcon from '@mui/icons-material/FastForward';
 import DownloadIcon from '@mui/icons-material/Download';
-import { PlayerConfig as config } from './config';
 import MediaSlider from './MediaSlider';
 import CancelMutedButton from './CancelMutedButton';
 import { DarkThemed } from '../theme';
@@ -31,9 +33,9 @@ const StyledVideo = styled('video')({
     height: '100%'
 })
 
-function usePipEvent(ref: React.MutableRefObject<HTMLVideoElement>, initState: boolean) {
+function usePipEvent(ref: React.MutableRefObject<HTMLVideoElement>) {
 
-    const [pip, setPip] = useState<boolean>(initState)
+    const [pip, setPip] = useState<boolean>(false)
 
     const onEnter = () => {
         setPip(true)
@@ -43,16 +45,62 @@ function usePipEvent(ref: React.MutableRefObject<HTMLVideoElement>, initState: b
         setPip(false)
     }
 
+    const togglePip = async () => {
+        if (pip) {
+            if (document.pictureInPictureElement) {
+                await document.exitPictureInPicture()
+            }
+        }
+        else {
+            await ref.current?.requestPictureInPicture()
+        }
+    }
+
     useEffect(() => {
-        ref.current.addEventListener('enterpictureinpicture', onEnter);
-        ref.current.addEventListener('leavepictureinpicture', onExit);
+        ref.current?.addEventListener('enterpictureinpicture', onEnter);
+        ref.current?.addEventListener('leavepictureinpicture', onExit);
         return () => {
-            ref.current.removeEventListener('enterpictureinpicture', onEnter);
-            ref.current.removeEventListener('leavepictureinpicture', onExit);
+            ref.current?.removeEventListener('enterpictureinpicture', onEnter);
+            ref.current?.removeEventListener('leavepictureinpicture', onExit);
         }
     }, [])
 
-    return [pip, setPip]
+    return {
+        pip,
+        togglePip
+    }
+}
+
+function useFullscreenEvent<T extends HTMLElement>(ref: React.MutableRefObject<T>) {
+
+    const [fullscreen, setFullscreen] = useState<boolean>(false)
+
+    const onChange = () => {
+        setFullscreen(document.fullscreenElement !== null)
+    }
+
+    const toggleFullscreen = async () => {
+        if (fullscreen) {
+            if (document.fullscreenElement) {
+                await document.exitFullscreen()
+            }
+        }
+        else {
+            await ref.current.requestFullscreen()
+        }
+    }
+
+    useEffect(() => {
+        document.addEventListener('fullscreenchange', onChange);
+        return () => {
+            document.removeEventListener('fullscreenchange', onChange);
+        }
+    }, [])
+
+    return {
+        fullscreen,
+        toggleFullscreen
+    }
 }
 
 function useStatus() {
@@ -74,6 +122,12 @@ function useStatus() {
     return { outlet, setShow, setStatusText }
 }
 
+export interface PlayState {
+    duration: number;
+    progress: number;
+    buffered: number;
+}
+
 interface VideoPlayerProps {
     url: string;
     title?: string;
@@ -89,7 +143,7 @@ interface VideoPlayerProps {
 function VideoPlayer({
     url,
     title,
-    poster = config.poster,
+    poster,
     hls: hlsType = false,
     live = false,
     autoplay = false,
@@ -107,6 +161,7 @@ function VideoPlayer({
 
     const [volume, setVolume] = useLocalStorageState<number>('__volume', 1)
     const cachedVolumeRef = useRef<number>(1)
+    const seekingRef = useRef(false)
 
     const [buffered, setBuffered] = useState(0)
     const [muted, setMuted] = useState(false)
@@ -115,12 +170,19 @@ function VideoPlayer({
     const [controlsShow, setControlsShow] = useState(true)
 
     const [rate, setRate] = useState(1)
-    const [pip] = usePipEvent(videoRef, false)
+    const { pip, togglePip } = usePipEvent(videoRef)
+
+    const playerRef = useRef<HTMLDivElement>()
+    const { fullscreen, toggleFullscreen } = useFullscreenEvent<HTMLDivElement>(playerRef)
 
     const hls2Mp4 = useRef<Hls2Mp4>()
     const { outlet, setShow, setStatusText } = useStatus()
     const [loading, setLoading] = useState(false)
     const [downloading, setDownloading] = useState(false)
+
+    const [error, setError] = useState(false)
+
+    const videoLoaded = useMemo(() => duration > 0, [duration])
 
     const initPlayer = () => {
         const video = videoRef.current;
@@ -156,24 +218,22 @@ function VideoPlayer({
         videoRef.current.pause();
     }
 
-    const onLoadedMetaData: React.ReactEventHandler<HTMLVideoElement> = (event) => {
-        setDuration(event.currentTarget.duration)
-        if (autoplay) {
-            playVideo()
-        }
-        if (initPlayTime > 0) {
-            videoRef.current.currentTime = initPlayTime;
-        }
-    }
-
     const disposePlayer = () => {
         hls.current?.detachMedia();
     }
 
-    const fastSeek = (duration: number) => {
+    const showLoading = () => {
+        setLoading(true)
+    }
+
+    const hideLoading = () => {
+        setLoading(false)
+    }
+
+    const fastSeek = (dur: number) => {
         videoRef.current.currentTime = Math.max(
             0,
-            Math.min(duration, currentTime + duration)
+            Math.min(duration, currentTime + dur)
         )
     }
 
@@ -182,6 +242,7 @@ function VideoPlayer({
         return () => {
             setDuration(0)
             setMuted(false)
+            setError(false)
             disposePlayer()
         }
     }, [url])
@@ -203,7 +264,7 @@ function VideoPlayer({
                         }
                     }
                     else if (type === 1) {
-                        setStatusText(`下载视频分片: ${Math.round(progress * 100)}`)
+                        setStatusText(`下载视频分片: ${Math.round(progress * 100)}%`)
                     }
                     else if (type === 2) {
                         if (progress === 0) {
@@ -239,16 +300,26 @@ function VideoPlayer({
                     bgcolor: 'common.black',
                     color: 'common.white'
                 }}
+                ref={playerRef}
                 onMouseEnter={
-                    () => setControlsShow(true)
+                    () => {
+                        if (!isMobile) {
+                            setControlsShow(true)
+                        }
+                    }
                 }
                 onMouseLeave={
-                    () => setControlsShow(false)
+                    () => {
+                        if (!isMobile) {
+                            setControlsShow(false)
+                        }
+                    }
                 }
             >
                 <Box sx={{
                     height: '100%',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    WebkitTapHighlightColor: 'transparent'
                 }} onClick={
                     () => {
                         if (isMobile) {
@@ -265,29 +336,43 @@ function VideoPlayer({
                             }
                         }
                     }
+                } onDoubleClick={
+                    () => {
+                        if (isMobile) {
+                            if (playing) {
+                                pauseVideo()
+                            }
+                            else {
+                                playVideo()
+                            }
+                        }
+                        else {
+                            toggleFullscreen()
+                        }
+                    }
                 }>
                     <StyledVideo
                         ref={videoRef}
-                        onLoadStart={
-                            () => setLoading(true)
-                        }
-                        onWaiting={
-                            () => {
-                                setLoading(true)
+                        preload="auto"
+                        onLoadStart={showLoading}
+                        onWaiting={showLoading}
+                        playsInline
+                        onDurationChange={
+                            (event: React.SyntheticEvent<HTMLVideoElement>) => {
+                                setDuration(event.currentTarget.duration)
                             }
                         }
-                        onLoadedMetadata={onLoadedMetaData}
-                        onCanPlay={
+                        onLoadedMetadata={
                             () => {
-                                setLoading(false)
-                                setControlsShow(false)
+                                if (autoplay) {
+                                    playVideo()
+                                }
+                                if (initPlayTime > 0) {
+                                    videoRef.current.currentTime = initPlayTime;
+                                }
                             }
                         }
-                        onCanPlayThrough={
-                            () => {
-                                setLoading(false)
-                            }
-                        }
+                        onCanPlay={hideLoading}
                         onPlay={
                             () => {
                                 setPlaying(true)
@@ -298,10 +383,17 @@ function VideoPlayer({
                                 setPlaying(false)
                             }
                         }
-                        onTimeUpdate={
+                        onSeeked={
                             () => {
-                                const currentTime = videoRef.current.currentTime;
-                                setCurrentTime(currentTime);
+                                seekingRef.current = false
+                            }
+                        }
+                        onTimeUpdate={
+                            (event: React.SyntheticEvent<HTMLVideoElement>) => {
+                                const currentTime = event.currentTarget.currentTime;
+                                if (!seekingRef.current) {
+                                    setCurrentTime(currentTime);
+                                }
                                 onTimeUpdate?.({
                                     progress: currentTime / duration,
                                     buffered,
@@ -312,20 +404,24 @@ function VideoPlayer({
                         onProgress={
                             () => {
                                 const buffered = videoRef.current.buffered;
-                                setBuffered(buffered.end(buffered.length - 1) / duration)
+                                setBuffered(
+                                    buffered.length > 0 ? buffered.end(buffered.length - 1) / duration : 0
+                                )
                             }
                         }
-                        onSeeked={playVideo}
                         onVolumeChange={
                             () => setVolume(videoRef.current.volume)
                         }
                         onRateChange={
                             () => setRate(videoRef.current.playbackRate)
                         }
+                        onError={
+                            () => setError(true)
+                        }
                         onEnded={onEnd}
                     />
                 </Box>
-                <Fade in={poster && duration === 0} mountOnEnter unmountOnExit>
+                <Fade in={poster && !videoLoaded} mountOnEnter unmountOnExit>
                     <Box
                         sx={{
                             position: 'absolute',
@@ -351,10 +447,22 @@ function VideoPlayer({
                         <CircularProgress />
                     </Stack>
                 </Fade>
+                <Fade in={error} unmountOnExit>
+                    <Stack sx={{
+                        position: 'absolute',
+                        left: 0,
+                        top: 0,
+                        right: 0,
+                        bottom: 0,
+                        zIndex: 3
+                    }} justifyContent="center" alignItems="center">
+                        <Alert severity="error">视频加载失败</Alert>
+                    </Stack>
+                </Fade>
                 <CancelMutedButton
                     show={muted}
                     left={16}
-                    bottom={90}
+                    bottom={controlsShow ? live ? 60 : 100 : 25}
                     onClick={
                         () => {
                             videoRef.current.muted = false;
@@ -363,14 +471,14 @@ function VideoPlayer({
                     }
                 />
                 {outlet}
-                <Fade in={controlsShow} mountOnEnter>
+                <Fade in={controlsShow} timeout={800} mountOnEnter>
                     <Stack
                         sx={{
                             position: 'absolute',
                             left: 0,
                             bottom: 0,
                             right: 0,
-                            backdropFilter: 'blur(4px)',
+                            backdropFilter: 'blur(2px)',
                             p: 1
                         }}
                     >
@@ -380,29 +488,39 @@ function VideoPlayer({
                                     sx={{
                                         px: 1
                                     }}
-                                    spacing={2}
+                                    spacing={1.5}
                                     direction="row"
                                     alignItems="center">
                                     <Typography variant="button">{timeFormatter(currentTime)}</Typography>
                                     <Stack flexGrow={1}>
                                         <MediaSlider
-                                            value={duration > 0 ? (currentTime * 100 / duration) : 0}
+                                            value={videoLoaded ? currentTime / duration : 0}
+                                            max={1}
+                                            step={.0000001}
+                                            disabled={duration === 0}
                                             buffered={buffered}
-                                            showTooltip={!isMobile && duration > 0}
+                                            showTooltip={!isMobile && videoLoaded}
                                             tooltipFormatter={
                                                 (value) => timeFormatter(value * duration)
                                             }
                                             onChange={
                                                 (_event, value: number) => {
-                                                    pauseVideo();
-                                                    videoRef.current.currentTime = value * duration / 100;
-                                                    setCurrentTime(value * duration / 100)
+                                                    if (playing) {
+                                                        pauseVideo();
+                                                    }
+                                                    seekingRef.current = true;
+                                                    const nextPlayTime = value * duration;
+                                                    videoRef.current.currentTime = nextPlayTime;
+                                                    setCurrentTime(nextPlayTime);
                                                 }
+                                            }
+                                            onChangeCommitted={
+                                                () => setTimeout(playVideo, 200)
                                             }
                                             size="small"
                                         />
                                     </Stack>
-                                    <Typography variant="button">{duration > 0 ? timeFormatter(duration) : durationPlaceholder}</Typography>
+                                    <Typography variant="button">{videoLoaded ? timeFormatter(duration) : durationPlaceholder}</Typography>
                                 </Stack>
                             )
                         }
@@ -420,6 +538,7 @@ function VideoPlayer({
                                             }
                                         }
                                     }
+                                    disabled={!videoLoaded}
                                 />
                                 {
                                     !isMobile && (
@@ -444,6 +563,7 @@ function VideoPlayer({
                                                     }
                                                 }
                                             }
+                                            disabled={!videoLoaded}
                                         />
                                     )
                                 }
@@ -456,6 +576,7 @@ function VideoPlayer({
                                                     onClick={
                                                         () => fastSeek(-10)
                                                     }
+                                                    disabled={!videoLoaded}
                                                 >
                                                     <FastRewindIcon />
                                                 </IconButton>
@@ -466,6 +587,7 @@ function VideoPlayer({
                                                     onClick={
                                                         () => fastSeek(10)
                                                     }
+                                                    disabled={!videoLoaded}
                                                 >
                                                     <FastForwardIcon />
                                                 </IconButton>
@@ -484,27 +606,20 @@ function VideoPlayer({
                                                     videoRef.current.playbackRate = rate
                                                 }
                                             }
+                                            IconProps={{
+                                                disabled: !videoLoaded
+                                            }}
                                         />
                                     )
                                 }
-                                <Tooltip title={`${pip ? '退出' : '进入'}画中画`}>
+                                <Tooltip title={`${fullscreen ? '退出' : '进入'}全屏`}>
                                     <IconButton
                                         color="inherit"
-                                        onClick={
-                                            async () => {
-                                                if (pip) {
-                                                    if (document.pictureInPictureElement) {
-                                                        await document.exitPictureInPicture()
-                                                    }
-                                                }
-                                                else {
-                                                    await videoRef.current.requestPictureInPicture()
-                                                }
-                                            }
-                                        }
+                                        onClick={toggleFullscreen}
+                                        disabled={!videoLoaded}
                                     >
                                         {
-                                            pip ? <PictureInPictureAltIcon /> : <PictureInPictureIcon />
+                                            fullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />
                                         }
                                     </IconButton>
                                 </Tooltip>
@@ -514,13 +629,24 @@ function VideoPlayer({
                                             <IconButton
                                                 color="inherit"
                                                 onClick={downloadVideo}
-                                                disabled={downloading}
+                                                disabled={downloading || !videoLoaded}
                                             >
                                                 <DownloadIcon />
                                             </IconButton>
                                         </Tooltip>
                                     )
                                 }
+                                <Tooltip title={`${pip ? '退出' : '进入'}画中画`}>
+                                    <IconButton
+                                        color="inherit"
+                                        onClick={togglePip}
+                                        disabled={!videoLoaded}
+                                    >
+                                        {
+                                            pip ? <PictureInPictureAltIcon /> : <PictureInPictureIcon />
+                                        }
+                                    </IconButton>
+                                </Tooltip>
                             </Stack>
                         </Stack>
                     </Stack>

@@ -18,7 +18,7 @@ export function Head() {
                     document.head.appendChild(script);
                 }
 
-                loadScript()
+                setTimeout(loadScript, 200)
                 `
             }} />
         </>
