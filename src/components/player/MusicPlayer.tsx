@@ -228,7 +228,9 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                         }} flexGrow={1}>
                             <MediaSlider
                                 size="small"
-                                value={duration ? (currentTime * 100 / duration) : 0}
+                                value={duration ? currentTime / duration : 0}
+                                max={1}
+                                step={.00001}
                                 buffered={buffered}
                                 showTooltip={!isMobile}
                                 tooltipFormatter={
@@ -238,14 +240,14 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                                     (_event, value: number) => {
                                         if (duration) {
                                             seekingRef.current = true;
-                                            setCurrentTime(value * duration / 100)
+                                            setCurrentTime(value * duration)
                                         }
                                     }
                                 }
                                 onChangeCommitted={
                                     (_event, value: number) => {
                                         if (duration) {
-                                            audioRef.current.currentTime = value * duration / 100;
+                                            audioRef.current.currentTime = value * duration;
                                         }
                                     }
                                 }
@@ -288,14 +290,15 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                                         }} alignItems="center">
                                             <Slider
                                                 size="small"
-                                                value={volume.data * 100}
+                                                value={volume.data}
+                                                max={1}
+                                                step={.00001}
                                                 disabled={!audioReady}
                                                 onChange={
                                                     (_event, value: number) => {
                                                         if (duration) {
-                                                            const actualVolume = value / 100;
-                                                            audioRef.current.volume = actualVolume;
-                                                            cachedVolumeRef.current = actualVolume;
+                                                            audioRef.current.volume = value;
+                                                            cachedVolumeRef.current = value;
                                                         }
                                                     }
                                                 }
