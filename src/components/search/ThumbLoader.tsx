@@ -1,7 +1,6 @@
 import React, { memo, useState, useRef } from 'react';
 import Box from '@mui/material/Box';
 import Skeleton from '@mui/material/Skeleton';
-import { Api } from '../../util/config';
 
 type ThumbLoaderProps = {
     src: string;
@@ -31,7 +30,7 @@ function ThumbLoader({ src, alt, aspectRatio = '2 / 3' }: ThumbLoaderProps) {
                 onError={
                     () => {
                         setLoading(false);
-                        imageRef.current.src = `${Api.assetUrl}/assets/image_fail.jpg`;
+                        imageRef.current.src = `/image_fail.jpg`;
                     }
                 }
                 hidden={loading}
