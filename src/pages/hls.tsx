@@ -21,7 +21,7 @@ export default function Hls() {
             height: 400
         }}>
             <VideoPlayer
-                url={new URL('/test.m3u8', document.location.href).href}
+                url="/test.m3u8"
                 hls
                 autoplay
             />

@@ -450,7 +450,7 @@ function VideoSummary({ video }: VideoSummaryProps) {
     const videoPoster = useMemo(
         () => (
             <ThumbLoader
-                src={video.pic}
+                src={`/api/proxy?url=${video.pic}`}
                 alt={video.name}
             />
         ),
@@ -510,8 +510,8 @@ export async function getServerData({ params }: PageProps<object, object, unknow
     return {
         status: 200,
         headers: {
-            // 'Cross-Origin-Embedder-Policy': 'require-corp',
-            // 'Cross-Origin-Opener-Policy': 'same-origin'
+            'Cross-Origin-Embedder-Policy': 'require-corp',
+            'Cross-Origin-Opener-Policy': 'same-origin'
         },
         props: {
             api,

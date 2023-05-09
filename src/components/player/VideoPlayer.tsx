@@ -276,7 +276,9 @@ function VideoPlayer({
                     }
                 })
             }
-            const buffer = await hls2Mp4.current.download(url)
+            const buffer = await hls2Mp4.current.download(
+                url.startsWith('http:') ? url : new URL(url, document.location.href).href
+            )
             hls2Mp4.current.saveToFile(buffer, `${title ?? 'download'}.mp4`)
             setDownloading(false)
         }
