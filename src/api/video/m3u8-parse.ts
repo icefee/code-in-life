@@ -13,6 +13,6 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
     res.setHeader('Transfer-Encoding', 'chunked');
     res.setHeader('Connection', 'keep-alive');
     res.end(
-        m3u8.content.replace(/^\/?\w+.ts/gmi, (v) => new URL(v, m3u8.url).href)
+        m3u8.content.replace(/(^|(?<=URI\="))\/?[\w\/]+.(ts|key)/gmi, (v) => new URL(v, m3u8.url).href)
     );
 }
