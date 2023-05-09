@@ -4,9 +4,9 @@ import { getTextWithTimeout } from '../../adaptors';
 
 export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
     const searchParams = new URLSearchParams(req.query)
-    const id = searchParams.get('id')
+    const url = searchParams.get('url')
     const m3u8 = await parseM3u8File(
-        Buffer.from(`${id}=`, 'base64').toString('utf-8'),
+        url,
         (url) => getTextWithTimeout(url)
     );
     res.setHeader('Content-Type', 'application/vnd.apple.mpegURL');
