@@ -13,7 +13,6 @@ import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
 import ThumbLoader from '../../../../components/search/ThumbLoader';
 import { LoadingScreen } from '../../../../components/loading';
-import BackgroundContainer from '../../../../components/layout/BackgroundContainer';
 import NoData from '../../../../components/search/NoData';
 import VideoUrlParser from '../../../../components/search/VideoUrlParser';
 import { PlayState } from '../../../../components/player/VideoPlayer';
@@ -221,218 +220,235 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                 <title>{this.pageTitle}</title>
                 {
                     this.props.video ? (
-                        <BackgroundContainer>
-                            <Box className={css.container}>
-                                <Box sx={
-                                    (theme) => ({
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        height: '100%',
-                                        [theme.breakpoints.up('sm')]: {
-                                            overflowY: 'auto'
+                        <Box className={css.container}>
+                            <Box sx={
+                                (theme) => ({
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    height: '100%',
+                                    [theme.breakpoints.up('sm')]: {
+                                        overflowY: 'auto'
+                                    }
+                                })
+                            }>
+                                <Box sx={(theme) => ({
+                                    background: '#000',
+                                    overflow: 'hidden',
+                                    width: '100%',
+                                    height: '45%',
+                                    flexShrink: 0,
+                                    [theme.breakpoints.up('sm')]: {
+                                        height: 'min(calc(min(100vw, 1200px) * 10 / 16), 600px)',
+                                        maxHeight: '100vh'
+                                    }
+                                })}>
+                                    <VideoUrlParser url={this.playingUrl}>
+                                        {
+                                            url => (
+                                                <VideoPlayer
+                                                    title={`${this.props.video.name}-${this.playingVideo.label}`}
+                                                    url={url}
+                                                    hls
+                                                    autoplay
+                                                    initPlayTime={this.videoParams ? this.videoParams.seek : 0}
+                                                    onTimeUpdate={this.onPlaying.bind(this)}
+                                                    onEnd={this.onPlayEnd.bind(this)}
+                                                />
+                                            )
                                         }
-                                    })
-                                }>
-                                    <Box sx={(theme) => ({
-                                        background: '#000',
-                                        overflow: 'hidden',
-                                        width: '100%',
-                                        height: '45%',
-                                        flexShrink: 0,
-                                        [theme.breakpoints.up('sm')]: {
-                                            height: 'min(calc(min(100vw, 1200px) * 10 / 16), 600px)',
-                                            maxHeight: '100vh'
-                                        }
-                                    })}>
-                                        <VideoUrlParser url={this.playingUrl}>
-                                            {
-                                                url => (
-                                                    <VideoPlayer
-                                                        title={`${this.props.video.name}-${this.playingVideo.label}`}
-                                                        url={url}
-                                                        hls
-                                                        autoplay
-                                                        initPlayTime={this.videoParams ? this.videoParams.seek : 0}
-                                                        onTimeUpdate={this.onPlaying.bind(this)}
-                                                        onEnd={this.onPlayEnd.bind(this)}
-                                                    />
-                                                )
-                                            }
-                                        </VideoUrlParser>
-                                    </Box>
-                                    {
-                                        this.activeSource.urls.length > 1 && (
+                                    </VideoUrlParser>
+                                </Box>
+                                {
+                                    this.activeSource.urls.length > 1 && (
+                                        <Box sx={{
+                                            backdropFilter: 'blur(15px)',
+                                            color: '#fff',
+                                        }}>
                                             <Box sx={{
-                                                backdropFilter: 'blur(15px)',
-                                                color: '#fff',
+                                                display: {
+                                                    xs: 'inherit',
+                                                    sm: 'none'
+                                                },
                                             }}>
                                                 <Box sx={{
-                                                    display: {
-                                                        xs: 'inherit',
-                                                        sm: 'none'
-                                                    },
+                                                    p: 1
                                                 }}>
-                                                    <Box sx={{
-                                                        p: 1
-                                                    }}>
-                                                        <Typography variant="subtitle1">{this.props.video.name} - {this.playingVideo.label}</Typography>
-                                                    </Box>
-                                                    <Divider sx={{
-                                                        mx: 1
-                                                    }} variant="middle" />
+                                                    <Typography variant="subtitle1">{this.props.video.name} - {this.playingVideo.label}</Typography>
                                                 </Box>
-                                                <Stack
-                                                    justifyContent="space-between"
-                                                    alignItems="center"
-                                                    direction="row"
-                                                    columnGap={1}
-                                                    sx={{
-                                                        p: 1
-                                                    }}
-                                                >
-                                                    <Button startIcon={
+                                                <Divider sx={{
+                                                    mx: 1
+                                                }} variant="middle" />
+                                            </Box>
+                                            <Stack
+                                                direction="row"
+                                                justifyContent="space-between"
+                                                alignItems="center"
+                                                columnGap={1}
+                                                sx={{
+                                                    p: 1
+                                                }}
+                                            >
+                                                <Button
+                                                    startIcon={
                                                         <SkipPreviousIcon />
-                                                    } variant="contained" disabled={this.isFirstVideo} onClick={
+                                                    }
+                                                    variant="outlined"
+                                                    color="inherit"
+                                                    size="small"
+                                                    disabled={this.isFirstVideo}
+                                                    onClick={
                                                         () => this.setPlayingIndex(prev => prev - 1)
-                                                    } sx={{
+                                                    }
+                                                    sx={{
                                                         flexShrink: 0,
                                                         mr: 2,
                                                         visibility: this.isFirstVideo ? 'hidden' : 'visible',
-                                                    }} size="small">{this.prevVideoTitle}</Button>
-                                                    <Typography textAlign="center" variant="subtitle1" sx={{
+                                                    }}
+                                                >{this.prevVideoTitle}</Button>
+                                                <Typography
+                                                    textAlign="center"
+                                                    variant="subtitle1"
+                                                    sx={{
                                                         display: {
                                                             xs: 'none',
                                                             sm: 'inherit'
                                                         },
                                                     }}>
-                                                        正在播放: {this.props.video.name} - {this.playingVideo.label}
-                                                    </Typography>
-                                                    <Button endIcon={
+                                                    正在播放: {this.props.video.name} - {this.playingVideo.label}
+                                                </Typography>
+                                                <Button
+                                                    endIcon={
                                                         <SkipNextIcon />
-                                                    } variant="contained" disabled={this.isLastVideo} onClick={
+                                                    }
+                                                    variant="outlined"
+                                                    color="inherit"
+                                                    size="small"
+                                                    disabled={this.isLastVideo}
+                                                    onClick={
                                                         () => this.setPlayingIndex(prev => prev + 1)
-                                                    } sx={{
+                                                    }
+                                                    sx={{
                                                         flexShrink: 0,
                                                         ml: 2,
                                                         visibility: this.isLastVideo ? 'hidden' : 'visible',
-                                                    }} size="small">{this.nextVideoTitle}</Button>
-                                                </Stack>
-                                            </Box>
-                                        )
-                                    }
-                                    <Box sx={(theme) => ({
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        flexGrow: 1,
-                                        [theme.breakpoints.only('xs')]: {
-                                            overflow: 'hidden'
-                                        }
-                                    })}>
-                                        <Box sx={{
-                                            width: '100%',
-                                            bgcolor: 'background.paper',
-                                            borderBottom: 1,
-                                            borderColor: 'divider'
-                                        }}>
-                                            <Tabs value={this.state.activeView} onChange={
-                                                (_event: React.SyntheticEvent, active: number) => {
-                                                    this.setState({
-                                                        activeView: active
-                                                    })
-                                                }
-                                            } centered>
-                                                <Tab label="简介" />
-                                                <Tab label="选集" />
-                                            </Tabs>
+                                                    }}
+                                                >{this.nextVideoTitle}</Button>
+                                            </Stack>
                                         </Box>
-                                        <TabPanel index={0} value={this.state.activeView}>
-                                            <VideoSummary video={this.props.video} />
-                                        </TabPanel>
-                                        <TabPanel index={1} value={this.state.activeView}>
+                                    )
+                                }
+                                <Box sx={(theme) => ({
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    flexGrow: 1,
+                                    [theme.breakpoints.only('xs')]: {
+                                        overflow: 'hidden'
+                                    }
+                                })}>
+                                    <Box sx={{
+                                        width: '100%',
+                                        bgcolor: 'background.paper',
+                                        borderBottom: 1,
+                                        borderColor: 'divider'
+                                    }}>
+                                        <Tabs value={this.state.activeView} onChange={
+                                            (_event: React.SyntheticEvent, active: number) => {
+                                                this.setState({
+                                                    activeView: active
+                                                })
+                                            }
+                                        } centered>
+                                            <Tab label="简介" />
+                                            <Tab label="选集" />
+                                        </Tabs>
+                                    </Box>
+                                    <TabPanel index={0} value={this.state.activeView}>
+                                        <VideoSummary video={this.props.video} />
+                                    </TabPanel>
+                                    <TabPanel index={1} value={this.state.activeView}>
+                                        <Box sx={(theme) => ({
+                                            display: 'flex',
+                                            flexDirection: 'row',
+                                            height: '100%',
+                                            [theme.breakpoints.up('sm')]: {
+                                                minHeight: 250
+                                            }
+                                        })}>
+                                            {
+                                                this.props.video.dataList.length > 1 && (
+                                                    <Tabs sx={{
+                                                        borderRight: 1,
+                                                        borderColor: 'divider',
+                                                        flexShrink: 0
+                                                    }} orientation="vertical" variant="scrollable" value={this.state.activeSource} onChange={
+                                                        (_event: React.SyntheticEvent, active: number) => {
+                                                            this.updateHistory({
+                                                                sourceIndex: active
+                                                            })
+                                                            this.setState({
+                                                                activeSource: active
+                                                            })
+                                                        }
+                                                    }>
+                                                        {
+                                                            this.props.video.dataList.map(
+                                                                (source: VideoSource, index: number) => (
+                                                                    <Tab label={source.name} key={index} />
+                                                                )
+                                                            )
+                                                        }
+                                                    </Tabs>
+                                                )
+                                            }
                                             <Box sx={(theme) => ({
-                                                display: 'flex',
-                                                flexDirection: 'row',
-                                                height: '100%',
-                                                [theme.breakpoints.up('sm')]: {
-                                                    minHeight: 250
+                                                width: '100%',
+                                                [theme.breakpoints.only('xs')]: {
+                                                    flexGrow: 1,
+                                                    overflowY: 'auto'
                                                 }
                                             })}>
                                                 {
-                                                    this.props.video.dataList.length > 1 && (
-                                                        <Tabs sx={{
-                                                            borderRight: 1,
-                                                            borderColor: 'divider',
-                                                            flexShrink: 0
-                                                        }} orientation="vertical" variant="scrollable" value={this.state.activeSource} onChange={
-                                                            (_event: React.SyntheticEvent, active: number) => {
-                                                                this.updateHistory({
-                                                                    sourceIndex: active
-                                                                })
-                                                                this.setState({
-                                                                    activeSource: active
-                                                                })
-                                                            }
-                                                        }>
-                                                            {
-                                                                this.props.video.dataList.map(
-                                                                    (source: VideoSource, index: number) => (
-                                                                        <Tab label={source.name} key={index} />
-                                                                    )
-                                                                )
-                                                            }
-                                                        </Tabs>
+                                                    this.props.video.dataList.map(
+                                                        (source: VideoSource, index: number) => (
+                                                            <TabPanel index={index} value={this.state.activeSource} key={index}>
+                                                                <Box sx={(theme) => ({
+                                                                    display: 'flex',
+                                                                    flexFlow: 'row wrap',
+                                                                    flexGrow: 1,
+                                                                    [theme.breakpoints.only('xs')]: {
+                                                                        overflowY: 'auto'
+                                                                    }
+                                                                })}>
+                                                                    {
+                                                                        source.urls.map(
+                                                                            (video: VideoItem, index: number) => (
+                                                                                <div className={css.cell} key={index}>
+                                                                                    <Button fullWidth disableElevation variant={
+                                                                                        this.state.playingIndex === index ? 'contained' : 'outlined'
+                                                                                    } sx={{
+                                                                                        whiteSpace: 'nowrap'
+                                                                                    }} size="small" onClick={
+                                                                                        () => {
+                                                                                            if (this.state.playingIndex !== index) {
+                                                                                                this.setPlayingIndex(index);
+                                                                                            }
+                                                                                        }
+                                                                                    }>{video.label}</Button>
+                                                                                </div>
+                                                                            )
+                                                                        )
+                                                                    }
+                                                                </Box>
+                                                            </TabPanel>
+                                                        )
                                                     )
                                                 }
-                                                <Box sx={(theme) => ({
-                                                    width: '100%',
-                                                    [theme.breakpoints.only('xs')]: {
-                                                        flexGrow: 1,
-                                                        overflowY: 'auto'
-                                                    }
-                                                })}>
-                                                    {
-                                                        this.props.video.dataList.map(
-                                                            (source: VideoSource, index: number) => (
-                                                                <TabPanel index={index} value={this.state.activeSource} key={index}>
-                                                                    <Box sx={(theme) => ({
-                                                                        display: 'flex',
-                                                                        flexFlow: 'row wrap',
-                                                                        flexGrow: 1,
-                                                                        [theme.breakpoints.only('xs')]: {
-                                                                            overflowY: 'auto'
-                                                                        }
-                                                                    })}>
-                                                                        {
-                                                                            source.urls.map(
-                                                                                (video: VideoItem, index: number) => (
-                                                                                    <div className={css.cell} key={index}>
-                                                                                        <Button fullWidth disableElevation variant={
-                                                                                            this.state.playingIndex === index ? 'contained' : 'outlined'
-                                                                                        } sx={{
-                                                                                            whiteSpace: 'nowrap'
-                                                                                        }} size="small" onClick={
-                                                                                            () => {
-                                                                                                if (this.state.playingIndex !== index) {
-                                                                                                    this.setPlayingIndex(index);
-                                                                                                }
-                                                                                            }
-                                                                                        }>{video.label}</Button>
-                                                                                    </div>
-                                                                                )
-                                                                            )
-                                                                        }
-                                                                    </Box>
-                                                                </TabPanel>
-                                                            )
-                                                        )
-                                                    }
-                                                </Box>
                                             </Box>
-                                        </TabPanel>
-                                    </Box>
+                                        </Box>
+                                    </TabPanel>
                                 </Box>
                             </Box>
-                        </BackgroundContainer>
+                        </Box>
                     ) : (
                         <NoData text="💔 数据解析错误.." />
                     )
