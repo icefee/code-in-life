@@ -252,6 +252,7 @@ function VideoPlayer({
             setDownloading(true)
             if (!hls2Mp4.current) {
                 hls2Mp4.current = new Hls2Mp4({
+                    corePath: new URL('/ffmpeg/ffmpeg-core.js', document.location.href).href,
                     log: true
                 }, (type, progress) => {
                     if (type === TaskType.parseM3u8) {
