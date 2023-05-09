@@ -21,7 +21,8 @@ export default function Hls() {
             height: 400
         }}>
             <VideoPlayer
-                url="/test.m3u8"
+                title="测试m3u8视频"
+                url="https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
                 hls
                 autoplay
             />

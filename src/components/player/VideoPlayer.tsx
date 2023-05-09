@@ -9,7 +9,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 import { styled } from '@mui/material/styles';
 import Hls from 'hls.js';
-import Hls2Mp4 from 'hls2mp4';
+import Hls2Mp4, { TaskType } from 'hls2mp4';
 import PictureInPictureIcon from '@mui/icons-material/PictureInPicture';
 import PictureInPictureAltIcon from '@mui/icons-material/PictureInPictureAlt';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
@@ -161,7 +161,6 @@ function VideoPlayer({
 
     const [volume, setVolume] = useLocalStorageState<number>('__volume', 1)
     const cachedVolumeRef = useRef<number>(1)
-    const seekingRef = useRef(false)
 
     const [buffered, setBuffered] = useState(0)
     const [muted, setMuted] = useState(false)
@@ -192,7 +191,7 @@ function VideoPlayer({
         else {
             if (Hls.isSupported()) {
                 if (!hls.current) {
-                    hls.current = new Hls();
+                    hls.current = new Hls()
                 }
                 hls.current.loadSource(url);
                 hls.current.attachMedia(video);
@@ -230,10 +229,11 @@ function VideoPlayer({
         setLoading(false)
     }
 
-    const fastSeek = (dur: number) => {
+    const fastSeek = (time: number) => {
+        setCurrentTime(time);
         videoRef.current.currentTime = Math.max(
             0,
-            Math.min(duration, currentTime + dur)
+            Math.min(duration, time)
         )
     }
 
@@ -254,7 +254,7 @@ function VideoPlayer({
                 hls2Mp4.current = new Hls2Mp4({
                     log: true
                 }, (type, progress) => {
-                    if (type === 0) {
+                    if (type === TaskType.parseM3u8) {
                         if (progress === 0) {
                             setShow(true)
                             setStatusText('解析视频地址')
@@ -263,10 +263,10 @@ function VideoPlayer({
                             setStatusText('视频地址解析完成')
                         }
                     }
-                    else if (type === 1) {
+                    else if (type === TaskType.downloadTs) {
                         setStatusText(`下载视频分片: ${Math.round(progress * 100)}%`)
                     }
-                    else if (type === 2) {
+                    else if (type === TaskType.mergeTs) {
                         if (progress === 0) {
                             setStatusText('合并视频分片')
                         }
@@ -374,7 +374,7 @@ function VideoPlayer({
                                     playVideo()
                                 }
                                 if (initPlayTime > 0) {
-                                    videoRef.current.currentTime = initPlayTime;
+                                    fastSeek(initPlayTime)
                                 }
                             }
                         }
@@ -389,17 +389,10 @@ function VideoPlayer({
                                 setPlaying(false)
                             }
                         }
-                        onSeeked={
-                            () => {
-                                seekingRef.current = false
-                            }
-                        }
                         onTimeUpdate={
                             (event: React.SyntheticEvent<HTMLVideoElement>) => {
                                 const currentTime = event.currentTarget.currentTime;
-                                if (!seekingRef.current) {
-                                    setCurrentTime(currentTime);
-                                }
+                                setCurrentTime(currentTime);
                                 onTimeUpdate?.({
                                     progress: currentTime / duration,
                                     buffered,
@@ -514,14 +507,14 @@ function VideoPlayer({
                                                     if (playing) {
                                                         pauseVideo();
                                                     }
-                                                    seekingRef.current = true;
-                                                    const nextPlayTime = value * duration;
-                                                    videoRef.current.currentTime = nextPlayTime;
-                                                    setCurrentTime(nextPlayTime);
+                                                    setCurrentTime(value * duration);
                                                 }
                                             }
                                             onChangeCommitted={
-                                                () => setTimeout(playVideo, 200)
+                                                (_event, value: number) => {
+                                                    fastSeek(value * duration);
+                                                    playVideo();
+                                                }
                                             }
                                             size="small"
                                         />
@@ -577,7 +570,7 @@ function VideoPlayer({
                                             <Tooltip title="快退10秒">
                                                 <IconButton
                                                     color="inherit"
-                                                    onClick={actionTrigger(() => fastSeek(-10))}
+                                                    onClick={actionTrigger(() => fastSeek(currentTime - 10))}
                                                 >
                                                     <FastRewindIcon />
                                                 </IconButton>
@@ -585,7 +578,7 @@ function VideoPlayer({
                                             <Tooltip title="快进10秒">
                                                 <IconButton
                                                     color="inherit"
-                                                    onClick={actionTrigger(() => fastSeek(10))}
+                                                    onClick={actionTrigger(() => fastSeek(currentTime + 10))}
                                                 >
                                                     <FastForwardIcon />
                                                 </IconButton>

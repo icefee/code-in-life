@@ -248,6 +248,7 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                             {
                                                 url => (
                                                     <VideoPlayer
+                                                        title={`${this.props.video.name}-${this.playingVideo.label}`}
                                                         url={url}
                                                         hls
                                                         autoplay
