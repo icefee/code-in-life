@@ -51,8 +51,12 @@ function VideoUrlParser({ url, children }: VideoUrlParserProps) {
         }
     }, [url])
 
+    const encodeUrl = (url: string) => {
+        return '/api/video/m3u8-parse?id=' + btoa(url).replace(/\=$/, '')
+    }
+
     if (isVideoUrl) {
-        return children(url)
+        return children(encodeUrl(url))
     }
     return (
         <Box sx={{
@@ -60,7 +64,7 @@ function VideoUrlParser({ url, children }: VideoUrlParserProps) {
             height: '100%'
         }}>
             {
-                videoUrl && children(videoUrl)
+                videoUrl && children(encodeUrl(videoUrl))
             }
             <LoadingOverlay
                 open={videoUrl === null && !error}

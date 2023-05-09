@@ -5924,10 +5924,10 @@ hls.js@^1.4.0:
   resolved "https://registry.yarnpkg.com/hls.js/-/hls.js-1.4.1.tgz#0792582650e5dd4517f7ebbf8cd3ca3b6f900bb9"
   integrity sha512-7/RBLhnmWbEVj/UxkqBK3rcqr/a2QAbSdjdp74iRKaPLosJoPwLw9mcjl5EOv6jutd0yHL8yGH3pSuUjNzRMyA==
 
-hls2mp4@^1.0.3:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/hls2mp4/-/hls2mp4-1.0.4.tgz#0415ab7435feae1f8ea00374e7a066acd30af106"
-  integrity sha512-eUkpsTlR5c59W3rK1psjMG5h5AlCLg0jeYtaRsbVmS7kCklUaM8hB8tIDvq8kzrgC8Ve6fSQGxYNp6b8VXuhtg==
+hls2mp4@^1.0.7:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/hls2mp4/-/hls2mp4-1.0.7.tgz#c208ede08a4f6632a562a0357be8f9008617aabc"
+  integrity sha512-ka0JWvLMoGUi78bvBUfHrlUfwLoYm+Qy8LKtJBueAACM6qGoUHauVGnaH2rTgzxOLbTH2dyb7B6rMw2lNmGzGg==
 
 hoist-non-react-statics@^3.3.1:
   version "3.3.2"

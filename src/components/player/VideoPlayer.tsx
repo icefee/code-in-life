@@ -253,11 +253,20 @@ function VideoPlayer({
             if (!hls2Mp4.current) {
                 hls2Mp4.current = new Hls2Mp4({
                     corePath: new URL('/ffmpeg/ffmpeg-core.js', document.location.href).href,
+                    wasmPath: '/api/ffmpeg-core.wasm',
                     log: true
                 }, (type, progress) => {
-                    if (type === TaskType.parseM3u8) {
+                    if (type === TaskType.loadFFmeg) {
+                        setShow(true)
                         if (progress === 0) {
-                            setShow(true)
+                            setStatusText('加载FFmpeg')
+                        }
+                        else {
+                            setStatusText('FFmpeg加载完成')
+                        }
+                    }
+                    else if (type === TaskType.parseM3u8) {
+                        if (progress === 0) {
                             setStatusText('解析视频地址')
                         }
                         else {
