@@ -21,7 +21,7 @@ export default function Hls() {
             height: 400
         }}>
             <VideoPlayer
-                url="https://cdn8.hdzyk-video.com/20220726/10883_8a84978f/index.m3u8"
+                url="/test.m3u8"
                 hls
                 autoplay
             />

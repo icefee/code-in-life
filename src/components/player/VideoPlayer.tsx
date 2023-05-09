@@ -291,6 +291,10 @@ function VideoPlayer({
         }
     }, [])
 
+    const actionTrigger = (callback: VoidFunction) => {
+        return videoLoaded ? callback : null
+    }
+
     return (
         <DarkThemed>
             <Stack
@@ -497,7 +501,7 @@ function VideoPlayer({
                                             value={videoLoaded ? currentTime / duration : 0}
                                             max={1}
                                             step={.0000001}
-                                            disabled={duration === 0}
+                                            disabled={!videoLoaded}
                                             buffered={buffered}
                                             showTooltip={!isMobile && videoLoaded}
                                             tooltipFormatter={
@@ -538,7 +542,6 @@ function VideoPlayer({
                                             }
                                         }
                                     }
-                                    disabled={!videoLoaded}
                                 />
                                 {
                                     !isMobile && (
@@ -563,7 +566,6 @@ function VideoPlayer({
                                                     }
                                                 }
                                             }
-                                            disabled={!videoLoaded}
                                         />
                                     )
                                 }
@@ -573,10 +575,7 @@ function VideoPlayer({
                                             <Tooltip title="快退10秒">
                                                 <IconButton
                                                     color="inherit"
-                                                    onClick={
-                                                        () => fastSeek(-10)
-                                                    }
-                                                    disabled={!videoLoaded}
+                                                    onClick={actionTrigger(() => fastSeek(-10))}
                                                 >
                                                     <FastRewindIcon />
                                                 </IconButton>
@@ -584,10 +583,7 @@ function VideoPlayer({
                                             <Tooltip title="快进10秒">
                                                 <IconButton
                                                     color="inherit"
-                                                    onClick={
-                                                        () => fastSeek(10)
-                                                    }
-                                                    disabled={!videoLoaded}
+                                                    onClick={actionTrigger(() => fastSeek(10))}
                                                 >
                                                     <FastForwardIcon />
                                                 </IconButton>
@@ -606,17 +602,13 @@ function VideoPlayer({
                                                     videoRef.current.playbackRate = rate
                                                 }
                                             }
-                                            IconProps={{
-                                                disabled: !videoLoaded
-                                            }}
                                         />
                                     )
                                 }
                                 <Tooltip title={`${fullscreen ? '退出' : '进入'}全屏`}>
                                     <IconButton
                                         color="inherit"
-                                        onClick={toggleFullscreen}
-                                        disabled={!videoLoaded}
+                                        onClick={actionTrigger(toggleFullscreen)}
                                     >
                                         {
                                             fullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />
@@ -628,8 +620,7 @@ function VideoPlayer({
                                         <Tooltip title="下载">
                                             <IconButton
                                                 color="inherit"
-                                                onClick={downloadVideo}
-                                                disabled={downloading || !videoLoaded}
+                                                onClick={downloading ? null : actionTrigger(downloadVideo)}
                                             >
                                                 <DownloadIcon />
                                             </IconButton>
@@ -639,8 +630,7 @@ function VideoPlayer({
                                 <Tooltip title={`${pip ? '退出' : '进入'}画中画`}>
                                     <IconButton
                                         color="inherit"
-                                        onClick={togglePip}
-                                        disabled={!videoLoaded}
+                                        onClick={actionTrigger(togglePip)}
                                     >
                                         {
                                             pip ? <PictureInPictureAltIcon /> : <PictureInPictureIcon />
