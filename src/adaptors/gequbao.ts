@@ -1,4 +1,4 @@
-import { getText, getTextWithTimeout, parseDuration, isTextNotNull } from './common';
+import { getTextWithTimeout, parseDuration, isTextNotNull } from './common';
 import { timeFormatter } from '../util/date';
 
 export const key = 'g';
@@ -50,7 +50,7 @@ function parsePosterUrl(html: string) {
 
 export async function parsePoster(id: string) {
     try {
-        const html = await getText(`${baseUrl}/music/${id}`)
+        const html = await getTextWithTimeout(`${baseUrl}/music/${id}`)
         const poster = parsePosterUrl(html)
         return poster;
     }
@@ -61,7 +61,7 @@ export async function parsePoster(id: string) {
 
 export async function parseMusicUrl(id: string) {
     try {
-        const html = await getText(`${baseUrl}/music/${id}`)
+        const html = await getTextWithTimeout(`${baseUrl}/music/${id}`)
         const matchBlock = html.match(
             /const url = 'https?:\/\/[^']+'/
         )
@@ -74,7 +74,7 @@ export async function parseMusicUrl(id: string) {
 
 export async function parseLrc(id: string) {
     try {
-        const lrc = await getText(`${baseUrl}/download/lrc/${id}`)
+        const lrc = await getTextWithTimeout(`${baseUrl}/download/lrc/${id}`)
         const lines = lrc.split(/\n/).filter(
             line => isTextNotNull(line)
         ).map(
