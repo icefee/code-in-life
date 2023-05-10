@@ -12,6 +12,7 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
             const headers = response.headers;
             headers.delete('content-disposition');
             headers.set('content-type', 'audio/mpeg');
+            headers.set('accept-ranges', 'bytes');
             for (const key of headers.keys()) {
                 res.setHeader(key, headers.get(key))
             }
