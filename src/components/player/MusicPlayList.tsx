@@ -53,6 +53,7 @@ type ListMatch = {
 type SearchMusicWithMatch = SearchMusic & { match?: Omit<ListMatch, 'id'> };
 
 interface MusicPlayListProps {
+    show: boolean;
     data: SearchMusic[];
     onChange: React.Dispatch<React.SetStateAction<SearchMusic[]>>;
     current: SearchMusic;
@@ -63,10 +64,11 @@ interface MusicPlayListProps {
     onSearch?(keyword: string): void;
 }
 
-function MusicPlayList({ data, onChange, current, playing, onPlay, onTogglePlay, onSearch, onDownload }: MusicPlayListProps) {
+function MusicPlayList({ show, data, onChange, current, playing, onPlay, onTogglePlay, onSearch, onDownload }: MusicPlayListProps) {
 
     const [keyword, setKeyword] = useState('')
     const { outlet, showMenu, hideMenu } = useMenu()
+    const [rendered, setRendered] = useState(false)
 
     const pinToTop = (music: SearchMusic) => {
         onChange(
@@ -177,9 +179,20 @@ function MusicPlayList({ data, onChange, current, playing, onPlay, onTogglePlay,
         return matched;
     }, [data, keyword])
 
+    useEffect(() => {
+        if (show) {
+            setRendered(true)
+        }
+    }, [show, rendered])
+
+    if (!rendered) {
+        return null;
+    }
+
     return (
         <DarkThemed>
             <Stack sx={{
+                display: show ? 'flex' : 'none',
                 height: '50vh',
                 bgcolor: 'background.paper',
                 color: '#fff',

@@ -3,8 +3,9 @@ import { createApiAdaptor, defaultPoster, parseId, getResponse } from '../../../
 
 export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
     const { key, id } = parseId(req.params.id);
-    const adaptor = createApiAdaptor(key)
+    const adaptor = createApiAdaptor(key);
     const poster = await adaptor.parsePoster(id);
+    // res.setHeader('cache-control', 'public, max-age=604800');
     try {
         if (poster) {
             if (adaptor.posterReferer) {

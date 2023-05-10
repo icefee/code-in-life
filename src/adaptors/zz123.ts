@@ -1,5 +1,6 @@
 import { getResponse, parseDuration, isTextNotNull, getTextWithTimeout } from './common';
 import { timeFormatter } from '../util/date';
+import { utf82utf16 } from '../util/parser';
 
 export const key = 'z';
 
@@ -98,7 +99,15 @@ export async function parseMusicUrl(id: string) {
         if (url.startsWith('http')) {
             return url;
         }
-        return baseUrl + url;
+        const fullUrl = baseUrl + url;
+        if (fullUrl.match(/xplay/)) {
+            const response = await getResponse(fullUrl, {
+                redirect: 'manual'
+            })
+            const audioUrl = response.headers.get('location');
+            return utf82utf16(decodeURI(audioUrl));
+        }
+        return fullUrl;
     }
     catch (err) {
         return null

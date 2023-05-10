@@ -4,6 +4,7 @@ import Snackbar from '@mui/material/Snackbar';
 import Alert, { AlertProps } from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Slide from '@mui/material/Slide';
+import Fade from '@mui/material/Fade';
 import Typography from '@mui/material/Typography';
 import SearchForm, { type SearchFormInstance } from '../../components/search/Form';
 import { LoadingOverlay } from '../../components/loading';
@@ -389,37 +390,34 @@ export default function MusicSearch() {
                                 }
                             }
                         />
-                        {
-                            playlistShow && (
-                                <MusicPlayList
-                                    data={playlist.data}
-                                    onChange={setPlaylist}
-                                    current={activeMusic}
-                                    playing={playing}
-                                    onPlay={
-                                        (music) => {
-                                            if (!music) {
-                                                setPlaying(false)
-                                            }
-                                            setActiveMusic(music)
-                                        }
+                        <MusicPlayList
+                            show={playlistShow}
+                            data={playlist.data}
+                            onChange={setPlaylist}
+                            current={activeMusic}
+                            playing={playing}
+                            onPlay={
+                                (music) => {
+                                    if (!music) {
+                                        setPlaying(false)
                                     }
-                                    onTogglePlay={
-                                        () => {
-                                            setPlaying(playing => !playing)
-                                        }
-                                    }
-                                    onSearch={
-                                        (s) => {
-                                            setKeyword(s)
-                                            onSearch(s)
-                                            searchFormRef.current?.putSuggest(s)
-                                        }
-                                    }
-                                    onDownload={downloadSong}
-                                />
-                            )
-                        }
+                                    setActiveMusic(music)
+                                }
+                            }
+                            onTogglePlay={
+                                () => {
+                                    setPlaying(playing => !playing)
+                                }
+                            }
+                            onSearch={
+                                (s) => {
+                                    setKeyword(s)
+                                    onSearch(s)
+                                    searchFormRef.current?.putSuggest(s)
+                                }
+                            }
+                            onDownload={downloadSong}
+                        />
                     </Stack>
                 </Slide>
                 <LoadingOverlay
