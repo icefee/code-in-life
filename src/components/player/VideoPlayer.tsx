@@ -291,10 +291,15 @@ function VideoPlayer({
                     }
                 })
             }
-            const buffer = await hls2Mp4.current.download(
-                url.startsWith('http:') ? url : new URL(url, document.location.href).href
-            )
-            hls2Mp4.current.saveToFile(buffer, `${title ?? 'download'}.mp4`)
+            try {
+                const buffer = await hls2Mp4.current.download(
+                    url.startsWith('http:') ? url : new URL(url, document.location.href).href
+                )
+                hls2Mp4.current.saveToFile(buffer, `${title ?? 'download'}.mp4`)
+            }
+            catch (err) {
+                setStatusText('下载视频出错, 当前视频不支持下载')
+            }
             setDownloading(false)
         }
         else {
