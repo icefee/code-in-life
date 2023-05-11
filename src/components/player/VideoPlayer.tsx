@@ -187,9 +187,6 @@ function VideoPlayer({
         if (autoplay) {
             playVideo()
         }
-        if (initPlayTime > 0) {
-            fastSeek(initPlayTime)
-        }
     }
 
     const initPlayer = () => {
@@ -383,7 +380,14 @@ function VideoPlayer({
                         onLoadStart={showLoading}
                         onWaiting={showLoading}
                         playsInline
-                        onLoadedMetadata={hlsType ? null : onMediaAttached}
+                        onLoadedMetadata={() => {
+                            if (initPlayTime > 0) {
+                                fastSeek(initPlayTime)
+                            }
+                            if (!hlsType) {
+                                onMediaAttached()
+                            }
+                        }}
                         onDurationChange={
                             (event: React.SyntheticEvent<HTMLVideoElement>) => {
                                 setDuration(event.currentTarget.duration)
@@ -402,13 +406,16 @@ function VideoPlayer({
                         }
                         onTimeUpdate={
                             (event: React.SyntheticEvent<HTMLVideoElement>) => {
-                                const currentTime = event.currentTarget.currentTime;
-                                setCurrentTime(currentTime);
-                                onTimeUpdate?.({
-                                    progress: currentTime / duration,
-                                    buffered,
-                                    duration
-                                })
+                                const video = event.currentTarget;
+                                if (!video.seeking) {
+                                    const currentTime = video.currentTime;
+                                    setCurrentTime(currentTime);
+                                    onTimeUpdate?.({
+                                        progress: currentTime / duration,
+                                        buffered,
+                                        duration
+                                    })
+                                }
                             }
                         }
                         onProgress={
@@ -439,7 +446,7 @@ function VideoPlayer({
                             top: 0,
                             right: 0,
                             bottom: 0,
-                            zIndex: 1,
+                            zIndex: 4,
                             background: `url(${poster}) no-repeat center center`,
                             backgroundSize: 'cover'
                         }}
@@ -489,7 +496,8 @@ function VideoPlayer({
                             bottom: 0,
                             right: 0,
                             backdropFilter: 'blur(2px)',
-                            p: 1
+                            p: 1,
+                            zIndex: 3
                         }}
                     >
                         {
