@@ -378,7 +378,7 @@ function VideoPlayer({
                         onLoadStart={showLoading}
                         onWaiting={showLoading}
                         playsInline
-                        onLoadedMetadata={hlsType ? onMediaAttached : null}
+                        onLoadedMetadata={hlsType ? null : onMediaAttached}
                         onDurationChange={
                             (event: React.SyntheticEvent<HTMLVideoElement>) => {
                                 setDuration(event.currentTarget.duration)
