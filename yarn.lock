@@ -5926,13 +5926,15 @@ header-case@^2.0.4:
     capital-case "^1.0.4"
     tslib "^2.0.3"
 
-hls.js@^1.4.0:
+hls.js@^1.4.2:
   version "1.4.2"
   resolved "https://registry.yarnpkg.com/hls.js/-/hls.js-1.4.2.tgz#14c271d78daed1f5d2b7b58d7edd9bcdefc44928"
   integrity sha512-+MPySxF0WVMj/uzj+LDtNFSU93X1+VbjLLixk2xah6Sf4LqU+qC02MjZVF/yvb1Cg9Gjor1g8K33K9b9etqJ/Q==
 
-hls2mp4@../hls2mp4/dist:
+hls2mp4@^1.0.7:
   version "1.0.7"
+  resolved "https://registry.yarnpkg.com/hls2mp4/-/hls2mp4-1.0.7.tgz#c208ede08a4f6632a562a0357be8f9008617aabc"
+  integrity sha512-ka0JWvLMoGUi78bvBUfHrlUfwLoYm+Qy8LKtJBueAACM6qGoUHauVGnaH2rTgzxOLbTH2dyb7B6rMw2lNmGzGg==
 
 hoist-non-react-statics@^3.3.1:
   version "3.3.2"

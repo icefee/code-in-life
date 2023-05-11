@@ -183,22 +183,27 @@ function VideoPlayer({
 
     const videoLoaded = useMemo(() => duration > 0, [duration])
 
+    const onMediaAttached = () => {
+        if (autoplay) {
+            playVideo()
+        }
+        if (initPlayTime > 0) {
+            fastSeek(initPlayTime)
+        }
+    }
+
     const initPlayer = () => {
         const video = videoRef.current;
-        if (video.canPlayType('application/vnd.apple.mpegurl') || !hlsType) {
-            video.src = url;
+        if (hlsType && Hls.isSupported()) {
+            if (!hls.current) {
+                hls.current = new Hls();
+                hls.current.on(Hls.Events.MEDIA_ATTACHED, onMediaAttached);
+            }
+            hls.current.loadSource(url);
+            hls.current.attachMedia(video);
         }
         else {
-            if (Hls.isSupported()) {
-                if (!hls.current) {
-                    hls.current = new Hls()
-                }
-                hls.current.loadSource(url);
-                hls.current.attachMedia(video);
-            }
-            else {
-                console.error('The browser does not support hls')
-            }
+            video.src = url;
         }
     }
 
@@ -373,19 +378,10 @@ function VideoPlayer({
                         onLoadStart={showLoading}
                         onWaiting={showLoading}
                         playsInline
+                        onLoadedMetadata={hlsType ? onMediaAttached : null}
                         onDurationChange={
                             (event: React.SyntheticEvent<HTMLVideoElement>) => {
                                 setDuration(event.currentTarget.duration)
-                            }
-                        }
-                        onLoadedMetadata={
-                            () => {
-                                if (autoplay) {
-                                    playVideo()
-                                }
-                                if (initPlayTime > 0) {
-                                    fastSeek(initPlayTime)
-                                }
                             }
                         }
                         onCanPlay={hideLoading}
