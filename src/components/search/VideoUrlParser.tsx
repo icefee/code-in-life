@@ -52,7 +52,7 @@ function VideoUrlParser({ url, children }: VideoUrlParserProps) {
     }, [url])
 
     const encodeUrl = (url: string) => {
-        return `/api/video/m3u8-parse?url=${url}`
+        return url // `/api/video/m3u8-parse?url=${url}`
     }
 
     if (isVideoUrl) {
