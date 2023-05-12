@@ -9,7 +9,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 import { styled } from '@mui/material/styles';
 import Hls from 'hls.js';
-import Hls2Mp4, { TaskType } from '../../hls2mp4';
+import Hls2Mp4, { TaskType } from 'hls2mp4';
 import PictureInPictureIcon from '@mui/icons-material/PictureInPicture';
 import PictureInPictureAltIcon from '@mui/icons-material/PictureInPictureAlt';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
