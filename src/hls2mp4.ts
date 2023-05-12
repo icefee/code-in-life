@@ -18,7 +18,19 @@ type LoadResult<T = unknown> = {
 }
 
 type Hls2Mp4Options = {
+    /**
+     * max retry times while request data failed
+     */
     maxRetry?: number;
+    /**
+     * the concurrency for download ts
+     */
+    tsDownloadConcurrency?: number;
+}
+
+type Segment = {
+    url: string;
+    name: string;
 }
 
 export interface M3u8Parsed {
@@ -65,12 +77,16 @@ export default class Hls2Mp4 {
     private instance: FFmpeg;
     private maxRetry: number;
     private loadRetryTime = 0;
-    public onProgress?: ProgressCallback;
+    private onProgress?: ProgressCallback;
+    private tsDownloadConcurrency: number;
+    private totalSegments = 0;
+    private savedSegments = 0;
 
-    constructor({ maxRetry = 3, ...options }: CreateFFmpegOptions & Hls2Mp4Options, onProgress?: ProgressCallback) {
+    constructor({ maxRetry = 3, tsDownloadConcurrency = 10, ...options }: CreateFFmpegOptions & Hls2Mp4Options, onProgress?: ProgressCallback) {
         this.instance = createFFmpeg(options);
         this.maxRetry = maxRetry;
         this.onProgress = onProgress;
+        this.tsDownloadConcurrency = tsDownloadConcurrency;
     }
 
     private transformBuffer(buffer: Uint8Array) {
@@ -110,7 +126,21 @@ export default class Hls2Mp4 {
         throw new Error('ts download failed')
     }
 
-    private async downloadSegments() {}
+    private async downloadSegments(segs: Segment[]) {
+        return Promise.all(
+            segs.map(async ({ name, url }) => {
+                const tsData = await this.downloadTs(url)
+                const buffer = this.transformBuffer(tsData)
+                this.instance.FS('writeFile', name, buffer)
+                this.savedSegments += 1
+                this.onProgress?.(TaskType.downloadTs, this.savedSegments / this.totalSegments)
+                return {
+                    name,
+                    url
+                }
+            })
+        )
+    }
 
     private async downloadM3u8(url: string) {
         let { content, url: parsedUrl } = await this.parseM3u8(url)
@@ -130,14 +160,32 @@ export default class Hls2Mp4 {
         const segs = content.match(
             createFileUrlRegExp('ts', 'gi')
         )
-        for (let i = 0; i < segs.length; i++) {
-            const tsUrl = parseUrl(parsedUrl, segs[i])
-            const segName = `seg-${i}.ts`
-            const tsData = await this.downloadTs(tsUrl)
-            const buffer = this.transformBuffer(tsData)
-            this.instance.FS('writeFile', segName, buffer)
-            this.onProgress?.(TaskType.downloadTs, (i + 1) / segs.length)
-            content = content.replace(segs[i], segName)
+        if (!segs) {
+            throw new Error('Invalid m3u8 file, no ts file found')
+        }
+
+        this.totalSegments = segs.length;
+
+        for (let i = 0; i <= Math.floor((segs.length / this.tsDownloadConcurrency)); i++) {
+
+            const downloadSegs = await this.downloadSegments(
+                segs.slice(
+                    i * this.tsDownloadConcurrency,
+                    Math.min(segs.length, (i + 1) * this.tsDownloadConcurrency)
+                ).map<Segment>(
+                    seg => {
+                        const url = parseUrl(parsedUrl, seg)
+                        const name = `seg-${i}.ts`
+                        return {
+                            url,
+                            name
+                        }
+                    }
+                )
+            )
+            for (const { name, url } of downloadSegs) {
+                content = content.replace(url, name)
+            }
         }
         const m3u8 = 'temp.m3u8'
         this.instance.FS('writeFile', m3u8, content)

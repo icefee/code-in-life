@@ -9,7 +9,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 import { styled } from '@mui/material/styles';
 import Hls from 'hls.js';
-import Hls2Mp4, { TaskType } from 'hls2mp4';
+import Hls2Mp4, { TaskType } from '../../hls2mp4';
 import PictureInPictureIcon from '@mui/icons-material/PictureInPicture';
 import PictureInPictureAltIcon from '@mui/icons-material/PictureInPictureAlt';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
@@ -430,7 +430,6 @@ function VideoPlayer({
                         () => {
                             if (!live && videoLoaded) {
                                 if (Math.abs(totalOffset) > 1) {
-                                    alert(totalOffset)
                                     fastSeek(currentTime);
                                     playVideo();
                                 }
@@ -730,7 +729,7 @@ function VideoPlayer({
                     </Box>
                 </Fade>
                 <MiniProcess
-                    visible={!controlsShow}
+                    visible={videoLoaded && !controlsShow}
                     state={state}
                 />
             </Stack>
