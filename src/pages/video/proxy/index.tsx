@@ -349,7 +349,7 @@ function Proxy() {
 
 export function Head() {
     return (
-        <title key="title">Proxy video</title>
+        <title>Proxy video</title>
     )
 }
 

@@ -23,6 +23,7 @@ import { DarkThemed } from '../theme';
 import PlayOrPauseButton from './PlayOrPauseButton';
 import VolumeSetter from './VolumeSetter';
 import RateSetter from './RateSetter';
+import MiniProcess from './MiniProcess';
 
 import { timeFormatter } from '../../util/date';
 import useLocalStorageState from '../hook/useLocalStorageState';
@@ -136,6 +137,7 @@ interface VideoPlayerProps {
     live?: boolean;
     autoplay?: boolean;
     initPlayTime?: number;
+    disableDownload?: boolean;
     onTimeUpdate?: (state: PlayState) => void;
     onEnd?: VoidFunction;
 }
@@ -148,6 +150,7 @@ function VideoPlayer({
     live = false,
     autoplay = false,
     initPlayTime,
+    disableDownload = false,
     onTimeUpdate,
     onEnd
 }: VideoPlayerProps) {
@@ -167,6 +170,7 @@ function VideoPlayer({
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)
     const durationPlaceholder = '--:--'
     const [controlsShow, setControlsShow] = useState(true)
+    const seekingRef = useRef(false)
 
     const [rate, setRate] = useState(1)
     const { pip, togglePip } = usePipEvent(videoRef)
@@ -180,6 +184,9 @@ function VideoPlayer({
     const [downloading, setDownloading] = useState(false)
 
     const [error, setError] = useState(false)
+    const [touchOrigin, setTouchOrigin] = useState(0)
+    const [touchOffset, setTouchOffset] = useState(0)
+    const [totalOffset, setTotalOffset] = useState(0)
 
     const videoLoaded = useMemo(() => duration > 0, [duration])
 
@@ -209,9 +216,11 @@ function VideoPlayer({
             await videoRef.current.play()
         }
         catch (err) {
-            videoRef.current.muted = true;
-            setMuted(true);
-            playVideo();
+            if (err.name === 'NotAllowedError') {
+                videoRef.current.muted = true;
+                setMuted(true);
+                playVideo();
+            }
         }
     }
 
@@ -314,6 +323,31 @@ function VideoPlayer({
         return videoLoaded ? callback : null
     }
 
+    const state = useMemo<PlayState>(() => ({
+        progress: duration > 0 ? currentTime / duration : 0,
+        buffered,
+        duration
+    }), [currentTime, buffered, duration])
+
+    const playOrPauseButton = useMemo(() => (
+        <PlayOrPauseButton
+            playing={playing}
+            onTogglePlay={
+                (nextState) => {
+                    if (nextState) {
+                        playVideo()
+                    }
+                    else {
+                        pauseVideo();
+                    }
+                }
+            }
+            sx={{
+                fontSize: 'inherit'
+            }}
+        />
+    ), [playing])
+
     return (
         <DarkThemed>
             <Stack
@@ -339,41 +373,73 @@ function VideoPlayer({
                     }
                 }
             >
-                <Box sx={{
-                    height: '100%',
-                    cursor: 'pointer',
-                    WebkitTapHighlightColor: 'transparent'
-                }} onClick={
-                    () => {
-                        if (isMobile) {
-                            setControlsShow(
-                                controlsShow => !controlsShow
-                            )
-                        }
-                        else {
-                            if (playing) {
-                                pauseVideo()
+                <Box
+                    sx={{
+                        height: '100%',
+                        cursor: 'pointer',
+                        WebkitTapHighlightColor: 'transparent'
+                    }}
+                    onClick={
+                        () => {
+                            if (isMobile) {
+                                setControlsShow(
+                                    controlsShow => !controlsShow
+                                )
                             }
                             else {
-                                playVideo()
+                                if (playing) {
+                                    pauseVideo()
+                                }
+                                else {
+                                    playVideo()
+                                }
                             }
                         }
                     }
-                } onDoubleClick={
-                    () => {
-                        if (isMobile) {
-                            if (playing) {
-                                pauseVideo()
+                    onTouchStart={
+                        (event: React.TouchEvent<HTMLDivElement>) => {
+                            if (!live && videoLoaded) {
+                                const touchs = event.changedTouches;
+                                const touchX = touchs[0].clientX;
+                                setTouchOrigin(touchX);
+                                setTouchOffset(touchX);
                             }
-                            else {
-                                playVideo()
-                            }
-                        }
-                        else {
-                            toggleFullscreen()
                         }
                     }
-                }>
+                    onTouchMove={
+                        (event: React.TouchEvent<HTMLDivElement>) => {
+                            if (!live && videoLoaded) {
+                                const touchs = event.changedTouches;
+                                const touchX = touchs[0].clientX;
+                                const offset = touchX - touchOffset;
+                                if (Math.abs(offset) > 1) {
+                                    seekingRef.current = true;
+                                    if (playing) {
+                                        pauseVideo();
+                                    }
+                                    setControlsShow(true);
+                                    const wrapWidth = event.currentTarget.clientWidth;
+                                    setCurrentTime(currentTime + (offset / wrapWidth) * duration);
+                                }
+                                setTouchOffset(touchX);
+                                setTotalOffset(touchX - touchOrigin);
+                            }
+                        }
+                    }
+                    onTouchEnd={
+                        () => {
+                            if (!live && videoLoaded) {
+                                if (Math.abs(totalOffset) > 1) {
+                                    alert(totalOffset)
+                                    fastSeek(currentTime);
+                                    playVideo();
+                                }
+                                seekingRef.current = false;
+                                setTotalOffset(0)
+                            }
+                        }
+                    }
+                >
                     <StyledVideo
                         ref={videoRef}
                         preload="auto"
@@ -407,14 +473,9 @@ function VideoPlayer({
                         onTimeUpdate={
                             (event: React.SyntheticEvent<HTMLVideoElement>) => {
                                 const video = event.currentTarget;
-                                if (!video.seeking) {
-                                    const currentTime = video.currentTime;
-                                    setCurrentTime(currentTime);
-                                    onTimeUpdate?.({
-                                        progress: currentTime / duration,
-                                        buffered,
-                                        duration
-                                    })
+                                if (!video.seeking && !seekingRef.current) {
+                                    setCurrentTime(video.currentTime);
+                                    onTimeUpdate?.(state)
                                 }
                             }
                         }
@@ -523,6 +584,7 @@ function VideoPlayer({
                                             }
                                             onChange={
                                                 (_event, value: number) => {
+                                                    seekingRef.current = true;
                                                     if (playing) {
                                                         pauseVideo();
                                                     }
@@ -533,6 +595,7 @@ function VideoPlayer({
                                                 (_event, value: number) => {
                                                     fastSeek(value * duration);
                                                     playVideo();
+                                                    seekingRef.current = false;
                                                 }
                                             }
                                             size="small"
@@ -544,19 +607,12 @@ function VideoPlayer({
                         }
                         <Stack direction="row" justifyContent="space-between">
                             <Stack direction="row">
-                                <PlayOrPauseButton
-                                    playing={playing}
-                                    onTogglePlay={
-                                        (nextState) => {
-                                            if (nextState) {
-                                                playVideo()
-                                            }
-                                            else {
-                                                pauseVideo();
-                                            }
-                                        }
-                                    }
-                                />
+                                <Box
+                                    sx={{
+                                        fontSize: '1.5rem'
+                                    }}>
+                                    {playOrPauseButton}
+                                </Box>
                                 {
                                     !isMobile && (
                                         <VolumeSetter
@@ -586,18 +642,18 @@ function VideoPlayer({
                                 {
                                     !live && (
                                         <>
-                                            <Tooltip title="快退10秒">
+                                            <Tooltip title="快退15秒">
                                                 <IconButton
                                                     color="inherit"
-                                                    onClick={actionTrigger(() => fastSeek(currentTime - 10))}
+                                                    onClick={actionTrigger(() => fastSeek(currentTime - 15))}
                                                 >
                                                     <FastRewindIcon />
                                                 </IconButton>
                                             </Tooltip>
-                                            <Tooltip title="快进10秒">
+                                            <Tooltip title="快进15秒">
                                                 <IconButton
                                                     color="inherit"
-                                                    onClick={actionTrigger(() => fastSeek(currentTime + 10))}
+                                                    onClick={actionTrigger(() => fastSeek(currentTime + 15))}
                                                 >
                                                     <FastForwardIcon />
                                                 </IconButton>
@@ -630,7 +686,7 @@ function VideoPlayer({
                                     </IconButton>
                                 </Tooltip>
                                 {
-                                    !live && (
+                                    !live && !disableDownload && (
                                         <Tooltip title="下载">
                                             <IconButton
                                                 color="inherit"
@@ -655,6 +711,28 @@ function VideoPlayer({
                         </Stack>
                     </Stack>
                 </Fade>
+                <Fade in={isMobile && controlsShow} timeout={400} mountOnEnter>
+                    <Box
+                        sx={{
+                            position: 'absolute',
+                            left: '50%',
+                            top: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            zIndex: 3,
+                            fontSize: '3rem'
+                        }}>
+                        <Box
+                            sx={{
+                                opacity: .8
+                            }}>
+                            {playOrPauseButton}
+                        </Box>
+                    </Box>
+                </Fade>
+                <MiniProcess
+                    visible={!controlsShow}
+                    state={state}
+                />
             </Stack>
         </DarkThemed>
     )
