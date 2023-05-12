@@ -21,7 +21,7 @@ function MiniProcess({ visible, state }: MiniProcessProps) {
                 left: 0,
                 right: 0,
                 bottom: 0,
-                transition: 'all .3s ease-in-out',
+                transition: `opacity .3s ${visible ? 2 : 0}s ease-in-out`,
                 opacity: visible ? 1 : 0,
                 zIndex: 5
             }}
