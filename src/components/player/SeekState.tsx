@@ -6,7 +6,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 import FastRewindIcon from '@mui/icons-material/FastRewind';
 import FastForwardIcon from '@mui/icons-material/FastForward';
 import { alpha } from '@mui/material/styles';
-import { timeFormatter } from 'util/date';
+import { timeFormatter } from '../../util/date';
 import type { PlayState } from './VideoPlayer';
 
 type SeekStateProps = {
@@ -27,14 +27,14 @@ export default function SeekState({ state, seek }: SeekStateProps) {
     return seek !== null && (
         <Box sx={(theme) => ({
             position: 'absolute',
-            bottom: 50,
+            top: '50%',
             left: '50%',
-            transform: 'translateX(-50%)',
+            transform: 'translate(-50%, -50%)',
             zIndex: 1e8,
             borderRadius: 2,
             p: 1,
             bgcolor: alpha(theme.palette.common.black, .75),
-            color: '#fff'
+            color: 'primary.main'
         })}>
             <Stack alignItems="center" sx={{
                 minWidth: 120
@@ -46,7 +46,7 @@ export default function SeekState({ state, seek }: SeekStateProps) {
                     <LinearProgress
                         sx={{
                             height: 2,
-                            '& .MuiLinearProgress-bar1Buffer': {
+                            '& .MuiLinearProgress-bar1Determinate': {
                                 transition: 'none'
                             }
                         }}
