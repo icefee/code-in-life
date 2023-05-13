@@ -203,18 +203,11 @@ function VideoPlayer({
 
     const videoLoaded = useMemo(() => duration > 0, [duration])
 
-    const onMediaAttached = () => {
-        if (autoplay) {
-            playVideo()
-        }
-    }
-
     const initPlayer = () => {
         const video = videoRef.current;
         if (hlsType && Hls.isSupported()) {
             if (!hls.current) {
                 hls.current = new Hls();
-                hls.current.on(Hls.Events.MEDIA_ATTACHED, onMediaAttached);
             }
             hls.current.loadSource(url);
             hls.current.attachMedia(video);
@@ -458,11 +451,6 @@ function VideoPlayer({
                         onLoadStart={showLoading}
                         onWaiting={showLoading}
                         playsInline
-                        onLoadedMetadata={() => {
-                            if (!hlsType) {
-                                onMediaAttached()
-                            }
-                        }}
                         onDurationChange={
                             (event: React.SyntheticEvent<HTMLVideoElement>) => {
                                 setDuration(event.currentTarget.duration)
@@ -470,8 +458,13 @@ function VideoPlayer({
                         }
                         onCanPlay={
                             () => {
-                                if (initPlayTime > 0 && !initPlayTimeSeeked.current) {
-                                    fastSeek(initPlayTime)
+                                if (!initPlayTimeSeeked.current) {
+                                    if (autoplay) {
+                                        playVideo()
+                                    }
+                                    if (initPlayTime > 0) {
+                                        fastSeek(initPlayTime)
+                                    }
                                     initPlayTimeSeeked.current = true;
                                 }
                                 hideLoading()
@@ -746,10 +739,14 @@ function VideoPlayer({
                         </Box>
                     </Box>
                 </Fade>
-                <MiniProcess
-                    visible={videoLoaded && !controlsShow}
-                    state={state}
-                />
+                {
+                    !live && (
+                        <MiniProcess
+                            visible={videoLoaded && !controlsShow}
+                            state={state}
+                        />
+                    )
+                }
             </Stack>
         </DarkThemed>
     )

@@ -6,22 +6,25 @@ import LinearProgress from '@mui/material/LinearProgress';
 import FastRewindIcon from '@mui/icons-material/FastRewind';
 import FastForwardIcon from '@mui/icons-material/FastForward';
 import { alpha } from '@mui/material/styles';
-import { timeFormatter } from '../../util/date';
+import { timeFormatter } from 'util/date';
+import type { PlayState } from './VideoPlayer';
 
 type SeekStateProps = {
-    video: HTMLVideoElement;
-    duration?: number;
+    state: PlayState;
+    seek?: number;
 }
 
-export default function SeekState({ video, duration }: SeekStateProps) {
+export default function SeekState({ state, seek }: SeekStateProps) {
+
+    const currentTime = state.progress * state.duration;
 
     const seconds = Math.round(
-        Math.max(Math.min(duration, video.duration - video.currentTime), - video.currentTime)
-    );
+        Math.max(Math.min(seek, state.duration - currentTime), - currentTime)
+    )
 
-    const seekingTime = [Math.max(0, video.currentTime + seconds), video.duration].map(timeFormatter).join(' / ')
+    const seekingTime = [Math.max(0, currentTime + seconds), state.duration].map(timeFormatter).join(' / ')
 
-    return duration && (
+    return seek !== null && (
         <Box sx={(theme) => ({
             position: 'absolute',
             bottom: 50,
@@ -38,8 +41,7 @@ export default function SeekState({ video, duration }: SeekStateProps) {
             }}>
                 <Box sx={{
                     width: '80%',
-                    py: 1,
-                    color: 'var(--status-color)'
+                    py: 1
                 }}>
                     <LinearProgress
                         sx={{
@@ -48,15 +50,12 @@ export default function SeekState({ video, duration }: SeekStateProps) {
                                 transition: 'none'
                             }
                         }}
-                        color="inherit"
                         variant="determinate"
-                        value={Math.max(0, video.currentTime + seconds) * 100 / video.duration}
+                        value={Math.max(0, currentTime + seconds) * 100 / state.duration}
                     />
                 </Box>
                 <Stack direction="row" alignItems="center" columnGap={.5}>
-                    <Stack justifyContent="center" sx={{
-                        color: 'var(--status-color)'
-                    }}>
+                    <Stack justifyContent="center">
                         {React.createElement(seconds > 0 ? FastForwardIcon : FastRewindIcon, {
                             color: 'inherit'
                         })}
