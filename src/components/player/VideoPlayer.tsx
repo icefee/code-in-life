@@ -184,11 +184,13 @@ function VideoPlayer({
     const durationPlaceholder = '--:--'
     const [controlsShow, setControlsShow] = useState(true)
     const seekingRef = useRef(false)
+    const initPlayTimeSeeked = useRef(false)
 
     const [rate, setRate] = useState(1)
     const { pip, togglePip } = usePipEvent(videoRef)
 
     const playerRef = useRef<HTMLDivElement>()
+    const playActionResolved = useRef(true)
     const { fullscreen, toggleFullscreen } = useFullscreenEvent<HTMLDivElement>(playerRef)
     const controlsAutoHideTimeout = useRef<NodeJS.Timeout>()
 
@@ -198,9 +200,6 @@ function VideoPlayer({
     const [downloading, setDownloading] = useState(false)
 
     const [error, setError] = useState(false)
-    const [touchOrigin, setTouchOrigin] = useState(0)
-    const [touchOffset, setTouchOffset] = useState(0)
-    const [totalOffset, setTotalOffset] = useState(0)
 
     const videoLoaded = useMemo(() => duration > 0, [duration])
 
@@ -227,14 +226,20 @@ function VideoPlayer({
 
     const playVideo = async () => {
         try {
-            await videoRef.current.play()
+            if (playActionResolved.current) {
+                playActionResolved.current = false;
+                await videoRef.current.play()
+            }
         }
         catch (err) {
             if (err.name === 'NotAllowedError') {
                 videoRef.current.muted = true;
                 setMuted(true);
-                playVideo();
+                setTimeout(playVideo, 0);
             }
+        }
+        finally {
+            playActionResolved.current = true;
         }
     }
 
@@ -319,6 +324,9 @@ function VideoPlayer({
             }
             catch (err) {
                 setStatusText('下载视频出错, 当前视频不支持下载')
+                setTimeout(() => {
+                    setShow(false)
+                }, 2.5e3);
             }
             setDownloading(false)
         }
@@ -421,6 +429,7 @@ function VideoPlayer({
             >
                 <Box
                     sx={{
+                        position: 'relative',
                         height: '100%',
                         cursor: 'pointer',
                         WebkitTapHighlightColor: 'transparent'
@@ -442,48 +451,6 @@ function VideoPlayer({
                             }
                         }
                     }
-                    onTouchStart={
-                        (event: React.TouchEvent<HTMLDivElement>) => {
-                            if (!live && videoLoaded) {
-                                const touchs = event.changedTouches;
-                                const touchX = touchs[0].clientX;
-                                setTouchOrigin(touchX);
-                                setTouchOffset(touchX);
-                            }
-                        }
-                    }
-                    onTouchMove={
-                        (event: React.TouchEvent<HTMLDivElement>) => {
-                            if (!live && videoLoaded) {
-                                const touchs = event.changedTouches;
-                                const touchX = touchs[0].clientX;
-                                const offset = touchX - touchOffset;
-                                if (Math.abs(offset) > 1) {
-                                    seekingRef.current = true;
-                                    if (playing) {
-                                        pauseVideo();
-                                    }
-                                    setControlsShow(true);
-                                    const wrapWidth = event.currentTarget.clientWidth;
-                                    setCurrentTime(currentTime + (offset / wrapWidth) * duration);
-                                }
-                                setTouchOffset(touchX);
-                                setTotalOffset(touchX - touchOrigin);
-                            }
-                        }
-                    }
-                    onTouchEnd={
-                        () => {
-                            if (!live && videoLoaded) {
-                                if (Math.abs(totalOffset) > 1) {
-                                    fastSeek(currentTime);
-                                    playVideo();
-                                }
-                                seekingRef.current = false;
-                                setTotalOffset(0)
-                            }
-                        }
-                    }
                 >
                     <StyledVideo
                         ref={videoRef}
@@ -492,9 +459,6 @@ function VideoPlayer({
                         onWaiting={showLoading}
                         playsInline
                         onLoadedMetadata={() => {
-                            if (initPlayTime > 0) {
-                                fastSeek(initPlayTime)
-                            }
                             if (!hlsType) {
                                 onMediaAttached()
                             }
@@ -504,7 +468,15 @@ function VideoPlayer({
                                 setDuration(event.currentTarget.duration)
                             }
                         }
-                        onCanPlay={hideLoading}
+                        onCanPlay={
+                            () => {
+                                if (initPlayTime > 0 && !initPlayTimeSeeked.current) {
+                                    fastSeek(initPlayTime)
+                                    initPlayTimeSeeked.current = true;
+                                }
+                                hideLoading()
+                            }
+                        }
                         onPlay={
                             () => {
                                 setPlaying(true)
@@ -543,6 +515,18 @@ function VideoPlayer({
                         }
                         onEnded={onEnd}
                     />
+                    <Fade in={loading} unmountOnExit>
+                        <Stack sx={{
+                            position: 'absolute',
+                            left: 0,
+                            top: 0,
+                            right: 0,
+                            bottom: 0,
+                            zIndex: 1
+                        }} justifyContent="center" alignItems="center">
+                            <CircularProgress />
+                        </Stack>
+                    </Fade>
                 </Box>
                 <Fade in={poster && !videoLoaded} mountOnEnter unmountOnExit>
                     <Box
@@ -557,18 +541,6 @@ function VideoPlayer({
                             backgroundSize: 'cover'
                         }}
                     />
-                </Fade>
-                <Fade in={loading} unmountOnExit>
-                    <Stack sx={{
-                        position: 'absolute',
-                        left: 0,
-                        top: 0,
-                        right: 0,
-                        bottom: 0,
-                        zIndex: 2
-                    }} justifyContent="center" alignItems="center">
-                        <CircularProgress />
-                    </Stack>
                 </Fade>
                 <Fade in={error} unmountOnExit>
                     <Stack sx={{
@@ -756,7 +728,7 @@ function VideoPlayer({
                         </Stack>
                     </Stack>
                 </Fade>
-                <Fade in={isMobile && controlsShow} timeout={400} mountOnEnter>
+                <Fade in={isMobile && controlsShow && !loading} timeout={400} mountOnEnter>
                     <Box
                         sx={{
                             position: 'absolute',
