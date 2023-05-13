@@ -1,19 +1,26 @@
 import React from 'react';
 import GlobalStyles from '@mui/material/GlobalStyles';
+import { Script } from 'gatsby';
 
 export function Head() {
     return (
         <>
             <title>音乐搜索</title>
-            <link rel="icon" type="image/svg+xml" href="/mmj/vite.svg" />
-            <link rel="stylesheet" href="/mmj/assets/index-36fb1412.css" />
             <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
-            <script dangerouslySetInnerHTML={{
+            <link rel="modulepreload" href="/mmj/js/_@vue-e00bfe83.js" />
+            <link rel="modulepreload" href="/mmj/js/_@element-plus-0c795a89.js" />
+            <link rel="modulepreload" href="/mmj/js/__vendor-6a03e462.js" />
+            <link rel="modulepreload" href="/mmj/js/_@popperjs-c45de710.js" />
+            <link rel="modulepreload" href="/mmj/js/_element-plus-9fd6eb85.js" />
+            <link rel="stylesheet" href="/mmj/css/_element-plus-16558732.css" />
+            <link rel="stylesheet" href="/mmj/css/index-696d273f.css"></link>
+
+            <Script defer dangerouslySetInnerHTML={{
                 __html: `
 
                 function loadScript() {
                     const script = document.createElement('script');
-                    script.src = '/mmj/assets/index-c74e0cd8.js';
+                    script.src = '/mmj/js/index-dd15ea96.js';
                     script.type = 'module';
                     script.crossorigin = 'anonymous';
                     document.head.appendChild(script);
@@ -24,6 +31,14 @@ export function Head() {
             }} />
         </>
     )
+}
+
+export async function config() {
+    return ({ params }) => {
+        return {
+            defer: true,
+        }
+    }
 }
 
 function Page() {

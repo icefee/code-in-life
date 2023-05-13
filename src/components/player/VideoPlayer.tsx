@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo, useEffect } from 'react';
+import React, { useState, useRef, useMemo, useEffect, useCallback } from 'react';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -123,6 +123,19 @@ function useStatus() {
     return { outlet, setShow, setStatusText }
 }
 
+function debounce(delay: number, callback: (args: any[]) => void) {
+    let timeout = null;
+    function wrapper(...args: any[]) {
+        if (timeout) {
+            clearTimeout(timeout);
+        }
+        timeout = setTimeout(() => {
+            callback.apply(this, ...args);
+        }, delay)
+    }
+    return wrapper;
+}
+
 export interface PlayState {
     duration: number;
     progress: number;
@@ -177,6 +190,7 @@ function VideoPlayer({
 
     const playerRef = useRef<HTMLDivElement>()
     const { fullscreen, toggleFullscreen } = useFullscreenEvent<HTMLDivElement>(playerRef)
+    const controlsAutoHideTimeout = useRef<NodeJS.Timeout>()
 
     const hls2Mp4 = useRef<Hls2Mp4>()
     const { outlet, setShow, setStatusText } = useStatus()
@@ -348,6 +362,37 @@ function VideoPlayer({
         />
     ), [playing])
 
+    const createControlsHideTimeout = () => {
+        controlsAutoHideTimeout.current = setTimeout(() => setControlsShow(false), 2.5e3)
+    }
+
+    const disposeControlsHideTimeout = () => {
+        if (controlsAutoHideTimeout.current) {
+            clearTimeout(controlsAutoHideTimeout.current)
+        }
+    }
+
+    const resetControlsHideTimeout = useCallback(debounce(2e3, () => {
+        disposeControlsHideTimeout()
+        createControlsHideTimeout()
+    }), [])
+
+    const onMouseMove = () => {
+        if (fullscreen) {
+            setControlsShow(true)
+            resetControlsHideTimeout()
+        }
+    }
+
+    useEffect(() => {
+        if (fullscreen) {
+            createControlsHideTimeout()
+        }
+        else {
+            disposeControlsHideTimeout()
+        }
+    }, [fullscreen])
+
     return (
         <DarkThemed>
             <Stack
@@ -372,6 +417,7 @@ function VideoPlayer({
                         }
                     }
                 }
+                onMouseMove={isMobile ? null : onMouseMove}
             >
                 <Box
                     sx={{
