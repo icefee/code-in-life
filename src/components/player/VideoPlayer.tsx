@@ -206,16 +206,16 @@ function VideoPlayer({
     const initPlayer = () => {
         const video = videoRef.current;
         if (hlsType) {
-            if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                video.src = url;
-                video.load();
-            }
-            else if (Hls.isSupported()) {
+            if (Hls.isSupported()) {
                 if (!hls.current) {
                     hls.current = new Hls();
                 }
                 hls.current.loadSource(url);
                 hls.current.attachMedia(video);
+            }
+            else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = url;
+                video.load();
             }
             else {
                 video.src = url;
@@ -734,7 +734,7 @@ function VideoPlayer({
                         </Stack>
                     </Stack>
                 </Fade>
-                <Fade in={isMobile && controlsShow && !loading} timeout={400} mountOnEnter>
+                <Fade in={isMobile && controlsShow && !loading && !error} timeout={400} mountOnEnter>
                     <Box
                         sx={{
                             position: 'absolute',
