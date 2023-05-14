@@ -205,15 +205,36 @@ function VideoPlayer({
 
     const initPlayer = () => {
         const video = videoRef.current;
-        if (hlsType && Hls.isSupported()) {
-            if (!hls.current) {
-                hls.current = new Hls();
+        if (hlsType) {
+            if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = url;
+                video.load();
             }
-            hls.current.loadSource(url);
-            hls.current.attachMedia(video);
+            else if (Hls.isSupported()) {
+                if (!hls.current) {
+                    hls.current = new Hls();
+                }
+                hls.current.loadSource(url);
+                hls.current.attachMedia(video);
+            }
+            else {
+                video.src = url;
+            }
         }
         else {
             video.src = url;
+        }
+    }
+
+    const initState = () => {
+        if (!initPlayTimeSeeked.current) {
+            if (autoplay) {
+                playVideo()
+            }
+            if (initPlayTime > 0) {
+                fastSeek(initPlayTime)
+            }
+            initPlayTimeSeeked.current = true;
         }
     }
 
@@ -458,15 +479,7 @@ function VideoPlayer({
                         }
                         onCanPlay={
                             () => {
-                                if (!initPlayTimeSeeked.current) {
-                                    if (autoplay) {
-                                        playVideo()
-                                    }
-                                    if (initPlayTime > 0) {
-                                        fastSeek(initPlayTime)
-                                    }
-                                    initPlayTimeSeeked.current = true;
-                                }
+                                initState()
                                 hideLoading()
                             }
                         }
