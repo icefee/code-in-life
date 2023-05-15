@@ -23,7 +23,7 @@ export default function Hls() {
         }}>
             <VideoPlayer
                 title="测试m3u8视频"
-                url="https://cdn1.kaiyunzy.org/20230103/t5SZoT51/index.m3u8"
+                url="https://nxxzyplayurl.com/20230514/Qc43w9q6/index.m3u8"
                 hls
                 autoplay
             />

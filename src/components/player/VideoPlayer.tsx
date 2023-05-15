@@ -9,7 +9,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 import { styled } from '@mui/material/styles';
 import Hls from 'hls.js';
-import Hls2Mp4, { TaskType } from 'hls2mp4';
+import Hls2Mp4, { parseM3u8File, TaskType } from 'hls2mp4';
 import PictureInPictureIcon from '@mui/icons-material/PictureInPicture';
 import PictureInPictureAltIcon from '@mui/icons-material/PictureInPictureAlt';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
@@ -17,6 +17,7 @@ import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import FastRewindIcon from '@mui/icons-material/FastRewind';
 import FastForwardIcon from '@mui/icons-material/FastForward';
 import DownloadIcon from '@mui/icons-material/Download';
+import FileDownloadOffIcon from '@mui/icons-material/FileDownloadOff';
 import MediaSlider from './MediaSlider';
 import CancelMutedButton from './CancelMutedButton';
 import { DarkThemed } from '../theme';
@@ -197,6 +198,7 @@ function VideoPlayer({
     const hls2Mp4 = useRef<Hls2Mp4>()
     const { outlet, setShow, setStatusText } = useStatus()
     const [loading, setLoading] = useState(false)
+    const [downloadable, setDownloadable] = useState(true)
     const [downloading, setDownloading] = useState(false)
 
     const [error, setError] = useState(false)
@@ -291,8 +293,18 @@ function VideoPlayer({
         }
     }, [url])
 
+    const checkDownloadable = async () => {
+        const m3u8 = await parseM3u8File(url)
+        if (m3u8 && m3u8.content.match(/#EXT-X-KEY/)) {
+            setDownloadable(false)
+        }
+    }
+
     const downloadVideo = async () => {
         if (hlsType) {
+            if (downloading) {
+                return;
+            }
             setDownloading(true)
             if (!hls2Mp4.current) {
                 hls2Mp4.current = new Hls2Mp4({
@@ -301,7 +313,6 @@ function VideoPlayer({
                     log: true
                 }, (type, progress) => {
                     if (type === TaskType.loadFFmeg) {
-                        setShow(true)
                         if (progress === 0) {
                             setStatusText('加载FFmpeg')
                         }
@@ -330,14 +341,21 @@ function VideoPlayer({
                     }
                 })
             }
+            setShow(true)
             try {
-                const buffer = await hls2Mp4.current.download(
-                    url.startsWith('http:') ? url : new URL(url, document.location.href).href
-                )
+                const buffer = await hls2Mp4.current.download(url)
                 hls2Mp4.current.saveToFile(buffer, `${title ?? 'download'}.mp4`)
             }
             catch (err) {
-                setStatusText('下载视频出错, 当前视频不支持下载')
+                if (/FFmpeg load failed/.test(err.message)) {
+                    setStatusText('FFmpeg 下载失败, 请重试')
+                }
+                else if (/video encrypted/.test(err.message)) {
+                    setStatusText('当前视频被加密, 无法下载')
+                }
+                else {
+                    setStatusText(`下载发生错误: ${err.message}`)
+                }
                 setTimeout(() => {
                     setShow(false)
                 }, 2.5e3);
@@ -475,6 +493,13 @@ function VideoPlayer({
                         onDurationChange={
                             (event: React.SyntheticEvent<HTMLVideoElement>) => {
                                 setDuration(event.currentTarget.duration)
+                            }
+                        }
+                        onLoadedMetadata={
+                            () => {
+                                if (hlsType) {
+                                    checkDownloadable()
+                                }
                             }
                         }
                         onCanPlay={
@@ -710,12 +735,12 @@ function VideoPlayer({
                                 </Tooltip>
                                 {
                                     !live && !disableDownload && (
-                                        <Tooltip title="下载">
+                                        <Tooltip title={downloadable ? '下载' : '当前视频不支持下载'}>
                                             <IconButton
                                                 color="inherit"
                                                 onClick={downloading ? null : actionTrigger(downloadVideo)}
                                             >
-                                                <DownloadIcon />
+                                                {downloadable ? <DownloadIcon /> : <FileDownloadOffIcon />}
                                             </IconButton>
                                         </Tooltip>
                                     )

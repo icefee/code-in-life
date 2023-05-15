@@ -1,7 +1,7 @@
 import React, { forwardRef, createElement } from 'react';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import PauseIcon from '@mui/icons-material/Pause';
+import PlayArrowIcon from '@mui/icons-material/PlayArrowRounded';
+import PauseIcon from '@mui/icons-material/PauseRounded';
 
 interface PlayOrPauseButtonProps extends Omit<IconButtonProps, 'color' | 'onClick' | 'children'> {
     playing: boolean;
