@@ -23,6 +23,7 @@
     "@mui/material": "^5.12.3",
     "abort-controller": "^3.0.0",
     "gatsby": "^5.9.0",
+    "gatsby-plugin-netlify": "^5.1.0",
     "hls.js": "^1.4.2",
     "hls2mp4": "^1.0.9",
     "react": "^18.2.0",

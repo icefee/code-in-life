@@ -4,7 +4,9 @@ const config: GatsbyConfig = {
   flags: {
     DEV_SSR: true
   },
-  plugins: []
+  plugins: [
+    'gatsby-plugin-netlify'
+  ]
 }
 
 export default config;
