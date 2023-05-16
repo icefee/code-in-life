@@ -16,10 +16,23 @@ export async function getServerData() {
 }
 
 export default function Hls() {
+    /*
+    const downloadFile = async () => {
+        const url = 'https://nxxzyplayurl.com/20230514/Qc43w9q6/index.m3u8'
+        const hls2Mp4 = new Hls2Mp4({
+            log: true,
+            maxRetry: 5,
+            tsDownloadConcurrency: 20
+        })
+        const buffer = await hls2Mp4.download(url)
+        hls2Mp4.saveToFile(buffer, `test.mp4`)
+    }
+    */
     return (
         <Box sx={{
             height: 400
         }}>
+            {/* <button onClick={downloadFile}>start</button> */}
             <VideoPlayer
                 title="测试m3u8视频"
                 url="https://nxxzyplayurl.com/20230514/Qc43w9q6/index.m3u8"
