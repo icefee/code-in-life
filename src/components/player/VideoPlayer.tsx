@@ -295,7 +295,7 @@ function VideoPlayer({
 
     const checkDownloadable = async () => {
         const m3u8 = await parseM3u8File(url)
-        if (m3u8 && m3u8.content.match(/#EXT-X-KEY/)) {
+        if (m3u8 && m3u8.content.match(/#EXT-X-KEY:METHOD=(?!NONE)/)) {
             setDownloadable(false)
         }
     }
