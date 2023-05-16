@@ -7,9 +7,9 @@ import Tooltip from '@mui/material/Tooltip';
 import Fade from '@mui/material/Fade';
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
-import { styled } from '@mui/material/styles';
+import { styled, alpha } from '@mui/material/styles';
 import Hls from 'hls.js';
-import Hls2Mp4, { parseM3u8File, TaskType } from 'hls2mp4';
+import Hls2Mp4, { TaskType } from 'hls2mp4';
 import PictureInPictureIcon from '@mui/icons-material/PictureInPicture';
 import PictureInPictureAltIcon from '@mui/icons-material/PictureInPictureAlt';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
@@ -17,7 +17,6 @@ import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import FastRewindIcon from '@mui/icons-material/FastRewind';
 import FastForwardIcon from '@mui/icons-material/FastForward';
 import DownloadIcon from '@mui/icons-material/Download';
-import FileDownloadOffIcon from '@mui/icons-material/FileDownloadOff';
 import MediaSlider from './MediaSlider';
 import CancelMutedButton from './CancelMutedButton';
 import { DarkThemed } from '../theme';
@@ -25,6 +24,7 @@ import PlayOrPauseButton from './PlayOrPauseButton';
 import VolumeSetter from './VolumeSetter';
 import RateSetter from './RateSetter';
 import MiniProcess from './MiniProcess';
+import SeekState from './SeekState';
 
 import { timeFormatter } from '../../util/date';
 import useLocalStorageState from '../hook/useLocalStorageState';
@@ -198,10 +198,11 @@ function VideoPlayer({
     const hls2Mp4 = useRef<Hls2Mp4>()
     const { outlet, setShow, setStatusText } = useStatus()
     const [loading, setLoading] = useState(false)
-    const [downloadable, setDownloadable] = useState(true)
     const [downloading, setDownloading] = useState(false)
 
     const [error, setError] = useState(false)
+    const [touchOrigin, setTouchOrigin] = useState(0)
+    const [seekingDuration, setSeekingDuration] = useState<number | null>(null)
 
     const videoLoaded = useMemo(() => duration > 0, [duration])
 
@@ -292,13 +293,6 @@ function VideoPlayer({
             disposePlayer()
         }
     }, [url])
-
-    const checkDownloadable = async () => {
-        const m3u8 = await parseM3u8File(url)
-        if (m3u8 && m3u8.content.match(/#EXT-X-KEY:METHOD=(?!NONE)/)) {
-            setDownloadable(false)
-        }
-    }
 
     const downloadVideo = async () => {
         if (hlsType) {
@@ -483,6 +477,34 @@ function VideoPlayer({
                             }
                         }
                     }
+                    onTouchStart={
+                        (event: React.TouchEvent<HTMLDivElement>) => {
+                            if (!live && videoLoaded) {
+                                const touchs = event.changedTouches;
+                                setTouchOrigin(touchs[0].clientX);
+                            }
+                        }
+                    }
+                    onTouchMove={
+                        (event: React.TouchEvent<HTMLDivElement>) => {
+                            if (!live && videoLoaded) {
+                                const touchs = event.changedTouches;
+                                const wrapWidth = event.currentTarget.clientWidth;
+                                const seekingDuration = (touchs[0].clientX - touchOrigin) * Math.max(duration / wrapWidth / 2, 1);
+                                setSeekingDuration(seekingDuration);
+                            }
+                        }
+                    }
+                    onTouchEnd={
+                        () => {
+                            if (!live && videoLoaded) {
+                                if (Math.abs(seekingDuration) > 1) {
+                                    fastSeek(currentTime + seekingDuration)
+                                }
+                                setSeekingDuration(null)
+                            }
+                        }
+                    }
                 >
                     <StyledVideo
                         ref={videoRef}
@@ -493,13 +515,6 @@ function VideoPlayer({
                         onDurationChange={
                             (event: React.SyntheticEvent<HTMLVideoElement>) => {
                                 setDuration(event.currentTarget.duration)
-                            }
-                        }
-                        onLoadedMetadata={
-                            () => {
-                                if (hlsType) {
-                                    checkDownloadable()
-                                }
                             }
                         }
                         onCanPlay={
@@ -605,6 +620,7 @@ function VideoPlayer({
                             bottom: 0,
                             right: 0,
                             backdropFilter: 'blur(2px)',
+                            backgroundImage: (theme) => `linear-gradient(0, ${alpha(theme.palette.common.black, .8)}, transparent)`,
                             p: 1,
                             zIndex: 3
                         }}
@@ -633,16 +649,12 @@ function VideoPlayer({
                                             onChange={
                                                 (_event, value: number) => {
                                                     seekingRef.current = true;
-                                                    if (playing) {
-                                                        pauseVideo();
-                                                    }
                                                     setCurrentTime(value * duration);
                                                 }
                                             }
                                             onChangeCommitted={
                                                 (_event, value: number) => {
                                                     fastSeek(value * duration);
-                                                    playVideo();
                                                     seekingRef.current = false;
                                                 }
                                             }
@@ -735,12 +747,12 @@ function VideoPlayer({
                                 </Tooltip>
                                 {
                                     !live && !disableDownload && (
-                                        <Tooltip title={downloadable ? '下载' : '当前视频不支持下载'}>
+                                        <Tooltip title="下载">
                                             <IconButton
                                                 color="inherit"
                                                 onClick={downloading ? null : actionTrigger(downloadVideo)}
                                             >
-                                                {downloadable ? <DownloadIcon /> : <FileDownloadOffIcon />}
+                                                <DownloadIcon />
                                             </IconButton>
                                         </Tooltip>
                                     )
@@ -779,10 +791,16 @@ function VideoPlayer({
                 </Fade>
                 {
                     !live && (
-                        <MiniProcess
-                            visible={videoLoaded && !controlsShow}
-                            state={state}
-                        />
+                        <>
+                            <MiniProcess
+                                visible={videoLoaded && !controlsShow}
+                                state={state}
+                            />
+                            <SeekState
+                                state={state}
+                                seek={seekingDuration}
+                            />
+                        </>
                     )
                 }
             </Stack>

@@ -1,6 +1,6 @@
 import React from 'react';
 import Box from '@mui/material/Box';
-import loadable from '@loadable/component'
+import loadable from '@loadable/component';
 
 const VideoPlayer = loadable(() => import('../components/player/VideoPlayer'))
 
@@ -16,7 +16,6 @@ export async function getServerData() {
 }
 
 export default function Hls() {
-
     return (
         <Box sx={{
             height: 400

@@ -16,26 +16,22 @@ type SeekStateProps = {
 
 export default function SeekState({ state, seek }: SeekStateProps) {
 
-    const currentTime = state.progress * state.duration;
-
-    const seconds = Math.round(
-        Math.max(Math.min(seek, state.duration - currentTime), - currentTime)
-    )
-
+    const currentTime = state.progress * state.duration
+    const seconds = Math.max(Math.min(seek, state.duration - currentTime), - currentTime)
     const seekingTime = [Math.max(0, currentTime + seconds), state.duration].map(timeFormatter).join(' / ')
 
     return seek !== null && (
-        <Box sx={(theme) => ({
+        <Box sx={{
             position: 'absolute',
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            zIndex: 1e8,
+            zIndex: 1e3,
             borderRadius: 2,
             p: 1,
-            bgcolor: alpha(theme.palette.common.black, .75),
+            bgcolor: (theme) => alpha(theme.palette.common.black, .8),
             color: 'primary.main'
-        })}>
+        }}>
             <Stack alignItems="center" sx={{
                 minWidth: 120
             }}>
@@ -66,7 +62,7 @@ export default function SeekState({ state, seek }: SeekStateProps) {
                             variant="h6"
                             lineHeight={1.2}
                             color="var(--status-color)"
-                        >{Math.abs(seconds)}</Typography>
+                        >{Math.abs(Math.round(seconds))}</Typography>
                         <Typography variant="caption">秒</Typography>
                     </Stack>
                 </Stack>
