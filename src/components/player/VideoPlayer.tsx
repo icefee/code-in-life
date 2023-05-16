@@ -304,7 +304,9 @@ function VideoPlayer({
                 hls2Mp4.current = new Hls2Mp4({
                     // corePath: new URL('/ffmpeg/ffmpeg-core.js', document.location.href).href,
                     // wasmPath: '/api/ffmpeg-core.wasm',
-                    log: true
+                    log: true,
+                    maxRetry: 5,
+                    tsDownloadConcurrency: 20
                 }, (type, progress) => {
                     if (type === TaskType.loadFFmeg) {
                         if (progress === 0) {
