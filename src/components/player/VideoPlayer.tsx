@@ -185,7 +185,6 @@ function VideoPlayer({
     const durationPlaceholder = '--:--'
     const [controlsShow, setControlsShow] = useState(true)
     const seekingRef = useRef(false)
-    const initPlayTimeSeeked = useRef(false)
 
     const [rate, setRate] = useState(1)
     const { pip, togglePip } = usePipEvent(videoRef)
@@ -210,11 +209,11 @@ function VideoPlayer({
         const video = videoRef.current;
         if (hlsType) {
             if (Hls.isSupported()) {
-                if (!hls.current) {
-                    hls.current = new Hls();
-                    hls.current.attachMedia(video);
-                }
+                hls.current = new Hls({
+                    startPosition: initPlayTime
+                });
                 hls.current.loadSource(url);
+                hls.current.attachMedia(video);
             }
             else if (video.canPlayType('application/vnd.apple.mpegurl')) {
                 video.src = url;
@@ -226,18 +225,6 @@ function VideoPlayer({
         }
         else {
             video.src = url;
-        }
-    }
-
-    const initState = () => {
-        if (!initPlayTimeSeeked.current) {
-            if (autoplay) {
-                playVideo()
-            }
-            if (initPlayTime > 0) {
-                fastSeek(initPlayTime)
-            }
-            initPlayTimeSeeked.current = true;
         }
     }
 
@@ -287,7 +274,8 @@ function VideoPlayer({
             setDuration(0)
             setMuted(false)
             setError(false)
-            initPlayTimeSeeked.current = false
+            hls.current?.detachMedia();
+            hls.current?.destroy();
         }
     }, [url])
 
@@ -361,13 +349,6 @@ function VideoPlayer({
             window.open(url)
         }
     }
-
-    useEffect(() => {
-        return () => {
-            hls.current?.detachMedia();
-            hls.current?.destroy();
-        }
-    }, [])
 
     const actionTrigger = (callback: VoidFunction) => {
         return videoLoaded ? callback : null
@@ -522,7 +503,9 @@ function VideoPlayer({
                         }
                         onCanPlay={
                             () => {
-                                initState()
+                                if (autoplay) {
+                                    playVideo()
+                                }
                                 hideLoading()
                             }
                         }
