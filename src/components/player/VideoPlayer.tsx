@@ -372,7 +372,6 @@ function VideoPlayer({
     const playOrPauseButton = useMemo(() => (
         <PlayOrPauseButton
             playing={playing}
-            disabled={!videoLoaded}
             onTogglePlay={videoLoaded ? togglePlay : null}
             sx={{
                 fontSize: 'inherit'
