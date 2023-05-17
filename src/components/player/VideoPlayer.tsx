@@ -251,6 +251,15 @@ function VideoPlayer({
         videoRef.current.pause();
     }
 
+    const togglePlay = (state: boolean) => {
+        if (state) {
+            playVideo()
+        }
+        else {
+            pauseVideo();
+        }
+    }
+
     const showLoading = () => {
         setLoading(true)
     }
@@ -364,16 +373,7 @@ function VideoPlayer({
         <PlayOrPauseButton
             playing={playing}
             disabled={!videoLoaded}
-            onTogglePlay={
-                (nextState) => {
-                    if (nextState) {
-                        playVideo()
-                    }
-                    else {
-                        pauseVideo();
-                    }
-                }
-            }
+            onTogglePlay={videoLoaded ? togglePlay : null}
             sx={{
                 fontSize: 'inherit'
             }}
