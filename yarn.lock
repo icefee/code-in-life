@@ -5958,10 +5958,10 @@ hls.js@^1.4.2:
   resolved "https://registry.yarnpkg.com/hls.js/-/hls.js-1.4.3.tgz#9326a680f5905631f86344d0ae155b5ef9d1bad7"
   integrity sha512-EE1MjIYDNO+ynbmCpAWfhUwQpyG8gUcKKuGDGgYgfRmW/g+inQUQ8sVVVY5WZaCxEGxDMGLbXhXGepkmDIMvdw==
 
-hls2mp4@^1.1.6:
-  version "1.1.6"
-  resolved "https://registry.yarnpkg.com/hls2mp4/-/hls2mp4-1.1.6.tgz#cadeaa2e1ca6a67d932777976dfa7f32f1c0c61e"
-  integrity sha512-M2IIGZ2zP+lOkXaElzzjrxZGEuUHpyX7JU1hgNSOQHgEkqJIcVx+YT56bBKu7hF+YzAqcS8zW4IOhaToxOygVA==
+hls2mp4@^1.1.7:
+  version "1.1.7"
+  resolved "https://registry.yarnpkg.com/hls2mp4/-/hls2mp4-1.1.7.tgz#f93961629114a1e080bf00e99de1e3d70c683dee"
+  integrity sha512-gdqX0xGaSbC2WQNlZtE7bYMbmeNk3u6JifkrgjGfFEqbzipE9FqkNUkeyMto3z+U8VsO4jemxHCZGMSRiRsj6g==
   dependencies:
     aes-js "^3.1.2"
 

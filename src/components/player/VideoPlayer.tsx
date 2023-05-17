@@ -332,7 +332,7 @@ function VideoPlayer({
                             setStatusText('合并视频分片')
                         }
                         else {
-                            setShow(false)
+                            setStatusText('视频分片合并完成')
                         }
                     }
                 })
@@ -340,7 +340,9 @@ function VideoPlayer({
             setShow(true)
             try {
                 const buffer = await hls2Mp4.current.download(url)
+                setStatusText('正在导出文件..')
                 hls2Mp4.current.saveToFile(buffer, `${title ?? 'download'}.mp4`)
+                setShow(false)
             }
             catch (err) {
                 if (/FFmpeg load failed/.test(err.message)) {
