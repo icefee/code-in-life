@@ -384,6 +384,7 @@ function VideoPlayer({
     const playOrPauseButton = useMemo(() => (
         <PlayOrPauseButton
             playing={playing}
+            disabled={!videoLoaded}
             onTogglePlay={
                 (nextState) => {
                     if (nextState) {
@@ -398,7 +399,7 @@ function VideoPlayer({
                 fontSize: 'inherit'
             }}
         />
-    ), [playing])
+    ), [playing, videoLoaded])
 
     const createControlsHideTimeout = () => {
         controlsAutoHideTimeout.current = setTimeout(() => setControlsShow(false), 2.5e3)
