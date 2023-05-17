@@ -212,9 +212,9 @@ function VideoPlayer({
             if (Hls.isSupported()) {
                 if (!hls.current) {
                     hls.current = new Hls();
+                    hls.current.attachMedia(video);
                 }
                 hls.current.loadSource(url);
-                hls.current.attachMedia(video);
             }
             else if (video.canPlayType('application/vnd.apple.mpegurl')) {
                 video.src = url;
@@ -264,10 +264,6 @@ function VideoPlayer({
         videoRef.current.pause();
     }
 
-    const disposePlayer = () => {
-        hls.current?.detachMedia();
-    }
-
     const showLoading = () => {
         setLoading(true)
     }
@@ -287,10 +283,11 @@ function VideoPlayer({
     useEffect(() => {
         initPlayer()
         return () => {
+            setPlaying(false)
             setDuration(0)
             setMuted(false)
             setError(false)
-            disposePlayer()
+            initPlayTimeSeeked.current = false
         }
     }, [url])
 
@@ -367,6 +364,7 @@ function VideoPlayer({
 
     useEffect(() => {
         return () => {
+            hls.current?.detachMedia();
             hls.current?.destroy();
         }
     }, [])
@@ -794,6 +792,23 @@ function VideoPlayer({
                         </Box>
                     </Box>
                 </Fade>
+                {
+                    !isMobile && (
+                        <Box
+                            sx={{
+                                position: 'absolute',
+                                left: '50%',
+                                top: '50%',
+                                transform: `translate(-50%, -50%) scale(${controlsShow && playing ? 2 : 1})`,
+                                opacity: playing ? 0 : .75,
+                                transition: (theme) => theme.transitions.create(['transform', 'opacity']),
+                                zIndex: 3,
+                                fontSize: '3rem'
+                            }}>
+                            {playOrPauseButton}
+                        </Box>
+                    )
+                }
                 {
                     !live && (
                         <>
