@@ -1,11 +1,11 @@
 import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
-import { parseM3u8File } from 'hls2mp4';
+import Hls2Mp4 from 'hls2mp4';
 import { getTextWithTimeout } from '../../adaptors';
 
 export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
     const searchParams = new URLSearchParams(req.query)
     const url = searchParams.get('url')
-    const m3u8 = await parseM3u8File(
+    const m3u8 = await Hls2Mp4.parseM3u8File(
         url,
         (url) => getTextWithTimeout(url)
     );

@@ -9,7 +9,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 import { styled, alpha } from '@mui/material/styles';
 import Hls from 'hls.js';
-import Hls2Mp4, { TaskType } from 'hls2mp4';
+import Hls2Mp4 from 'hls2mp4';
 import PictureInPictureIcon from '@mui/icons-material/PictureInPicture';
 import PictureInPictureAltIcon from '@mui/icons-material/PictureInPictureAlt';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
@@ -270,9 +270,10 @@ function VideoPlayer({
 
     const fastSeek = (time: number) => {
         setCurrentTime(time);
-        videoRef.current.currentTime = Math.max(
+        const video = videoRef.current;
+        video.currentTime = Math.max(
             0,
-            Math.min(duration, time)
+            Math.min(video.duration, time)
         )
     }
 
@@ -280,6 +281,7 @@ function VideoPlayer({
         initPlayer()
         return () => {
             setPlaying(false)
+            setBuffered(0)
             setDuration(0)
             setMuted(false)
             setError(false)
@@ -287,8 +289,27 @@ function VideoPlayer({
         }
     }, [url])
 
+    const hotKeysMap: Record<string, (video: HTMLVideoElement, event: KeyboardEvent) => void> = {
+        ArrowLeft(video) {
+            fastSeek(video.currentTime - 15)
+        },
+        ArrowRight(video) {
+            fastSeek(video.currentTime + 15)
+        },
+        Space(video, event) {
+            event.preventDefault()
+            togglePlay(video.paused)
+        }
+    }
+
+    const onKeyUp = (event: KeyboardEvent) => {
+        hotKeysMap[event.code]?.(videoRef.current, event)
+    }
+
     useEffect(() => {
+        window.addEventListener('keyup', onKeyUp)
         return () => {
+            window.removeEventListener('keyup', onKeyUp)
             hls.current?.detachMedia();
             hls.current?.destroy();
         }
@@ -308,6 +329,7 @@ function VideoPlayer({
                     maxRetry: 5,
                     tsDownloadConcurrency: 20
                 }, (type, progress) => {
+                    const TaskType = Hls2Mp4.TaskType;
                     if (type === TaskType.loadFFmeg) {
                         if (progress === 0) {
                             setStatusText('加载FFmpeg')
@@ -787,7 +809,7 @@ function VideoPlayer({
                                 position: 'absolute',
                                 left: '50%',
                                 top: '50%',
-                                transform: `translate(-50%, -50%) scale(${controlsShow && playing ? 2 : 1})`,
+                                transform: `translate(-50%, -50%) scale(${playing ? 2.5 : 1})`,
                                 opacity: playing ? 0 : .75,
                                 transition: (theme) => theme.transitions.create(['transform', 'opacity']),
                                 zIndex: 3,
