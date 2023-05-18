@@ -56,6 +56,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
             if (audioRef.current) {
                 audioRef.current.currentTime = 0;
                 setCurrentTime(0);
+                setBuffered(0);
                 seekingRef.current = false;
                 hasError.current = false;
             }

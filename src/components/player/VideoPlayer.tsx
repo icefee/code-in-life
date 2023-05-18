@@ -190,7 +190,6 @@ function VideoPlayer({
     const { pip, togglePip } = usePipEvent(videoRef)
 
     const playerRef = useRef<HTMLDivElement>()
-    const playActionResolved = useRef(true)
     const { fullscreen, toggleFullscreen } = useFullscreenEvent<HTMLDivElement>(playerRef)
     const controlsAutoHideTimeout = useRef<NodeJS.Timeout>()
 
@@ -205,15 +204,22 @@ function VideoPlayer({
 
     const videoLoaded = useMemo(() => duration > 0, [duration])
 
+    const onMainfestParsed = () => {
+        hls.current.startLoad(initPlayTime)
+    }
+
     const initPlayer = () => {
         const video = videoRef.current;
         if (hlsType) {
             if (Hls.isSupported()) {
-                hls.current = new Hls({
-                    startPosition: initPlayTime
-                });
+                if (!hls.current) {
+                    hls.current = new Hls({
+                        autoStartLoad: false
+                    });
+                    hls.current.attachMedia(video);
+                }
+                hls.current.on(Hls.Events.MANIFEST_PARSED, onMainfestParsed);
                 hls.current.loadSource(url);
-                hls.current.attachMedia(video);
             }
             else if (video.canPlayType('application/vnd.apple.mpegurl')) {
                 video.src = url;
@@ -230,10 +236,7 @@ function VideoPlayer({
 
     const playVideo = async () => {
         try {
-            if (playActionResolved.current) {
-                playActionResolved.current = false;
-                await videoRef.current.play()
-            }
+            await videoRef.current.play()
         }
         catch (err) {
             if (err.name === 'NotAllowedError') {
@@ -241,9 +244,6 @@ function VideoPlayer({
                 setMuted(true);
                 setTimeout(playVideo, 0);
             }
-        }
-        finally {
-            playActionResolved.current = true;
         }
     }
 
@@ -283,10 +283,16 @@ function VideoPlayer({
             setDuration(0)
             setMuted(false)
             setError(false)
+            hls.current?.off(Hls.Events.MANIFEST_PARSED, onMainfestParsed)
+        }
+    }, [url])
+
+    useEffect(() => {
+        return () => {
             hls.current?.detachMedia();
             hls.current?.destroy();
         }
-    }, [url])
+    }, [])
 
     const downloadVideo = async () => {
         if (hlsType) {
@@ -775,7 +781,7 @@ function VideoPlayer({
                     </Box>
                 </Fade>
                 {
-                    !isMobile && (
+                    !isMobile && !loading && (
                         <Box
                             sx={{
                                 position: 'absolute',
