@@ -593,6 +593,23 @@ function VideoPlayer({
                             <CircularProgress />
                         </Stack>
                     </Fade>
+                    {
+                        !isMobile && !loading && (
+                            <Box
+                                sx={{
+                                    position: 'absolute',
+                                    left: '50%',
+                                    top: '50%',
+                                    transform: `translate(-50%, -50%) scale(${playing ? 2.5 : 1})`,
+                                    opacity: playing ? 0 : .75,
+                                    transition: (theme) => theme.transitions.create(['transform', 'opacity']),
+                                    zIndex: 2,
+                                    fontSize: '3rem'
+                                }}>
+                                {playOrPauseButton}
+                            </Box>
+                        )
+                    }
                 </Box>
                 <Fade in={poster && !videoLoaded} mountOnEnter unmountOnExit>
                     <Box
@@ -818,23 +835,6 @@ function VideoPlayer({
                         </Box>
                     </Box>
                 </Fade>
-                {
-                    !isMobile && !loading && (
-                        <Box
-                            sx={{
-                                position: 'absolute',
-                                left: '50%',
-                                top: '50%',
-                                transform: `translate(-50%, -50%) scale(${playing ? 2.5 : 1})`,
-                                opacity: playing ? 0 : .75,
-                                transition: (theme) => theme.transitions.create(['transform', 'opacity']),
-                                zIndex: 3,
-                                fontSize: '3rem'
-                            }}>
-                            {playOrPauseButton}
-                        </Box>
-                    )
-                }
                 {
                     !live && (
                         <>
