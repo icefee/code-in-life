@@ -282,10 +282,14 @@ function VideoPlayer({
     const fastSeek = (time: number) => {
         setCurrentTime(time);
         const video = videoRef.current;
+        const lastPlayTime = video.currentTime;
         video.currentTime = Math.max(
             0,
             Math.min(video.duration, time)
         )
+        if (!downloading) {
+            showStatus(`快${time > lastPlayTime ? '进' : '退'}${Math.round(Math.abs(time - lastPlayTime))}秒`)
+        }
     }
 
     useEffect(() => {
@@ -343,7 +347,7 @@ function VideoPlayer({
                     const TaskType = Hls2Mp4.TaskType;
                     if (type === TaskType.loadFFmeg) {
                         if (progress === 0) {
-                            showStatus('加载FFmpeg', 2e4)
+                            showStatus('加载FFmpeg', 1e5)
                         }
                         else {
                             showStatus('FFmpeg加载完成')
@@ -351,7 +355,7 @@ function VideoPlayer({
                     }
                     else if (type === TaskType.parseM3u8) {
                         if (progress === 0) {
-                            showStatus('解析视频地址')
+                            showStatus('解析视频地址', 3e4)
                         }
                         else {
                             showStatus('视频地址解析完成')
