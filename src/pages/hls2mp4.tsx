@@ -87,6 +87,8 @@ function Hls2Mp4Demo() {
                           
                           const downloadBtn = document.getElementById('dl-btn')
                           downloadBtn.addEventListener('click', async function() {
+
+                            this.setAttribute('disabled', 'disabled')
                             
                             const hls2Mp4 = new Hls2Mp4({
                                 log: true,
@@ -124,7 +126,7 @@ function Hls2Mp4Demo() {
                             })
                             const buffer = await hls2Mp4.download(testUrl)
                             hls2Mp4.saveToFile(buffer, 'test.mp4')
-                            
+                            this.removeAttribute('disabled')
                           });
 
                         `}
