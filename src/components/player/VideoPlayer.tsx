@@ -108,6 +108,7 @@ function useFullscreenEvent<T extends HTMLElement>(ref: React.MutableRefObject<T
 function useStatus() {
     const [show, setShow] = useState(false)
     const [statusText, setStatusText] = useState('')
+    const timeoutRef = useRef<NodeJS.Timeout>()
     const outlet = (
         <Fade in={show} unmountOnExit>
             <Box sx={{
@@ -121,7 +122,17 @@ function useStatus() {
             </Box>
         </Fade>
     )
-    return { outlet, setShow, setStatusText }
+    const showStatus = (text: string, duration = 3e3) => {
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current)
+        }
+        setStatusText(text)
+        setShow(true)
+        timeoutRef.current = setTimeout(() => {
+            setShow(false)
+        }, duration)
+    }
+    return { outlet, showStatus }
 }
 
 function debounce(delay: number, callback: (args: any[]) => void) {
@@ -194,7 +205,7 @@ function VideoPlayer({
     const controlsAutoHideTimeout = useRef<NodeJS.Timeout>()
 
     const hls2Mp4 = useRef<Hls2Mp4>()
-    const { outlet, setShow, setStatusText } = useStatus()
+    const { outlet, showStatus } = useStatus()
     const [loading, setLoading] = useState(false)
     const [downloading, setDownloading] = useState(false)
 
@@ -332,53 +343,48 @@ function VideoPlayer({
                     const TaskType = Hls2Mp4.TaskType;
                     if (type === TaskType.loadFFmeg) {
                         if (progress === 0) {
-                            setStatusText('加载FFmpeg')
+                            showStatus('加载FFmpeg', 2e4)
                         }
                         else {
-                            setStatusText('FFmpeg加载完成')
+                            showStatus('FFmpeg加载完成')
                         }
                     }
                     else if (type === TaskType.parseM3u8) {
                         if (progress === 0) {
-                            setStatusText('解析视频地址')
+                            showStatus('解析视频地址')
                         }
                         else {
-                            setStatusText('视频地址解析完成')
+                            showStatus('视频地址解析完成')
                         }
                     }
                     else if (type === TaskType.downloadTs) {
-                        setStatusText(`下载视频分片: ${Math.round(progress * 100)}%`)
+                        showStatus(`下载视频分片: ${Math.round(progress * 100)}%`)
                     }
                     else if (type === TaskType.mergeTs) {
                         if (progress === 0) {
-                            setStatusText('合并视频分片')
+                            showStatus('合并视频分片')
                         }
                         else {
-                            setStatusText('视频分片合并完成')
+                            showStatus('视频分片合并完成')
                         }
                     }
                 })
             }
-            setShow(true)
             try {
                 const buffer = await hls2Mp4.current.download(url)
-                setStatusText('正在导出文件..')
+                showStatus('正在导出文件..')
                 hls2Mp4.current.saveToFile(buffer, `${title ?? 'download'}.mp4`)
-                setShow(false)
             }
             catch (err) {
                 if (/FFmpeg load failed/.test(err.message)) {
-                    setStatusText('FFmpeg 下载失败, 请重试')
+                    showStatus('FFmpeg 下载失败, 请重试')
                 }
                 else if (/video encrypted/.test(err.message)) {
-                    setStatusText('当前视频被加密, 无法下载')
+                    showStatus('当前视频被加密, 无法下载')
                 }
                 else {
-                    setStatusText(`下载发生错误: ${err.message}`)
+                    showStatus(`下载发生错误: ${err.message}`)
                 }
-                setTimeout(() => {
-                    setShow(false)
-                }, 2.5e3);
             }
             setDownloading(false)
         }
@@ -522,6 +528,7 @@ function VideoPlayer({
                         preload="auto"
                         onLoadStart={showLoading}
                         onWaiting={showLoading}
+                        poster={poster}
                         playsInline
                         onDurationChange={
                             (event: React.SyntheticEvent<HTMLVideoElement>) => {
@@ -773,7 +780,16 @@ function VideoPlayer({
                                 <Tooltip title={`${pip ? '退出' : '进入'}画中画`}>
                                     <IconButton
                                         color="inherit"
-                                        onClick={actionTrigger(togglePip)}
+                                        onClick={actionTrigger(
+                                            async () => {
+                                                try {
+                                                    await togglePip()
+                                                }
+                                                catch (err) {
+                                                    showStatus('当前浏览器不支持画中画')
+                                                }
+                                            }
+                                        )}
                                     >
                                         {
                                             pip ? <PictureInPictureAltIcon /> : <PictureInPictureIcon />
