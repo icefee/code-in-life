@@ -362,7 +362,7 @@ function VideoPlayer({
                     }
                     else if (type === TaskType.mergeTs) {
                         if (progress === 0) {
-                            showStatus('合并视频分片')
+                            showStatus('合并视频分片', 1e4)
                         }
                         else {
                             showStatus('视频分片合并完成')
