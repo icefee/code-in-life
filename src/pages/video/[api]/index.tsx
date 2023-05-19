@@ -91,7 +91,7 @@ const SiteSearch: React.FunctionComponent<PageProps<object, object, unknown, Sea
                                         </Box>
                                     </Stack>
                                     <Box sx={(theme) => ({
-                                        m: theme.spacing(0, 2, 1, 2),
+                                        m: theme.spacing(0, 1.5, 1),
                                         p: 1,
                                         backgroundImage: (theme) => `linear-gradient(90deg, ${alpha(theme.palette.background.paper, .75)}, transparent)`
                                     })}>

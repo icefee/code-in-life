@@ -276,15 +276,23 @@ export default function MusicSearch() {
                                                             m => !playlist.data.find(
                                                                 music => music.id === m.id
                                                             )
-                                                        );
-                                                        setPlaylist(list => [...list, ...dataList])
-                                                        if (playlist.data.length === 0) {
-                                                            setActiveMusic(dataList[0])
+                                                        )
+                                                        if (dataList.length > 0) {
+                                                            setPlaylist(list => [...list, ...dataList])
+                                                            if (playlist.data.length === 0) {
+                                                                setActiveMusic(dataList[0])
+                                                            }
+                                                            setToastMsg({
+                                                                type: 'success',
+                                                                msg: `已将${dataList.length}首歌曲加入播放列表`
+                                                            })
                                                         }
-                                                        setToastMsg({
-                                                            type: 'success',
-                                                            msg: `已将${dataList.length}首歌曲加入播放列表`
-                                                        })
+                                                        else {
+                                                            setToastMsg({
+                                                                type: 'warning',
+                                                                msg: '所有歌曲都已在播放列表中'
+                                                            })
+                                                        }
                                                     }
                                                     else {
                                                         const playIndex = playlist.data.findIndex(
