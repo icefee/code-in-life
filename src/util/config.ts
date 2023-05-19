@@ -10,4 +10,5 @@ export abstract class Api {
     public static assetSite = 'https://cil.onrender.com'
     public static hosting = isDev ? `http://${Api.localhost}:8000` : 'https://apps.gatsbyjs.io'
     public static assetUrl = 'https://www.stormkit.dev'
+    public static posterApiPrefix = isDev ? '' : 'https://music.gatsbyjs.io'
 }

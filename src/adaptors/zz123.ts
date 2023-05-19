@@ -1,6 +1,7 @@
 import { getResponse, parseDuration, isTextNotNull, getTextWithTimeout } from './common';
 import { timeFormatter } from '../util/date';
 import { utf82utf16 } from '../util/parser';
+import { Api } from '../util/config';
 
 export const key = 'z';
 
@@ -30,10 +31,10 @@ export async function getMusicSearch(s: string): Promise<SearchMusic[]> {
                     const id = key + idMatch
                     return {
                         id,
-                        name: nameMatch.trimStart().trimEnd(),
+                        name: nameMatch.trim(),
                         artist: artistMatch,
                         url: `/api/music/play/${id}`,
-                        poster: `/api/music/poster/${id}`
+                        poster: `${Api.posterApiPrefix}/api/music/poster/${id}`
                     }
                 }
             )
