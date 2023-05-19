@@ -311,12 +311,10 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                                                 onClick={
                                                     () => {
                                                         if (volume.data > 0) {
-                                                            setVolume(0)
                                                             audioRef.current.volume = 0;
                                                         }
                                                         else {
                                                             const targetVolume = cachedVolumeRef.current > 0 ? cachedVolumeRef.current : .5;
-                                                            setVolume(targetVolume)
                                                             audioRef.current.volume = targetVolume;
                                                         }
                                                     }
