@@ -196,6 +196,7 @@ function VideoPlayer({
     const durationPlaceholder = '--:--'
     const [controlsShow, setControlsShow] = useState(true)
     const seekingRef = useRef(false)
+    const autoPlayEventFired = useRef(false)
 
     const [rate, setRate] = useState(1)
     const { pip, togglePip } = usePipEvent(videoRef)
@@ -279,6 +280,17 @@ function VideoPlayer({
         setLoading(false)
     }
 
+    const showMessage = (message: string) => {
+        if (!downloading) {
+            showStatus(message)
+        }
+    }
+
+    const setVolumeWithMessage = (volume: number) => {
+        setVolume(volume)
+        showMessage(`设置音量为${Math.round(volume * 100)}%`)
+    }
+
     const fastSeek = (time: number) => {
         setCurrentTime(time);
         const video = videoRef.current;
@@ -287,9 +299,7 @@ function VideoPlayer({
             0,
             Math.min(video.duration, time)
         )
-        if (!downloading) {
-            showStatus(`快${time > lastPlayTime ? '进' : '退'}${Math.round(Math.abs(time - lastPlayTime))}秒`)
-        }
+        showMessage(`快${time > lastPlayTime ? '进' : '退'}${Math.round(Math.abs(time - lastPlayTime))}秒`)
     }
 
     useEffect(() => {
@@ -300,9 +310,16 @@ function VideoPlayer({
             setDuration(0)
             setMuted(false)
             setError(false)
+            autoPlayEventFired.current = false
             hls.current?.off(Hls.Events.MANIFEST_PARSED, onMainfestParsed)
         }
     }, [url])
+
+    useEffect(() => {
+        if (volume.init) {
+            videoRef.current.volume = volume.data;
+        }
+    }, [volume])
 
     const hotKeysMap: Record<string, (video: HTMLVideoElement, event: KeyboardEvent) => void> = {
         ArrowLeft(video) {
@@ -311,14 +328,23 @@ function VideoPlayer({
         ArrowRight(video) {
             fastSeek(video.currentTime + 15)
         },
-        Space(video, event) {
-            event.preventDefault()
+        ArrowUp(video) {
+            video.volume = Math.min(1, video.volume + .1)
+        },
+        ArrowDown(video) {
+            video.volume = Math.max(0, video.volume - .1)
+        },
+        Space(video) {
             togglePlay(video.paused)
         }
     }
 
     const onKeyUp = (event: KeyboardEvent) => {
-        hotKeysMap[event.code]?.(videoRef.current, event)
+        const bindAction = hotKeysMap[event.code];
+        if (bindAction) {
+            event.preventDefault();
+            bindAction(videoRef.current, event);
+        }
     }
 
     useEffect(() => {
@@ -541,7 +567,8 @@ function VideoPlayer({
                         }
                         onCanPlay={
                             () => {
-                                if (autoplay) {
+                                if (autoplay && !autoPlayEventFired.current) {
+                                    autoPlayEventFired.current = true
                                     playVideo()
                                 }
                                 hideLoading()
@@ -575,7 +602,7 @@ function VideoPlayer({
                             }
                         }
                         onVolumeChange={
-                            () => setVolume(videoRef.current.volume)
+                            () => setVolumeWithMessage(videoRef.current.volume)
                         }
                         onRateChange={
                             () => setRate(videoRef.current.playbackRate)
@@ -727,12 +754,10 @@ function VideoPlayer({
                                             onMute={
                                                 () => {
                                                     if (volume.data > 0) {
-                                                        setVolume(0)
                                                         videoRef.current.volume = 0;
                                                     }
                                                     else {
                                                         const targetVolume = cachedVolumeRef.current > 0 ? cachedVolumeRef.current : .5;
-                                                        setVolume(targetVolume);
                                                         videoRef.current.volume = targetVolume;
                                                     }
                                                 }
