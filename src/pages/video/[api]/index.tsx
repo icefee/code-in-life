@@ -1,9 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import type { GetServerDataProps, HeadProps, PageProps } from 'gatsby';
 import fetch from 'node-fetch';
 import NoSsr from '@mui/material/NoSsr';
 import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -11,8 +10,10 @@ import Pagination from '@mui/material/Pagination';
 import PaginationItem from '@mui/material/PaginationItem';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
+import { alpha } from '@mui/material/styles';
 import { SearchList } from '../../../components/search/List';
 import BackgroundContainer from '../../../components/layout/BackgroundContainer';
+import SearchForm from '../../../components/search/Form';
 import NoData from '../../../components/search/NoData';
 import { Api } from '../../../util/config';
 
@@ -21,7 +22,7 @@ interface SearchResultProps {
     data: {
         name: string;
         page: ResponsePagination;
-        video: VideoListItem[];
+        video?: VideoListItem[];
         types: VideoType[];
         type: number | null;
         s: string;
@@ -34,6 +35,8 @@ const SiteSearch: React.FunctionComponent<PageProps<object, object, unknown, Sea
     const { data, api } = serverData;
     const responseError = data.video === undefined;
     const hasListData = !responseError && data.video.length > 0;
+
+    const [keyword, setKeyword] = useState(data.s);
 
     const headTitle = useMemo(() => {
         return data.name + '站内查询到' + data.page.recordcount + '条记录';
@@ -62,14 +65,40 @@ const SiteSearch: React.FunctionComponent<PageProps<object, object, unknown, Sea
                                     height: '100%',
                                     pr: .5
                                 }}>
-                                    <Paper sx={(theme) => ({
-                                        m: theme.spacing(2, 2, 1, 2),
-                                        p: 1
+                                    <Stack sx={{
+                                        p: 1.5
+                                    }} direction="row" justifyContent="center">
+                                        <Box sx={
+                                            (theme) => ({
+                                                width: '100%',
+                                                [theme.breakpoints.up('sm')]: {
+                                                    width: 300
+                                                }
+                                            })
+                                        }>
+                                            <SearchForm
+                                                value={keyword}
+                                                onChange={setKeyword}
+                                                onSubmit={
+                                                    (value) => {
+                                                        const searchParams = new URLSearchParams(window.location.search)
+                                                        searchParams.set('s', value)
+                                                        searchParams.delete('p')
+                                                        window.location.href = `/video/${api}?${searchParams}`
+                                                    }
+                                                }
+                                            />
+                                        </Box>
+                                    </Stack>
+                                    <Box sx={(theme) => ({
+                                        m: theme.spacing(0, 2, 1, 2),
+                                        p: 1,
+                                        backgroundImage: (theme) => `linear-gradient(90deg, ${alpha(theme.palette.background.paper, .75)}, transparent)`
                                     })}>
                                         <Typography variant="subtitle1">
                                             {headTitle}
                                         </Typography>
-                                    </Paper>
+                                    </Box>
                                     <Tabs
                                         value={data.type ? String(data.type) : ''}
                                         variant="scrollable"
@@ -150,27 +179,32 @@ const SiteSearch: React.FunctionComponent<PageProps<object, object, unknown, Sea
 }
 
 export function Head({ serverData }: HeadProps<object, object, SearchResultProps>) {
-    const { data } = serverData;
-    const responseError = data.video === undefined;
-    const typeName = useMemo(() => {
-        const activeType = data.types.find(
-            t => t.tid === String(data.type)
-        )
-        return activeType ? activeType.tname : null;
-    }, [data.video, data.type])
 
-    const pageTitle = useMemo(() => {
-        let title = data.name + ' - 站内搜索';
-        if (typeName) {
-            title += ' - ' + typeName;
+    const getPageTitle = () => {
+        if (serverData) {
+            const { data } = serverData;
+            if (data.video) {
+                const activeType = data.types.find(
+                    t => t.tid === String(data.type)
+                )
+                let title = data.name + ' - 站内搜索';
+                if (activeType) {
+                    title += ' - ' + activeType.tname;
+                }
+                if (data.s !== '') {
+                    title += ` - ${data.s}`;
+                }
+                return title;
+            }
+            return '数据获取失败'
         }
-        if (data.s === '') {
-            return title;
-        }
-        return title + ` - ${data.s}`;
-    }, [typeName, serverData])
+        return '数据加载中'
+    }
+
+    const pageTitle = getPageTitle()
+
     return (
-        <title>{responseError ? '数据获取失败' : pageTitle}</title>
+        <title>{pageTitle}</title>
     )
 }
 

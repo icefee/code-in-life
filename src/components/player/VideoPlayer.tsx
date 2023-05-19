@@ -721,7 +721,10 @@ function VideoPlayer({
                                                 }
                                             }
                                             onChangeCommitted={
-                                                (_event, value: number) => {
+                                                (event, value: number) => {
+                                                    if (isMobile && event.type === 'mouseup') {
+                                                        return;
+                                                    }
                                                     fastSeek(value * duration);
                                                     seekingRef.current = false;
                                                 }

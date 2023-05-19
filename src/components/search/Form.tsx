@@ -99,7 +99,7 @@ function SearchForm({
                         sx: {
                             borderTopLeftRadius: 0,
                             borderTopRightRadius: 0,
-                            backgroundColor: (theme) => alpha(theme.palette.background.paper, .8),
+                            backgroundColor: (theme) => alpha(theme.palette.background.paper, .75),
                             backdropFilter: 'blur(4px)'
                         }
                     }
