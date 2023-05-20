@@ -319,8 +319,8 @@ export default function MusicSearch() {
                                 <Tooltip title="播放列表">
                                     <Badge sx={{
                                         '& .MuiBadge-badge': {
-                                            top: 10,
-                                            right: 10
+                                            top: 8,
+                                            right: 8
                                         }
                                     }} color="secondary" badgeContent={playlist.data.length}>
                                         <IconButton
