@@ -4,8 +4,12 @@ import Snackbar from '@mui/material/Snackbar';
 import Alert, { AlertProps } from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Slide from '@mui/material/Slide';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import Badge from '@mui/material/Badge';
 import Typography from '@mui/material/Typography';
-import SearchForm from '../components/search/Form';
+import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
+import SearchForm, { type SearchFormInstance } from '../components/search/Form';
 import { LoadingOverlay } from '../components/loading';
 import MusicPlayer, { RepeatMode } from '../components/player/MusicPlayer';
 import NoData from '../components/search/NoData';
@@ -23,8 +27,9 @@ export default function MusicSearch() {
         complete: false,
         success: false
     })
+    const searchFormRef = useRef<SearchFormInstance>()
 
-    const [activeMusic, setActiveMusic] = useState<SearchMusic>()
+    const [activeMusic, setActiveMusic] = useState<SearchMusic>(null)
     const [playing, setPlaying] = useState(false)
 
     const [playlistShow, setPlaylistShow] = useState(false)
@@ -165,10 +170,12 @@ export default function MusicSearch() {
                         }
                     })}>
                         <SearchForm
+                            ref={searchFormRef}
                             value={keyword}
                             onChange={setKeyword}
                             onSubmit={onSearch}
                             loading={searchTask.pending}
+                            autocompleteKey="music"
                         />
                     </Box>
                 </Stack>
@@ -301,19 +308,34 @@ export default function MusicSearch() {
                         right: 0,
                         bottom: 0,
                         boxShadow: '0px -4px 12px 0px rgb(0 0 0 / 80%)',
-                        maxHeight: '60%',
                         zIndex: 1250
                     }}>
                         <MusicPlayer
                             music={activeMusic}
                             playing={playing}
                             onPlayStateChange={setPlaying}
-                            onTogglePlayList={
-                                () => setPlaylistShow(
-                                    show => !show
-                                )
-                            }
                             repeat={repeat.data}
+                            extendButtons={
+                                <Tooltip title="播放列表">
+                                    <Badge sx={{
+                                        '& .MuiBadge-badge': {
+                                            top: 10,
+                                            right: 10
+                                        }
+                                    }} color="secondary" badgeContent={playlist.data.length}>
+                                        <IconButton
+                                            color="inherit"
+                                            onClick={
+                                                () => setPlaylistShow(
+                                                    show => !show
+                                                )
+                                            }
+                                        >
+                                            <PlaylistPlayIcon />
+                                        </IconButton>
+                                    </Badge>
+                                </Tooltip>
+                            }
                             onRepeatChange={setRepeat}
                             onPlayEnd={
                                 async (end) => {
@@ -347,36 +369,34 @@ export default function MusicSearch() {
                                 }
                             }
                         />
-                        {
-                            playlistShow && (
-                                <MusicPlayList
-                                    data={playlist.data}
-                                    onChange={setPlaylist}
-                                    current={activeMusic}
-                                    playing={playing}
-                                    onPlay={
-                                        (music) => {
-                                            if (!music) {
-                                                setPlaying(false)
-                                            }
-                                            setActiveMusic(music)
-                                        }
+                        <MusicPlayList
+                            show={playlistShow}
+                            data={playlist.data}
+                            onChange={setPlaylist}
+                            current={activeMusic}
+                            playing={playing}
+                            onPlay={
+                                (music) => {
+                                    if (!music) {
+                                        setPlaying(false)
                                     }
-                                    onTogglePlay={
-                                        () => {
-                                            setPlaying(playing => !playing)
-                                        }
-                                    }
-                                    onSearch={
-                                        (s) => {
-                                            setKeyword(s)
-                                            onSearch(s)
-                                        }
-                                    }
-                                    onDownload={downloadSong}
-                                />
-                            )
-                        }
+                                    setActiveMusic(music)
+                                }
+                            }
+                            onTogglePlay={
+                                () => {
+                                    setPlaying(playing => !playing)
+                                }
+                            }
+                            onSearch={
+                                (s) => {
+                                    setKeyword(s)
+                                    onSearch(s)
+                                    searchFormRef.current?.putSuggest(s)
+                                }
+                            }
+                            onDownload={downloadSong}
+                        />
                     </Stack>
                 </Slide>
                 <LoadingOverlay

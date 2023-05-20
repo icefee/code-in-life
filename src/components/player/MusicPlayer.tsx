@@ -4,24 +4,19 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
-import Slider from '@mui/material/Slider';
-import Popover from '@mui/material/Popover';
 import Tooltip from '@mui/material/Tooltip';
-import VolumeUpIcon from '@mui/icons-material/VolumeUp';
-import VolumeDownIcon from '@mui/icons-material/VolumeDown';
-import VolumeOffIcon from '@mui/icons-material/VolumeOff';
 import RepeatOneIcon from '@mui/icons-material/RepeatOne';
 import LoopIcon from '@mui/icons-material/Loop';
-import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import MusicPoster from './MusicPoster';
 import MusicLrc from './MusicLrc';
 import PlayOrPauseButton from './PlayOrPauseButton';
-import { timeFormatter } from '../../util/date';
+import VolumeSetter from './VolumeSetter';
 import useLocalStorageState from '../hook/useLocalStorageState';
 import MediaSlider from './MediaSlider';
 import AudioVisual from 'react-audio-visual';
 import { generate } from '../../util/url';
+import { timeFormatter } from '../../util/date';
 import { isDev } from '../../util/env';
 
 export enum RepeatMode {
@@ -34,13 +29,13 @@ interface MusicPlayerProps {
     music?: SearchMusic;
     playing: boolean;
     repeat: RepeatMode;
+    extendButtons: React.ReactNode;
     onRepeatChange(mode: RepeatMode): void;
     onPlayStateChange(state: boolean): void;
-    onTogglePlayList?: VoidFunction;
     onPlayEnd?(end: boolean): void;
 }
 
-function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayList, onRepeatChange, onPlayEnd }: MusicPlayerProps) {
+function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange, onRepeatChange, onPlayEnd }: MusicPlayerProps) {
 
     const audioRef = useRef<HTMLAudioElement>()
     const [audioReady, setAudioReady] = useState(false)
@@ -49,7 +44,6 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
     const [volume, setVolume] = useLocalStorageState<number>('__volume', 1)
     const cachedVolumeRef = useRef<number>(1)
     const [loading, setLoading] = useState(false)
-    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null)
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)
     const hasError = useRef(false)
     const seekingRef = useRef(false)
@@ -88,8 +82,6 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
     useEffect(() => {
         togglePlay(playing)
     }, [playing])
-
-    const volumeIcon = useMemo(() => volume.data > 0 ? volume.data > .5 ? <VolumeUpIcon /> : <VolumeDownIcon /> : <VolumeOffIcon />, [volume])
 
     const repeatMeta = useMemo(() => {
         return repeat === RepeatMode.All ? {
@@ -229,11 +221,12 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                         }} flexGrow={1}>
                             <MediaSlider
                                 size="small"
+                                color="secondary"
                                 value={duration ? currentTime / duration : 0}
-                                max={1}
-                                step={.00001}
                                 buffered={buffered}
                                 showTooltip={!isMobile}
+                                max={1}
+                                step={.00001}
                                 tooltipFormatter={
                                     (value) => duration ? timeFormatter(value * duration) : durationPlaceholder
                                 }
@@ -256,85 +249,33 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                         </Stack>
                         {
                             !isMobile && (
-                                <>
-                                    <Tooltip title="音量">
-                                        <IconButton
-                                            color="inherit"
-                                            size="small"
-                                            onClick={
-                                                (event: React.MouseEvent<HTMLButtonElement>) => {
-                                                    setAnchorEl(event.currentTarget);
-                                                }
-                                            }
-                                        >
-                                            {volumeIcon}
-                                        </IconButton>
-                                    </Tooltip>
-                                    <Popover
-                                        open={Boolean(anchorEl)}
-                                        anchorEl={anchorEl}
-                                        onClose={
-                                            () => setAnchorEl(null)
+                                <VolumeSetter
+                                    value={volume.data}
+                                    onChange={
+                                        (value) => {
+                                            audioRef.current.volume = value;
+                                            cachedVolumeRef.current = value;
                                         }
-                                        anchorOrigin={{
-                                            vertical: 'top',
-                                            horizontal: 'center',
-                                        }}
-                                        transformOrigin={{
-                                            vertical: 'bottom',
-                                            horizontal: 'center',
-                                        }}
-                                    >
-                                        <Stack sx={{
-                                            height: 120,
-                                            pt: 2
-                                        }} alignItems="center">
-                                            <Slider
-                                                size="small"
-                                                value={volume.data}
-                                                max={1}
-                                                step={.00001}
-                                                disabled={!audioReady}
-                                                onChange={
-                                                    (_event, value: number) => {
-                                                        if (duration) {
-                                                            audioRef.current.volume = value;
-                                                            cachedVolumeRef.current = value;
-                                                        }
-                                                    }
-                                                }
-                                                orientation="vertical"
-                                            />
-                                            <IconButton
-                                                color="inherit"
-                                                size="small"
-                                                onClick={
-                                                    () => {
-                                                        if (volume.data > 0) {
-                                                            audioRef.current.volume = 0;
-                                                        }
-                                                        else {
-                                                            const targetVolume = cachedVolumeRef.current > 0 ? cachedVolumeRef.current : .5;
-                                                            audioRef.current.volume = targetVolume;
-                                                        }
-                                                    }
-                                                }
-                                            >
-                                                {volumeIcon}
-                                            </IconButton>
-                                        </Stack>
-                                    </Popover>
-                                </>
+                                    }
+                                    onMute={
+                                        () => {
+                                            if (volume.data > 0) {
+                                                audioRef.current.volume = 0;
+                                            }
+                                            else {
+                                                const targetVolume = cachedVolumeRef.current > 0 ? cachedVolumeRef.current : .5;
+                                                audioRef.current.volume = targetVolume;
+                                            }
+                                        }
+                                    }
+                                    disabled={!audioReady}
+                                    IconProps={{
+                                        size: 'small'
+                                    }}
+                                />
                             )
                         }
-                        <Tooltip title="播放列表">
-                            <IconButton
-                                color="inherit"
-                                onClick={onTogglePlayList}
-                            >
-                                <PlaylistPlayIcon />
-                            </IconButton>
-                        </Tooltip>
+                        {extendButtons}
                         <Tooltip title={repeatMeta.label}>
                             <IconButton
                                 color="inherit"
@@ -447,13 +388,11 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                                 }
                             }
                             onVolumeChange={
-                                () => {
-                                    const volume = audioRef.current.volume;
-                                    setVolume(volume);
-                                }
+                                () => setVolume(audioRef.current.volume)
                             }
                             onError={
                                 () => {
+                                    // audioRef.current.src = music.url;
                                     if (hasError.current) {
                                         onPlayEnd?.(false)
                                         setLoading(false)
