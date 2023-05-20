@@ -73,23 +73,12 @@ function usePipEvent(ref: React.MutableRefObject<HTMLVideoElement>) {
     }
 }
 
-function useFullscreenEvent<T extends HTMLElement>(ref: React.MutableRefObject<T>) {
+function useFullscreenEvent() {
 
-    const [fullscreen, setFullscreen] = useState<boolean>(false)
+    const [fullscreen, setFullscreen] = useState(false)
 
     const onChange = () => {
-        setFullscreen(document.fullscreenElement !== null)
-    }
-
-    const toggleFullscreen = async () => {
-        if (fullscreen) {
-            if (document.fullscreenElement) {
-                await document.exitFullscreen()
-            }
-        }
-        else {
-            await ref.current.requestFullscreen()
-        }
+        setFullscreen(document.fullscreenEnabled)
     }
 
     useEffect(() => {
@@ -100,8 +89,7 @@ function useFullscreenEvent<T extends HTMLElement>(ref: React.MutableRefObject<T
     }, [])
 
     return {
-        fullscreen,
-        toggleFullscreen
+        fullscreen
     }
 }
 
@@ -202,7 +190,7 @@ function VideoPlayer({
     const { pip, togglePip } = usePipEvent(videoRef)
 
     const playerRef = useRef<HTMLDivElement>()
-    const { fullscreen, toggleFullscreen } = useFullscreenEvent<HTMLDivElement>(playerRef)
+    const { fullscreen } = useFullscreenEvent()
     const controlsAutoHideTimeout = useRef<NodeJS.Timeout>()
 
     const hls2Mp4 = useRef<Hls2Mp4>()
@@ -278,6 +266,21 @@ function VideoPlayer({
 
     const hideLoading = () => {
         setLoading(false)
+    }
+
+    const toggleFullscreen = async () => {
+        if (fullscreen) {
+            if (document.fullscreenElement) {
+                await document.exitFullscreen()
+            }
+        }
+        else if (document.fullscreenEnabled) {
+            await playerRef.current.requestFullscreen()
+        }
+        else {
+            /* @ts-ignore */
+            await videoRef.current.webkitEnterFullscreen()
+        }
     }
 
     const showMessage = (message: string) => {
@@ -632,7 +635,7 @@ function VideoPlayer({
                                     left: '50%',
                                     top: '50%',
                                     transform: `translate(-50%, -50%) scale(${playing ? 2.5 : 1})`,
-                                    opacity: playing ? 0 : .75,
+                                    opacity: playing ? 0 : 1,
                                     transition: (theme) => theme.transitions.create(['transform', 'opacity']),
                                     zIndex: 2,
                                     fontSize: '3rem'

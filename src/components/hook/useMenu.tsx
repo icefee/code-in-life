@@ -3,6 +3,7 @@ import Menu, { type MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import Typography from '@mui/material/Typography';
 
 interface MenuType {
     icon: React.ReactNode;
@@ -45,7 +46,7 @@ function useMenu<AnchorElement extends Element = HTMLButtonElement>(props?: Menu
                             <ListItemIcon>
                                 {icon}
                             </ListItemIcon>
-                            <ListItemText>{text}</ListItemText>
+                            <Typography variant="inherit" noWrap>{text}</Typography>
                         </MenuItem>
                     )
                 )
