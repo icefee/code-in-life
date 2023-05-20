@@ -17,6 +17,7 @@ import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import FastRewindIcon from '@mui/icons-material/FastRewind';
 import FastForwardIcon from '@mui/icons-material/FastForward';
 import DownloadIcon from '@mui/icons-material/Download';
+import useLocalStorageState from '../hook/useLocalStorageState';
 import MediaSlider from './MediaSlider';
 import CancelMutedButton from './CancelMutedButton';
 import { DarkThemed } from '../theme';
@@ -25,9 +26,7 @@ import VolumeSetter from './VolumeSetter';
 import RateSetter from './RateSetter';
 import MiniProcess from './MiniProcess';
 import SeekState from './SeekState';
-
 import { timeFormatter } from '../../util/date';
-import useLocalStorageState from '../hook/useLocalStorageState';
 
 const StyledVideo = styled('video')({
     display: 'block',

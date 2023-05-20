@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import Menu, { type MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Typography from '@mui/material/Typography';
 
