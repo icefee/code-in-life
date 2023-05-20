@@ -80,6 +80,12 @@ function SearchForm({
         )
     }, [autocompleteKey, suggests])
 
+    const filteredSuggests = useMemo(() => {
+        return relatedSuggests.filter(
+            (option) => new RegExp(value.replace('\\', '\\\\'), 'i').test(option)
+        )
+    }, [relatedSuggests, value])
+
     useImperativeHandle(ref, () => ({
         putSuggest
     }))
@@ -154,7 +160,7 @@ function SearchForm({
                             display: 'flex',
                             width: '100%',
                             backgroundColor: (theme) => alpha(theme.palette.background.paper, .8),
-                            ...(autoCompleteOpen && relatedSuggests.length > 0 ? {
+                            ...(autoCompleteOpen && filteredSuggests.length > 0 ? {
                                 borderBottomLeftRadius: 0,
                                 borderBottomRightRadius: 0,
                             } : null)

@@ -7,7 +7,6 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import RepeatOneIcon from '@mui/icons-material/RepeatOne';
 import LoopIcon from '@mui/icons-material/Loop';
-import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import MusicPoster from './MusicPoster';
 import MusicLrc from './MusicLrc';
@@ -30,13 +29,13 @@ interface MusicPlayerProps {
     music?: SearchMusic;
     playing: boolean;
     repeat: RepeatMode;
+    extendButtons: React.ReactNode;
     onRepeatChange(mode: RepeatMode): void;
     onPlayStateChange(state: boolean): void;
-    onTogglePlayList?: VoidFunction;
     onPlayEnd?(end: boolean): void;
 }
 
-function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayList, onRepeatChange, onPlayEnd }: MusicPlayerProps) {
+function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange, onRepeatChange, onPlayEnd }: MusicPlayerProps) {
 
     const audioRef = useRef<HTMLAudioElement>()
     const [audioReady, setAudioReady] = useState(false)
@@ -276,14 +275,7 @@ function MusicPlayer({ music, playing, repeat, onPlayStateChange, onTogglePlayLi
                                 />
                             )
                         }
-                        <Tooltip title="播放列表">
-                            <IconButton
-                                color="inherit"
-                                onClick={onTogglePlayList}
-                            >
-                                <PlaylistPlayIcon />
-                            </IconButton>
-                        </Tooltip>
+                        {extendButtons}
                         <Tooltip title={repeatMeta.label}>
                             <IconButton
                                 color="inherit"

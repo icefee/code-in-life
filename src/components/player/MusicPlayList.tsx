@@ -1,17 +1,14 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import type { ReactNode, MouseEvent, MouseEventHandler, SyntheticEvent } from 'react';
+import type { ReactNode, MouseEvent, MouseEventHandler } from 'react';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListSubheader from '@mui/material/ListSubheader';
 import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
@@ -329,13 +326,13 @@ interface PlayListItemProps {
 
 function PlayListItem({ music, playing, isCurrent, divider, onAction, onClick }: PlayListItemProps) {
 
-    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null)
     const listItemRef = useRef<HTMLLIElement>()
+    const { outlet, showMenu, hideMenu } = useMenu()
 
     const handleMenuAction = (cmd: MenuAction) => {
-        return (_event: SyntheticEvent) => {
+        return () => {
             onAction(cmd, music)
-            setAnchorEl(null)
+            hideMenu()
         }
     }
 
@@ -358,65 +355,43 @@ function PlayListItem({ music, playing, isCurrent, divider, onAction, onClick }:
                 <>
                     <IconButton onClick={
                         (event: MouseEvent<HTMLButtonElement>) => {
-                            setAnchorEl(event.currentTarget);
+                            showMenu(event.currentTarget, [
+                                {
+                                    icon: <PublishIcon />,
+                                    text: '置顶',
+                                    onClick: handleMenuAction('pin')
+                                },
+                                {
+                                    icon: <PersonSearchOutlinedIcon />,
+                                    text: `搜索“${music.artist}”`,
+                                    onClick: handleMenuAction('search-artist')
+                                },
+                                {
+                                    icon: <ManageSearchOutlinedIcon />,
+                                    text: `搜索“${music.name}”`,
+                                    onClick: handleMenuAction('search-name')
+                                },
+                                {
+                                    icon: <DownloadIcon />,
+                                    text: '下载歌曲',
+                                    onClick: handleMenuAction('download-song')
+                                },
+                                {
+                                    icon: <RttOutlinedIcon />,
+                                    text: '下载歌词',
+                                    onClick: handleMenuAction('download-lrc')
+                                },
+                                {
+                                    icon: <PlaylistRemoveIcon />,
+                                    text: '移出播放列表',
+                                    onClick: handleMenuAction('remove')
+                                }
+                            ]);
                         }
                     }>
                         <MoreVertIcon />
                     </IconButton>
-                    <Menu
-                        anchorEl={anchorEl}
-                        open={Boolean(anchorEl)}
-                        anchorOrigin={{
-                            vertical: 'top',
-                            horizontal: 'left',
-                        }}
-                        transformOrigin={{
-                            vertical: 'top',
-                            horizontal: 'right',
-                        }}
-                        onClose={
-                            () => {
-                                setAnchorEl(null)
-                            }
-                        }
-                    >
-                        <MenuItem onClick={handleMenuAction('pin')}>
-                            <ListItemIcon>
-                                <PublishIcon />
-                            </ListItemIcon>
-                            <ListItemText>置顶</ListItemText>
-                        </MenuItem>
-                        <MenuItem onClick={handleMenuAction('search-artist')}>
-                            <ListItemIcon>
-                                <PersonSearchOutlinedIcon />
-                            </ListItemIcon>
-                            <ListItemText>搜索“{music.artist}”</ListItemText>
-                        </MenuItem>
-                        <MenuItem onClick={handleMenuAction('search-name')}>
-                            <ListItemIcon>
-                                <ManageSearchOutlinedIcon />
-                            </ListItemIcon>
-                            <ListItemText>搜索“{music.name}”</ListItemText>
-                        </MenuItem>
-                        <MenuItem onClick={handleMenuAction('download-song')}>
-                            <ListItemIcon>
-                                <DownloadIcon />
-                            </ListItemIcon>
-                            <ListItemText>下载歌曲</ListItemText>
-                        </MenuItem>
-                        <MenuItem onClick={handleMenuAction('download-lrc')}>
-                            <ListItemIcon>
-                                <RttOutlinedIcon />
-                            </ListItemIcon>
-                            <ListItemText>下载歌词</ListItemText>
-                        </MenuItem>
-                        <MenuItem onClick={handleMenuAction('remove')}>
-                            <ListItemIcon>
-                                <PlaylistRemoveIcon />
-                            </ListItemIcon>
-                            <ListItemText>移出播放列表</ListItemText>
-                        </MenuItem>
-                    </Menu>
+                    {outlet}
                 </>
             }
         >

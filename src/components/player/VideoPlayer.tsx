@@ -375,7 +375,7 @@ function VideoPlayer({
                     const TaskType = Hls2Mp4.TaskType;
                     if (type === TaskType.loadFFmeg) {
                         if (progress === 0) {
-                            showStatus('加载FFmpeg', 1e5)
+                            showStatus('加载FFmpeg', 1e6)
                         }
                         else {
                             showStatus('FFmpeg加载完成')
@@ -390,7 +390,7 @@ function VideoPlayer({
                         }
                     }
                     else if (type === TaskType.downloadTs) {
-                        showStatus(`下载视频分片: ${Math.round(progress * 100)}%`)
+                        showStatus(`下载视频分片: ${Math.round(progress * 100)}%`, 1e4)
                     }
                     else if (type === TaskType.mergeTs) {
                         if (progress === 0) {

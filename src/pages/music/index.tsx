@@ -4,8 +4,11 @@ import Snackbar from '@mui/material/Snackbar';
 import Alert, { AlertProps } from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Slide from '@mui/material/Slide';
-import Fade from '@mui/material/Fade';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import Badge from '@mui/material/Badge';
 import Typography from '@mui/material/Typography';
+import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
 import SearchForm, { type SearchFormInstance } from '../../components/search/Form';
 import { LoadingOverlay } from '../../components/loading';
 import MusicPlayer, { RepeatMode } from '../../components/player/MusicPlayer';
@@ -134,54 +137,6 @@ export default function MusicSearch() {
             setPlaylistShow(false)
         }
     }, [activeMusic])
-
-    const checkPlayListState = () => {
-
-        const playListUpgradeKey = '__playlist_upgraded';
-        const playListUpgraded = localStorage.getItem(playListUpgradeKey)
-
-        if (!playListUpgraded) {
-            const cachedList = JSON.parse(localStorage.getItem('__playlist')) as (Omit<SearchMusic, 'id'> & { id: number | string; })[]
-
-            if (cachedList.some(
-                m => typeof m.id === 'number'
-            )) {
-                const upgradedList = cachedList.map(
-                    (m) => {
-                        const { id, poster, url, ...rest } = m;
-                        if (typeof m.id === 'number') {
-                            const regExp = new RegExp(
-                                String(m.id)
-                            )
-                            const newId = 'g' + m.id;
-                            return ({
-                                id: newId,
-                                poster: poster.replace(regExp, newId),
-                                url: url.replace(regExp, newId),
-                                ...rest
-                            })
-                        }
-                        return {
-                            ...m,
-                            id: String(id)
-                        }
-                    }
-                );
-                setPlaylist(upgradedList)
-                setToastMsg({
-                    type: 'success',
-                    msg: '播放列表已升级'
-                })
-                setActiveMusic(upgradedList[0])
-            }
-
-            localStorage.setItem(playListUpgradeKey, '1')
-        }
-    }
-
-    useEffect(() => {
-        checkPlayListState()
-    }, [])
 
     return (
         <Stack sx={{
@@ -359,12 +314,28 @@ export default function MusicSearch() {
                             music={activeMusic}
                             playing={playing}
                             onPlayStateChange={setPlaying}
-                            onTogglePlayList={
-                                () => setPlaylistShow(
-                                    show => !show
-                                )
-                            }
                             repeat={repeat.data}
+                            extendButtons={
+                                <Tooltip title="播放列表">
+                                    <Badge sx={{
+                                        '& .MuiBadge-badge': {
+                                            top: 8,
+                                            right: 8
+                                        }
+                                    }} color="secondary" badgeContent={playlist.data.length}>
+                                        <IconButton
+                                            color="inherit"
+                                            onClick={
+                                                () => setPlaylistShow(
+                                                    show => !show
+                                                )
+                                            }
+                                        >
+                                            <PlaylistPlayIcon />
+                                        </IconButton>
+                                    </Badge>
+                                </Tooltip>
+                            }
                             onRepeatChange={setRepeat}
                             onPlayEnd={
                                 async (end) => {
