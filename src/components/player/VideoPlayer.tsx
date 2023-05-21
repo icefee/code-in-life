@@ -27,6 +27,7 @@ import RateSetter from './RateSetter';
 import MiniProcess from './MiniProcess';
 import SeekState from './SeekState';
 import { timeFormatter } from '../../util/date';
+import { isMobileDevice } from '../../util/env';
 
 const StyledVideo = styled('video')({
     display: 'block',
@@ -179,7 +180,7 @@ function VideoPlayer({
 
     const [buffered, setBuffered] = useState(0)
     const [muted, setMuted] = useState(false)
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)
+    const isMobile = isMobileDevice()
     const durationPlaceholder = '--:--'
     const [controlsShow, setControlsShow] = useState(true)
     const seekingRef = useRef(false)
@@ -207,6 +208,10 @@ function VideoPlayer({
         hls.current.startLoad(initPlayTime)
     }
 
+    const onMediaAttached = () => {
+        tryToAutoPlay()
+    }
+
     const initPlayer = () => {
         const video = videoRef.current;
         if (hlsType) {
@@ -218,6 +223,7 @@ function VideoPlayer({
                     hls.current.attachMedia(video);
                 }
                 hls.current.on(Hls.Events.MANIFEST_PARSED, onMainfestParsed);
+                hls.current.on(Hls.Events.MEDIA_ATTACHED, onMediaAttached);
                 hls.current.loadSource(url);
             }
             else if (video.canPlayType('application/vnd.apple.mpegurl')) {
@@ -259,6 +265,13 @@ function VideoPlayer({
         }
     }
 
+    const tryToAutoPlay = () => {
+        if (autoplay && !autoPlayEventFired.current) {
+            autoPlayEventFired.current = true
+            playVideo()
+        }
+    }
+
     const showLoading = () => {
         setLoading(true)
     }
@@ -290,7 +303,9 @@ function VideoPlayer({
 
     const setVolumeWithMessage = (volume: number) => {
         setVolume(volume)
-        showMessage(`设置音量为${Math.round(volume * 100)}%`)
+        if (!isMobile) {
+            showMessage(`设置音量为${Math.round(volume * 100)}%`)
+        }
     }
 
     const fastSeek = (time: number) => {
@@ -308,10 +323,14 @@ function VideoPlayer({
         initPlayer()
         return () => {
             setPlaying(false)
+            setCurrentTime(0)
             setBuffered(0)
             setDuration(0)
             setMuted(false)
             setError(false)
+            if (videoRef.current) {
+                videoRef.current.muted = false
+            }
             autoPlayEventFired.current = false
             hls.current?.off(Hls.Events.MANIFEST_PARSED, onMainfestParsed)
         }
@@ -350,9 +369,13 @@ function VideoPlayer({
     }
 
     useEffect(() => {
-        window.addEventListener('keyup', onKeyUp)
+        if (!isMobile) {
+            window.addEventListener('keyup', onKeyUp)
+        }
         return () => {
-            window.removeEventListener('keyup', onKeyUp)
+            if (!isMobile) {
+                window.removeEventListener('keyup', onKeyUp)
+            }
             hls.current?.detachMedia();
             hls.current?.destroy();
         }
@@ -569,9 +592,9 @@ function VideoPlayer({
                         }
                         onCanPlay={
                             () => {
-                                if (autoplay && !autoPlayEventFired.current) {
-                                    autoPlayEventFired.current = true
-                                    playVideo()
+                                if (!hls.current) {
+                                    fastSeek(initPlayTime)
+                                    tryToAutoPlay()
                                 }
                                 hideLoading()
                             }
@@ -591,7 +614,7 @@ function VideoPlayer({
                                 const video = event.currentTarget;
                                 if (!video.seeking && !seekingRef.current) {
                                     setCurrentTime(video.currentTime);
-                                    onTimeUpdate?.(state)
+                                    onTimeUpdate?.(state);
                                 }
                             }
                         }
@@ -689,7 +712,6 @@ function VideoPlayer({
                             left: 0,
                             bottom: 0,
                             right: 0,
-                            backdropFilter: 'blur(2px)',
                             backgroundImage: (theme) => `linear-gradient(0, ${alpha(theme.palette.common.black, .8)}, transparent)`,
                             p: 1,
                             zIndex: 3

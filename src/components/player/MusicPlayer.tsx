@@ -17,7 +17,7 @@ import MediaSlider from './MediaSlider';
 import AudioVisual from 'react-audio-visual';
 import { generate } from '../../util/url';
 import { timeFormatter } from '../../util/date';
-import { isDev } from '../../util/env';
+import { isDev, isMobileDevice } from '../../util/env';
 
 export enum RepeatMode {
     All,
@@ -44,7 +44,7 @@ function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange,
     const [volume, setVolume] = useLocalStorageState<number>('__volume', 1)
     const cachedVolumeRef = useRef<number>(1)
     const [loading, setLoading] = useState(false)
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)
+    const isMobile = isMobileDevice()
     const hasError = useRef(false)
     const seekingRef = useRef(false)
     const [buffered, setBuffered] = useState(0)
