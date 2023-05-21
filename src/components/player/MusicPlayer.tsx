@@ -56,6 +56,7 @@ function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange,
                 audioRef.current.currentTime = 0;
                 setCurrentTime(0);
                 setBuffered(0);
+                onPlayStateChange(false);
                 seekingRef.current = false;
                 hasError.current = false;
             }
