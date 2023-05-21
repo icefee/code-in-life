@@ -61,7 +61,6 @@ export default function SeekState({ state, seek }: SeekStateProps) {
                         <Typography
                             variant="h6"
                             lineHeight={1.2}
-                            color="var(--status-color)"
                         >{Math.abs(Math.round(seconds))}</Typography>
                         <Typography variant="caption">秒</Typography>
                     </Stack>

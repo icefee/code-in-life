@@ -311,12 +311,12 @@ function VideoPlayer({
     const fastSeek = (time: number) => {
         setCurrentTime(time);
         const video = videoRef.current;
-        const lastPlayTime = video.currentTime;
-        video.currentTime = Math.max(
+        const nextPlayTime = Math.max(
             0,
             Math.min(video.duration, time)
-        )
-        showMessage(`快${time > lastPlayTime ? '进' : '退'}${Math.round(Math.abs(time - lastPlayTime))}秒`)
+        );
+        showMessage(`快${nextPlayTime > video.currentTime ? '进' : '退'}${Math.round(Math.abs(nextPlayTime - video.currentTime))}秒`)
+        video.currentTime = nextPlayTime;
     }
 
     useEffect(() => {
@@ -612,7 +612,7 @@ function VideoPlayer({
                         onTimeUpdate={
                             (event: React.SyntheticEvent<HTMLVideoElement>) => {
                                 const video = event.currentTarget;
-                                if (!video.seeking && !seekingRef.current) {
+                                if (!seekingRef.current) {
                                     setCurrentTime(video.currentTime);
                                     onTimeUpdate?.(state);
                                 }
