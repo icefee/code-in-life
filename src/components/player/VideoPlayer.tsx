@@ -78,7 +78,7 @@ function useFullscreenEvent() {
     const [fullscreen, setFullscreen] = useState(false)
 
     const onChange = () => {
-        setFullscreen(document.fullscreenEnabled)
+        setFullscreen(document.fullscreenElement !== null)
     }
 
     useEffect(() => {

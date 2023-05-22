@@ -25,7 +25,7 @@ export async function getTextWithTimeout(...args: Parameters<typeof fetch>): Pro
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.5615.121 Safari/537.36'
             },
-            signal: abortController.signal
+            signal: abortController.signal as AbortSignal
         })
         return text;
     }
