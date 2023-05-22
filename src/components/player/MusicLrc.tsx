@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import Fade from '@mui/material/Fade';
 import Popover from '@mui/material/Popover';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -40,6 +41,8 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
     const downloadingPlaceholder = '正在下载歌词..'
     const emptyPlaceholder = '🎵🎵...'
 
+    const [show, setShow] = useState(false)
+
     const handleClose = () => {
         setAnchorEl(null)
     }
@@ -63,15 +66,19 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
         getLrc(id)
     }, [id])
 
+    const lineIndex = useMemo(() => {
+        const index = lrc.findIndex(
+            ({ time }) => time > currentTime
+        )
+        return index > 1 ? index - 1 : 0;
+    }, [lrc, currentTime])
+
     const lrcLine = useMemo(() => {
         if (downloading) {
             return downloadingPlaceholder
         }
-        const playedLines = lrc.filter(
-            ({ time }) => time <= currentTime
-        )
-        if (playedLines.length > 0) {
-            return playedLines[playedLines.length - 1].text
+        if (lrc.length > 0) {
+            return lrc[lineIndex].text
         }
         return '';
     }, [downloading, lrc, currentTime])
@@ -85,11 +92,18 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
     )
 
     const displayLrc = useMemo(() => {
-        if (lrcLine.trimStart().trimEnd().length > 0) {
+        if (lrcLine.trim().length > 0) {
             return lrcLine;
         }
         return emptyPlaceholder;
     }, [lrcLine])
+
+    useEffect(() => {
+        setShow(true)
+        return () => {
+            setShow(false)
+        }
+    }, [displayLrc])
 
     return (
         <>
@@ -110,7 +124,25 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                         }
                     }
                     title={displayLrc}
-                >{displayLrc}</Typography>
+                >
+                    {
+                        displayLrc.split('').map(
+                            (text, index) => {
+                                const key = lineIndex + '-' + index;
+                                const timeout = 150 * index;
+                                return (
+                                    <Fade
+                                        key={key}
+                                        in={show}
+                                        timeout={timeout}
+                                    >
+                                        <span>{text}</span>
+                                    </Fade>
+                                )
+                            }
+                        )
+                    }
+                </Typography>
             </Stack>
             <Popover
                 open={Boolean(anchorEl)}
@@ -203,21 +235,24 @@ function ScrollingLrc({ lrc, currentTime }: ScrollingLrcProps) {
                 }}>
                     {
                         lrc.map(
-                            ({ text }, index) => (
-                                <Stack sx={{
-                                    height: 28,
-                                    color: activeIndex === index ? 'primary.main' : 'text.primary'
-                                }} justifyContent="center" key={index}>
-                                    <Typography
-                                        variant="subtitle2"
-                                        color="inherit"
-                                        textOverflow="ellipsis"
-                                        textAlign="center"
-                                        title={text}
-                                        noWrap
-                                    >{text}</Typography>
-                                </Stack>
-                            )
+                            ({ text }, index) => {
+                                const isActive = activeIndex === index;
+                                return (
+                                    <Stack sx={{
+                                        height: 28,
+                                        color: isActive ? 'primary.main' : 'text.primary'
+                                    }} justifyContent="center" key={index}>
+                                        <Typography
+                                            variant={isActive ? 'body1' : 'subtitle2'}
+                                            color="inherit"
+                                            textOverflow="ellipsis"
+                                            textAlign="center"
+                                            title={text}
+                                            noWrap
+                                        >{text}</Typography>
+                                    </Stack>
+                                )
+                            }
                         )
                     }
                 </Box>
