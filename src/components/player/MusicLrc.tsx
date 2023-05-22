@@ -66,15 +66,19 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
         getLrc(id)
     }, [id])
 
+    const lineIndex = useMemo(() => {
+        const index = lrc.findIndex(
+            ({ time }) => time > currentTime
+        )
+        return index > 1 ? index - 1 : 0;
+    }, [lrc, currentTime])
+
     const lrcLine = useMemo(() => {
         if (downloading) {
             return downloadingPlaceholder
         }
-        const playedLines = lrc.filter(
-            ({ time }) => time <= currentTime
-        )
-        if (playedLines.length > 0) {
-            return playedLines[playedLines.length - 1].text
+        if (lrc.length > 0) {
+            return lrc[lineIndex].text
         }
         return '';
     }, [downloading, lrc, currentTime])
@@ -88,7 +92,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
     )
 
     const displayLrc = useMemo(() => {
-        if (lrcLine.trimStart().trimEnd().length > 0) {
+        if (lrcLine.trim().length > 0) {
             return lrcLine;
         }
         return emptyPlaceholder;
@@ -124,7 +128,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                     {
                         displayLrc.split('').map(
                             (text, index) => {
-                                const key = text.charCodeAt(0) + '-' + index;
+                                const key = lineIndex + '-' + index;
                                 const timeout = 150 * index;
                                 return (
                                     <Fade
@@ -231,21 +235,24 @@ function ScrollingLrc({ lrc, currentTime }: ScrollingLrcProps) {
                 }}>
                     {
                         lrc.map(
-                            ({ text }, index) => (
-                                <Stack sx={{
-                                    height: 28,
-                                    color: activeIndex === index ? 'primary.main' : 'text.primary'
-                                }} justifyContent="center" key={index}>
-                                    <Typography
-                                        variant="subtitle2"
-                                        color="inherit"
-                                        textOverflow="ellipsis"
-                                        textAlign="center"
-                                        title={text}
-                                        noWrap
-                                    >{text}</Typography>
-                                </Stack>
-                            )
+                            ({ text }, index) => {
+                                const isActive = activeIndex === index;
+                                return (
+                                    <Stack sx={{
+                                        height: 28,
+                                        color: isActive ? 'primary.main' : 'text.primary'
+                                    }} justifyContent="center" key={index}>
+                                        <Typography
+                                            variant={isActive ? 'body1' : 'subtitle2'}
+                                            color="inherit"
+                                            textOverflow="ellipsis"
+                                            textAlign="center"
+                                            title={text}
+                                            noWrap
+                                        >{text}</Typography>
+                                    </Stack>
+                                )
+                            }
                         )
                     }
                 </Box>
