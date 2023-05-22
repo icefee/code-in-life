@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import Fade from '@mui/material/Fade';
 import Popover from '@mui/material/Popover';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -39,6 +40,8 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
     const [anchorEl, setAnchorEl] = useState<HTMLSpanElement | null>(null)
     const downloadingPlaceholder = '正在下载歌词..'
     const emptyPlaceholder = '🎵🎵...'
+
+    const [show, setShow] = useState(false)
 
     const handleClose = () => {
         setAnchorEl(null)
@@ -91,6 +94,13 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
         return emptyPlaceholder;
     }, [lrcLine])
 
+    useEffect(() => {
+        setShow(true)
+        return () => {
+            setShow(false)
+        }
+    }, [displayLrc])
+
     return (
         <>
             <Stack
@@ -110,7 +120,25 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                         }
                     }
                     title={displayLrc}
-                >{displayLrc}</Typography>
+                >
+                    {
+                        displayLrc.split('').map(
+                            (text, index) => {
+                                const key = text.charCodeAt(0) + '-' + index;
+                                const timeout = 150 * index;
+                                return (
+                                    <Fade
+                                        key={key}
+                                        in={show}
+                                        timeout={timeout}
+                                    >
+                                        <span>{text}</span>
+                                    </Fade>
+                                )
+                            }
+                        )
+                    }
+                </Typography>
             </Stack>
             <Popover
                 open={Boolean(anchorEl)}
