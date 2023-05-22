@@ -3,27 +3,24 @@ import { createApiAdaptor, defaultPoster, parseId, getResponse } from '../../../
 
 export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
     const { key, id } = parseId(req.params.id);
-    const adaptor = createApiAdaptor(key)
+    const adaptor = createApiAdaptor(key);
     const poster = await adaptor.parsePoster(id);
     try {
         if (poster) {
-            if (adaptor.posterReferer) {
-                const response = await getResponse(poster, {
-                    headers: {
-                        'Referer': adaptor.baseUrl
-                    }
-                });
-                const headers = response.headers;
-                headers.delete('content-disposition');
-                for (const key of headers.keys()) {
-                    res.setHeader(key, headers.get(key))
+            const response = await getResponse(poster, {
+                headers: {
+                    'Referer': adaptor.baseUrl
                 }
-                response.body.pipe(res);
+            });
+            const headers = response.headers;
+            res.setHeader('cache-control', 'public, max-age=604800');
+            const inheritedHeaders = [
+                'content-type'
+            ];
+            for (const key of inheritedHeaders) {
+                res.setHeader(key, headers.get(key))
             }
-            else {
-                res.redirect(poster)
-                res.end()
-            }
+            response.body.pipe(res);
         }
         else {
             throw new Error('can not find poster')
