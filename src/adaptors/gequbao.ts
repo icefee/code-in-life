@@ -6,8 +6,6 @@ export const key = 'g';
 
 export const baseUrl = 'https://www.gequbao.com';
 
-export const posterReferer = false;
-
 export const lrcFile = true;
 
 export async function getMusicSearch(s: string): Promise<SearchMusic[]> {

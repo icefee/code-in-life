@@ -7,8 +7,6 @@ export const key = 'z';
 
 export const baseUrl = 'https://zz123.com';
 
-export const posterReferer = true;
-
 export const lrcFile = false;
 
 export async function getMusicSearch(s: string): Promise<SearchMusic[]> {

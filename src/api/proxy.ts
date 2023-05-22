@@ -6,11 +6,17 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
     const response = await getResponse(url);
     const headers = response.headers;
     const inheritedHeaders = [
-        'content-type',
-        'transfer-encoding'
+        {
+            key: 'content-type',
+            defaultValue: 'text/plain'
+        },
+        {
+            key: 'transfer-encoding',
+            defaultValue: 'chunked'
+        }
     ]
-    for (const key of inheritedHeaders) {
-        res.setHeader(key, headers.get(key))
+    for (const { key, defaultValue } of inheritedHeaders) {
+        res.setHeader(key, headers.get(key) ?? defaultValue)
     }
     response.body.pipe(res);
 }
