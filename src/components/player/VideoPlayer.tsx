@@ -734,9 +734,12 @@ function VideoPlayer({
                                                 (value) => timeFormatter(value * duration)
                                             }
                                             onChange={
-                                                (_event, value: number) => {
-                                                    seekingRef.current = true;
+                                                (event, value: number) => {
+                                                    if (isMobile && event.type === 'mousedown') {
+                                                        return;
+                                                    }
                                                     setCurrentTime(value * duration);
+                                                    seekingRef.current = true;
                                                 }
                                             }
                                             onChangeCommitted={
