@@ -68,9 +68,9 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
 
     const lineIndex = useMemo(() => {
         const index = lrc.findIndex(
-            ({ time }) => time > currentTime
+            ({ time }) => time >= currentTime
         )
-        return index > 1 ? index - 1 : 0;
+        return index > -1 ? index > 0 ? index - 1 : 0 : lrc.length - 1;
     }, [lrc, currentTime])
 
     const lrcLine = useMemo(() => {

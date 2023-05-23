@@ -85,6 +85,8 @@ export async function parseLrc(id: string) {
                     text: textMatch ? textMatch[0] : ''
                 }
             }
+        ).filter(
+            ({ text }) => isTextNotNull(text)
         )
         return lines;
     }
