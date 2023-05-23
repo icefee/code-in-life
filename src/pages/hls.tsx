@@ -35,7 +35,7 @@ export default function Hls() {
             {/* <button onClick={downloadFile}>start</button> */}
             <VideoPlayer
                 title="测试m3u8视频"
-                url="https://nxxzyplayurl.com/20230514/Qc43w9q6/index.m3u8"
+                url="https://s.xlzys.com/play/YaOqQQNd/index.m3u8"
                 hls
                 autoplay
             />

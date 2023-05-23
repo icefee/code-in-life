@@ -162,7 +162,7 @@ function VideoPlayer({
     hls: hlsType = false,
     live = false,
     autoplay = false,
-    initPlayTime,
+    initPlayTime = 0,
     disableDownload = false,
     onTimeUpdate,
     onEnd
@@ -214,28 +214,21 @@ function VideoPlayer({
 
     const initPlayer = () => {
         const video = videoRef.current;
-        if (hlsType) {
-            if (Hls.isSupported()) {
-                if (!hls.current) {
-                    hls.current = new Hls({
-                        autoStartLoad: false
-                    });
-                    hls.current.attachMedia(video);
-                }
-                hls.current.on(Hls.Events.MANIFEST_PARSED, onMainfestParsed);
-                hls.current.on(Hls.Events.MEDIA_ATTACHED, onMediaAttached);
-                hls.current.loadSource(url);
+        if (hlsType && Hls.isSupported()) {
+            if (!hls.current) {
+                hls.current = new Hls({
+                    autoStartLoad: false
+                });
+                hls.current.attachMedia(video);
             }
-            else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                video.src = url;
-                video.load();
-            }
-            else {
-                video.src = url;
-            }
+            hls.current.on(Hls.Events.MANIFEST_PARSED, onMainfestParsed);
+            hls.current.on(Hls.Events.MEDIA_ATTACHED, onMediaAttached);
+            hls.current.loadSource(url);
+            // video.canPlayType('application/vnd.apple.mpegurl')
         }
         else {
             video.src = url;
+            video.load();
         }
     }
 
@@ -593,7 +586,9 @@ function VideoPlayer({
                         onCanPlay={
                             () => {
                                 if (!hls.current) {
-                                    fastSeek(initPlayTime)
+                                    if (initPlayTime > 0) {
+                                        fastSeek(initPlayTime)
+                                    }
                                     tryToAutoPlay()
                                 }
                                 hideLoading()
