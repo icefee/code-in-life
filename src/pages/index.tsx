@@ -325,6 +325,7 @@ export default function MusicSearch() {
                                     }} color="secondary" badgeContent={playlist.data.length}>
                                         <IconButton
                                             color="inherit"
+                                            size="small"
                                             onClick={
                                                 () => setPlaylistShow(
                                                     show => !show
