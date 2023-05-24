@@ -135,6 +135,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                                         key={key}
                                         in={show}
                                         timeout={timeout}
+                                        unmountOnExit
                                     >
                                         <span>{text}</span>
                                     </Fade>
