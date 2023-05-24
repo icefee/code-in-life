@@ -13,20 +13,20 @@ export async function getMusicSearch(s: string): Promise<SearchMusic[]> {
     try {
         const html = await getTextWithTimeout(url)
         const matchBlocks = html.replace(/[\n\r]+/g, '').replace(new RegExp('&amp;', 'g'), '&').match(
-            /<tr>\s*<td><a href="\/music\/\d+"\s*class="text-primary font-weight-bold"\s+target="_blank">[^<]+<\/a>\s*<\/td>\s*<td class="text-success">[^<]+<\/td>\s*<td><a href="\/music\/\d+" target="_blank"><u>下载<\/u><\/a><\/td>\s*<\/tr>/g
+            /<div class="row">\s*<div class="col-5 col-content">\s*<a href="\/music\/\d+"\s*class="text-primary font-weight-bold"\s+target="_blank">[^<]+<\/a>\s*<\/div>\s*<div class="text-success col-4 col-content">[^<]+<\/div>\s*<div class="col-3 col-content">\s*<a href="\/music\/\d+" target="_blank"><u>下载<\/u><\/a>\s*<\/div>\s*<\/div>/g
         )
         if (matchBlocks) {
             return matchBlocks.map(
                 (block) => {
                     const url = block.match(/music\/\d+/)[0]
                     const idMatch = url.match(/\d+/)[0]
-                    const nameMatch = block.match(/(?<=<a href="\/music\/\d+"\s*class="text-primary font-weight-bold" target="_blank">)[^<]+(?=<\/a>)/)[0]
-                    const artistMatch = block.match(/(?<=<td class="text-success">)[^<]+(?=<\/td>)/)[0]
+                    const nameMatch = block.match(/(?<=<a href="\/music\/\d+"\s*class="text-primary\s+font-weight-bold"\s+target="_blank">)[^<]+(?=<\/a>)/)[0]
+                    const artistMatch = block.match(/(?<=<div\s+class="text-success\s+col-4\s+col-content">)[^<]+(?=<\/div>)/)[0]
                     const id = key + idMatch
                     return {
                         id,
                         name: nameMatch.trim(),
-                        artist: artistMatch,
+                        artist: artistMatch.trim(),
                         url: `/api/music/play/${id}`,
                         poster: `${Api.posterApiPrefix}/api/music/poster/${id}`
                     }
