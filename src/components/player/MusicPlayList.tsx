@@ -336,12 +336,22 @@ function PlayListItem({ music, playing, isCurrent, divider, onAction, onClick }:
         }
     }
 
+    const setScroll = () => {
+        listItemRef.current.scrollIntoView({
+            behavior: 'auto',
+            block: 'center'
+        })
+    }
+
     useEffect(() => {
-        if (isCurrent || music.match?.firstMatch) {
-            listItemRef.current.scrollIntoView({
-                behavior: 'auto',
-                block: 'center'
-            })
+        if (isCurrent) {
+            setScroll()
+        }
+    }, [])
+
+    useEffect(() => {
+        if (music.match?.firstMatch) {
+            setScroll()
         }
     }, [music.match])
 

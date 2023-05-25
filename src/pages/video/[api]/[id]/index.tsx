@@ -2,15 +2,11 @@ import React, { Component, useState, useEffect, useMemo } from 'react';
 import type { PageProps } from 'gatsby';
 import fetch from 'node-fetch';
 import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import loadable from '@loadable/component';
-import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
-import SkipNextIcon from '@mui/icons-material/SkipNext';
 import ThumbLoader from '../../../../components/search/ThumbLoader';
 import { LoadingScreen } from '../../../../components/loading';
 import NoData from '../../../../components/search/NoData';
@@ -136,28 +132,6 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
         return this.activeSource.urls[playingIndex]
     }
 
-    public get playingUrl() {
-        return this.playingVideo.url
-    }
-
-    public get isFirstVideo() {
-        return this.state.playingIndex === 0
-    }
-
-    public get prevVideoTitle() {
-        if (this.isFirstVideo) {
-            return '上一集'
-        }
-        return this.activeSource.urls[this.state.playingIndex - 1].label
-    }
-
-    public get nextVideoTitle() {
-        if (this.isLastVideo) {
-            return '下一集'
-        }
-        return this.activeSource.urls[this.state.playingIndex + 1].label
-    }
-
     public get isLastVideo() {
         return this.state.playingIndex === this.activeSource.urls.length - 1
     }
@@ -242,7 +216,7 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                         maxHeight: '100vh'
                                     }
                                 })}>
-                                    <VideoUrlParser url={this.playingUrl}>
+                                    <VideoUrlParser url={this.playingVideo.url}>
                                         {
                                             url => (
                                                 <VideoPlayer
@@ -252,6 +226,9 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                                     autoplay
                                                     initPlayTime={this.videoParams ? this.videoParams.seek : 0}
                                                     onTimeUpdate={this.onPlaying.bind(this)}
+                                                    onNext={
+                                                        this.isLastVideo ? null : () => this.setPlayingIndex(prev => prev + 1)
+                                                    }
                                                     onEnd={this.onPlayEnd.bind(this)}
                                                 />
                                             )
@@ -263,77 +240,9 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                         <Box sx={{
                                             backdropFilter: 'blur(15px)',
                                             color: '#fff',
+                                            p: 1.5
                                         }}>
-                                            <Box sx={{
-                                                display: {
-                                                    xs: 'inherit',
-                                                    sm: 'none'
-                                                },
-                                            }}>
-                                                <Box sx={{
-                                                    p: 1
-                                                }}>
-                                                    <Typography variant="subtitle1">{this.props.video.name} - {this.playingVideo.label}</Typography>
-                                                </Box>
-                                                <Divider sx={{
-                                                    mx: 1
-                                                }} variant="middle" />
-                                            </Box>
-                                            <Stack
-                                                direction="row"
-                                                justifyContent="space-between"
-                                                alignItems="center"
-                                                columnGap={1}
-                                                sx={{
-                                                    p: 1
-                                                }}
-                                            >
-                                                <Button
-                                                    startIcon={
-                                                        <SkipPreviousIcon />
-                                                    }
-                                                    variant="outlined"
-                                                    color="inherit"
-                                                    size="small"
-                                                    disabled={this.isFirstVideo}
-                                                    onClick={
-                                                        () => this.setPlayingIndex(prev => prev - 1)
-                                                    }
-                                                    sx={{
-                                                        flexShrink: 0,
-                                                        mr: 2,
-                                                        visibility: this.isFirstVideo ? 'hidden' : 'visible',
-                                                    }}
-                                                >{this.prevVideoTitle}</Button>
-                                                <Typography
-                                                    textAlign="center"
-                                                    variant="subtitle1"
-                                                    sx={{
-                                                        display: {
-                                                            xs: 'none',
-                                                            sm: 'inherit'
-                                                        },
-                                                    }}>
-                                                    正在播放: {this.props.video.name} - {this.playingVideo.label}
-                                                </Typography>
-                                                <Button
-                                                    endIcon={
-                                                        <SkipNextIcon />
-                                                    }
-                                                    variant="outlined"
-                                                    color="inherit"
-                                                    size="small"
-                                                    disabled={this.isLastVideo}
-                                                    onClick={
-                                                        () => this.setPlayingIndex(prev => prev + 1)
-                                                    }
-                                                    sx={{
-                                                        flexShrink: 0,
-                                                        ml: 2,
-                                                        visibility: this.isLastVideo ? 'hidden' : 'visible',
-                                                    }}
-                                                >{this.nextVideoTitle}</Button>
-                                            </Stack>
+                                            <Typography variant="subtitle1">{this.props.video.name} - {this.playingVideo.label}</Typography>
                                         </Box>
                                     )
                                 }

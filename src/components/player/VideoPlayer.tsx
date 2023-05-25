@@ -10,6 +10,7 @@ import Alert from '@mui/material/Alert';
 import { styled, alpha } from '@mui/material/styles';
 import Hls from 'hls.js';
 import Hls2Mp4 from 'hls2mp4';
+import SkipNextIcon from '@mui/icons-material/SkipNext';
 import PictureInPictureIcon from '@mui/icons-material/PictureInPicture';
 import PictureInPictureAltIcon from '@mui/icons-material/PictureInPictureAlt';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
@@ -152,6 +153,7 @@ interface VideoPlayerProps {
     initPlayTime?: number;
     disableDownload?: boolean;
     onTimeUpdate?: (state: PlayState) => void;
+    onNext?: VoidFunction;
     onEnd?: VoidFunction;
 }
 
@@ -165,6 +167,7 @@ function VideoPlayer({
     initPlayTime = 0,
     disableDownload = false,
     onTimeUpdate,
+    onNext,
     onEnd
 }: VideoPlayerProps) {
 
@@ -645,6 +648,72 @@ function VideoPlayer({
                         </Stack>
                     </Fade>
                     {
+                        !live && (
+                            <>
+                                <Tooltip title="快退15秒">
+                                    <Fade in={controlsShow && videoLoaded} unmountOnExit>
+                                        <IconButton
+                                            color="inherit"
+                                            onClick={
+                                                (event: React.SyntheticEvent<HTMLButtonElement, Event>) => {
+                                                    event.stopPropagation();
+                                                    fastSeek(currentTime - 15);
+                                                }
+                                            }
+                                            sx={{
+                                                position: 'absolute',
+                                                left: 8,
+                                                top: '50%',
+                                                transform: 'translate(0, -50%)',
+                                                zIndex: 2
+                                            }}
+                                        >
+                                            <FastRewindIcon
+                                                sx={{
+                                                    opacity: .5,
+                                                    transition: (theme) => theme.transitions.create('opacity'),
+                                                    '&:hover': {
+                                                        opacity: .75
+                                                    }
+                                                }}
+                                            />
+                                        </IconButton>
+                                    </Fade>
+                                </Tooltip>
+                                <Tooltip title="快进15秒">
+                                    <Fade in={controlsShow && videoLoaded} unmountOnExit>
+                                        <IconButton
+                                            color="inherit"
+                                            onClick={
+                                                (event: React.SyntheticEvent<HTMLButtonElement, Event>) => {
+                                                    event.stopPropagation();
+                                                    fastSeek(currentTime + 15);
+                                                }
+                                            }
+                                            sx={{
+                                                position: 'absolute',
+                                                right: 8,
+                                                top: '50%',
+                                                transform: 'translate(0, -50%)',
+                                                zIndex: 2
+                                            }}
+                                        >
+                                            <FastForwardIcon
+                                                sx={{
+                                                    opacity: .5,
+                                                    transition: (theme) => theme.transitions.create('opacity'),
+                                                    '&:hover': {
+                                                        opacity: .75
+                                                    }
+                                                }}
+                                            />
+                                        </IconButton>
+                                    </Fade>
+                                </Tooltip>
+                            </>
+                        )
+                    }
+                    {
                         !isMobile && !loading && (
                             <Box
                                 sx={{
@@ -767,6 +836,18 @@ function VideoPlayer({
                                     {playOrPauseButton}
                                 </Box>
                                 {
+                                    onNext && (
+                                        <Tooltip title="播放下一个">
+                                            <IconButton
+                                                color="inherit"
+                                                onClick={onNext}
+                                            >
+                                                <SkipNextIcon />
+                                            </IconButton>
+                                        </Tooltip>
+                                    )
+                                }
+                                {
                                     !isMobile && (
                                         <VolumeSetter
                                             value={volume.data}
@@ -788,28 +869,6 @@ function VideoPlayer({
                                                 }
                                             }
                                         />
-                                    )
-                                }
-                                {
-                                    !live && (
-                                        <>
-                                            <Tooltip title="快退15秒">
-                                                <IconButton
-                                                    color="inherit"
-                                                    onClick={actionTrigger(() => fastSeek(currentTime - 15))}
-                                                >
-                                                    <FastRewindIcon />
-                                                </IconButton>
-                                            </Tooltip>
-                                            <Tooltip title="快进15秒">
-                                                <IconButton
-                                                    color="inherit"
-                                                    onClick={actionTrigger(() => fastSeek(currentTime + 15))}
-                                                >
-                                                    <FastForwardIcon />
-                                                </IconButton>
-                                            </Tooltip>
-                                        </>
                                     )
                                 }
                             </Stack>
