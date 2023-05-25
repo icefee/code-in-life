@@ -10,9 +10,9 @@ import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
-import DownloadIcon from '@mui/icons-material/Download';
-import RttOutlinedIcon from '@mui/icons-material/RttOutlined';
+import PlaylistAddRoundedcon from '@mui/icons-material/PlaylistAdd';
+import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
+import RttdRoundedIcon from '@mui/icons-material/RttRounded';
 import MusicPoster from '../player/MusicPoster';
 import MusicPlayIcon from '../loading/music';
 import useMenu from '../hook/useMenu';
@@ -42,7 +42,7 @@ function SongList({ data, onAction, ...rest }: SongListProps) {
                     <Typography variant="button">搜索到{data.length}首歌曲</Typography>
                     <Button
                         size="small"
-                        startIcon={<PlaylistAddIcon />}
+                        startIcon={<PlaylistAddRoundedcon />}
                         onClick={
                             () => onAction('add-all')
                         }
@@ -92,17 +92,17 @@ function SongListItem({ current, divider, isCurrentPlaying, onTogglePlay, onActi
                         (event: MouseEvent<HTMLButtonElement>) => {
                             showMenu(event.currentTarget, [
                                 {
-                                    icon: <PlaylistAddIcon />,
+                                    icon: <PlaylistAddRoundedcon />,
                                     text: '加入播放列表',
                                     onClick: handleMenuAction('add')
                                 },
                                 {
-                                    icon: <DownloadIcon />,
+                                    icon: <DownloadRoundedIcon />,
                                     text: '下载歌曲',
                                     onClick: handleMenuAction('download-song')
                                 },
                                 {
-                                    icon: <RttOutlinedIcon />,
+                                    icon: <RttdRoundedIcon />,
                                     text: '下载歌词',
                                     onClick: handleMenuAction('download-lrc')
                                 }

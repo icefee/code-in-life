@@ -10,14 +10,14 @@ import Alert from '@mui/material/Alert';
 import { styled, alpha } from '@mui/material/styles';
 import Hls from 'hls.js';
 import Hls2Mp4 from 'hls2mp4';
-import SkipNextIcon from '@mui/icons-material/SkipNext';
-import PictureInPictureIcon from '@mui/icons-material/PictureInPicture';
-import PictureInPictureAltIcon from '@mui/icons-material/PictureInPictureAlt';
-import FullscreenIcon from '@mui/icons-material/Fullscreen';
-import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
-import FastRewindIcon from '@mui/icons-material/FastRewind';
-import FastForwardIcon from '@mui/icons-material/FastForward';
-import DownloadIcon from '@mui/icons-material/Download';
+import SkipNextRoundedIcon from '@mui/icons-material/SkipNextRounded';
+import PictureInPictureRoundedIcon from '@mui/icons-material/PictureInPictureRounded';
+import PictureInPictureAltRoundedIcon from '@mui/icons-material/PictureInPictureAltRounded';
+import FullscreenRoundedIcon from '@mui/icons-material/FullscreenRounded';
+import FullscreenExitRoundedIcon from '@mui/icons-material/FullscreenExitRounded';
+import Replay10RoundedIcon from '@mui/icons-material/Replay10Rounded';
+import Forward10RoundedIcon from '@mui/icons-material/Forward10Rounded';
+import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import useLocalStorageState from '../hook/useLocalStorageState';
 import MediaSlider from './MediaSlider';
 import CancelMutedButton from './CancelMutedButton';
@@ -454,16 +454,6 @@ function VideoPlayer({
         duration
     }), [currentTime, buffered, duration])
 
-    const playOrPauseButton = useMemo(() => (
-        <PlayOrPauseButton
-            playing={playing}
-            onTogglePlay={videoLoaded ? togglePlay : null}
-            sx={{
-                fontSize: 'inherit'
-            }}
-        />
-    ), [playing, videoLoaded])
-
     const createControlsHideTimeout = () => {
         controlsAutoHideTimeout.current = setTimeout(() => setControlsShow(false), 2.5e3)
     }
@@ -650,63 +640,53 @@ function VideoPlayer({
                     {
                         !live && (
                             <>
-                                <Tooltip title="快退15秒">
+                                <Tooltip title="快退10秒">
                                     <Fade in={controlsShow && videoLoaded} unmountOnExit>
                                         <IconButton
                                             color="inherit"
                                             onClick={
                                                 (event: React.SyntheticEvent<HTMLButtonElement, Event>) => {
                                                     event.stopPropagation();
-                                                    fastSeek(currentTime - 15);
+                                                    fastSeek(currentTime - 10);
                                                 }
                                             }
                                             sx={{
                                                 position: 'absolute',
-                                                left: 8,
+                                                left: isMobile ? '50%' : 8,
                                                 top: '50%',
-                                                transform: 'translate(0, -50%)',
+                                                transform: `translate(${isMobile ? 'calc(-50% - 100px)' : 0}, -50%)`,
                                                 zIndex: 2
                                             }}
+                                            size="large"
                                         >
-                                            <FastRewindIcon
-                                                sx={{
-                                                    opacity: .5,
-                                                    transition: (theme) => theme.transitions.create('opacity'),
-                                                    '&:hover': {
-                                                        opacity: .75
-                                                    }
-                                                }}
-                                            />
+                                            <Replay10RoundedIcon fontSize="inherit" />
                                         </IconButton>
                                     </Fade>
                                 </Tooltip>
-                                <Tooltip title="快进15秒">
+                                <Tooltip title="快进10秒">
                                     <Fade in={controlsShow && videoLoaded} unmountOnExit>
                                         <IconButton
                                             color="inherit"
                                             onClick={
                                                 (event: React.SyntheticEvent<HTMLButtonElement, Event>) => {
                                                     event.stopPropagation();
-                                                    fastSeek(currentTime + 15);
+                                                    fastSeek(currentTime + 10);
                                                 }
                                             }
                                             sx={{
                                                 position: 'absolute',
-                                                right: 8,
                                                 top: '50%',
-                                                transform: 'translate(0, -50%)',
-                                                zIndex: 2
+                                                transform: `translate(${isMobile ? 'calc(-50% + 100px)' : 0}, -50%)`,
+                                                zIndex: 2,
+                                                ...(isMobile ? {
+                                                    left: '50%'
+                                                } : {
+                                                    right: 8
+                                                })
                                             }}
+                                            size="large"
                                         >
-                                            <FastForwardIcon
-                                                sx={{
-                                                    opacity: .5,
-                                                    transition: (theme) => theme.transitions.create('opacity'),
-                                                    '&:hover': {
-                                                        opacity: .75
-                                                    }
-                                                }}
-                                            />
+                                            <Forward10RoundedIcon fontSize="inherit" />
                                         </IconButton>
                                     </Fade>
                                 </Tooltip>
@@ -715,7 +695,9 @@ function VideoPlayer({
                     }
                     {
                         !isMobile && !loading && (
-                            <Box
+                            <PlayOrPauseButton
+                                playing={playing}
+                                onTogglePlay={videoLoaded ? togglePlay : null}
                                 sx={{
                                     position: 'absolute',
                                     left: '50%',
@@ -725,9 +707,8 @@ function VideoPlayer({
                                     transition: (theme) => theme.transitions.create(['transform', 'opacity']),
                                     zIndex: 2,
                                     fontSize: '3rem'
-                                }}>
-                                {playOrPauseButton}
-                            </Box>
+                                }}
+                            />
                         )
                     }
                 </Box>
@@ -829,12 +810,12 @@ function VideoPlayer({
                         }
                         <Stack direction="row" justifyContent="space-between">
                             <Stack direction="row">
-                                <Box
-                                    sx={{
-                                        fontSize: '1.5rem'
-                                    }}>
-                                    {playOrPauseButton}
-                                </Box>
+                                <Tooltip title={playing ? '暂停' : '播放'}>
+                                    <PlayOrPauseButton
+                                        playing={playing}
+                                        onTogglePlay={videoLoaded ? togglePlay : null}
+                                    />
+                                </Tooltip>
                                 {
                                     onNext && (
                                         <Tooltip title="播放下一个">
@@ -842,7 +823,7 @@ function VideoPlayer({
                                                 color="inherit"
                                                 onClick={onNext}
                                             >
-                                                <SkipNextIcon />
+                                                <SkipNextRoundedIcon />
                                             </IconButton>
                                         </Tooltip>
                                     )
@@ -891,7 +872,7 @@ function VideoPlayer({
                                         onClick={actionTrigger(toggleFullscreen)}
                                     >
                                         {
-                                            fullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />
+                                            fullscreen ? <FullscreenExitRoundedIcon /> : <FullscreenRoundedIcon />
                                         }
                                     </IconButton>
                                 </Tooltip>
@@ -902,7 +883,7 @@ function VideoPlayer({
                                                 color="inherit"
                                                 onClick={downloading ? null : actionTrigger(downloadVideo)}
                                             >
-                                                <DownloadIcon />
+                                                <DownloadRoundedIcon />
                                             </IconButton>
                                         </Tooltip>
                                     )
@@ -922,7 +903,7 @@ function VideoPlayer({
                                         )}
                                     >
                                         {
-                                            pip ? <PictureInPictureAltIcon /> : <PictureInPictureIcon />
+                                            pip ? <PictureInPictureAltRoundedIcon /> : <PictureInPictureRoundedIcon />
                                         }
                                     </IconButton>
                                 </Tooltip>
@@ -931,7 +912,9 @@ function VideoPlayer({
                     </Stack>
                 </Fade>
                 <Fade in={isMobile && controlsShow && !loading && !error} timeout={400} mountOnEnter>
-                    <Box
+                    <PlayOrPauseButton
+                        playing={playing}
+                        onTogglePlay={videoLoaded ? togglePlay : null}
                         sx={{
                             position: 'absolute',
                             left: '50%',
@@ -939,14 +922,8 @@ function VideoPlayer({
                             transform: 'translate(-50%, -50%)',
                             zIndex: 3,
                             fontSize: '3rem'
-                        }}>
-                        <Box
-                            sx={{
-                                opacity: .8
-                            }}>
-                            {playOrPauseButton}
-                        </Box>
-                    </Box>
+                        }}
+                    />
                 </Fade>
                 {
                     !live && (

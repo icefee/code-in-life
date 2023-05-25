@@ -242,7 +242,7 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                             color: '#fff',
                                             p: 1.5
                                         }}>
-                                            <Typography variant="subtitle1">{this.props.video.name} - {this.playingVideo.label}</Typography>
+                                            <Typography variant="subtitle1" align="center">{this.props.video.name} - {this.playingVideo.label}</Typography>
                                         </Box>
                                     )
                                 }
@@ -459,6 +459,9 @@ export default function Page({ serverData }: PageProps<object, object, unknown, 
                 )
                 if (code === 0) {
                     setVideo(data)
+                }
+                else {
+                    throw new Error('request failed')
                 }
             }
             catch (err) {

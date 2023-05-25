@@ -3,7 +3,7 @@ import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import TimesOneMobiledataIcon from '@mui/icons-material/TimesOneMobiledata';
+import TimesOneMobiledataRoundedIcon from '@mui/icons-material/TimesOneMobiledataRounded';
 
 interface RateSetterProps {
     value: number;
@@ -32,7 +32,7 @@ function RateSetter({ value, onChange, IconProps }: RateSetterProps) {
                     }
                     {...IconProps}
                 >
-                    <TimesOneMobiledataIcon />
+                    <TimesOneMobiledataRoundedIcon />
                 </IconButton>
             </Tooltip>
             <Menu

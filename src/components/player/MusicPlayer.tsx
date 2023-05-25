@@ -5,9 +5,9 @@ import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-import RepeatOneIcon from '@mui/icons-material/RepeatOne';
-import LoopIcon from '@mui/icons-material/Loop';
-import ShuffleIcon from '@mui/icons-material/Shuffle';
+import RepeatOneRoundedIcon from '@mui/icons-material/RepeatOneRounded';
+import LoopRoundedIcon from '@mui/icons-material/LoopRounded';
+import ShuffleRoundedIcon from '@mui/icons-material/ShuffleRounded';
 import MusicPoster from './MusicPoster';
 import MusicLrc from './MusicLrc';
 import PlayOrPauseButton from './PlayOrPauseButton';
@@ -87,13 +87,13 @@ function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange,
     const repeatMeta = useMemo(() => {
         return repeat === RepeatMode.All ? {
             label: '列表循环',
-            icon: <LoopIcon />
+            icon: <LoopRoundedIcon />
         } : repeat === RepeatMode.One ? {
             label: '单曲循环',
-            icon: <RepeatOneIcon />
+            icon: <RepeatOneRoundedIcon />
         } : {
             label: '随机播放',
-            icon: <ShuffleIcon />
+            icon: <ShuffleRoundedIcon />
         }
     }, [repeat])
 
@@ -179,6 +179,9 @@ function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange,
                                             onPlayStateChange(nextState)
                                         }
                                     }
+                                    sx={{
+                                        fontSize: '2.4rem'
+                                    }}
                                     size="large"
                                 />
                             )

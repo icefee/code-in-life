@@ -11,15 +11,15 @@ import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
-import SearchIcon from '@mui/icons-material/Search';
-import ClearAllIcon from '@mui/icons-material/ClearAll';
-import ManageSearchOutlinedIcon from '@mui/icons-material/ManageSearchOutlined';
-import PersonSearchOutlinedIcon from '@mui/icons-material/PersonSearchOutlined';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import PublishIcon from '@mui/icons-material/Publish';
-import DownloadIcon from '@mui/icons-material/Download';
-import RttOutlinedIcon from '@mui/icons-material/RttOutlined';
-import PlaylistRemoveIcon from '@mui/icons-material/PlaylistRemove';
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
+import ClearAllRoundedIcon from '@mui/icons-material/ClearAllRounded';
+import ManageSearchRoundedIcon from '@mui/icons-material/ManageSearchRounded';
+import PersonSearchRoundedIcon from '@mui/icons-material/PersonSearchOutlined';
+import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
+import PublishRoundedIcon from '@mui/icons-material/PublishRounded';
+import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
+import RttRoundedIcon from '@mui/icons-material/RttRounded';
+import PlaylistRemoveRoundedIcon from '@mui/icons-material/PlaylistRemoveRounded';
 import { DarkThemed } from '../theme';
 import MusicPoster from './MusicPoster';
 import MusicPlayIcon from '../loading/music';
@@ -217,7 +217,7 @@ function MusicPlayList({ show, data, onChange, current, playing, onPlay, onToggl
                                     bgcolor: '#ffffff10',
                                     borderRadius: 1
                                 }} direction="row" alignItems="center" columnGap={1}>
-                                    <SearchIcon fontSize="small" />
+                                    <SearchRoundedIcon fontSize="small" />
                                     <StyledInput
                                         placeholder="输入关键词搜索.."
                                         value={keyword}
@@ -232,7 +232,7 @@ function MusicPlayList({ show, data, onChange, current, playing, onPlay, onToggl
                                     (event: MouseEvent<HTMLButtonElement>) => {
                                         showMenu(event.currentTarget, [
                                             {
-                                                icon: <ClearAllIcon />,
+                                                icon: <ClearAllRoundedIcon />,
                                                 text: '清空播放列表',
                                                 onClick: () => {
                                                     clearPlayList()
@@ -242,7 +242,7 @@ function MusicPlayList({ show, data, onChange, current, playing, onPlay, onToggl
                                         ]);
                                     }
                                 }>
-                                    <MoreVertIcon />
+                                    <MoreVertRoundedIcon />
                                 </IconButton>
                                 {outlet}
                             </Stack>
@@ -367,39 +367,39 @@ function PlayListItem({ music, playing, isCurrent, divider, onAction, onClick }:
                         (event: MouseEvent<HTMLButtonElement>) => {
                             showMenu(event.currentTarget, [
                                 {
-                                    icon: <PublishIcon />,
+                                    icon: <PublishRoundedIcon />,
                                     text: '置顶',
                                     onClick: handleMenuAction('pin')
                                 },
                                 {
-                                    icon: <PersonSearchOutlinedIcon />,
+                                    icon: <PersonSearchRoundedIcon />,
                                     text: `搜索“${music.artist}”`,
                                     onClick: handleMenuAction('search-artist')
                                 },
                                 {
-                                    icon: <ManageSearchOutlinedIcon />,
+                                    icon: <ManageSearchRoundedIcon />,
                                     text: `搜索“${music.name}”`,
                                     onClick: handleMenuAction('search-name')
                                 },
                                 {
-                                    icon: <DownloadIcon />,
+                                    icon: <DownloadRoundedIcon />,
                                     text: '下载歌曲',
                                     onClick: handleMenuAction('download-song')
                                 },
                                 {
-                                    icon: <RttOutlinedIcon />,
+                                    icon: <RttRoundedIcon />,
                                     text: '下载歌词',
                                     onClick: handleMenuAction('download-lrc')
                                 },
                                 {
-                                    icon: <PlaylistRemoveIcon />,
+                                    icon: <PlaylistRemoveRoundedIcon />,
                                     text: '移出播放列表',
                                     onClick: handleMenuAction('remove')
                                 }
                             ]);
                         }
                     }>
-                        <MoreVertIcon />
+                        <MoreVertRoundedIcon />
                     </IconButton>
                     {outlet}
                 </>

@@ -4,9 +4,9 @@ import Slider from '@mui/material/Slider';
 import Popover from '@mui/material/Popover';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton, { type IconButtonProps } from '@mui/material/IconButton';
-import VolumeUpIcon from '@mui/icons-material/VolumeUp';
-import VolumeDownIcon from '@mui/icons-material/VolumeDown';
-import VolumeOffIcon from '@mui/icons-material/VolumeOff';
+import VolumeUpRoundedIcon from '@mui/icons-material/VolumeUpRounded';
+import VolumeDownRoundedIcon from '@mui/icons-material/VolumeDownRounded';
+import VolumeOffRoundedIcon from '@mui/icons-material/VolumeOffRounded';
 
 interface VolumeSetterProps {
     value: number;
@@ -19,7 +19,7 @@ interface VolumeSetterProps {
 function VolumeSetter({ value, onChange, onMute, disabled = false, IconProps }: VolumeSetterProps) {
 
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null)
-    const volumeIcon = useMemo(() => value > 0 ? value > .5 ? <VolumeUpIcon /> : <VolumeDownIcon /> : <VolumeOffIcon />, [value])
+    const volumeIcon = useMemo(() => value > 0 ? value > .5 ? <VolumeUpRoundedIcon /> : <VolumeDownRoundedIcon /> : <VolumeOffRoundedIcon />, [value])
 
     return (
         <>

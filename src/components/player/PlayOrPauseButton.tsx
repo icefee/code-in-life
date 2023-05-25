@@ -1,7 +1,7 @@
 import React, { forwardRef, createElement } from 'react';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import PauseIcon from '@mui/icons-material/Pause';
+import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
+import PauseRoundedIcon from '@mui/icons-material/PauseRounded';
 
 interface PlayOrPauseButtonProps extends Omit<IconButtonProps, 'color' | 'onClick' | 'children'> {
     playing: boolean;
@@ -18,7 +18,7 @@ const PlayOrPauseButton = forwardRef<HTMLButtonElement, PlayOrPauseButtonProps>(
             }
             {...rest}
         >
-            {createElement(playing ? PauseIcon : PlayArrowIcon, {
+            {createElement(playing ? PauseRoundedIcon : PlayArrowRoundedIcon, {
                 fontSize: 'inherit'
             })}
         </IconButton>
