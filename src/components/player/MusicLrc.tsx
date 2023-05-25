@@ -244,7 +244,7 @@ function ScrollingLrc({ lrc, currentTime }: ScrollingLrcProps) {
                                         color: isActive ? 'primary.main' : 'text.primary'
                                     }} justifyContent="center" key={index}>
                                         <Typography
-                                            variant={isActive ? 'body1' : 'subtitle2'}
+                                            variant="subtitle2"
                                             color="inherit"
                                             textOverflow="ellipsis"
                                             textAlign="center"
