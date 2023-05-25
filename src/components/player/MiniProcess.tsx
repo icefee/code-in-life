@@ -21,8 +21,11 @@ function MiniProcess({ visible, state }: MiniProcessProps) {
                 left: 0,
                 right: 0,
                 bottom: 0,
-                transition: `all .3s ${visible ? 2 : 0}s ease-in-out`,
-                transform: `translate(0, ${visible ? 0 : 30}px)`,
+                transition: (theme) => theme.transitions.create('opacity', {
+                    duration: '.3s',
+                    easing: 'ease-in-out',
+                    delay: `${visible ? 2 : 0}s`
+                }),
                 opacity: visible ? 1 : 0,
                 zIndex: 5
             }}
@@ -47,12 +50,14 @@ function MiniProcess({ visible, state }: MiniProcessProps) {
                 }}
             />
             <Box
-                className="rest-label"
                 sx={{
                     position: 'absolute',
                     bottom: 4,
                     right: 6,
-                    color: '#fff'
+                    color: '#fff',
+                    transition: (theme) => theme.transitions.create(['transform', 'opacity']),
+                    transform: `translate(0, ${visible ? 0 : 30}px)`,
+                    opacity: visible ? 1 : 0
                 }}>
                 <Typography color="inherit" variant="caption">-{timeFormatter(restSeconds)}</Typography>
             </Box>
