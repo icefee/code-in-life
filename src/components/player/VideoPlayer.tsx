@@ -566,6 +566,10 @@ function VideoPlayer({
                 >
                     <StyledVideo
                         ref={videoRef}
+                        sx={{
+                            opacity: controlsShow ? .75 : 1,
+                            transition: (theme) => theme.transitions.create('opacity')
+                        }}
                         preload="auto"
                         onLoadStart={showLoading}
                         onWaiting={showLoading}
@@ -654,7 +658,7 @@ function VideoPlayer({
                                                 position: 'absolute',
                                                 left: isMobile ? '50%' : 8,
                                                 top: '50%',
-                                                transform: `translate(${isMobile ? 'calc(-50% - 100px)' : 0}, -50%)`,
+                                                transform: `translate(${isMobile ? 'calc(-50% - 72px)' : 0}, -50%)`,
                                                 zIndex: 2
                                             }}
                                             size="large"
@@ -676,7 +680,7 @@ function VideoPlayer({
                                             sx={{
                                                 position: 'absolute',
                                                 top: '50%',
-                                                transform: `translate(${isMobile ? 'calc(-50% + 100px)' : 0}, -50%)`,
+                                                transform: `translate(${isMobile ? 'calc(-50% + 72px)' : 0}, -50%)`,
                                                 zIndex: 2,
                                                 ...(isMobile ? {
                                                     left: '50%'
@@ -921,7 +925,7 @@ function VideoPlayer({
                             top: '50%',
                             transform: 'translate(-50%, -50%)',
                             zIndex: 3,
-                            fontSize: '3rem'
+                            fontSize: '3.2rem'
                         }}
                     />
                 </Fade>

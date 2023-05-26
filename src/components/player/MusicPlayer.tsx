@@ -180,7 +180,7 @@ function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange,
                                         }
                                     }
                                     sx={{
-                                        fontSize: '2.4rem'
+                                        fontSize: '2rem'
                                     }}
                                     size="large"
                                 />
