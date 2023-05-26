@@ -12,7 +12,7 @@ import Typography from '@mui/material/Typography';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import DownloadIcon from '@mui/icons-material/Download';
-import RttOutlinedIcon from '@mui/icons-material/RttOutlined';
+import LyricsIcon from '@mui/icons-material/Lyrics';
 import MusicPoster from '../player/MusicPoster';
 import MusicPlayIcon from '../loading/music';
 import useMenu from '../hook/useMenu';
@@ -102,7 +102,7 @@ function SongListItem({ current, divider, isCurrentPlaying, onTogglePlay, onActi
                                     onClick: handleMenuAction('download-song')
                                 },
                                 {
-                                    icon: <RttOutlinedIcon />,
+                                    icon: <LyricsIcon />,
                                     text: '下载歌词',
                                     onClick: handleMenuAction('download-lrc')
                                 }

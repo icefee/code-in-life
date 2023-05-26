@@ -13,12 +13,12 @@ import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearAllIcon from '@mui/icons-material/ClearAll';
-import ManageSearchOutlinedIcon from '@mui/icons-material/ManageSearchOutlined';
-import PersonSearchOutlinedIcon from '@mui/icons-material/PersonSearchOutlined';
+import ManageSearchIcon from '@mui/icons-material/ManageSearch';
+import PersonSearchIcon from '@mui/icons-material/PersonSearch';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PublishIcon from '@mui/icons-material/Publish';
 import DownloadIcon from '@mui/icons-material/Download';
-import RttOutlinedIcon from '@mui/icons-material/RttOutlined';
+import LyricsIcon from '@mui/icons-material/Lyrics';
 import PlaylistRemoveIcon from '@mui/icons-material/PlaylistRemove';
 import { DarkThemed } from '../theme';
 import MusicPoster from './MusicPoster';
@@ -372,12 +372,12 @@ function PlayListItem({ music, playing, isCurrent, divider, onAction, onClick }:
                                     onClick: handleMenuAction('pin')
                                 },
                                 {
-                                    icon: <PersonSearchOutlinedIcon />,
+                                    icon: <PersonSearchIcon />,
                                     text: `搜索“${music.artist}”`,
                                     onClick: handleMenuAction('search-artist')
                                 },
                                 {
-                                    icon: <ManageSearchOutlinedIcon />,
+                                    icon: <ManageSearchIcon />,
                                     text: `搜索“${music.name}”`,
                                     onClick: handleMenuAction('search-name')
                                 },
@@ -387,7 +387,7 @@ function PlayListItem({ music, playing, isCurrent, divider, onAction, onClick }:
                                     onClick: handleMenuAction('download-song')
                                 },
                                 {
-                                    icon: <RttOutlinedIcon />,
+                                    icon: <LyricsIcon />,
                                     text: '下载歌词',
                                     onClick: handleMenuAction('download-lrc')
                                 },
