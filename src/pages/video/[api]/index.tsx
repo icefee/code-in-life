@@ -66,7 +66,7 @@ const SiteSearch: React.FunctionComponent<PageProps<object, object, unknown, Sea
                                     pr: .5
                                 }}>
                                     <Stack sx={{
-                                        p: 1.5
+                                        p: (theme) => theme.spacing(1.5, 1.5, 1)
                                     }} direction="row" justifyContent="center">
                                         <Box sx={
                                             (theme) => ({
@@ -91,9 +91,11 @@ const SiteSearch: React.FunctionComponent<PageProps<object, object, unknown, Sea
                                         </Box>
                                     </Stack>
                                     <Box sx={(theme) => ({
-                                        m: theme.spacing(0, 1.5, 1),
+                                        m: theme.spacing(0, 1.5, .5),
                                         p: 1,
-                                        backgroundImage: (theme) => `linear-gradient(90deg, ${alpha(theme.palette.background.paper, .75)}, transparent)`
+                                        borderTopLeftRadius: theme.shape.borderRadius,
+                                        borderBottomLeftRadius: theme.shape.borderRadius,
+                                        backgroundImage: `linear-gradient(90deg, ${alpha(theme.palette.background.paper, .5)}, transparent)`
                                     })}>
                                         <Typography variant="subtitle1">
                                             {headTitle}

@@ -18,7 +18,7 @@ import PersonSearchRoundedIcon from '@mui/icons-material/PersonSearchOutlined';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import PublishRoundedIcon from '@mui/icons-material/PublishRounded';
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
-import RttRoundedIcon from '@mui/icons-material/RttRounded';
+import LyricsRoundedIcon from '@mui/icons-material/LyricsRounded';
 import PlaylistRemoveRoundedIcon from '@mui/icons-material/PlaylistRemoveRounded';
 import { DarkThemed } from '../theme';
 import MusicPoster from './MusicPoster';
@@ -387,7 +387,7 @@ function PlayListItem({ music, playing, isCurrent, divider, onAction, onClick }:
                                     onClick: handleMenuAction('download-song')
                                 },
                                 {
-                                    icon: <RttRoundedIcon />,
+                                    icon: <LyricsRoundedIcon />,
                                     text: '下载歌词',
                                     onClick: handleMenuAction('download-lrc')
                                 },

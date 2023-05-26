@@ -5,6 +5,8 @@ import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+// import PictureInPictureAltRoundedIcon from '@mui/icons-material/PictureInPictureAltRounded';
+// import PictureInPictureRoundedIcon from '@mui/icons-material/PictureInPictureRounded';
 import RepeatOneRoundedIcon from '@mui/icons-material/RepeatOneRounded';
 import LoopRoundedIcon from '@mui/icons-material/LoopRounded';
 import ShuffleRoundedIcon from '@mui/icons-material/ShuffleRounded';
@@ -49,6 +51,8 @@ function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange,
     const seekingRef = useRef(false)
     const [buffered, setBuffered] = useState(0)
     const durationPlaceholder = '--:--';
+
+    // const [pip, setPip] = useState(false)
 
     useEffect(() => {
         return () => {
@@ -301,6 +305,23 @@ function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange,
                                 {repeatMeta.icon}
                             </IconButton>
                         </Tooltip>
+                        {/* <Tooltip title={pip ? '画中画模式' : '退出画中画'}>
+                            <IconButton
+                                color="inherit"
+                                size="small"
+                                onClick={
+                                    () => {
+                                        setPip(
+                                            pip => !pip
+                                        )
+                                    }
+                                }
+                            >
+                                {
+                                    pip ? <PictureInPictureAltRoundedIcon /> : <PictureInPictureRoundedIcon />
+                                }
+                            </IconButton>
+                        </Tooltip> */}
                     </Stack>
                 </Stack>
                 {
@@ -396,7 +417,6 @@ function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange,
                             }
                             onError={
                                 () => {
-                                    // audioRef.current.src = music.url;
                                     if (hasError.current) {
                                         onPlayEnd?.(false)
                                         setLoading(false)
