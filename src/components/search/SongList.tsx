@@ -9,7 +9,7 @@ import ListItemText from '@mui/material/ListItemText';
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import PlaylistAddRoundedcon from '@mui/icons-material/PlaylistAdd';
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import LyricsRoundedIcon from '@mui/icons-material/LyricsRounded';
@@ -109,7 +109,7 @@ function SongListItem({ current, divider, isCurrentPlaying, onTogglePlay, onActi
                             ]);
                         }
                     }>
-                        <MoreVertIcon />
+                        <MoreVertRoundedIcon />
                     </IconButton>
                     {outlet}
                 </>

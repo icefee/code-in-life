@@ -430,9 +430,6 @@ function VideoPlayer({
                 if (/FFmpeg load failed/.test(err.message)) {
                     showStatus('FFmpeg 下载失败, 请重试')
                 }
-                else if (/video encrypted/.test(err.message)) {
-                    showStatus('当前视频被加密, 无法下载')
-                }
                 else {
                     showStatus(`下载发生错误: ${err.message}`)
                 }
