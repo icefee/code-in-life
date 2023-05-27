@@ -655,7 +655,7 @@ function VideoPlayer({
                                                 position: 'absolute',
                                                 left: isMobile ? '50%' : 8,
                                                 top: '50%',
-                                                transform: `translate(${isMobile ? 'calc(-50% - 72px)' : 0}, -50%)`,
+                                                transform: `translate(${isMobile ? 'calc(-50% - 80px)' : 0}, -50%)`,
                                                 zIndex: 2
                                             }}
                                             size="large"
@@ -677,7 +677,7 @@ function VideoPlayer({
                                             sx={{
                                                 position: 'absolute',
                                                 top: '50%',
-                                                transform: `translate(${isMobile ? 'calc(-50% + 72px)' : 0}, -50%)`,
+                                                transform: `translate(${isMobile ? 'calc(-50% + 80px)' : 0}, -50%)`,
                                                 zIndex: 2,
                                                 ...(isMobile ? {
                                                     left: '50%'
