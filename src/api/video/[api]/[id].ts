@@ -20,7 +20,7 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
     const apiUrl = `${Api.site}/api/video/${api}/${id}`;
     const data = await getVideoData(apiUrl);
     if (type === 'poster') {
-        res.redirect(301, data ? data.pic : `${Api.assetUrl}/assets/image_fail.jpg`)
+        res.redirect(301, data ? data.pic : `/image_fail.jpg`)
         res.end();
     }
     else {
