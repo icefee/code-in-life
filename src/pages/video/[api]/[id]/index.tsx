@@ -397,15 +397,19 @@ function VideoSummary({ video }: VideoSummaryProps) {
                 flexShrink: 0,
                 [theme.breakpoints.up('sm')]: {
                     width: 180
-                }
+                },
+                mr: 1.5
             })}>
                 {videoPoster}
             </Box>
-            <Box sx={{
-                ml: 1.5
-            }}>
+            <Box>
                 <Typography variant="h5" lineHeight={1.2}>{video.name}</Typography>
                 <Typography variant="body1" gutterBottom>{video.note}</Typography>
+                {
+                    video.subname && (
+                        <Typography>又名:{video.subname}</Typography>
+                    )
+                }
                 <Typography variant="body1">类别:{video.type}</Typography>
                 <Typography variant="body1">年份:{video.year}</Typography>
                 {
