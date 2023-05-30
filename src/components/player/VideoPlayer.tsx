@@ -340,10 +340,10 @@ function VideoPlayer({
 
     const hotKeysMap: Record<string, (video: HTMLVideoElement, event: KeyboardEvent) => void> = {
         ArrowLeft(video) {
-            fastSeek(video.currentTime - 15)
+            fastSeek(video.currentTime - 10)
         },
         ArrowRight(video) {
-            fastSeek(video.currentTime + 15)
+            fastSeek(video.currentTime + 10)
         },
         ArrowUp(video) {
             video.volume = Math.min(1, video.volume + .1)

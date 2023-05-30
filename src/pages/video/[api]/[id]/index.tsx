@@ -178,6 +178,10 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
         }
     }
 
+    public get playingVideoTitle() {
+        return this.props.video.name + ' - ' + this.playingVideo.label
+    }
+
     public get pageTitle() {
         if (this.props.video) {
             return this.props.video.name
@@ -220,7 +224,7 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                         {
                                             url => (
                                                 <VideoPlayer
-                                                    title={`${this.props.video.name}-${this.playingVideo.label}`}
+                                                    title={this.playingVideoTitle}
                                                     url={url}
                                                     hls
                                                     autoplay
@@ -242,7 +246,7 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                             color: '#fff',
                                             p: 1.5
                                         }}>
-                                            <Typography variant="subtitle1" align="center">{this.props.video.name} - {this.playingVideo.label}</Typography>
+                                            <Typography variant="subtitle1" align="center">{this.playingVideoTitle}</Typography>
                                         </Box>
                                     )
                                 }
