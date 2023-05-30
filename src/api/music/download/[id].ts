@@ -1,9 +1,11 @@
 import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
-import { getResponse } from '../../../adaptors';
-import { Api } from '../../../util/config';
+import { createApiAdaptor, parseId, getResponse } from '../../../adaptors';
 
 export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
-    const response = await getResponse(`${Api.hosting}/api/music/play/${req.params.id}`);
+    const { key, id } = parseId(req.params.id);
+    const adaptor = createApiAdaptor(key);
+    const url = await adaptor.parseMusicUrl(id);
+    const response = await getResponse(url);
     const headers = response.headers;
     const contentType = headers.get('Content-Type');
     if (contentType.match(/text\/html/)) {

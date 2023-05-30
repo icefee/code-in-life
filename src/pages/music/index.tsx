@@ -396,7 +396,16 @@ export default function MusicSearch() {
                                     searchFormRef.current?.putSuggest(s)
                                 }
                             }
-                            onDownload={downloadSong}
+                            onDownload={
+                                (music, type) => {
+                                    if (type === 'song') {
+                                        downloadSong(music)
+                                    }
+                                    else if (type === 'lrc') {
+                                        downloadLrc(music)
+                                    }
+                                }
+                            }
                         />
                     </Stack>
                 </Slide>
