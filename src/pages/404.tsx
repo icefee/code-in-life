@@ -4,7 +4,6 @@ import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { Api } from '../util/config';
 
 export function Head() {
     return (
@@ -50,7 +49,7 @@ const Page404 = () => (
                 }}>
                     <img
                         alt="page not found"
-                        src={`${Api.assetUrl}/assets/page_not_found.svg`}
+                        src="/page_not_found.svg"
                         width={537}
                         height={292}
                         style={{
