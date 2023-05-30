@@ -489,7 +489,8 @@ function VideoPlayer({
                     position: 'relative',
                     height: '100%',
                     bgcolor: 'common.black',
-                    color: 'common.white'
+                    color: 'common.white',
+                    overflow: 'hidden'
                 }}
                 ref={playerRef}
                 onMouseEnter={
@@ -570,6 +571,9 @@ function VideoPlayer({
                         preload="auto"
                         onLoadStart={showLoading}
                         onWaiting={showLoading}
+                        onContextMenu={
+                            (event) => event.preventDefault()
+                        }
                         poster={poster}
                         playsInline
                         onDurationChange={
@@ -653,7 +657,7 @@ function VideoPlayer({
                                             }
                                             sx={{
                                                 position: 'absolute',
-                                                left: isMobile ? '50%' : 8,
+                                                left: isMobile ? '50%' : 16,
                                                 top: '50%',
                                                 transform: `translate(${isMobile ? 'calc(-50% - 88px)' : 0}, -50%)`,
                                                 zIndex: 2
@@ -682,7 +686,7 @@ function VideoPlayer({
                                                 ...(isMobile ? {
                                                     left: '50%'
                                                 } : {
-                                                    right: 8
+                                                    right: 16
                                                 })
                                             }}
                                             size="large"

@@ -20,8 +20,7 @@ class BackgroundContainer extends Component<BackgroundContainerProps, Background
         backgroundImage: ''
     }
 
-    constructor(props: BackgroundContainerProps) {
-        super(props)
+    componentDidMount(): void {
         this.state.backgroundImage = this.getNextImage()
     }
 
