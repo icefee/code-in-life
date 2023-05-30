@@ -1,12 +1,10 @@
 import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
-import fetch from 'node-fetch';
+import { getJson } from '../../../adaptors';
 import { Api } from '../../../util/config';
 
 const getVideoData = async (url: string) => {
     try {
-        const { data } = await fetch(url).then<ApiJsonType<VideoInfo>>(
-            response => response.json()
-        );
+        const { data } = await getJson<ApiJsonType<VideoInfo>>(url);
         return data;
     }
     catch (err) {

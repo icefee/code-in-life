@@ -1,11 +1,11 @@
 import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
-import fetch from 'node-fetch';
+import { getResponse } from '../../../adaptors';
 import { Api } from '../../../util/config';
 
 export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
     const searchParams = new URLSearchParams(req.query as Record<string, string>)
     try {
-        const response = await fetch(`${Api.site}/api/video/proxy?${searchParams}`)
+        const response = await getResponse(`${Api.site}/api/video/proxy?${searchParams}`)
         res.setHeader('Content-Type', 'application/json')
         response.body.pipe(res)
     }
