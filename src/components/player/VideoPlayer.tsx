@@ -310,8 +310,8 @@ function VideoPlayer({
             0,
             Math.min(video.duration, time)
         );
-        if (nextPlayTime >= 0 && nextPlayTime <= video.duration) {
-            setCurrentTime(time);
+        if (nextPlayTime > video.currentTime && video.currentTime < video.duration || nextPlayTime < video.currentTime && video.currentTime > 0) {
+            setCurrentTime(nextPlayTime);
             showMessage(`快${nextPlayTime > video.currentTime ? '进' : '退'}${Math.round(Math.abs(nextPlayTime - video.currentTime))}秒`);
             video.currentTime = nextPlayTime;
         }
