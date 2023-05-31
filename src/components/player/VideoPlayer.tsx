@@ -305,14 +305,14 @@ function VideoPlayer({
     }
 
     const fastSeek = (time: number) => {
-        setCurrentTime(time);
         const video = videoRef.current;
         const nextPlayTime = Math.max(
             0,
             Math.min(video.duration, time)
         );
-        if (nextPlayTime > 0 && nextPlayTime < video.duration) {
-            showMessage(`快${nextPlayTime > video.currentTime ? '进' : '退'}${Math.round(Math.abs(nextPlayTime - video.currentTime))}秒`)
+        if (nextPlayTime >= 0 && nextPlayTime <= video.duration) {
+            setCurrentTime(time);
+            showMessage(`快${nextPlayTime > video.currentTime ? '进' : '退'}${Math.round(Math.abs(nextPlayTime - video.currentTime))}秒`);
             video.currentTime = nextPlayTime;
         }
     }
