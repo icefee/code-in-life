@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography';
 import CardActionArea from '@mui/material/CardActionArea';
 import ThumbLoader from './ThumbLoader';
 import RowClipTypography from '../layout/element/RowClipTypography';
+import Clue from '../../util/clue';
 
 type ListData = VideoListItem[];
 
@@ -45,7 +46,8 @@ interface VideoItemProps extends Pick<ListProps, 'api' | 'typed'> {
 
 function VideoItem({ video, api, typed }: VideoItemProps) {
 
-    const videoUrl = useMemo(() => `/video/${api}/${video.id}/`, [api, video.id])
+    const id = useMemo(() => Clue.create(api, video.id), [api, video.id])
+    const videoUrl = useMemo(() => `/video/play/${id}/`, [id])
 
     return (
         <Card elevation={2}>
@@ -56,7 +58,7 @@ function VideoItem({ video, api, typed }: VideoItemProps) {
                     flexShrink: 0
                 }} href={videoUrl} target="_blank">
                     <ThumbLoader
-                        src={`/api/video/${api}/${video.id}?type=poster`}
+                        src={`/api/video/${id}?type=poster`}
                         aspectRatio="125 / 180"
                         alt={video.name}
                     />

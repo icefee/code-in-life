@@ -9,13 +9,13 @@ import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
 import Typography from '@mui/material/Typography';
 import PlaylistPlayRoundedIcon from '@mui/icons-material/PlaylistPlayRounded';
-import SearchForm, { type SearchFormInstance } from '../../components/search/Form';
-import { LoadingOverlay } from '../../components/loading';
-import MusicPlayer, { RepeatMode } from '../../components/player/MusicPlayer';
-import NoData from '../../components/search/NoData';
-import SongList from '../../components/search/SongList';
-import MusicPlayList from '../../components/player/MusicPlayList';
-import useLocalStorageState from '../../components/hook/useLocalStorageState';
+import SearchForm, { type SearchFormInstance } from '../components/search/Form';
+import { LoadingOverlay } from '../components/loading';
+import MusicPlayer, { RepeatMode } from '../components/player/MusicPlayer';
+import NoData from '../components/search/NoData';
+import SongList from '../components/search/SongList';
+import MusicPlayList from '../components/player/MusicPlayList';
+import useLocalStorageState from '../components/hook/useLocalStorageState';
 
 export default function MusicSearch() {
 

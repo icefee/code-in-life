@@ -1,20 +1,20 @@
 import React, { Component, useState, useEffect, useMemo } from 'react';
 import type { PageProps } from 'gatsby';
-import fetch from 'node-fetch';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import loadable from '@loadable/component';
-import ThumbLoader from '../../../../components/search/ThumbLoader';
-import { LoadingScreen } from '../../../../components/loading';
-import NoData from '../../../../components/search/NoData';
-import VideoUrlParser from '../../../../components/search/VideoUrlParser';
-import { PlayState } from '../../../../components/player/VideoPlayer';
+import ThumbLoader from '../../../components/search/ThumbLoader';
+import { LoadingScreen } from '../../../components/loading';
+import NoData from '../../../components/search/NoData';
+import { getJson } from '../../../adaptors';
+import VideoUrlParser from '../../../components/search/VideoUrlParser';
+import { PlayState } from '../../../components/player/VideoPlayer';
 import * as css from './style.module.css';
 
-const VideoPlayer = loadable(() => import('../../../../components/player/VideoPlayer'))
+const VideoPlayer = loadable(() => import('../../../components/player/VideoPlayer'))
 
 interface TabPanelProps extends React.PropsWithChildren<{
     index: number;
@@ -52,33 +52,26 @@ type PlayHistory = {
     episodeIndex?: number;
 }
 
-function getStoreKey(api: string, id: string) {
-    return `${api}_${id}`;
-}
-
-function getHistory({ api, id }: VideoDetailProps): PlayHistory {
+function getHistory({ id }: VideoDetailProps): PlayHistory {
     const params = createVideoParams();
     const defaultHistory: PlayHistory = {
         params,
         episodeIndex: 0,
         sourceIndex: 0
     };
-    const key = getStoreKey(api, id);
-    const store = localStorage.getItem(key);
+    const store = localStorage.getItem(id);
     return store ? JSON.parse(store) : defaultHistory;
 }
 
-function setHistory({ api, id }: VideoDetailProps, history: Partial<PlayHistory>): void {
-    const key = getStoreKey(api, id);
-    const store = localStorage.getItem(key);
-    localStorage.setItem(key, JSON.stringify({
+function setHistory({ id }: VideoDetailProps, history: Partial<PlayHistory>): void {
+    const store = localStorage.getItem(id);
+    localStorage.setItem(id, JSON.stringify({
         ...(store ? JSON.parse(store) : null),
         ...history
     }))
 }
 
 interface VideoDetailProps {
-    api: string;
     id: string;
     video: VideoInfo;
 }
@@ -440,7 +433,7 @@ function VideoSummary({ video }: VideoSummaryProps) {
 }
 
 export async function getServerData({ params }: PageProps<object, object, unknown, unknown>) {
-    const { api, id } = params as Record<'api' | 'id', string>;
+    const { id } = params;
     return {
         status: 200,
         headers: {
@@ -448,25 +441,22 @@ export async function getServerData({ params }: PageProps<object, object, unknow
             'Cross-Origin-Opener-Policy': 'same-origin'
         },
         props: {
-            api,
             id
         }
     }
 }
 
-export default function Page({ serverData }: PageProps<object, object, unknown, { api: string; id: string }>) {
+export default function Page({ serverData }: PageProps<object, object, unknown, Record<'id', string>>) {
 
-    const { api, id } = serverData;
-    const [video, setVideo] = useState<VideoInfo>();
+    const { id } = serverData;
+    const [videoInfo, setVideoInfo] = useState<VideoInfo>();
 
     useEffect(() => {
         (async function getVideoInfo() {
             try {
-                const { code, data } = await fetch(`/api/video/${api}/${id}`).then<ApiJsonType<VideoInfo>>(
-                    response => response.json()
-                )
+                const { code, data } = await getJson<ApiJsonType<VideoInfo>>(`/api/video/${id}`)
                 if (code === 0) {
-                    setVideo(data)
+                    setVideoInfo(data)
                 }
                 else {
                     throw new Error('request failed')
@@ -478,11 +468,10 @@ export default function Page({ serverData }: PageProps<object, object, unknown, 
             }
         })()
     }, [])
-    return video ? (
+    return videoInfo ? (
         <VideoDetail
-            api={api}
             id={id}
-            video={video}
+            video={videoInfo}
         />
     ) : (
         <LoadingScreen />

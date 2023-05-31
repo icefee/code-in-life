@@ -1,6 +1,7 @@
 import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
-import { getJson } from '../../../adaptors';
-import { Api } from '../../../util/config';
+import { getJson } from '../../adaptors';
+import { Api } from '../../util/config';
+import Clue from '../../util/clue';
 
 const getVideoData = async (url: string) => {
     try {
@@ -13,13 +14,12 @@ const getVideoData = async (url: string) => {
 }
 
 export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
-    const { api, id } = req.params;
+    const { api, id } = Clue.parse(req.params.id);
     const { type } = req.query;
     const apiUrl = `${Api.site}/api/video/${api}/${id}`;
     const data = await getVideoData(apiUrl);
     if (type === 'poster') {
         res.redirect(301, data ? data.pic : `/image_fail.jpg`)
-        res.end();
     }
     else {
         res.json(data ? {
