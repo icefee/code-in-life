@@ -1,3 +1,4 @@
+import { utf8Tobase64, base64ToUtf8 } from './base64'
 
 type VideoClue = {
     api: string;
@@ -8,7 +9,7 @@ export default abstract class Clue {
 
     public static parse(text: string): VideoClue | null {
         try {
-            const origin = atob(text + '='.repeat(4 - text.length % 4));
+            const origin = base64ToUtf8(text + '='.repeat(4 - text.length % 4));
             const [api, id] = origin.split('|');
             return {
                 api,
@@ -21,6 +22,6 @@ export default abstract class Clue {
     }
 
     public static create(api: VideoClue['api'], id: VideoClue['id']): string {
-        return btoa(`${api}|${id}`).replace(/\={1,2}$/, '')
+        return utf8Tobase64(`${api}|${id}`).replace(/\={1,2}$/, '')
     }
 }

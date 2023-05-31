@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect, useMemo } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import type { PageProps } from 'gatsby';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -370,16 +370,6 @@ interface VideoSummaryProps {
 
 function VideoSummary({ video }: VideoSummaryProps) {
 
-    const videoPoster = useMemo(
-        () => (
-            <ThumbLoader
-                src={`/api/proxy?url=${video.pic}`}
-                alt={video.name}
-            />
-        ),
-        [video.pic]
-    )
-
     return (
         <Box sx={(theme) => ({
             display: 'flex',
@@ -397,7 +387,9 @@ function VideoSummary({ video }: VideoSummaryProps) {
                 },
                 mr: 1.5
             })}>
-                {videoPoster}
+                <ThumbLoader
+                    src={`/api/proxy?url=${video.pic}`}
+                />
             </Box>
             <Box>
                 <Typography variant="h5" lineHeight={1.2}>{video.name}</Typography>

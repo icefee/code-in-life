@@ -60,7 +60,6 @@ function VideoItem({ video, api, typed }: VideoItemProps) {
                     <ThumbLoader
                         src={`/api/video/${id}?type=poster`}
                         aspectRatio="125 / 180"
-                        alt={video.name}
                     />
                 </CardActionArea>
                 <Box sx={{
