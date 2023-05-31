@@ -311,8 +311,10 @@ function VideoPlayer({
             0,
             Math.min(video.duration, time)
         );
-        showMessage(`快${nextPlayTime > video.currentTime ? '进' : '退'}${Math.round(Math.abs(nextPlayTime - video.currentTime))}秒`)
-        video.currentTime = nextPlayTime;
+        if (nextPlayTime > 0 && nextPlayTime < video.duration) {
+            showMessage(`快${nextPlayTime > video.currentTime ? '进' : '退'}${Math.round(Math.abs(nextPlayTime - video.currentTime))}秒`)
+            video.currentTime = nextPlayTime;
+        }
     }
 
     useEffect(() => {

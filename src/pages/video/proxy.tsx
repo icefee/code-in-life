@@ -228,7 +228,6 @@ function Proxy() {
                                                                         <ThumbLoader
                                                                             src={video.poster}
                                                                             aspectRatio="125 / 180"
-                                                                            alt={video.title}
                                                                         />
                                                                     </Box>
                                                                     <Box sx={{
