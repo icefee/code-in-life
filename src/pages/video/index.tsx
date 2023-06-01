@@ -127,15 +127,10 @@ export default function VideoSearch() {
                 {
                     searchTask.success ? (
                         searchTask.data.length > 0 ? (
-                            <Box sx={{
-                                flexGrow: 1,
-                                overflowY: 'auto'
-                            }}>
-                                <SearchResult
-                                    keyword={searchTask.keyword}
-                                    videoList={searchTask.data}
-                                />
-                            </Box>
+                            <SearchResult
+                                keyword={searchTask.keyword}
+                                videoList={searchTask.data}
+                            />
                         ) : (
                             <NoData text='💔 没有找到相关的内容, 换个关键词试试吧' />
                         )

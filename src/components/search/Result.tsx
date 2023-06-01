@@ -1,11 +1,16 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import List from '@mui/material/List';
 import ListSubheader from '@mui/material/ListSubheader';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Rating from '@mui/material/Rating';
+import Divider from '@mui/material/Divider';
+import { alpha } from '@mui/material/styles';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { SearchList } from './List';
@@ -17,38 +22,79 @@ interface SearchResultProps {
 }
 
 function SearchResult({ keyword, videoList }: SearchResultProps) {
+
+    const total = useMemo(() => videoList.reduce((prev, current) => prev + current.data.length, 0), [videoList])
+    const tabTypeThreshold = 100
+
     return (
         <Box sx={{
             position: 'relative',
             height: '100%'
         }}>
             {
-                videoList.length > 0 ? videoList.map(
+                videoList.length > 0 ? total > tabTypeThreshold ? (
+                    <TabType
+                        videoList={videoList}
+                        keyword={keyword}
+                    />
+                ) : (
+                    <ListType
+                        videoList={videoList}
+                        keyword={keyword}
+                    />
+                ) : (
+                    <Box sx={{
+                        position: 'absolute',
+                        zIndex: 1,
+                        left: 0,
+                        top: 0,
+                        right: 0,
+                        bottom: 0
+                    }}>
+                        <NoData />
+                    </Box>
+                )
+            }
+        </Box>
+    )
+}
+
+function ListType({ videoList, keyword }: SearchResultProps) {
+
+    return (
+        <Box sx={{
+            height: '100%',
+            overflowY: 'auto'
+        }}>
+            {
+                videoList.map(
                     ({ key, name, rating, data, page }) => (
                         <List key={key} sx={{
                             bgcolor: 'transparent'
                         }} component="div" subheader={
-                            <ListSubheader
-                                component="div"
-                                sx={{
+                            <ListSubheader component="div" sx={
+                                (theme) => ({
                                     display: 'flex',
                                     justifyContent: 'space-between',
                                     alignItems: 'center',
-                                    bgcolor: 'transparent',
-                                    color: '#fff',
+                                    bgcolor: alpha(theme.palette.background.paper, .75),
                                     pl: 4,
+                                    pr: 1,
                                     py: 1,
+                                    mx: 1.5,
                                     backdropFilter: 'blur(2px)',
+                                    boxShadow: theme.shadows[2],
                                     '&::before': {
                                         content: '""',
-                                        bgcolor: '#fff',
+                                        bgcolor: theme.palette.primary.main,
                                         position: 'absolute',
                                         left: 12,
                                         top: 'calc(50% - 8px)',
                                         width: 5,
                                         height: 16
                                     }
-                                }} color="primary">
+                                })
+                            } color="primary">
                                 <Stack direction="row" alignItems="center" columnGap={1}>
                                     <Typography>{name}</Typography>
                                     <Rating
@@ -60,10 +106,9 @@ function SearchResult({ keyword, videoList }: SearchResultProps) {
                                 </Stack>
                                 <Button
                                     LinkComponent="a"
-                                    href={`/video/${key}/`}
+                                    href={`/video/${key}`}
                                     target="_blank"
                                     size="small"
-                                    color="inherit"
                                     startIcon={
                                         <ManageSearchIcon />
                                     }
@@ -101,22 +146,107 @@ function SearchResult({ keyword, videoList }: SearchResultProps) {
                             }
                         </List>
                     )
-                ) : (
-                    <Box sx={{
-                        position: 'absolute',
-                        zIndex: 1,
-                        left: 0,
-                        top: 0,
-                        right: 0,
-                        bottom: 0
-                    }}>
-                        <NoData />
-                    </Box>
                 )
             }
         </Box>
     )
 }
 
+function TabType({ videoList, keyword }: SearchResultProps) {
+
+    const [activeTab, setActiveTab] = useState(0)
+    const activeList = useMemo(() => videoList[activeTab], [videoList, activeTab])
+
+    return (
+        <Stack sx={{
+            height: '100%',
+            overflow: 'hidden'
+        }}>
+            <Box sx={{
+                px: 1.5
+            }}>
+                <Paper>
+                    <Tabs
+                        value={activeTab}
+                        variant="scrollable"
+                        scrollButtons="auto"
+                        allowScrollButtonsMobile
+                        onChange={
+                            (_event, active: number) => {
+                                setActiveTab(active);
+                            }
+                        }
+                    >
+                        {
+                            videoList.map(
+                                ({ key, name }, index) => (
+                                    <Tab
+                                        key={key}
+                                        label={name}
+                                        value={index}
+                                    />
+                                )
+                            )
+                        }
+                    </Tabs>
+                    <Divider />
+                    <Stack sx={{
+                        p: 1
+                    }} direction="row" alignItems="center" justifyContent="space-between">
+                        <Stack direction="row" alignItems="center" columnGap={1}>
+                            <Typography variant="subtitle2" color="text.secondary">当前{activeList.page.pagesize} / {activeList.page.recordcount}条记录</Typography>
+                            <Rating
+                                defaultValue={activeList.rating}
+                                precision={.5}
+                                size="small"
+                                readOnly
+                            />
+                        </Stack>
+                        <Button
+                            LinkComponent="a"
+                            href={`/video/${activeList.key}`}
+                            target="_blank"
+                            size="small"
+                            startIcon={
+                                <ManageSearchIcon />
+                            }
+                        >站内查询</Button>
+                    </Stack>
+                </Paper>
+            </Box>
+            <Box sx={(theme) => ({
+                flexGrow: 1,
+                p: theme.spacing(1, 1.5, 2),
+                overflowY: 'auto'
+            })}>
+                <SearchList
+                    data={activeList.data}
+                    api={activeList.key}
+                />
+                {
+                    activeList.page.pagecount > 1 && (
+                        <Box sx={{
+                            display: 'flex',
+                            justifyContent: 'flex-end',
+                            pt: 2,
+                            color: '#fff'
+                        }}>
+                            <Button
+                                LinkComponent="a"
+                                variant="outlined"
+                                color="inherit"
+                                endIcon={
+                                    <ArrowForwardIosIcon />
+                                }
+                                href={'/video/' + activeList.key + '?s=' + keyword + '&p=2'}
+                                target="_blank"
+                            >更多</Button>
+                        </Box>
+                    )
+                }
+            </Box>
+        </Stack>
+    )
+}
 
 export default SearchResult;
