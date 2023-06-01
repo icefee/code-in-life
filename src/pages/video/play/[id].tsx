@@ -12,6 +12,7 @@ import NoData from '../../../components/search/NoData';
 import { getJson } from '../../../adaptors';
 import VideoUrlParser from '../../../components/search/VideoUrlParser';
 import { PlayState } from '../../../components/player/VideoPlayer';
+import AnimationGradient from '../../../components/layout/AnimationGradient';
 import * as css from './style.module.css';
 
 const VideoPlayer = loadable(() => import('../../../components/player/VideoPlayer'))
@@ -235,10 +236,20 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                 {
                                     this.activeSource.urls.length > 1 && (
                                         <Box sx={{
-                                            backdropFilter: 'blur(15px)',
+                                            position: 'relative',
                                             color: '#fff',
                                             p: 1.5
                                         }}>
+                                            <Box sx={{
+                                                position: 'absolute',
+                                                left: 0,
+                                                top: 0,
+                                                right: 0,
+                                                bottom: 0,
+                                                zIndex: -1
+                                            }}>
+                                                <AnimationGradient />
+                                            </Box>
                                             <Typography variant="subtitle1" align="center">{this.playingVideoTitle}</Typography>
                                         </Box>
                                     )
