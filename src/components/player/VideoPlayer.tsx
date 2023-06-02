@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useMemo, useEffect, useCallback, useImperativeHandle, forwardRef } from 'react';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -157,7 +157,7 @@ interface VideoPlayerProps {
     onEnd?: VoidFunction;
 }
 
-function VideoPlayer({
+const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
     url,
     title,
     poster,
@@ -169,7 +169,7 @@ function VideoPlayer({
     onTimeUpdate,
     onNext,
     onEnd
-}: VideoPlayerProps) {
+}, ref) => {
 
     const videoRef = useRef<HTMLVideoElement>()
     const hls = useRef<Hls>()
@@ -204,6 +204,8 @@ function VideoPlayer({
     const [error, setError] = useState(false)
     const [touchOrigin, setTouchOrigin] = useState(0)
     const [seekingDuration, setSeekingDuration] = useState<number | null>(null)
+
+    useImperativeHandle(ref, () => videoRef.current, [])
 
     const videoLoaded = useMemo(() => duration > 0, [duration])
 
@@ -949,6 +951,6 @@ function VideoPlayer({
             </Stack>
         </DarkThemed>
     )
-}
+})
 
 export default VideoPlayer;

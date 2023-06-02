@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect } from 'react';
+import React, { Component, useState, useEffect, createRef } from 'react';
 import type { PageProps } from 'gatsby';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -12,7 +12,7 @@ import NoData from '../../../components/search/NoData';
 import { getJson } from '../../../adaptors';
 import VideoUrlParser from '../../../components/search/VideoUrlParser';
 import { PlayState } from '../../../components/player/VideoPlayer';
-import AnimationGradient from '../../../components/layout/AnimationGradient';
+import AudioVisual from 'react-audio-visual';
 import * as css from './style.module.css';
 
 const VideoPlayer = loadable(() => import('../../../components/player/VideoPlayer'))
@@ -87,7 +87,8 @@ interface VideoDetailState {
 class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
 
     public videoParams?: VideoParams;
-    public lastUpdateTime = 0;
+    private lastUpdateTime = 0;
+    public videoRef = createRef<HTMLVideoElement>()
 
     state: VideoDetailState = {
         activeView: 0,
@@ -218,6 +219,7 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                         {
                                             url => (
                                                 <VideoPlayer
+                                                    ref={this.videoRef}
                                                     title={this.playingVideoTitle}
                                                     url={url}
                                                     hls
@@ -246,9 +248,18 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                                 top: 0,
                                                 right: 0,
                                                 bottom: 0,
-                                                zIndex: -1
+                                                zIndex: -1,
+                                                bgcolor: '#000'
                                             }}>
-                                                <AnimationGradient />
+                                                <AudioVisual
+                                                    audio={this.videoRef}
+                                                    colors={
+                                                        [
+                                                            '#3f51b580',
+                                                            '#03a9f480'
+                                                        ]
+                                                    }
+                                                />
                                             </Box>
                                             <Typography variant="subtitle1" align="center">{this.playingVideoTitle}</Typography>
                                         </Box>
