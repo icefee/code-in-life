@@ -125,15 +125,25 @@ function useStatus() {
 }
 
 function debounce(delay: number, callback: (args: any[]) => void) {
+
     let timeout = null;
-    function wrapper(...args: any[]) {
+
+    function cancel() {
         if (timeout) {
             clearTimeout(timeout);
+            timeout = null;
         }
+    }
+
+    function wrapper(...args: any[]) {
+        cancel()
         timeout = setTimeout(() => {
             callback.apply(this, ...args);
         }, delay)
     }
+
+    wrapper.cancel = cancel;
+
     return wrapper;
 }
 
@@ -470,22 +480,6 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
         createControlsHideTimeout()
     }), [])
 
-    const onMouseMove = () => {
-        if (fullscreen) {
-            setControlsShow(true)
-            resetControlsHideTimeout()
-        }
-    }
-
-    useEffect(() => {
-        if (fullscreen) {
-            createControlsHideTimeout()
-        }
-        else {
-            disposeControlsHideTimeout()
-        }
-    }, [fullscreen])
-
     return (
         <DarkThemed>
             <Stack
@@ -497,21 +491,18 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                     overflow: 'hidden'
                 }}
                 ref={playerRef}
-                onMouseEnter={
-                    () => {
-                        if (!isMobile) {
-                            setControlsShow(true)
-                        }
+                onMouseMove={isMobile ? null : () => {
+                    setControlsShow(true)
+                    if (playing) {
+                        resetControlsHideTimeout()
                     }
-                }
-                onMouseLeave={
-                    () => {
-                        if (!isMobile) {
-                            setControlsShow(false)
-                        }
+                }}
+                onMouseLeave={isMobile ? null : () => {
+                    if (playing) {
+                        setControlsShow(false)
                     }
-                }
-                onMouseMove={isMobile ? null : onMouseMove}
+                    disposeControlsHideTimeout()
+                }}
             >
                 <Box
                     sx={{
@@ -598,11 +589,15 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                         }
                         onPlay={
                             () => {
+                                createControlsHideTimeout()
                                 setPlaying(true)
                             }
                         }
                         onPause={
                             () => {
+                                resetControlsHideTimeout.cancel()
+                                disposeControlsHideTimeout()
+                                setControlsShow(true)
                                 setPlaying(false)
                             }
                         }
@@ -641,9 +636,10 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                             top: 0,
                             right: 0,
                             bottom: 0,
-                            zIndex: 1
+                            zIndex: 1,
+                            color: '#fff'
                         }} justifyContent="center" alignItems="center">
-                            <CircularProgress />
+                            <CircularProgress color="inherit" />
                         </Stack>
                     </Fade>
                     {
