@@ -15,6 +15,12 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
             defaultValue: 'chunked'
         }
     ]
+    if (/(video|audio)\/*/.test(headers.get('content-type'))) {
+        inheritedHeaders.push({
+            key: 'accept-ranges',
+            defaultValue: 'bytes'
+        })
+    }
     for (const { key, defaultValue } of inheritedHeaders) {
         res.setHeader(key, headers.get(key) ?? defaultValue)
     }

@@ -197,7 +197,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
     const durationPlaceholder = '--:--'
     const [controlsShow, setControlsShow] = useState(true)
     const seekingRef = useRef(false)
-    const autoPlayEventFired = useRef(false)
+    const canPlayEventFired = useRef(false)
 
     const [rate, setRate] = useState(1)
     const { pip, togglePip } = usePipEvent(videoRef)
@@ -274,8 +274,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
     }
 
     const tryToAutoPlay = () => {
-        if (autoplay && !autoPlayEventFired.current) {
-            autoPlayEventFired.current = true
+        if (autoplay) {
             playVideo()
         }
     }
@@ -341,7 +340,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
             if (videoRef.current) {
                 videoRef.current.muted = false
             }
-            autoPlayEventFired.current = false
+            canPlayEventFired.current = false
             hls.current?.off(Hls.Events.MANIFEST_PARSED, onMainfestParsed)
         }
     }, [url])
@@ -578,12 +577,13 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                         }
                         onCanPlay={
                             () => {
-                                if (!hls.current) {
+                                if (!hls.current && !canPlayEventFired.current) {
                                     if (initPlayTime > 0) {
                                         fastSeek(initPlayTime)
                                     }
                                     tryToAutoPlay()
                                 }
+                                canPlayEventFired.current = true;
                                 hideLoading()
                             }
                         }
