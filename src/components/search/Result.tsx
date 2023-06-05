@@ -159,64 +159,67 @@ function TabType({ videoList, keyword }: SearchResultProps) {
 
     return (
         <Stack sx={{
+            position: 'relative',
             height: '100%',
             overflow: 'hidden'
         }}>
-            <Box sx={{
-                px: 1.5
-            }}>
-                <Paper>
-                    <Tabs
-                        value={activeTab}
-                        variant="scrollable"
-                        scrollButtons="auto"
-                        allowScrollButtonsMobile
-                        onChange={
-                            (_event, active: number) => {
-                                setActiveTab(active);
-                            }
+            <Paper sx={{
+                position: 'absolute',
+                left: 12,
+                top: 0,
+                right: 12,
+                zIndex: 5
+            }} elevation={3}>
+                <Tabs
+                    value={activeTab}
+                    variant="scrollable"
+                    scrollButtons="auto"
+                    allowScrollButtonsMobile
+                    onChange={
+                        (_event, active: number) => {
+                            setActiveTab(active);
                         }
-                    >
-                        {
-                            videoList.map(
-                                ({ key, name }, index) => (
-                                    <Tab
-                                        key={key}
-                                        label={name}
-                                        value={index}
-                                    />
-                                )
+                    }
+                >
+                    {
+                        videoList.map(
+                            ({ key, name }, index) => (
+                                <Tab
+                                    key={key}
+                                    label={name}
+                                    value={index}
+                                />
                             )
-                        }
-                    </Tabs>
-                    <Divider />
-                    <Stack sx={{
-                        p: 1
-                    }} direction="row" alignItems="center" justifyContent="space-between">
-                        <Stack direction="row" alignItems="center" columnGap={1}>
-                            <Typography variant="subtitle2" color="text.secondary">当前{activeList.page.pagesize} / {activeList.page.recordcount}条记录</Typography>
-                            <Rating
-                                defaultValue={activeList.rating}
-                                precision={.5}
-                                size="small"
-                                readOnly
-                            />
-                        </Stack>
-                        <Button
-                            LinkComponent="a"
-                            href={`/video/${activeList.key}`}
-                            target="_blank"
+                        )
+                    }
+                </Tabs>
+                <Divider />
+                <Stack sx={{
+                    p: 1
+                }} direction="row" alignItems="center" justifyContent="space-between">
+                    <Stack direction="row" alignItems="center" columnGap={1}>
+                        <Typography variant="subtitle2" color="text.secondary">当前{Math.min(activeList.page.pagesize, activeList.page.recordcount)} / {activeList.page.recordcount}条记录</Typography>
+                        <Rating
+                            defaultValue={activeList.rating}
+                            precision={.5}
                             size="small"
-                            startIcon={
-                                <ManageSearchIcon />
-                            }
-                        >站内查询</Button>
+                            readOnly
+                        />
                     </Stack>
-                </Paper>
-            </Box>
+                    <Button
+                        LinkComponent="a"
+                        href={`/video/${activeList.key}`}
+                        target="_blank"
+                        size="small"
+                        startIcon={
+                            <ManageSearchIcon />
+                        }
+                    >站内查询</Button>
+                </Stack>
+            </Paper>
             <Box sx={(theme) => ({
                 flexGrow: 1,
-                p: theme.spacing(1, 1.5, 2),
+                p: theme.spacing(14, 1.5, 2),
                 overflowY: 'auto'
             })}>
                 <SearchList

@@ -22,7 +22,7 @@ type ListProps = {
 
 export function SearchList({ data, api, typed = false }: ListProps) {
     return (
-        <Grid spacing={2} container>
+        <Grid spacing={1.5} container>
             {
                 data.map(
                     (dataItem) => (
