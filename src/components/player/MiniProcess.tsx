@@ -38,15 +38,15 @@ function MiniProcess({ visible, state }: MiniProcessProps) {
                 value={state.progress * 100}
                 valueBuffer={state.buffered * 100}
             />
-            <Box
-                sx={{
+            <div
+                style={{
                     position: 'absolute',
                     left: 0,
-                    bottom: 2,
+                    bottom: 0,
                     width: `${state.progress * 100}%`,
-                    height: 4,
-                    bgcolor: 'primary.dark',
-                    filter: 'blur(8px)'
+                    height: 2,
+                    backgroundColor: '#42a5f5',
+                    filter: 'blur(4px)'
                 }}
             />
             <Box
