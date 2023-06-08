@@ -20,7 +20,7 @@ function MusicPoster({ spinning = false, src, alt }: MusicPosterProps) {
             setPoster(url)
         }
         image.onerror = () => {
-            setPoster('/poster.svg')
+            setPoster('/poster.jpg')
         }
     }
 

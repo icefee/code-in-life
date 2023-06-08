@@ -133,8 +133,8 @@ export async function parseLrc(id: string) {
         }
         return lrcs.filter(
             ({ text }) => {
-                const hostname = new URL(baseUrl).hostname;
-                return isTextNotNull(text) && !text.match(new RegExp(hostname));
+                const domain = new URL(baseUrl).hostname.replace(/.com/, '');
+                return isTextNotNull(text) && !text.match(new RegExp(domain));
             }
         ).sort(
             (prev, next) => prev.time - next.time
