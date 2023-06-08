@@ -1,5 +1,4 @@
 import React, { Component, useState, useEffect, createRef } from 'react';
-import type { PageProps } from 'gatsby';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -446,23 +445,8 @@ function VideoSummary({ video }: VideoSummaryProps) {
     )
 }
 
-export async function getServerData({ params }: PageProps<object, object, unknown, unknown>) {
-    const { id } = params;
-    return {
-        status: 200,
-        headers: {
-            'Cross-Origin-Embedder-Policy': 'require-corp',
-            'Cross-Origin-Opener-Policy': 'same-origin'
-        },
-        props: {
-            id
-        }
-    }
-}
+export default function Page({ id }: Record<'id', string>) {
 
-export default function Page({ serverData }: PageProps<object, object, unknown, Record<'id', string>>) {
-
-    const { id } = serverData;
     const [videoInfo, setVideoInfo] = useState<VideoInfo>();
 
     useEffect(() => {

@@ -24,7 +24,7 @@ export default function Hls() {
             {/* <button onClick={downloadFile}>start</button> */}
             <VideoPlayer
                 title="测试m3u8视频"
-                url="https://s.xlzys.com/play/YaOqQQNd/index.m3u8"
+                url="https://cdn12.yzzy-tv-cdn.com/20221217/11433_5e900683/index.m3u8"
                 hls
                 autoplay
             />

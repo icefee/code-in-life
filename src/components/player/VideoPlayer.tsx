@@ -398,9 +398,6 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
             setDownloading(true)
             if (!hls2Mp4.current) {
                 hls2Mp4.current = new Hls2Mp4({
-                    // corePath: new URL('/ffmpeg/ffmpeg-core.js', document.location.href).href,
-                    // wasmPath: '/api/ffmpeg-core.wasm',
-                    log: true,
                     maxRetry: 5,
                     tsDownloadConcurrency: 20
                 }, (type, progress) => {
