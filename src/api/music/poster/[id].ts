@@ -27,7 +27,6 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
         }
     }
     catch (err) {
-        res.setHeader('Content-Type', 'image/svg+xml')
-        res.send(defaultPoster)
+        res.redirect(defaultPoster)
     }
 }
