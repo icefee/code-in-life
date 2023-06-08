@@ -437,12 +437,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                 hls2Mp4.current.saveToFile(buffer, `${title ?? 'download'}.mp4`)
             }
             catch (err) {
-                if (/FFmpeg load failed/.test(err.message)) {
-                    showStatus('FFmpeg 下载失败, 请重试')
-                }
-                else {
-                    showStatus(`下载发生错误: ${err.message}`)
-                }
+                showStatus(`下载发生错误: ${err.message}`)
             }
             setDownloading(false)
         }
