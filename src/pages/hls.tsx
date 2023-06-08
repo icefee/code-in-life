@@ -4,17 +4,6 @@ import loadable from '@loadable/component';
 
 const VideoPlayer = loadable(() => import('../components/player/VideoPlayer'))
 
-export async function getServerData() {
-    return {
-        status: 200,
-        headers: {
-            'Cross-Origin-Embedder-Policy': 'require-corp',
-            'Cross-Origin-Opener-Policy': 'same-origin'
-        },
-        props: {}
-    }
-}
-
 export default function Hls() {
     /*
     const downloadFile = async () => {
