@@ -399,18 +399,11 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
             if (!hls2Mp4.current) {
                 hls2Mp4.current = new Hls2Mp4({
                     maxRetry: 5,
-                    tsDownloadConcurrency: 20
+                    tsDownloadConcurrency: 20,
+                    outputType: 'mp4'
                 }, (type, progress) => {
                     const TaskType = Hls2Mp4.TaskType;
-                    if (type === TaskType.loadFFmeg) {
-                        if (progress === 0) {
-                            showStatus('加载FFmpeg', 1e6)
-                        }
-                        else {
-                            showStatus('FFmpeg加载完成')
-                        }
-                    }
-                    else if (type === TaskType.parseM3u8) {
+                    if (type === TaskType.parseM3u8) {
                         if (progress === 0) {
                             showStatus('解析视频地址', 3e4)
                         }

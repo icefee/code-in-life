@@ -18,7 +18,7 @@ function Hls2Mp4Demo() {
             <Script src="https://hlsjs.video-dev.org/dist/hls.js" onLoad={
                 () => setHlsLoaded(true)
             } />
-            <Script src="https://unpkg.com/hls2mp4@2.0.3/hls2mp4.js" />
+            <Script src="https://unpkg.com/hls2mp4@2.0.4/hls2mp4.js" />
             <div className="hls-demo">
                 <video style={{
                     display: 'block',
