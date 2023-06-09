@@ -104,7 +104,7 @@ function MusicPlayList({ show, data, onChange, current, playing, onPlay, onToggl
         onChange([])
     }
 
-    const validKeyword = useMemo(() => keyword.trimStart().trimEnd(), [keyword])
+    const validKeyword = useMemo(() => keyword.trim(), [keyword])
 
     const getMatch = (text: string) => {
         const pattern = new RegExp(validKeyword.replace(/\\/g, '\\\\'), 'gi');
