@@ -409,7 +409,7 @@ function VideoSummary({ video }: VideoSummaryProps) {
                 mr: 1.5
             })}>
                 <ThumbLoader
-                    src={`/api/proxy?url=${video.pic}`}
+                    src={video.pic}
                 />
             </Box>
             <Box>
