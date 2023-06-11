@@ -3,21 +3,20 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Zoom from '@mui/material/Zoom';
 import VolumeOffIcon from '@mui/icons-material/VolumeOff';
+import type { SxProps, Theme } from '@mui/material/styles';
 
 interface CancelMutedButtonProps {
     show: boolean;
-    left: number;
-    bottom: number;
+    sx?: SxProps<Theme>;
     onClick?: VoidFunction;
 }
 
-function CancelMutedButton({ show, left, bottom, onClick }: CancelMutedButtonProps) {
+function CancelMutedButton({ show, sx, onClick }: CancelMutedButtonProps) {
     return (
         <Zoom in={show} unmountOnExit>
             <Box sx={{
                 position: 'absolute',
-                left,
-                bottom
+                ...sx
             }}>
                 <Button variant="outlined" size="small" startIcon={
                     <VolumeOffIcon />

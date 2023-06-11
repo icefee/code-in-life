@@ -730,8 +730,11 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                 </Fade>
                 <CancelMutedButton
                     show={muted}
-                    left={16}
-                    bottom={controlsShow ? live ? 60 : 100 : 25}
+                    sx={{
+                        left: 16,
+                        bottom: controlsShow ? live ? 60 : 100 : 25,
+                        zIndex: 3
+                    }}
                     onClick={
                         () => {
                             videoRef.current.muted = false;

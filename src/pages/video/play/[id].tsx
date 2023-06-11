@@ -8,10 +8,9 @@ import loadable from '@loadable/component';
 import ThumbLoader from '../../../components/search/ThumbLoader';
 import { LoadingScreen } from '../../../components/loading';
 import NoData from '../../../components/search/NoData';
-import { getJson } from '../../../adaptors';
+import { getJson } from '../../../adaptors/common';
 import VideoUrlParser from '../../../components/search/VideoUrlParser';
 import { PlayState } from '../../../components/player/VideoPlayer';
-import AudioVisual from 'react-audio-visual';
 import * as css from './style.module.css';
 
 const VideoPlayer = loadable(() => import('../../../components/player/VideoPlayer'))
@@ -237,29 +236,9 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                 {
                                     this.activeSource.urls.length > 1 && (
                                         <Box sx={{
-                                            position: 'relative',
                                             color: '#fff',
                                             p: 1.5
                                         }}>
-                                            <Box sx={{
-                                                position: 'absolute',
-                                                left: 0,
-                                                top: 0,
-                                                right: 0,
-                                                bottom: 0,
-                                                zIndex: -1,
-                                                bgcolor: '#000'
-                                            }}>
-                                                <AudioVisual
-                                                    audio={this.videoRef}
-                                                    colors={
-                                                        [
-                                                            '#3f51b580',
-                                                            '#03a9f480'
-                                                        ]
-                                                    }
-                                                />
-                                            </Box>
                                             <Typography variant="subtitle1" align="center">{this.playingVideoTitle}</Typography>
                                         </Box>
                                     )
