@@ -65,16 +65,21 @@ class BackgroundContainer extends Component<BackgroundContainerProps, Background
 
     public render(): React.ReactNode {
         return (
-            <Box className={css.container} sx={{
-                position: 'relative',
-                height: '100%',
-                ...this.props.style
-            }}>
-                <Box className={css.imageLayer} sx={{
-                    ...this.absoluteStyle,
-                    transition: 'background-image 2.5s ease-in-out',
-                    backgroundImage: this.backgroundImage,
-                }} />
+            <Box
+                className={css.container}
+                sx={{
+                    position: 'relative',
+                    height: '100%',
+                    ...this.props.style
+                }}>
+                <Box
+                    className={css.imageLayer}
+                    sx={{
+                        ...this.absoluteStyle,
+                        transition: 'background-image 2.5s ease-in-out',
+                        backgroundImage: this.backgroundImage,
+                    }}
+                />
                 <Box
                     sx={{
                         ...this.absoluteStyle,

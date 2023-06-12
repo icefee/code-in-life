@@ -12,7 +12,6 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
 import CloseIcon from '@mui/icons-material/Close';
-import loadable from '@loadable/component';
 import { StaticTheme } from '../../components/theme';
 import SearchForm from '../../components/search/Form';
 import BackgroundContainer from '../../components/layout/BackgroundContainer';
@@ -22,10 +21,9 @@ import RowClipTypography from '../../components/layout/element/RowClipTypography
 import useErrorMessage, { SnackbarProvider } from '../../components/hook/useErrorMessage';
 import NoData from '../../components/search/NoData';
 import createTransition from '../../components/transition/Slide';
+import { VideoPlayer } from '../../components/player';
 
 const Transition = createTransition()
-
-const VideoPlayer = loadable(() => import('../../components/player/VideoPlayer'))
 
 interface PagedSearchTask<T> extends SearchTask<T> {
     total: number;

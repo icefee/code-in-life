@@ -1,6 +1,17 @@
 import React, { useState } from 'react';
 import { Script } from 'gatsby';
 
+export async function getServerData() {
+    return {
+        status: 200,
+        headers: {
+            'Cross-Origin-Embedder-Policy': 'require-corp',
+            'Cross-Origin-Opener-Policy': 'same-origin'
+        },
+        props: {}
+    }
+}
+
 export async function config() {
     return () => {
         return {
@@ -12,13 +23,21 @@ export async function config() {
 function Hls2Mp4Demo() {
 
     const [hlsLoaded, setHlsLoaded] = useState(false)
+    const [ffmpegLoaded, setFFmpegLoaded] = useState(false)
 
     return (
         <>
-            <Script src="https://hlsjs.video-dev.org/dist/hls.js" onLoad={
+            <Script src="/api/proxy?url=https://hlsjs.video-dev.org/dist/hls.js" onLoad={
                 () => setHlsLoaded(true)
             } />
-            <Script src="https://unpkg.com/hls2mp4@2.0.4/hls2mp4.js" />
+            <Script src="/api/proxy?url=https://unpkg.com/@ffmpeg.wasm/main@0.12.0/dist/ffmpeg.min.js" onLoad={
+                () => setFFmpegLoaded(true)
+            } />
+            {
+                ffmpegLoaded && (
+                    <Script src="/api/proxy?url=https://unpkg.com/hls2mp4@1.1.9/hls2mp4.js" />
+                )
+            }
             <div className="hls-demo">
                 <video style={{
                     display: 'block',

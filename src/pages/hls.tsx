@@ -1,8 +1,16 @@
 import React from 'react';
 import Box from '@mui/material/Box';
-import loadable from '@loadable/component';
+import { VideoPlayer } from '../components/player';
 
-const VideoPlayer = loadable(() => import('../components/player/VideoPlayer'))
+export async function getServerData() {
+    return {
+        status: 200,
+        headers: {
+            'Cross-Origin-Embedder-Policy': 'require-corp',
+            'Cross-Origin-Opener-Policy': 'same-origin'
+        }
+    }
+}
 
 export default function Hls() {
     /*

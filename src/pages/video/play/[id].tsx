@@ -1,42 +1,21 @@
 import React, { Component, useState, useEffect, createRef } from 'react';
+import type { PageProps, GetServerDataProps, GetServerDataReturn } from 'gatsby';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import loadable from '@loadable/component';
+import TabPanel from '../../../components/layout/TabPanel';
 import ThumbLoader from '../../../components/search/ThumbLoader';
 import { LoadingScreen } from '../../../components/loading';
 import NoData from '../../../components/search/NoData';
 import { getJson } from '../../../adaptors/common';
 import VideoUrlParser from '../../../components/search/VideoUrlParser';
-import { PlayState } from '../../../components/player/VideoPlayer';
+import { VideoPlayer, type PlayState } from '../../../components/player';
 import * as css from './style.module.css';
-
-const VideoPlayer = loadable(() => import('../../../components/player/VideoPlayer'))
-
-interface TabPanelProps extends React.PropsWithChildren<{
-    index: number;
-    value: number;
-}> { }
 
 interface VideoParams {
     seek: number;
-}
-
-function TabPanel({ index, value, children }: TabPanelProps) {
-    if (index === value) {
-        return (
-            <Box sx={{
-                width: '100%',
-                flexGrow: 1,
-                p: 1,
-                bgcolor: 'background.default',
-                overflow: 'hidden',
-            }}>{children}</Box>
-        )
-    }
-    return null;
 }
 
 function createVideoParams(): VideoParams {
@@ -388,7 +367,7 @@ function VideoSummary({ video }: VideoSummaryProps) {
                 mr: 1.5
             })}>
                 <ThumbLoader
-                    src={video.pic}
+                    src={`/api/proxy?url=${video.pic}`}
                 />
             </Box>
             <Box>
@@ -424,8 +403,27 @@ function VideoSummary({ video }: VideoSummaryProps) {
     )
 }
 
-export default function Page({ id }: Record<'id', string>) {
+type ServerProps = {
+    id: string;
+}
 
+export async function getServerData({ params }: GetServerDataProps): Promise<GetServerDataReturn<ServerProps>> {
+    const { id } = params as ServerProps;
+    return {
+        status: 200,
+        headers: {
+            'Cross-Origin-Embedder-Policy': 'require-corp',
+            'Cross-Origin-Opener-Policy': 'same-origin'
+        },
+        props: {
+            id
+        }
+    }
+}
+
+export default function Page({ serverData }: PageProps<object, object, unknown, ServerProps>) {
+
+    const { id } = serverData;
     const [videoInfo, setVideoInfo] = useState<VideoInfo>();
 
     useEffect(() => {

@@ -153,7 +153,7 @@ export interface PlayState {
     buffered: number;
 }
 
-interface VideoPlayerProps {
+export interface VideoPlayerProps {
     url: string;
     title?: string;
     poster?: string;
@@ -398,12 +398,20 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
             setDownloading(true)
             if (!hls2Mp4.current) {
                 hls2Mp4.current = new Hls2Mp4({
+                    log: true,
                     maxRetry: 5,
-                    tsDownloadConcurrency: 20,
-                    outputType: 'mp4'
+                    tsDownloadConcurrency: 20
                 }, (type, progress) => {
                     const TaskType = Hls2Mp4.TaskType;
-                    if (type === TaskType.parseM3u8) {
+                    if (type === TaskType.loadFFmeg) {
+                        if (progress === 0) {
+                            showStatus('加载FFmpeg', 1e6)
+                        }
+                        else {
+                            showStatus('FFmpeg加载完成')
+                        }
+                    }
+                    else if (type === TaskType.parseM3u8) {
                         if (progress === 0) {
                             showStatus('解析视频地址', 3e4)
                         }
@@ -430,7 +438,12 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                 hls2Mp4.current.saveToFile(buffer, `${title ?? 'download'}.mp4`)
             }
             catch (err) {
-                showStatus(`下载发生错误: ${err.message}`)
+                if (/FFmpeg load failed/.test(err.message)) {
+                    showStatus('FFmpeg 下载失败, 请重试')
+                }
+                else {
+                    showStatus(`下载发生错误: ${err.message}`)
+                }
             }
             setDownloading(false)
         }

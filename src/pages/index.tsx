@@ -1,56 +1,18 @@
 import React from 'react';
+import type { SvgIconProps } from '@mui/material/SvgIcon';
 import Stack from '@mui/material/Stack';
-// import Paper from '@mui/material/Paper';
-import { SvgIconProps } from '@mui/material/SvgIcon';
+import ButtonBase from '@mui/material/ButtonBase';
+import Typography from '@mui/material/Typography';
 import AlbumIcon from '@mui/icons-material/Album';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import TheatersIcon from '@mui/icons-material/Theaters';
-import ButtonBase, { ButtonBaseProps } from '@mui/material/ButtonBase';
-import Typography from '@mui/material/Typography';
-// import { Link } from 'gatsby';
-// import Alert from '@mui/material/Alert';
-// import { PlayerContainer, Player } from '../components/react-player';
-// import Hls from 'hls.js';
+import QrCodeIcon from '@mui/icons-material/QrCode';
 
 export function Head() {
   return (
     <title>应用中心</title>
   )
 }
-
-/*
-class Index extends React.Component {
-  public render() {
-    return (
-      <Box sx={{
-        p: 1
-      }}>
-        <Paper>
-          <Alert severity="success">常用的组件集成</Alert>
-        </Paper>
-        <Box sx={{
-          height: 400
-        }}>
-          <PlayerContainer>
-            <Player
-              url="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"
-              autoplay
-              customType={{
-                hls: (video, url) => {
-                  const hls = new Hls();
-                  hls.loadSource(url);
-                  hls.attachMedia(video);
-                  return hls;
-                }
-              }}
-            />
-          </PlayerContainer>
-        </Box>
-      </Box>
-    )
-  }
-}
-*/
 
 interface App {
   id: string;
@@ -86,6 +48,14 @@ const apps: App[] = [
     iconForeground: '#222222bd',
     iconBackground: 'linear-gradient(90deg, #ff5200, #00bcd4)'
   },
+  {
+    id: 'qr',
+    name: '二维码生成',
+    url: '/qr',
+    icon: QrCodeIcon,
+    iconForeground: '#ffffffcf',
+    iconBackground: 'linear-gradient(300deg, #ff5722, #00bcd4)'
+  }
 ];
 
 interface AppIconProps {
@@ -122,23 +92,26 @@ function AppIcon({ app }: AppIconProps) {
 
 function Index() {
   return (
-    <Stack sx={(theme) => ({
+    <Stack sx={{
       height: '100%',
       background: 'var(--linear-gradient-image)',
       p: 3,
-      overflowY: 'auto',
-      '--icon-size': '72px',
-      [theme.breakpoints.up('sm')]: {
-        '--icon-size': '96px',
-      }
-    })} direction="row" gap={3} flexWrap="wrap">
-      {
-        apps.map(
-          (app) => (
-            <AppIcon key={app.id} app={app} />
+      overflowY: 'auto'
+    }}>
+      <Stack sx={(theme) => ({
+        '--icon-size': 'calc((100vw - 112px) / 3)',
+        [theme.breakpoints.up('sm')]: {
+          '--icon-size': '96px',
+        }
+      })} direction="row" gap={4} flexWrap="wrap">
+        {
+          apps.map(
+            (app) => (
+              <AppIcon key={app.id} app={app} />
+            )
           )
-        )
-      }
+        }
+      </Stack>
     </Stack>
   )
 }
