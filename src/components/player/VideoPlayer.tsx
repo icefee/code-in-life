@@ -28,7 +28,7 @@ import RateSetter from './RateSetter';
 import MiniProcess from './MiniProcess';
 import SeekState from './SeekState';
 import { timeFormatter } from '../../util/date';
-import { isMobileDevice } from '../../util/env';
+import { isMobileDevice, isIos } from '../../util/env';
 
 const StyledVideo = styled('video')({
     display: 'block',
@@ -194,6 +194,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
     const [buffered, setBuffered] = useState(0)
     const [muted, setMuted] = useState(false)
     const isMobile = isMobileDevice()
+    const ios = isIos()
     const durationPlaceholder = '--:--'
     const [controlsShow, setControlsShow] = useState(true)
     const seekingRef = useRef(false)
@@ -883,7 +884,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                                     </IconButton>
                                 </Tooltip>
                                 {
-                                    !live && !disableDownload && (
+                                    !live && !disableDownload && !ios && (
                                         <Tooltip title="下载">
                                             <IconButton
                                                 color="inherit"
