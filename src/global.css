@@ -63,3 +63,13 @@ body {
     transform: rotate(360deg);
   }
 }
+
+@keyframes motion {
+  from {
+      background-position: center 0;
+  }
+
+  to {
+      background-position: center 100%;
+  }
+}

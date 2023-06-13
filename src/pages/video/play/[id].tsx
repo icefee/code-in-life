@@ -215,10 +215,33 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                 {
                                     this.activeSource.urls.length > 1 && (
                                         <Box sx={{
+                                            position: 'relative',
                                             bgcolor: 'background.paper',
-                                            p: 1.5
+                                            color: '#fff',
+                                            p: 1.5,
+                                            '&::before': {
+                                                content: '""',
+                                                position: 'absolute',
+                                                inset: 0,
+                                                zIndex: 0,
+                                                background: 'url(/images/3.jpg) no-repeat 0% 0% / 100% auto',
+                                                animation: 'motion 60s linear alternate infinite'
+                                            },
+                                            '&::after': {
+                                                content: '""',
+                                                position: 'absolute',
+                                                inset: 0,
+                                                backdropFilter: 'blur(12px)'
+                                            }
                                         }}>
-                                            <Typography variant="subtitle1" align="center">{this.playingVideoTitle}</Typography>
+                                            <Typography
+                                                variant="subtitle1"
+                                                align="center"
+                                                sx={{
+                                                    position: 'relative',
+                                                    zIndex: 2
+                                                }}
+                                            >{this.playingVideoTitle}</Typography>
                                         </Box>
                                     )
                                 }
