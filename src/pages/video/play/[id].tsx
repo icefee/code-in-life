@@ -2,9 +2,9 @@ import React, { Component, useState, useEffect, createRef } from 'react';
 import type { PageProps, GetServerDataProps, GetServerDataReturn } from 'gatsby';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
+import Typography from '@mui/material/Typography';
 import TabPanel from '../../../components/layout/TabPanel';
 import ThumbLoader from '../../../components/search/ThumbLoader';
 import { LoadingScreen } from '../../../components/loading';
@@ -194,7 +194,7 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                 })}>
                                     <VideoUrlParser url={this.playingVideo.url}>
                                         {
-                                            url => (
+                                            (url) => (
                                                 <VideoPlayer
                                                     ref={this.videoRef}
                                                     title={this.playingVideoTitle}
@@ -215,7 +215,7 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                 {
                                     this.activeSource.urls.length > 1 && (
                                         <Box sx={{
-                                            color: '#fff',
+                                            bgcolor: 'background.paper',
                                             p: 1.5
                                         }}>
                                             <Typography variant="subtitle1" align="center">{this.playingVideoTitle}</Typography>
@@ -237,7 +237,7 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                         borderColor: 'divider'
                                     }}>
                                         <Tabs value={this.state.activeView} onChange={
-                                            (_event: React.SyntheticEvent, active: number) => {
+                                            (_event, active: number) => {
                                                 this.setState({
                                                     activeView: active
                                                 })
