@@ -1,6 +1,6 @@
 import React, { useState, useRef, useMemo } from 'react';
-import Slider, { SliderProps } from '@mui/material/Slider';
-import { SxProps, Theme } from '@mui/material/styles';
+import Slider, { type SliderProps } from '@mui/material/Slider';
+import type { SxProps, Theme } from '@mui/material/styles';
 import Tooltip from '@mui/material/Tooltip';
 import { Instance } from '@popperjs/core';
 

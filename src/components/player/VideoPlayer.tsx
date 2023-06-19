@@ -650,7 +650,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                         !live && (
                             <>
                                 <Tooltip title="快退10秒">
-                                    <Fade in={controlsShow && videoLoaded} unmountOnExit>
+                                    <Fade in={controlsShow && videoLoaded && !error} unmountOnExit>
                                         <IconButton
                                             color="inherit"
                                             onClick={
@@ -673,7 +673,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                                     </Fade>
                                 </Tooltip>
                                 <Tooltip title="快进10秒">
-                                    <Fade in={controlsShow && videoLoaded} unmountOnExit>
+                                    <Fade in={controlsShow && videoLoaded && !error} unmountOnExit>
                                         <IconButton
                                             color="inherit"
                                             onClick={
@@ -748,7 +748,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                     </Stack>
                 </Fade>
                 <CancelMutedButton
-                    show={muted}
+                    show={muted && !error}
                     sx={{
                         left: 16,
                         bottom: controlsShow ? live ? 60 : 100 : 25,
