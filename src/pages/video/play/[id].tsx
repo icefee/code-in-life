@@ -224,14 +224,13 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                                 position: 'absolute',
                                                 inset: 0,
                                                 zIndex: 0,
-                                                background: 'url(/images/3.jpg) no-repeat 0% 0% / 100% auto',
-                                                animation: 'motion 60s linear alternate infinite'
+                                                background: 'url(/images/3.jpg) #000 no-repeat 0% 0% / 100% auto'
                                             },
                                             '&::after': {
                                                 content: '""',
                                                 position: 'absolute',
                                                 inset: 0,
-                                                backdropFilter: 'blur(12px)'
+                                                backdropFilter: 'blur(3px)'
                                             }
                                         }}>
                                             <Typography

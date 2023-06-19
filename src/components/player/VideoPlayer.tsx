@@ -228,6 +228,10 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
         tryToAutoPlay()
     }
 
+    const onLoadError = () => {
+        setError(true)
+    }
+
     const initPlayer = () => {
         const video = videoRef.current;
         if (hlsType && Hls.isSupported()) {
@@ -236,6 +240,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                     autoStartLoad: false
                 });
                 hls.current.attachMedia(video);
+                hls.current.on(Hls.Events.ERROR, onLoadError);
             }
             hls.current.on(Hls.Events.MANIFEST_PARSED, onMainfestParsed);
             hls.current.on(Hls.Events.MEDIA_ATTACHED, onMediaAttached);
