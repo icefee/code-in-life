@@ -56,7 +56,7 @@ function MediaSlider({ buffered, components, sx, showTooltip = false, tooltipFor
                 }
             },
             '& .MuiSlider-track': {
-                backgroundImage: 'linear-gradient(90deg, var(--linear-gradient), currentColor)'
+                backgroundImage: 'linear-gradient(90deg, hsl(0, 50%, 50%), hsl(60deg, 50%, 50%), hsl(180deg, 50%, 50%), currentColor)'
             }
         }),
         [buffered, sx]

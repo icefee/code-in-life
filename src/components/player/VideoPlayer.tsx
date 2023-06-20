@@ -8,7 +8,7 @@ import Fade from '@mui/material/Fade';
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 import { styled, alpha } from '@mui/material/styles';
-import Hls from 'hls.js';
+import Hls, { type HlsListeners } from 'hls.js';
 import Hls2Mp4 from 'hls2mp4';
 import SkipNextRoundedIcon from '@mui/icons-material/SkipNextRounded';
 import PictureInPictureRoundedIcon from '@mui/icons-material/PictureInPictureRounded';
@@ -29,6 +29,8 @@ import MiniProcess from './MiniProcess';
 import SeekState from './SeekState';
 import { timeFormatter } from '../../util/date';
 import { isMobileDevice, isIos } from '../../util/env';
+
+const Events = Hls.Events
 
 const StyledVideo = styled('video')({
     display: 'block',
@@ -220,16 +222,18 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
 
     const videoLoaded = useMemo(() => duration > 0, [duration])
 
-    const onMainfestParsed = () => {
+    const onMainfestParsed: HlsListeners[typeof Events.MANIFEST_PARSED] = () => {
         hls.current.startLoad(initPlayTime)
     }
 
-    const onMediaAttached = () => {
+    const onMediaAttached: HlsListeners[typeof Events.MEDIA_ATTACHED] = () => {
         tryToAutoPlay()
     }
 
-    const onLoadError = () => {
-        setError(true)
+    const onLoadError: HlsListeners[typeof Events.ERROR] = (_event, errorData) => {
+        if (errorData.fatal) {
+            setError(true)
+        }
     }
 
     const initPlayer = () => {
@@ -240,10 +244,10 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                     autoStartLoad: false
                 });
                 hls.current.attachMedia(video);
-                hls.current.on(Hls.Events.ERROR, onLoadError);
+                hls.current.on(Events.ERROR, onLoadError);
             }
-            hls.current.on(Hls.Events.MANIFEST_PARSED, onMainfestParsed);
-            hls.current.on(Hls.Events.MEDIA_ATTACHED, onMediaAttached);
+            hls.current.on(Events.MANIFEST_PARSED, onMainfestParsed);
+            hls.current.on(Events.MEDIA_ATTACHED, onMediaAttached);
             hls.current.loadSource(url);
             // video.canPlayType('application/vnd.apple.mpegurl')
         }
@@ -778,7 +782,8 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                             !live && (
                                 <Stack
                                     sx={{
-                                        px: 1
+                                        px: 1,
+                                        color: '#fff'
                                     }}
                                     spacing={1.5}
                                     direction="row"
