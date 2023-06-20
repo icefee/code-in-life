@@ -473,12 +473,13 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
     }), [currentTime, buffered, duration])
 
     const createControlsHideTimeout = () => {
-        controlsAutoHideTimeout.current = setTimeout(() => setControlsShow(false), 2.5e3)
+        controlsAutoHideTimeout.current = setTimeout(() => setControlsShow(false), 4e3)
     }
 
     const disposeControlsHideTimeout = () => {
         if (controlsAutoHideTimeout.current) {
             clearTimeout(controlsAutoHideTimeout.current)
+            controlsAutoHideTimeout.current = null
         }
     }
 
@@ -807,6 +808,10 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                                                     }
                                                     setCurrentTime(value * duration);
                                                     seekingRef.current = true;
+
+                                                    setControlsShow(true);
+                                                    resetControlsHideTimeout.cancel();
+                                                    disposeControlsHideTimeout();
                                                 }
                                             }
                                             onChangeCommitted={
