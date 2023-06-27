@@ -33,10 +33,12 @@ function MediaSlider({ buffered, components, sx, showTooltip = false, tooltipFor
     const commonSx = useMemo<SxProps<Theme>>(
         () => ({
             ...sx,
+            height: 3,
             '& .MuiSlider-rail': {
                 opacity: 1,
                 bgcolor: 'currentcolor',
                 backgroundImage: 'linear-gradient(0, #000, #000)',
+                overflow: 'hidden',
                 '&:before, &:after': {
                     content: '""',
                     position: 'absolute',
@@ -145,9 +147,20 @@ function MediaSlider({ buffered, components, sx, showTooltip = false, tooltipFor
                     sx={{
                         ...commonSx,
                         '& .MuiSlider-thumb': {
+                            width: 0,
+                            height: 0,
+                            transition: '.2s ease',
+                            '&.Mui-active': {
+                                width: 16,
+                                height: 16,
+                            },
                             '&:after': {
                                 display: 'none',
                             }
+                        },
+                        '&:hover .MuiSlider-thumb': {
+                            width: 12,
+                            height: 12
                         }
                     }}
                     {...props}
