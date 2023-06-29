@@ -195,6 +195,7 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                     overflow: 'hidden',
                                     height: '45%',
                                     flexShrink: 0,
+                                    opacity: 0,
                                     [theme.breakpoints.up('sm')]: {
                                         height: 'min(calc(min(100vw, 1200px) * 10 / 16), 600px)',
                                         maxHeight: '100vh'
@@ -232,13 +233,13 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                                 position: 'absolute',
                                                 inset: 0,
                                                 zIndex: 0,
-                                                background: 'url(/images/3.jpg) #000 no-repeat 0% 0% / 100% auto'
+                                                background: 'url(/images/6.jpg) #000 no-repeat 0% 30% / 100% auto'
                                             },
                                             '&::after': {
                                                 content: '""',
                                                 position: 'absolute',
                                                 inset: 0,
-                                                backdropFilter: 'blur(3px)'
+                                                backdropFilter: 'blur(20px)'
                                             }
                                         }}>
                                             <Typography
@@ -296,7 +297,7 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                                         borderColor: 'divider',
                                                         flexShrink: 0
                                                     }} orientation="vertical" variant="scrollable" value={this.state.activeSource} onChange={
-                                                        (_event: React.SyntheticEvent, active: number) => {
+                                                        (_event, active: number) => {
                                                             this.updateHistory({
                                                                 sourceIndex: active
                                                             })
