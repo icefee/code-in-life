@@ -1,14 +1,3 @@
-.container {
-    position: relative;
-    width: 100%;
-    max-width: 1200px;
-    height: 100%;
-    z-index: 5;
-    overflow: hidden;
-    margin: 0 auto;
-    box-shadow: rgb(0 0 0 / 50%) 2px 2px 15px;
-}
-
 .cell {
     width: calc(100% / var(--segment, 3));
     padding: 2px;

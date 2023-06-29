@@ -170,7 +170,16 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                 <title>{this.pageTitle}</title>
                 {
                     this.props.video ? (
-                        <Box className={css.container}>
+                        <Box sx={{
+                            position: 'relative',
+                            width: '100%',
+                            maxWidth: 1200,
+                            height: '100%',
+                            zIndex: 5,
+                            overflow: 'hidden',
+                            margin: '0 auto',
+                            boxShadow: 'rgb(0 0 0 / 50%) 2px 2px 15px'
+                        }}>
                             <Box sx={
                                 (theme) => ({
                                     display: 'flex',
@@ -184,7 +193,6 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                 <Box sx={(theme) => ({
                                     background: '#000',
                                     overflow: 'hidden',
-                                    width: '100%',
                                     height: '45%',
                                     flexShrink: 0,
                                     [theme.breakpoints.up('sm')]: {
@@ -317,7 +325,7 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                                 {
                                                     this.props.video.dataList.map(
                                                         (source: VideoSource, index: number) => (
-                                                            <TabPanel index={index} value={this.state.activeSource} key={index}>
+                                                            <TabPanel index={index} value={this.state.activeSource} key={index} disablePadding>
                                                                 <Box sx={(theme) => ({
                                                                     display: 'flex',
                                                                     flexFlow: 'row wrap',
@@ -329,7 +337,7 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                                                     {
                                                                         source.urls.map(
                                                                             (video: VideoItem, index: number) => (
-                                                                                <div className={css.cell} key={index}>
+                                                                                <Box className={css.cell} key={index}>
                                                                                     <Button fullWidth disableElevation variant={
                                                                                         this.state.playingIndex === index ? 'contained' : 'outlined'
                                                                                     } sx={{
@@ -341,7 +349,7 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                                                                             }
                                                                                         }
                                                                                     }>{video.label}</Button>
-                                                                                </div>
+                                                                                </Box>
                                                                             )
                                                                         )
                                                                     }
