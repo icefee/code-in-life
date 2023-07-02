@@ -564,6 +564,11 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                             }
                         }
                     }
+                    onTouchCancel={
+                        () => {
+                            setSeekingDuration(null)
+                        }
+                    }
                 >
                     <StyledVideo
                         ref={videoRef}

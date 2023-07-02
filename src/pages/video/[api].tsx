@@ -30,9 +30,10 @@ interface SearchResultProps {
     }
 }
 
-const SiteSearch: React.FunctionComponent<PageProps<object, object, unknown, SearchResultProps>> = ({ serverData }) => {
+const SiteSearch: React.FunctionComponent<PageProps<object, object, unknown, SearchResultProps>> = ({ serverData, location }) => {
 
     const { data, api } = serverData;
+    const urlSearchParams = new URLSearchParams(location.search)
     const responseError = data.video === undefined;
     const hasListData = !responseError && data.video.length > 0;
 
@@ -41,6 +42,14 @@ const SiteSearch: React.FunctionComponent<PageProps<object, object, unknown, Sea
     const headTitle = useMemo(() => {
         return data.name + '站内查询到' + data.page.recordcount + '条记录';
     }, [data])
+
+    const searchPage = useMemo(() => {
+        const page = urlSearchParams.get('p')
+        if (page !== null && page !== '') {
+            return Number(page)
+        }
+        return 1
+    }, [urlSearchParams])
 
     return (
         <NoSsr>
@@ -146,7 +155,7 @@ const SiteSearch: React.FunctionComponent<PageProps<object, object, unknown, Sea
                                                     my: 1
                                                 }} direction="row" justifyContent="center">
                                                     <Pagination
-                                                        page={data.page.page}
+                                                        page={data.page.page ?? searchPage}
                                                         count={data.page.pagecount}
                                                         variant="outlined"
                                                         color="primary"
