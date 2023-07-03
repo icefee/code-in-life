@@ -225,21 +225,7 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                         <Box sx={{
                                             position: 'relative',
                                             bgcolor: 'background.paper',
-                                            color: '#fff',
-                                            p: 1.5,
-                                            '&::before': {
-                                                content: '""',
-                                                position: 'absolute',
-                                                inset: 0,
-                                                zIndex: 0,
-                                                background: 'url(/images/6.jpg) #000 no-repeat 0% 30% / 100% auto'
-                                            },
-                                            '&::after': {
-                                                content: '""',
-                                                position: 'absolute',
-                                                inset: 0,
-                                                backdropFilter: 'blur(20px)'
-                                            }
+                                            p: 1.5
                                         }}>
                                             <Typography
                                                 variant="subtitle1"
