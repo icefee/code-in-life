@@ -9,10 +9,6 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
         {
             key: 'content-type',
             defaultValue: 'text/plain'
-        },
-        {
-            key: 'transfer-encoding',
-            defaultValue: 'chunked'
         }
     ]
     if (/(video|audio)\/*/.test(headers.get('content-type'))) {
@@ -21,8 +17,23 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
             defaultValue: 'bytes'
         })
     }
+    if (res.hasHeader('content-length')) {
+        inheritedHeaders.push({
+            key: 'content-length',
+            defaultValue: null
+        })
+    }
+    else {
+        inheritedHeaders.push({
+            key: 'transfer-encoding',
+            defaultValue: 'chunked'
+        })
+    }
     for (const { key, defaultValue } of inheritedHeaders) {
-        res.setHeader(key, headers.get(key) ?? defaultValue)
+        const value = headers.get(key) ?? defaultValue;
+        if (value) {
+            res.setHeader(key, value);
+        }
     }
     response.body.pipe(res);
 }

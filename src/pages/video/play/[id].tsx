@@ -195,6 +195,7 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                     overflow: 'hidden',
                                     height: '45%',
                                     flexShrink: 0,
+                                    opacity: 0,
                                     [theme.breakpoints.up('sm')]: {
                                         height: 'min(calc(min(100vw, 1200px) * 10 / 16), 600px)',
                                         maxHeight: '100vh'
@@ -264,13 +265,14 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                         </Tabs>
                                     </Box>
                                     <TabPanel index={0} value={this.state.activeView}>
-                                        <VideoSummary video={this.props.video} />
+                                        <VideoProfile video={this.props.video} />
                                     </TabPanel>
-                                    <TabPanel index={1} value={this.state.activeView}>
+                                    <TabPanel index={1} value={this.state.activeView} disablePadding>
                                         <Box sx={(theme) => ({
                                             display: 'flex',
                                             flexDirection: 'row',
                                             height: '100%',
+                                            py: 1.5,
                                             [theme.breakpoints.up('sm')]: {
                                                 minHeight: 250
                                             }
@@ -316,6 +318,7 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                                                     display: 'flex',
                                                                     flexFlow: 'row wrap',
                                                                     flexGrow: 1,
+                                                                    px: 1.5,
                                                                     [theme.breakpoints.only('xs')]: {
                                                                         overflowY: 'auto'
                                                                     }
@@ -359,11 +362,11 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
     }
 }
 
-interface VideoSummaryProps {
+interface VideoProfileProps {
     video: VideoInfo;
 }
 
-function VideoSummary({ video }: VideoSummaryProps) {
+function VideoProfile({ video }: VideoProfileProps) {
 
     return (
         <Box sx={(theme) => ({

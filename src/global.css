@@ -15,10 +15,6 @@ body,
   --scrollbar-thumb-dark-mode-hover-color: hsl(0 0% 100% / 75%);
 }
 
-body {
-  margin: 0;
-}
-
 ::-webkit-scrollbar {
   width: 4px;
   height: 8px;
@@ -45,6 +41,10 @@ body {
 }
 
 @media screen and (prefers-color-scheme: dark) {
+  :root {
+    --linear-gradient: #00bcd460, #3a86ff60;
+  }
+
   ::-webkit-scrollbar-thumb {
     background-color: var(--scrollbar-thumb-dark-mode-color);
   }
@@ -66,10 +66,10 @@ body {
 
 @keyframes motion {
   from {
-      background-position: center 0;
+    background-position: center 0;
   }
 
   to {
-      background-position: center 100%;
+    background-position: center 100%;
   }
 }
