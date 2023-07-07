@@ -1,10 +1,10 @@
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useRef, useMemo, KeyboardEvent } from 'react';
 import Slider, { type SliderProps } from '@mui/material/Slider';
 import type { SxProps, Theme } from '@mui/material/styles';
 import Tooltip from '@mui/material/Tooltip';
 import { Instance } from '@popperjs/core';
 
-interface MediaSliderProps extends Omit<SliderProps, 'onMouseMove'> {
+interface MediaSliderProps extends Omit<SliderProps, 'onMouseMove' | 'onKeyDown'> {
     buffered: number;
     showTooltip?: boolean;
     tooltipFormatter?: (value: number) => string | number;
@@ -63,6 +63,12 @@ function MediaSlider({ buffered, components, sx, showTooltip = false, tooltipFor
         }),
         [buffered, sx]
     )
+
+    const onKeyDown = (event: KeyboardEvent) => {
+        if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+            event.preventDefault();
+        }
+    }
 
     /*
     const RootElement = forwardRef<HTMLSpanElement, PropsWithChildren<{
@@ -144,6 +150,7 @@ function MediaSlider({ buffered, components, sx, showTooltip = false, tooltipFor
                 <Slider
                     ref={rootRef}
                     onMouseMove={handleMouseMove}
+                    onKeyDown={onKeyDown}
                     sx={{
                         ...commonSx,
                         '& .MuiSlider-thumb': {
@@ -172,6 +179,7 @@ function MediaSlider({ buffered, components, sx, showTooltip = false, tooltipFor
     return (
         <Slider
             sx={commonSx}
+            onKeyDown={onKeyDown}
             {...props}
         />
     )
