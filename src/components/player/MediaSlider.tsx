@@ -1,10 +1,10 @@
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useRef, useMemo, KeyboardEvent } from 'react';
 import Slider, { SliderProps } from '@mui/material/Slider';
 import { SxProps, Theme } from '@mui/material/styles';
 import Tooltip from '@mui/material/Tooltip';
 import { Instance } from '@popperjs/core';
 
-interface MediaSliderProps extends Omit<SliderProps, 'onMouseMove'> {
+interface MediaSliderProps extends Omit<SliderProps, 'onMouseMove' | 'onKeyDown'> {
     buffered: number;
     showTooltip?: boolean;
     tooltipFormatter?: (value: number) => string | number;
@@ -59,60 +59,11 @@ function MediaSlider({ buffered, components, sx, showTooltip = false, tooltipFor
         [buffered, sx]
     )
 
-    /*
-    const RootElement = forwardRef<HTMLSpanElement, PropsWithChildren<{
-        className: string;
-        ownerState: SliderOwnerState;
-    }>>(({ children, ...props }, ref) => {
-
-        const rootRef = useRef<HTMLSpanElement>();
-        const [hoverRate, setHoverRate] = useState(0);
-
-        useImperativeHandle(ref, () => rootRef.current, []);
-        const popperRef = useRef<Instance>(null)
-
-        const handleMouseMove = (event: React.MouseEvent) => {
-            positionRef.current = { x: event.clientX, y: event.clientY };
-            if (popperRef.current != null) {
-                popperRef.current.update();
-            }
-            const rootRect = rootRef.current?.getBoundingClientRect();
-            const rate = (positionRef.current.x - rootRect.x) / rootRect.width;
-            setHoverRate(rate);
+    const onKeyDown = (event: KeyboardEvent) => {
+        if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+            event.preventDefault();
         }
-
-        return (
-            <Tooltip
-                title={
-                    tooltipFormatter ? tooltipFormatter(hoverRate) : hoverRate
-                }
-                placement="top"
-                arrow
-                PopperProps={{
-                    popperRef,
-                    anchorEl: {
-                        getBoundingClientRect: () => {
-                            return new DOMRect(
-                                positionRef.current.x,
-                                rootRef.current?.getBoundingClientRect()?.y,
-                                0,
-                                0,
-                            )
-                        },
-                    }
-                }}
-            >
-                <SliderRoot
-                    ref={rootRef}
-                    onMouseMove={handleMouseMove}
-                    {...props}
-                >
-                    {children}
-                </SliderRoot>
-            </Tooltip>
-        )
-    });
-    */
+    }
 
     if (showTooltip) {
         return (
@@ -139,6 +90,7 @@ function MediaSlider({ buffered, components, sx, showTooltip = false, tooltipFor
                 <Slider
                     ref={rootRef}
                     onMouseMove={handleMouseMove}
+                    onKeyDown={onKeyDown}
                     sx={{
                         ...commonSx,
                         '& .MuiSlider-thumb': {
@@ -156,6 +108,7 @@ function MediaSlider({ buffered, components, sx, showTooltip = false, tooltipFor
     return (
         <Slider
             sx={commonSx}
+            onKeyDown={onKeyDown}
             {...props}
         />
     )
