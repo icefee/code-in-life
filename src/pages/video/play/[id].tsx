@@ -195,7 +195,6 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                     overflow: 'hidden',
                                     height: '45%',
                                     flexShrink: 0,
-                                    opacity: 0,
                                     [theme.breakpoints.up('sm')]: {
                                         height: 'min(calc(min(100vw, 1200px) * 10 / 16), 600px)',
                                         maxHeight: '100vh'
