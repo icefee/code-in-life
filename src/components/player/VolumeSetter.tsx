@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import Stack from '@mui/material/Stack';
-import Slider from '@mui/material/Slider';
+import Slider, { type SliderProps } from '@mui/material/Slider';
 import Popover from '@mui/material/Popover';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton, { type IconButtonProps } from '@mui/material/IconButton';
@@ -14,9 +14,10 @@ interface VolumeSetterProps {
     disabled?: boolean;
     onMute?: VoidFunction;
     IconProps?: Omit<IconButtonProps, 'onClick'>;
+    SliderProps?: Pick<SliderProps, 'color'>;
 }
 
-function VolumeSetter({ value, onChange, onMute, disabled = false, IconProps }: VolumeSetterProps) {
+function VolumeSetter({ value, onChange, onMute, disabled = false, IconProps, SliderProps }: VolumeSetterProps) {
 
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null)
     const volumeIcon = useMemo(() => value > 0 ? value > .5 ? <VolumeUpIcon /> : <VolumeDownIcon /> : <VolumeOffIcon />, [value])
@@ -67,6 +68,7 @@ function VolumeSetter({ value, onChange, onMute, disabled = false, IconProps }: 
                             }
                         }
                         orientation="vertical"
+                        {...SliderProps}
                     />
                     <IconButton
                         color="inherit"
