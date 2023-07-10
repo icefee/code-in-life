@@ -41,7 +41,7 @@ function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange,
 
     const audioRef = useRef<HTMLAudioElement>()
     const [audioReady, setAudioReady] = useState(false)
-    const [duration, setDuration] = useState<number>()
+    const [duration, setDuration] = useState<number | null>(null)
     const [currentTime, setCurrentTime] = useState<number>(0)
     const [volume, setVolume] = useLocalStorageState<number>('__volume', 1)
     const cachedVolumeRef = useRef<number>(1)
@@ -235,22 +235,19 @@ function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange,
                                 showTooltip={!isMobile}
                                 max={1}
                                 step={.00001}
+                                disabled={duration === null}
                                 tooltipFormatter={
-                                    (value) => duration ? timeFormatter(value * duration) : durationPlaceholder
+                                    (value) => timeFormatter(value * duration)
                                 }
                                 onChange={
                                     (_event, value: number) => {
-                                        if (duration) {
-                                            seekingRef.current = true;
-                                            setCurrentTime(value * duration)
-                                        }
+                                        seekingRef.current = true
+                                        setCurrentTime(value * duration)
                                     }
                                 }
                                 onChangeCommitted={
                                     (_event, value: number) => {
-                                        if (duration) {
-                                            audioRef.current.currentTime = value * duration;
-                                        }
+                                        audioRef.current.currentTime = value * duration
                                     }
                                 }
                             />
@@ -279,6 +276,9 @@ function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange,
                                     disabled={!audioReady}
                                     IconProps={{
                                         size: 'small'
+                                    }}
+                                    SliderProps={{
+                                        color: 'secondary'
                                     }}
                                 />
                             )

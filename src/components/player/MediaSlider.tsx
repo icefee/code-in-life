@@ -10,7 +10,7 @@ interface MediaSliderProps extends Omit<SliderProps, 'onMouseMove' | 'onKeyDown'
     tooltipFormatter?: (value: number) => string | number;
 }
 
-function MediaSlider({ buffered, components, sx, showTooltip = false, tooltipFormatter, ...props }: MediaSliderProps) {
+function MediaSlider({ buffered, components, sx, showTooltip = false, tooltipFormatter, disabled, ...props }: MediaSliderProps) {
 
     const rootRef = useRef<HTMLSpanElement>();
     const positionRef = useRef<{ x: number; y: number }>({
@@ -125,7 +125,7 @@ function MediaSlider({ buffered, components, sx, showTooltip = false, tooltipFor
     });
     */
 
-    if (showTooltip) {
+    if (showTooltip && !disabled) {
         return (
             <Tooltip
                 title={
@@ -136,14 +136,12 @@ function MediaSlider({ buffered, components, sx, showTooltip = false, tooltipFor
                 PopperProps={{
                     popperRef,
                     anchorEl: {
-                        getBoundingClientRect: () => {
-                            return new DOMRect(
-                                positionRef.current.x,
-                                rootRef.current?.getBoundingClientRect()?.y,
-                                0,
-                                0,
-                            )
-                        },
+                        getBoundingClientRect: () => new DOMRect(
+                            positionRef.current.x,
+                            rootRef.current?.getBoundingClientRect()?.y,
+                            0,
+                            0,
+                        )
                     }
                 }}
             >
@@ -151,6 +149,7 @@ function MediaSlider({ buffered, components, sx, showTooltip = false, tooltipFor
                     ref={rootRef}
                     onMouseMove={handleMouseMove}
                     onKeyDown={onKeyDown}
+                    disabled={disabled}
                     sx={{
                         ...commonSx,
                         '& .MuiSlider-thumb': {
@@ -160,6 +159,9 @@ function MediaSlider({ buffered, components, sx, showTooltip = false, tooltipFor
                             '&.Mui-active': {
                                 width: 16,
                                 height: 16,
+                            },
+                            '&.Mui-focusVisible': {
+                                boxShadow: 'none'
                             },
                             '&:after': {
                                 display: 'none',
@@ -180,6 +182,7 @@ function MediaSlider({ buffered, components, sx, showTooltip = false, tooltipFor
         <Slider
             sx={commonSx}
             onKeyDown={onKeyDown}
+            disabled={disabled}
             {...props}
         />
     )
