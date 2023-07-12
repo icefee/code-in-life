@@ -30,7 +30,7 @@ const apps: App[] = [
     url: '/music/',
     icon: AlbumIcon,
     iconForeground: '#222222bd',
-    iconBackground: 'linear-gradient(0, #ff5200, #00bcd4)'
+    iconBackground: 'linear-gradient(15deg, #2196F3, #FF5722)'
   },
   {
     id: 'video',
@@ -45,8 +45,8 @@ const apps: App[] = [
     name: '音乐搜索2',
     url: '/mmj/',
     icon: MusicNoteIcon,
-    iconForeground: '#222222bd',
-    iconBackground: 'linear-gradient(90deg, #ff5200, #00bcd4)'
+    iconForeground: '#fff',
+    iconBackground: 'linear-gradient(45deg, #FF5722, #E91E63)'
   },
   {
     id: 'qr',

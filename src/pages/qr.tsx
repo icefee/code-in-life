@@ -93,7 +93,8 @@ function QrcodeGenerator() {
                         transition: theme.transitions.create('top'),
                         zIndex: 20,
                         [theme.breakpoints.up('sm')]: {
-                            width: 450
+                            width: 450,
+                            px: 0
                         }
                     })} direction="row" columnGap={1} component="form" onSubmit={
                         (event: React.FormEvent<HTMLFormElement>) => {
