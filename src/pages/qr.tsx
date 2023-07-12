@@ -51,6 +51,7 @@ function QrcodeGenerator() {
     const [done, setDone] = useState(false)
 
     const generate = () => {
+        console.log('generate')
         if (input.data.trim() !== '') {
             QRCode.toCanvas(canvasRef.current, input.data, {
                 scale: 8,
@@ -117,13 +118,18 @@ function QrcodeGenerator() {
                                 }
                             }
                         />
-                        <Button variant="contained" onClick={generate}>生成</Button>
+                        <Button variant="outlined" type="submit">生成</Button>
                     </Stack>
                     <Stack justifyContent="center" alignItems="center" flexGrow={1}>
-                        <canvas style={{
-                            opacity: done ? 1 : 0,
-                            transition: 'opacity .4s'
-                        }} ref={canvasRef} width={250} height={250} />
+                        <canvas
+                            width={250}
+                            height={250}
+                            ref={canvasRef}
+                            style={{
+                                opacity: done ? 1 : 0,
+                                transition: 'opacity .4s'
+                            }}
+                        />
                     </Stack>
                 </Stack>
             </StaticTheme>
