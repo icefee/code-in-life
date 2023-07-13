@@ -73,13 +73,16 @@ export default function VideoSearch() {
             }}>
             <title>{pageTitle}</title>
             <Stack sx={{
+                position: 'absolute',
+                width: '100%',
+                zIndex: 150,
                 p: 1.5
             }} direction="row" justifyContent="center">
                 <Box sx={
                     (theme) => ({
                         width: '100%',
                         [theme.breakpoints.up('sm')]: {
-                            width: 300
+                            width: 320
                         }
                     })
                 }>
@@ -127,10 +130,16 @@ export default function VideoSearch() {
                 {
                     searchTask.success ? (
                         searchTask.data.length > 0 ? (
-                            <SearchResult
-                                keyword={searchTask.keyword}
-                                videoList={searchTask.data}
-                            />
+                            <Box sx={{
+                                flexGrow: 1,
+                                overflow: 'hidden',
+                                pt: 9
+                            }}>
+                                <SearchResult
+                                    keyword={searchTask.keyword}
+                                    videoList={searchTask.data}
+                                />
+                            </Box>
                         ) : (
                             <NoData text='💔 没有找到相关的内容, 换个关键词试试吧' />
                         )
