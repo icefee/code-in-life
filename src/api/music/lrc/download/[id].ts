@@ -17,7 +17,7 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
         else {
             const lrcText = await adaptor.getLrcText(id)
             if (lrcText) {
-                appendContentDisposition(req, res, 'lrc').setHeader('content-type', 'text/lrc').send(lrcText)
+                appendContentDisposition(req, res, 'lrc').setHeader('content-type', 'text/lrc').end(lrcText)
             }
             else {
                 throw new Error('lrc file not found.')
