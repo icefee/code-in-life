@@ -2,10 +2,10 @@ import { createApiAdaptor, parseId, getResponse } from '../../../../adaptors'
 import { appendContentDisposition, errorHandler, ApiHandler } from '../../../../util/middleware'
 
 const handler: ApiHandler = async (req, res) => {
-    const { key, id } = parseId(req.params.id)
+    // const { key, id } = parseId(req.params.id)
     res.json({
-        key,
-        id
+        params: req.params,
+        query: req.query
     })
     // const adaptor = createApiAdaptor(key)
     // if (adaptor.lrcFile) {
