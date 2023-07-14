@@ -1,32 +1,29 @@
-import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
-import { createApiAdaptor, defaultPoster, parseId, getResponse } from '../../../adaptors';
+import { createApiAdaptor, defaultPoster, parseId, getResponse } from '../../../adaptors'
+import { errorHandler, ApiHandler } from '../../../util/middleware'
 
-export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
-    const { key, id } = parseId(req.params.id);
-    const adaptor = createApiAdaptor(key);
-    const poster = await adaptor.parsePoster(id);
-    try {
-        if (poster) {
-            const response = await getResponse(poster, {
-                headers: {
-                    'Referer': adaptor.baseUrl
-                }
-            });
-            const headers = response.headers;
-            res.setHeader('cache-control', 'public, max-age=604800');
-            const inheritedHeaders = [
-                'content-type'
-            ];
-            for (const key of inheritedHeaders) {
-                res.setHeader(key, headers.get(key))
+const handler: ApiHandler = async (req, res) => {
+    const { key, id } = parseId(req.params.id)
+    const adaptor = createApiAdaptor(key)
+    const poster = await adaptor.parsePoster(id)
+    if (poster) {
+        const response = await getResponse(poster, {
+            headers: {
+                'referer': adaptor.baseUrl
             }
-            response.body.pipe(res);
+        })
+        const headers = response.headers
+        res.setHeader('cache-control', 'public, max-age=604800')
+        const inheritedHeaders = [
+            'content-type'
+        ]
+        for (const key of inheritedHeaders) {
+            res.setHeader(key, headers.get(key))
         }
-        else {
-            throw new Error('can not find poster')
-        }
+        response.body.pipe(res)
     }
-    catch (err) {
+    else {
         res.redirect(defaultPoster)
     }
 }
+
+export default errorHandler(handler)
