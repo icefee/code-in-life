@@ -1,4 +1,4 @@
-declare module "*.module.css";
+declare module '*.module.css'
 
 declare interface SearchVideo {
     key: string;

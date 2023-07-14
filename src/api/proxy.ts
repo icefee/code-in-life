@@ -1,10 +1,10 @@
-import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
-import { getResponse } from '../adaptors';
+import { getResponse } from '../adaptors'
+import { errorHandler, ApiHandler } from '../util/middleware'
 
-export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
+const handler: ApiHandler = async (req, res) => {
     const { url } = req.query as Record<'url', string>
-    const response = await getResponse(url);
-    const headers = response.headers;
+    const response = await getResponse(url)
+    const headers = response.headers
     const inheritedHeaders = [
         {
             key: 'content-type',
@@ -30,10 +30,12 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
         })
     }
     for (const { key, defaultValue } of inheritedHeaders) {
-        const value = headers.get(key) ?? defaultValue;
+        const value = headers.get(key) ?? defaultValue
         if (value) {
-            res.setHeader(key, value);
+            res.setHeader(key, value)
         }
     }
-    response.body.pipe(res);
+    response.body.pipe(res)
 }
+
+export default errorHandler(handler)

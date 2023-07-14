@@ -1,10 +1,10 @@
-import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
-import { createApiAdaptor, parseId } from '../../../adaptors';
+import { createApiAdaptor, parseId } from '../../../adaptors'
+import { errorHandler, ApiHandler } from '../../../util/middleware'
 
-export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
-    const { key, id } = parseId(req.params.id);
-    const adaptor = createApiAdaptor(key);
-    const lrc = await adaptor.parseLrc(id);
+const handler: ApiHandler = async (req, res) => {
+    const { key, id } = parseId(req.params.id)
+    const adaptor = createApiAdaptor(key)
+    const lrc = await adaptor.parseLrc(id)
     if (lrc) {
         res.json({
             code: 0,
@@ -13,10 +13,8 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
         })
     }
     else {
-        res.json({
-            code: -1,
-            data: null,
-            msg: '失败'
-        })
+        throw new Error('lrc not found.')
     }
 }
+
+export default errorHandler(handler)

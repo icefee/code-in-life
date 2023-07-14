@@ -4,12 +4,13 @@ import NoSsr from '@mui/material/NoSsr'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
-import { StaticTheme } from '../components/theme'
 import useLocalStorageState from '../components/hook/useLocalStorageState'
 
 export function Head() {
     return (
-        <title>二维码生成</title>
+        <>
+            <title>二维码生成</title>
+        </>
     )
 }
 
@@ -51,7 +52,6 @@ function QrcodeGenerator() {
     const [done, setDone] = useState(false)
 
     const generate = () => {
-        console.log('generate')
         if (input.data.trim() !== '') {
             QRCode.toCanvas(canvasRef.current, input.data, {
                 scale: 8,
@@ -75,64 +75,62 @@ function QrcodeGenerator() {
 
     return (
         <NoSsr>
-            <StaticTheme>
-                <Script src="https://unpkg.com/qrcode@1.5.1/build/qrcode.js" onLoad={
-                    () => setLibLoaded(true)
-                } />
-                <Stack sx={{
-                    position: 'relative',
-                    height: '100%',
-                    backgroundImage: 'var(--linear-gradient-image)'
-                }}>
-                    <Stack sx={(theme) => ({
-                        position: 'absolute',
-                        width: '100%',
-                        left: '50%',
-                        top: done ? 40 : '50%',
-                        transform: 'translate(-50%, -50%)',
-                        px: 2,
-                        transition: theme.transitions.create('top'),
-                        zIndex: 20,
-                        [theme.breakpoints.up('sm')]: {
-                            width: 450,
-                            px: 0
-                        }
-                    })} direction="row" columnGap={1} component="form" onSubmit={
-                        (event: React.FormEvent<HTMLFormElement>) => {
-                            event.preventDefault();
-                            generate()
-                        }
-                    }>
-                        <TextField
-                            sx={{
-                                flexGrow: 1
-                            }}
-                            label="文本"
-                            size="small"
-                            value={input.data}
-                            onChange={
-                                (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-                                    setInput(
-                                        event.target.value
-                                    )
-                                }
+            <Script src="https://unpkg.com/qrcode@1.5.1/build/qrcode.js" onLoad={
+                () => setLibLoaded(true)
+            } />
+            <Stack sx={{
+                position: 'relative',
+                height: '100%',
+                backgroundImage: 'var(--linear-gradient-image)'
+            }}>
+                <Stack sx={(theme) => ({
+                    position: 'absolute',
+                    width: '100%',
+                    left: '50%',
+                    top: done ? 40 : '50%',
+                    transform: 'translate(-50%, -50%)',
+                    px: 2,
+                    transition: theme.transitions.create('top'),
+                    zIndex: 20,
+                    [theme.breakpoints.up('sm')]: {
+                        width: 450,
+                        px: 0
+                    }
+                })} direction="row" columnGap={1} component="form" onSubmit={
+                    (event: React.FormEvent<HTMLFormElement>) => {
+                        event.preventDefault();
+                        generate()
+                    }
+                }>
+                    <TextField
+                        sx={{
+                            flexGrow: 1
+                        }}
+                        label="文本"
+                        size="small"
+                        value={input.data}
+                        onChange={
+                            (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+                                setInput(
+                                    event.target.value
+                                )
                             }
-                        />
-                        <Button variant="outlined" type="submit">生成</Button>
-                    </Stack>
-                    <Stack justifyContent="center" alignItems="center" flexGrow={1}>
-                        <canvas
-                            width={250}
-                            height={250}
-                            ref={canvasRef}
-                            style={{
-                                opacity: done ? 1 : 0,
-                                transition: 'opacity .4s'
-                            }}
-                        />
-                    </Stack>
+                        }
+                    />
+                    <Button variant="outlined" type="submit">生成</Button>
                 </Stack>
-            </StaticTheme>
+                <Stack justifyContent="center" alignItems="center" flexGrow={1}>
+                    <canvas
+                        width={250}
+                        height={250}
+                        ref={canvasRef}
+                        style={{
+                            opacity: done ? 1 : 0,
+                            transition: 'opacity .4s'
+                        }}
+                    />
+                </Stack>
+            </Stack>
         </NoSsr>
     )
 }

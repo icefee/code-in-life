@@ -1,7 +1,7 @@
-import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
+import { errorHandler, ApiHandler } from '../util/middleware'
 // import { open } from 'lmdb';
 
-export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
+const handler: ApiHandler = async (req, res) => {
 
     let msg = 'hello';
 
@@ -25,3 +25,5 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
         msg,
     })
 }
+
+export default errorHandler(handler)

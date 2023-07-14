@@ -73,7 +73,9 @@ export async function parseMusicUrl(id: string) {
 
 export async function parseLrc(id: string) {
     try {
-        const lrc = await getTextWithTimeout(`${baseUrl}/download/lrc/${id}`)
+        const lrc = await getTextWithTimeout(
+            getLrcUrl(id)
+        )
         const lines = lrc.split(/\n/).filter(
             line => isTextNotNull(line)
         ).map(

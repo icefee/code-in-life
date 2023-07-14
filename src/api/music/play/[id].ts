@@ -1,22 +1,22 @@
-import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
-import { createApiAdaptor, parseId, getResponse } from '../../../adaptors';
-import { isDev } from '../../../util/env';
+import { createApiAdaptor, parseId, getResponse } from '../../../adaptors'
+import { errorHandler, ApiHandler } from '../../../util/middleware'
+import { isDev } from '../../../util/env'
 
-export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void> {
-    const { key, id } = parseId(req.params.id);
-    const adaptor = createApiAdaptor(key);
-    const url = await adaptor.parseMusicUrl(id);
+const handler: ApiHandler = async (req, res) => {
+    const { key, id } = parseId(req.params.id)
+    const adaptor = createApiAdaptor(key)
+    const url = await adaptor.parseMusicUrl(id)
     if (url) {
         if (isDev) {
-            const response = await getResponse(url);
+            const response = await getResponse(url)
             const headers = response.headers;
-            headers.delete('content-disposition');
-            headers.set('content-type', 'audio/mpeg');
-            headers.set('accept-ranges', 'bytes');
+            headers.delete('content-disposition')
+            headers.set('content-type', 'audio/mpeg')
+            headers.set('accept-ranges', 'bytes')
             for (const key of headers.keys()) {
                 res.setHeader(key, headers.get(key))
             }
-            response.body.pipe(res);
+            response.body.pipe(res)
         }
         else {
             res.redirect(url)
@@ -24,10 +24,8 @@ export default async function handler(req: GatsbyFunctionRequest, res: GatsbyFun
         }
     }
     else {
-        res.json({
-            code: -1,
-            data: null,
-            msg: '失败'
-        })
+        throw new Error('file not found.')
     }
 }
+
+export default errorHandler(handler)
