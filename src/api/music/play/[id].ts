@@ -20,7 +20,6 @@ const handler: ApiHandler = async (req, res) => {
         }
         else {
             res.redirect(url)
-            res.end()
         }
     }
     else {

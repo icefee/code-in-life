@@ -15,7 +15,7 @@ const handler: ApiHandler = async (req, res) => {
     else {
         const lrcText = await adaptor.getLrcText(id)
         if (lrcText) {
-            appendContentDisposition(req, res, 'lrc').setHeader('content-type', 'text/lrc').end(lrcText)
+            appendContentDisposition(req, res, 'lrc').setHeader('content-type', 'text/lrc').send(lrcText)
         }
         else {
             throw new Error('lrc file not found.')
