@@ -4,8 +4,8 @@ import { appendContentDisposition, errorHandler, ApiHandler } from '../../../../
 const handler: ApiHandler = async (req, res) => {
     // const { key, id } = parseId(req.params.id)
     res.json({
-        params: req.params,
-        query: req.query
+        params: JSON.stringify(req.params),
+        query: JSON.stringify(req.query)
     })
     // const adaptor = createApiAdaptor(key)
     // if (adaptor.lrcFile) {
