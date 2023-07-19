@@ -102,7 +102,7 @@ function Index() {
             }
         })}>
             <Stack sx={(theme) => ({
-                '--icon-size': `calc((100vw - ${theme.spacing(10)}) / 4)`,
+                '--icon-size': `clamp(75px, calc((100vw - ${theme.spacing(10)}) / 4), 90px)`,
                 gap: 2,
                 [theme.breakpoints.up('sm')]: {
                     '--icon-size': '96px',

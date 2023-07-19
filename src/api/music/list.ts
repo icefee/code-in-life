@@ -18,4 +18,4 @@ const handler: ApiHandler = async (req, res) => {
     })
 }
 
-errorHandler(handler)
+export default errorHandler(handler)
