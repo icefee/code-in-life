@@ -2,6 +2,7 @@ import { getJson } from '../../adaptors'
 import { errorHandler, ApiHandler } from '../../util/middleware'
 import { Api } from '../../util/config'
 import Clue from '../../util/clue'
+import { proxyUrl } from '../../util/proxy'
 
 async function getRelatedList(api: string, typeId: number) {
     const searchParams = new URLSearchParams({
@@ -21,14 +22,14 @@ async function getRelatedList(api: string, typeId: number) {
 
 const handler: ApiHandler = async (req, res) => {
     const { api, id } = Clue.parse(req.params.id)
-    const { type } = req.query
+    const { type, proxy } = req.query
     const url = `${Api.site}/api/video/${api}/${id}`
     const { code, data, msg } = await getJson<ApiJsonType<VideoInfo>>(url)
     if (code !== 0) {
         throw new Error(msg)
     }
     if (type === 'poster') {
-        res.redirect(301, data ? data.pic : `/image_fail.jpg`)
+        res.redirect(301, data ? proxy === '1' ? proxyUrl(data.pic) : data.pic : `/image_fail.jpg`)
     }
     else {
         const related = await getRelatedList(api, data.tid)

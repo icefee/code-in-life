@@ -1,22 +1,23 @@
-import React, { Component, useState, useEffect, createRef } from 'react';
-import type { PageProps, GetServerDataProps, GetServerDataReturn } from 'gatsby';
-import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Grid from '@mui/material/Grid';
-import Card from '@mui/material/Card';
-import CardActionArea from '@mui/material/CardActionArea';
-import Typography from '@mui/material/Typography';
-import TabPanel from '../../../components/layout/TabPanel';
-import ThumbLoader from '../../../components/search/ThumbLoader';
-import { LoadingScreen } from '../../../components/loading';
-import NoData from '../../../components/search/NoData';
-import { getJson } from '../../../adaptors/common';
-import VideoUrlParser from '../../../components/search/VideoUrlParser';
-import { VideoPlayer, type PlayState } from '../../../components/player';
-import * as css from './style.module.css';
+import React, { Component, useState, useEffect, createRef } from 'react'
+import type { PageProps, GetServerDataProps, GetServerDataReturn } from 'gatsby'
+import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
+import Button from '@mui/material/Button'
+import Tabs from '@mui/material/Tabs'
+import Tab from '@mui/material/Tab'
+import Grid from '@mui/material/Grid'
+import Card from '@mui/material/Card'
+import CardActionArea from '@mui/material/CardActionArea'
+import Typography from '@mui/material/Typography'
+import TabPanel from '../../../components/layout/TabPanel'
+import ThumbLoader from '../../../components/search/ThumbLoader'
+import { LoadingScreen } from '../../../components/loading'
+import NoData from '../../../components/search/NoData'
+import { getJson } from '../../../adaptors/common'
+import VideoUrlParser from '../../../components/search/VideoUrlParser'
+import { VideoPlayer, type PlayState } from '../../../components/player'
+import { proxyUrl } from '../../../util/proxy'
+import * as css from './style.module.css'
 
 interface VideoParams {
     seek: number;
@@ -387,7 +388,7 @@ function VideoProfile({ video }: VideoProfileProps) {
                 mr: 1.5
             })}>
                 <ThumbLoader
-                    src={`/api/proxy?url=${video.pic}`}
+                    src={proxyUrl(video.pic)}
                 />
             </Box>
             <Box>
@@ -444,7 +445,7 @@ function RelatedList({ data }: RelatedListProps) {
                                             flexShrink: 0
                                         }}>
                                             <ThumbLoader
-                                                src={`/api/video/${id}?type=poster`}
+                                                src={`/api/video/${id}?type=poster&proxy=1`}
                                                 aspectRatio="3 / 4"
                                             />
                                         </Box>

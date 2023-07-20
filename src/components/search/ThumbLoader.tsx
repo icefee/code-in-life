@@ -10,7 +10,8 @@ type ThumbLoaderProps = {
 
 function ThumbLoader({ src, alt, aspectRatio = '2 / 3' }: ThumbLoaderProps) {
     const [loading, setLoading] = useState(true)
-    const imageRef = useRef<HTMLImageElement>()
+    const [error, setError] = useState(false)
+    const imageRef = useRef<HTMLImageElement | null>(null)
     return (
         <Box sx={{
             position: 'relative',
@@ -25,15 +26,19 @@ function ThumbLoader({ src, alt, aspectRatio = '2 / 3' }: ThumbLoaderProps) {
                     objectFit: 'cover'
                 }}
                 onLoad={
-                    () => setLoading(false)
+                    () => {
+                        setLoading(false)
+                        setError(false)
+                    }
                 }
                 onError={
                     () => {
-                        setLoading(false);
+                        setLoading(false)
+                        setError(true)
                         imageRef.current.src = `/image_fail.jpg`;
                     }
                 }
-                hidden={loading}
+                hidden={loading || error}
                 src={src}
                 alt={alt}
             />
