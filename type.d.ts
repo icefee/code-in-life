@@ -8,6 +8,16 @@ declare interface SearchVideo {
     page: ResponsePagination;
 }
 
+declare interface VideoListItem {
+    id: number;
+    name: string;
+    note: string;
+    last: string;
+    dt: string;
+    tid: number;
+    type: string;
+}
+
 declare type VideoItem = {
     label: string;
     url: string;
@@ -15,7 +25,7 @@ declare type VideoItem = {
 
 declare type VideoSource = {
     name: string;
-    urls: VideoItem[]
+    urls: VideoItem[];
 }
 
 declare type VideoType = {
@@ -38,17 +48,12 @@ declare interface VideoInfo {
     last: string;
     state: number;
     tid: number;
-    dataList: VideoSource[]
+    dataList: VideoSource[];
+    related: VideoRelated[];
 }
 
-declare interface VideoListItem {
-    id: number;
-    name: string;
-    note: string;
-    last: string;
-    dt: string;
-    tid: number;
-    type: string;
+declare interface VideoRelated extends Pick<VideoInfo, 'name' | 'note' | 'last'> {
+    id: string;
 }
 
 declare interface ResponsePagination {

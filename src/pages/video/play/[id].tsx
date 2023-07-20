@@ -1,9 +1,13 @@
 import React, { Component, useState, useEffect, createRef } from 'react';
 import type { PageProps, GetServerDataProps, GetServerDataReturn } from 'gatsby';
 import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
+import Grid from '@mui/material/Grid';
+import Card from '@mui/material/Card';
+import CardActionArea from '@mui/material/CardActionArea';
 import Typography from '@mui/material/Typography';
 import TabPanel from '../../../components/layout/TabPanel';
 import ThumbLoader from '../../../components/search/ThumbLoader';
@@ -58,7 +62,6 @@ interface VideoDetailState {
     activeView: number; /* 0 简介, 1 选集 */
     activeSource: number;
     playingIndex: number;
-    isCollected: boolean;
 }
 
 class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
@@ -67,30 +70,18 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
     private lastUpdateTime = 0;
     public videoRef = createRef<HTMLVideoElement>()
 
-    state: VideoDetailState = {
+    state: Readonly<VideoDetailState> = {
         activeView: 0,
         activeSource: 0,
-        playingIndex: null,
-        isCollected: false
-    }
-
-    constructor(props: VideoDetailProps) {
-
-        super(props);
-
-        const { params, sourceIndex: activeSource = 0, episodeIndex } = getHistory(this.props);
-        this.state.activeSource = activeSource;
-        this.state.playingIndex = episodeIndex;
-        this.videoParams = params;
-        this.lastUpdateTime = +new Date();
+        playingIndex: 0
     }
 
     componentDidMount() {
-        const { params, sourceIndex: activeSource = 0, episodeIndex } = getHistory(this.props);
+        const { params, sourceIndex = 0, episodeIndex = 0 } = getHistory(this.props);
         this.setState({
-            activeSource
+            activeSource: sourceIndex,
+            playingIndex: episodeIndex
         })
-        this.setPlayingIndex(episodeIndex, true);
         this.videoParams = params;
     }
 
@@ -136,18 +127,16 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
         }
     }
 
-    public setPlayingIndex(indexOrSetter: number | ((prev: number) => number), init = false) {
+    public setPlayingIndex(indexOrSetter: number | ((prev: number) => number)) {
         this.setState(
             typeof indexOrSetter === 'number' ? { playingIndex: indexOrSetter } : state => ({
                 playingIndex: indexOrSetter(state.playingIndex)
             })
         )
-        if (!init) {
-            this.updateHistory({
-                episodeIndex: typeof indexOrSetter === 'number' ? indexOrSetter : indexOrSetter(this.state.playingIndex)
-            })
-            this.videoParams = null;
-        }
+        this.updateHistory({
+            episodeIndex: typeof indexOrSetter === 'number' ? indexOrSetter : indexOrSetter(this.state.playingIndex)
+        })
+        this.videoParams = null;
     }
 
     public get playingVideoTitle() {
@@ -162,6 +151,9 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
     }
 
     public render(): React.ReactNode {
+
+        const { video } = this.props;
+
         return (
             <Box sx={{
                 height: '100%',
@@ -169,7 +161,7 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
             }}>
                 <title>{this.pageTitle}</title>
                 {
-                    this.props.video ? (
+                    video ? (
                         <Box sx={{
                             position: 'relative',
                             width: '100%',
@@ -261,10 +253,11 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                         } centered>
                                             <Tab label="简介" />
                                             <Tab label="选集" />
+                                            <Tab label="同类推荐" />
                                         </Tabs>
                                     </Box>
                                     <TabPanel index={0} value={this.state.activeView}>
-                                        <VideoProfile video={this.props.video} />
+                                        <VideoProfile video={video} />
                                     </TabPanel>
                                     <TabPanel index={1} value={this.state.activeView} disablePadding>
                                         <Box sx={(theme) => ({
@@ -277,7 +270,7 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                             }
                                         })}>
                                             {
-                                                this.props.video.dataList.length > 1 && (
+                                                video.dataList.length > 1 && (
                                                     <Tabs sx={{
                                                         borderRight: 1,
                                                         borderColor: 'divider',
@@ -293,7 +286,7 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                                         }
                                                     }>
                                                         {
-                                                            this.props.video.dataList.map(
+                                                            video.dataList.map(
                                                                 (source: VideoSource, index: number) => (
                                                                     <Tab label={source.name} key={index} />
                                                                 )
@@ -310,7 +303,7 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                                 }
                                             })}>
                                                 {
-                                                    this.props.video.dataList.map(
+                                                    video.dataList.map(
                                                         (source: VideoSource, index: number) => (
                                                             <TabPanel index={index} value={this.state.activeSource} key={index} disablePadding>
                                                                 <Box sx={(theme) => ({
@@ -347,6 +340,15 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                                     )
                                                 }
                                             </Box>
+                                        </Box>
+                                    </TabPanel>
+                                    <TabPanel index={2} value={this.state.activeView} disablePadding>
+                                        <Box sx={{
+                                            height: '100%',
+                                            p: 1.5,
+                                            overflowY: 'auto'
+                                        }}>
+                                            <RelatedList data={video.related} />
                                         </Box>
                                     </TabPanel>
                                 </Box>
@@ -420,6 +422,60 @@ function VideoProfile({ video }: VideoProfileProps) {
         </Box>
     )
 }
+
+
+interface RelatedListProps {
+    data: VideoRelated[];
+}
+
+function RelatedList({ data }: RelatedListProps) {
+    return (
+        <Grid spacing={1} container>
+            {
+                data.map(
+                    ({ id, name, note, last }) => (
+                        <Grid xs={12} sm={6} lg={4} xl={3} key={id} item>
+                            <Card elevation={2}>
+                                <CardActionArea href={`/video/play/${id}/`}>
+                                    <Stack direction="row">
+                                        <Box sx={{
+                                            width: 90,
+                                            height: 120,
+                                            flexShrink: 0
+                                        }}>
+                                            <ThumbLoader
+                                                src={`/api/video/${id}?type=poster`}
+                                                aspectRatio="3 / 4"
+                                            />
+                                        </Box>
+                                        <Box sx={{
+                                            flexGrow: 1,
+                                            p: 1,
+                                            overflow: 'hidden'
+                                        }}>
+                                            <Stack sx={{
+                                                height: '100%'
+                                            }}>
+                                                <Box sx={{
+                                                    flexGrow: 1
+                                                }}>
+                                                    <Typography>{name}</Typography>
+                                                    <Typography variant="subtitle2" color="text.secondary">{note}</Typography>
+                                                </Box>
+                                                <Typography variant="subtitle2" color="text.secondary" align="right">{last}</Typography>
+                                            </Stack>
+                                        </Box>
+                                    </Stack>
+                                </CardActionArea>
+                            </Card>
+                        </Grid>
+                    )
+                )
+            }
+        </Grid>
+    )
+}
+
 
 type ServerProps = {
     id: string;

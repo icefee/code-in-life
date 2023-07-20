@@ -3,6 +3,22 @@ import { errorHandler, ApiHandler } from '../../util/middleware'
 import { Api } from '../../util/config'
 import Clue from '../../util/clue'
 
+async function getRelatedList(api: string, typeId: number) {
+    const searchParams = new URLSearchParams({
+        api,
+        t: String(typeId)
+    })
+    const { data } = await getJson<ApiJsonType<{
+        video?: VideoListItem[];
+    }>>(`${Api.site}/api/video/list?${searchParams}`)
+    return data?.video.map(
+        ({ id, ...rest }) => ({
+            id: Clue.create(api, id),
+            ...rest
+        })
+    ) ?? []
+}
+
 const handler: ApiHandler = async (req, res) => {
     const { api, id } = Clue.parse(req.params.id)
     const { type } = req.query
@@ -15,6 +31,8 @@ const handler: ApiHandler = async (req, res) => {
         res.redirect(301, data ? data.pic : `/image_fail.jpg`)
     }
     else {
+        const related = await getRelatedList(api, data.tid)
+        data.related = related
         res.json({
             code: 0,
             data,
