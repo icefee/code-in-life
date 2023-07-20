@@ -12,12 +12,7 @@ async function getRelatedList(api: string, typeId: number) {
     const { data } = await getJson<ApiJsonType<{
         video?: VideoListItem[];
     }>>(`${Api.site}/api/video/list?${searchParams}`)
-    return data?.video.map(
-        ({ id, ...rest }) => ({
-            id: Clue.create(api, id),
-            ...rest
-        })
-    ) ?? []
+    return data?.video ?? []
 }
 
 const handler: ApiHandler = async (req, res) => {
@@ -33,7 +28,14 @@ const handler: ApiHandler = async (req, res) => {
     }
     else {
         const related = await getRelatedList(api, data.tid)
-        data.related = related
+        data.related = related.filter(
+            ({ id }) => id !== data.id
+        ).map(
+            ({ id, ...rest }) => ({
+                id: Clue.create(api, id),
+                ...rest
+            })
+        )
         res.json({
             code: 0,
             data,

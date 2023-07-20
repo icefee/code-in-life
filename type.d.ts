@@ -34,6 +34,7 @@ declare type VideoType = {
 }
 
 declare interface VideoInfo {
+    id: number;
     name: string;
     subname?: string;
     note: string;
