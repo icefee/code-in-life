@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'gatsby';
 import type { SvgIconProps } from '@mui/material/SvgIcon';
 import Stack from '@mui/material/Stack';
 import ButtonBase from '@mui/material/ButtonBase';
@@ -10,7 +11,7 @@ import QrCodeIcon from '@mui/icons-material/QrCode';
 
 export function Head() {
     return (
-        <title>应用中心</title>
+        <title key="qr">应用中心</title>
     )
 }
 
@@ -58,6 +59,16 @@ const apps: App[] = [
     }
 ];
 
+interface GatsbyLinkProps {
+    href: string;
+}
+
+function GatsbyLink({ href, ...rest }: GatsbyLinkProps) {
+    return (
+        <Link to={href} {...rest} />
+    )
+}
+
 interface AppIconProps {
     app: App;
 }
@@ -68,7 +79,7 @@ function AppIcon({ app }: AppIconProps) {
         <Stack sx={{
             width: 'var(--icon-size)',
         }}>
-            <ButtonBase href={app.url} disableRipple>
+            <ButtonBase LinkComponent={GatsbyLink} href={app.url} disableRipple>
                 <Stack style={{
                     color: '#fff',
                     alignItems: 'center'

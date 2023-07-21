@@ -25,6 +25,7 @@
     "gatsby": "^5.11.0",
     "gatsby-plugin-manifest": "^5.11.0",
     "gatsby-plugin-netlify": "^5.1.0",
+    "gatsby-plugin-offline": "^6.11.0",
     "hls.js": "^1.4.10",
     "hls2mp4": "^1.1.9",
     "react": "^18.2.0",

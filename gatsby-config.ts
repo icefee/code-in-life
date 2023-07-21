@@ -15,7 +15,16 @@ const config: GatsbyConfig = {
         start_url: '/?mode=pwa',
         background_color: '#03a9f4',
         theme_color: '#3f51b5',
-        display: 'standalone'
+        display: 'standalone',
+        cache_busting_mode: 'none'
+      }
+    },
+    {
+      resolve: 'gatsby-plugin-offline',
+      options: {
+        workboxConfig: {
+          globPatterns: ['**/static*']
+        }
       }
     }
   ]
