@@ -7,7 +7,7 @@ export default function Page404() {
         <Stack sx={{
             height: '100%'
         }} justifyContent="center" alignItems="center">
-            <Typography variant="h3">Page not found.</Typography>
+            <Typography variant="h4">Page not found.</Typography>
         </Stack>
     )
 }

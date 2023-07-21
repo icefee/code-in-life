@@ -13,6 +13,14 @@ const config: GatsbyConfig = {
         theme_color: '#3f51b5',
         display: 'standalone'
       }
+    },
+    {
+      resolve: 'gatsby-plugin-offline',
+      options: {
+        workboxConfig: {
+          globPatterns: ['**/static*']
+        }
+      }
     }
   ]
 }
