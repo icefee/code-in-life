@@ -11,6 +11,7 @@ import CardActionArea from '@mui/material/CardActionArea'
 import Typography from '@mui/material/Typography'
 import TabPanel from '../../../components/layout/TabPanel'
 import ThumbLoader from '../../../components/search/ThumbLoader'
+import RowClipTypography from '../../../components/layout/element/RowClipTypography'
 import { LoadingScreen } from '../../../components/loading'
 import NoData from '../../../components/search/NoData'
 import { getJson } from '../../../adaptors/common'
@@ -460,7 +461,10 @@ function RelatedList({ data }: RelatedListProps) {
                                                 <Box sx={{
                                                     flexGrow: 1
                                                 }}>
-                                                    <Typography>{name}</Typography>
+                                                    <RowClipTypography
+                                                        rows={2}
+                                                        paragraph
+                                                    >{name}</RowClipTypography>
                                                     <Typography variant="subtitle2" color="text.secondary">{note}</Typography>
                                                 </Box>
                                                 <Typography variant="subtitle2" color="text.secondary" align="right">{last}</Typography>

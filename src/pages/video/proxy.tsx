@@ -238,14 +238,12 @@ function Proxy() {
                                                                             justifyContent: 'space-between'
                                                                         }}>
                                                                             <Tooltip title={video.title}>
-                                                                                <Box>
-                                                                                    <RowClipTypography
-                                                                                        lineHeight={1.2}
-                                                                                        rows={4}
-                                                                                        variant="h5"
-                                                                                        paragraph
-                                                                                    >{video.title}</RowClipTypography>
-                                                                                </Box>
+                                                                                <RowClipTypography
+                                                                                    lineHeight={1.2}
+                                                                                    rows={4}
+                                                                                    variant="h5"
+                                                                                    paragraph
+                                                                                >{video.title}</RowClipTypography>
                                                                             </Tooltip>
                                                                             <Typography variant="subtitle2" color="text.secondary" align="right">{video.createTime}</Typography>
                                                                         </Stack>
