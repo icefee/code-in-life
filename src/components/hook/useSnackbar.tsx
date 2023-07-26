@@ -24,19 +24,18 @@ export function SnackbarProvider({ children }) {
             hideAll: () => setSnackbarOpen(false)
         }}>
             {children}
-            {snackbarOption && <Snackbar
-                open={snackbarOpen}
-                onClose={() => setSnackbarOpen(false)}
-                {...snackbarOption}
-            >{snackbarOption.children}</Snackbar>}
+            {snackbarOption && (
+                <Snackbar
+                    open={snackbarOpen}
+                    onClose={() => setSnackbarOpen(false)}
+                    {...snackbarOption}
+                >{snackbarOption.children}</Snackbar>
+            )}
         </SnackbarContext.Provider>
     )
 }
 
 export function useSnackbar() {
-    const { showSnackbar, hideAll } = useContext(SnackbarContext)
-    return {
-        showSnackbar,
-        hideAll
-    }
+    const context = useContext(SnackbarContext)
+    return context
 }

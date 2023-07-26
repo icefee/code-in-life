@@ -1,13 +1,13 @@
-import React from 'react';
-import Alert from '@mui/material/Alert';
-import Button from '@mui/material/Button';
-import { useSnackbar } from './useSnackbar';
+import React from 'react'
+import Alert from '@mui/material/Alert'
+import Button from '@mui/material/Button'
+import { useSnackbar } from './useSnackbar'
 
 export { SnackbarProvider } from './useSnackbar'
 
 export default function useErrorMessage() {
 
-    const { showSnackbar, hideAll } = useSnackbar();
+    const context = useSnackbar();
 
     const showErrorMessage = ({
         message,
@@ -20,7 +20,7 @@ export default function useErrorMessage() {
         actionText?: string;
         onAction?: VoidFunction;
     }) => {
-        showSnackbar({
+        context?.showSnackbar({
             anchorOrigin: {
                 vertical: 'bottom',
                 horizontal: 'center'
@@ -34,7 +34,7 @@ export default function useErrorMessage() {
                             size="small"
                             onClick={
                                 () => {
-                                    hideAll();
+                                    context?.hideAll();
                                     onAction();
                                 }
                             }>{actionText}</Button>
