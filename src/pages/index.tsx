@@ -18,7 +18,9 @@ import { Spinner } from '../components/loading'
 
 export function Head() {
     return (
-        <title key="index">应用中心</title>
+        <>
+            <title key="index">应用中心</title>
+        </>
     )
 }
 
