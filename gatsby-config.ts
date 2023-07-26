@@ -30,7 +30,7 @@ const config: GatsbyConfig = {
     {
       resolve: 'gatsby-plugin-gatsby-cloud',
       options: {
-        mergeCachingHeaders: false
+        mergeSecurityHeaders: false
       }
     }
   ]
