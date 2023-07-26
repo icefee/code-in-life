@@ -1,17 +1,24 @@
-import React from 'react';
-import { Link } from 'gatsby';
-import type { SvgIconProps } from '@mui/material/SvgIcon';
-import Stack from '@mui/material/Stack';
-import ButtonBase from '@mui/material/ButtonBase';
-import Typography from '@mui/material/Typography';
-import AlbumIcon from '@mui/icons-material/Album';
-import MusicNoteIcon from '@mui/icons-material/MusicNote';
-import TheatersIcon from '@mui/icons-material/Theaters';
-import QrCodeIcon from '@mui/icons-material/QrCode';
+import React, { useState, useRef } from 'react'
+import { Link, PageProps } from 'gatsby'
+import type { SvgIconProps } from '@mui/material/SvgIcon'
+import Stack from '@mui/material/Stack'
+import AppBar from '@mui/material/AppBar'
+import Toolbar from '@mui/material/Toolbar'
+import IconButton from '@mui/material/IconButton'
+import ButtonBase from '@mui/material/ButtonBase'
+import Backdrop from '@mui/material/Backdrop'
+import Typography from '@mui/material/Typography'
+import AlbumIcon from '@mui/icons-material/Album'
+import MusicNoteIcon from '@mui/icons-material/MusicNote'
+import TheatersIcon from '@mui/icons-material/Theaters'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import QrCodeIcon from '@mui/icons-material/QrCode'
+import PopDialog, { PopDialogRef } from '../components/PopDialog'
+import { Spinner } from '../components/loading'
 
 export function Head() {
     return (
-        <title key="qr">应用中心</title>
+        <title key="index">应用中心</title>
     )
 }
 
@@ -71,15 +78,18 @@ function GatsbyLink({ href, ...rest }: GatsbyLinkProps) {
 
 interface AppIconProps {
     app: App;
+    onBoot?(app: App): void;
 }
 
-function AppIcon({ app }: AppIconProps) {
+function AppIcon({ app, onBoot }: AppIconProps) {
     const Icon = app.icon;
     return (
         <Stack sx={{
             width: 'var(--icon-size)',
         }}>
-            <ButtonBase LinkComponent={GatsbyLink} href={app.url} disableRipple>
+            <ButtonBase onClick={
+                () => onBoot?.(app)
+            } disableRipple>
                 <Stack style={{
                     color: '#fff',
                     alignItems: 'center'
@@ -101,7 +111,15 @@ function AppIcon({ app }: AppIconProps) {
     )
 }
 
-function Index() {
+function Index({ location }: PageProps<object, object, unknown, unknown>) {
+
+    const searchParams = new URLSearchParams(location.search)
+    const dialogRef = useRef<PopDialogRef | null>(null)
+    const [runningApp, setRunningApp] = useState<App | null>(null)
+    const [loading, setLoading] = useState(false)
+
+    const isPwaMode = searchParams.get('mode') === 'pwa'
+
     return (
         <Stack sx={(theme) => ({
             height: '100%',
@@ -123,11 +141,79 @@ function Index() {
                 {
                     apps.map(
                         (app) => (
-                            <AppIcon key={app.id} app={app} />
+                            <AppIcon
+                                key={app.id}
+                                app={app}
+                                onBoot={
+                                    (app) => {
+                                        if (isPwaMode) {
+                                            setRunningApp(app)
+                                            dialogRef.current.open()
+                                            setLoading(true)
+                                        }
+                                        else {
+                                            open(app.url)
+                                        }
+                                    }
+                                }
+                            />
                         )
                     )
                 }
             </Stack>
+            <PopDialog
+                ref={dialogRef}
+            >
+                <AppBar position="relative">
+                    <Toolbar>
+                        <IconButton
+                            edge="start"
+                            color="inherit"
+                            onClick={() => dialogRef.current.close()}
+                            aria-label="close"
+                        >
+                            <ArrowBackIcon />
+                        </IconButton>
+                        <Typography
+                            sx={{
+                                ml: 2,
+                                flex: 1
+                            }}
+                            variant="h6"
+                            component="div"
+                        >{runningApp?.name}</Typography>
+                    </Toolbar>
+                </AppBar>
+                <Stack sx={{
+                    position: 'relative',
+                    flexGrow: 1,
+                    overflow: 'hidden'
+                }}>
+                    <iframe
+                        style={{
+                            display: 'block',
+                            border: 'none',
+                            height: '100%'
+                        }}
+                        src={runningApp?.url}
+                        onLoad={
+                            () => setLoading(false)
+                        }
+                    />
+                    <Backdrop
+                        sx={{
+                            position: 'absolute',
+                            color: '#fff'
+                        }}
+                        open={loading}>
+                        <Spinner
+                            sx={{
+                                fontSize: 40
+                            }}
+                        />
+                    </Backdrop>
+                </Stack>
+            </PopDialog>
         </Stack>
     )
 }

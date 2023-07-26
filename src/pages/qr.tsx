@@ -9,7 +9,7 @@ import useLocalStorageState from '../components/hook/useLocalStorageState'
 export function Head() {
     return (
         <>
-            <title>二维码生成</title>
+            <title key="qr">二维码生成</title>
         </>
     )
 }
@@ -91,6 +91,7 @@ function QrcodeGenerator() {
                     transform: 'translate(-50%, -50%)',
                     px: 2,
                     transition: theme.transitions.create('top'),
+                    color: '#fff',
                     zIndex: 20,
                     [theme.breakpoints.up('sm')]: {
                         width: 450,
@@ -107,6 +108,7 @@ function QrcodeGenerator() {
                             flexGrow: 1
                         }}
                         label="文本"
+                        variant="outlined"
                         size="small"
                         value={input.data}
                         onChange={
@@ -117,7 +119,7 @@ function QrcodeGenerator() {
                             }
                         }
                     />
-                    <Button variant="outlined" type="submit">生成</Button>
+                    <Button variant="outlined" color="inherit" type="submit">生成</Button>
                 </Stack>
                 <Stack justifyContent="center" alignItems="center" flexGrow={1}>
                     <canvas
