@@ -7,7 +7,9 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 export function Head() {
     return (
-        <title>内容不存在</title>
+        <>
+            <title key="404">内容不存在</title>
+        </>
     )
 }
 
