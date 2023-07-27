@@ -6,7 +6,7 @@ import Alert from '@mui/material/Alert'
 import AlertTitle from '@mui/material/AlertTitle'
 import Typography from '@mui/material/Typography'
 import LoadingOverlay from '../loading/LoadingOverlay'
-import { Video } from '../../util/regExp'
+import { Video } from '~/util/regExp'
 
 type VideoUrlParserProps = {
     url: string;

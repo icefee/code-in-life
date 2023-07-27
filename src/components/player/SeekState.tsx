@@ -6,7 +6,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 import FastRewindIcon from '@mui/icons-material/FastRewind';
 import FastForwardIcon from '@mui/icons-material/FastForward';
 import { alpha } from '@mui/material/styles';
-import { timeFormatter } from '../../util/date';
+import { timeFormatter } from '~/util/date';
 import type { PlayState } from './VideoPlayer';
 
 type SeekStateProps = {

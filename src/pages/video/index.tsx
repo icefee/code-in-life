@@ -4,10 +4,10 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Snackbar from '@mui/material/Snackbar';
 import Alert, { AlertProps } from '@mui/material/Alert';
-import SearchResult from '../../components/search/Result';
-import SearchForm from '../../components/search/Form';
-import NoData from '../../components/search/NoData';
-import { LoadingOverlay } from '../../components/loading';
+import SearchResult from '~/components/search/Result';
+import SearchForm from '~/components/search/Form';
+import NoData from '~/components/search/NoData';
+import { LoadingOverlay } from '~/components/loading';
 
 const getSearch = async (s: string) => {
     try {

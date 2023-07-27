@@ -14,7 +14,7 @@ import PlaylistAddRoundedcon from '@mui/icons-material/PlaylistAdd';
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import LyricsRoundedIcon from '@mui/icons-material/LyricsRounded';
 import MusicPoster from '../player/MusicPoster';
-import MusicPlayIcon from '../loading/music';
+import { MusicPlay as MusicPlayIcon } from '../loading';
 import useMenu from '../hook/useMenu';
 
 type MenuAction = 'add' | 'add-all' | 'download-song' | 'download-lrc';

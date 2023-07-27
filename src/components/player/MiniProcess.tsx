@@ -2,7 +2,7 @@ import React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import LinearProgress from '@mui/material/LinearProgress';
-import { timeFormatter } from '../../util/date';
+import { timeFormatter } from '~/util/date';
 import type { PlayState } from './VideoPlayer';
 
 interface MiniProcessProps {

@@ -8,8 +8,8 @@ import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import CardActionArea from '@mui/material/CardActionArea';
 import ThumbLoader from './ThumbLoader';
-import RowClipTypography from '../layout/element/RowClipTypography';
-import Clue from '../../util/clue';
+import { RowClipTypography } from '../layout';
+import Clue from '~/util/clue';
 
 type ListData = VideoListItem[];
 

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Script } from 'gatsby';
+import React, { useState } from 'react'
+import { Script } from 'gatsby'
 
 export async function getServerData() {
     return {
@@ -137,4 +137,4 @@ function Hls2Mp4Demo() {
     )
 }
 
-export default Hls2Mp4Demo;
+export default Hls2Mp4Demo

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'react'
 import Dialog, { DialogProps } from '@mui/material/Dialog'
-import createTransition from '../transition/Slide'
+import createTransition from '~/components/transition/Slide'
 
 const Transition = createTransition()
 

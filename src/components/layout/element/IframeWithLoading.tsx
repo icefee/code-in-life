@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import IframeWithoutHistory from './IframeWithoutHistory';
-import LoadingOverlay from '../../loading/LoadingOverlay';
+import LoadingOverlay from '~/components/loading/LoadingOverlay';
 
 function IframeWithLoading({ src, onLoad, style, ...props }: JSX.IntrinsicElements['iframe']) {
     const [loading, setLoading] = useState(false)

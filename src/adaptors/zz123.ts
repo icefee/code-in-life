@@ -1,7 +1,7 @@
-import { getResponse, parseDuration, isTextNotNull, getTextWithTimeout } from './common';
-import { timeFormatter } from '../util/date';
-import { utf82utf16 } from '../util/parser';
-import { Api } from '../util/config';
+import { getResponse, parseDuration, isTextNotNull, getTextWithTimeout } from './common'
+import { timeFormatter } from '../util/date'
+import { utf82utf16 } from '../util/parser'
+import { Api } from '../util/config'
 
 export const key = 'z';
 

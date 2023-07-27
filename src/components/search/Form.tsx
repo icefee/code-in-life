@@ -11,7 +11,7 @@ import { alpha } from '@mui/material/styles';
 import LoadingButton from '@mui/lab/LoadingButton';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import useLocalStorageState from '../hook/useLocalStorageState';
-import { isTextNotNull } from '../../util/string';
+import { isTextNotNull } from '~/util/string';
 
 interface SearchFormProps {
     action?: string;

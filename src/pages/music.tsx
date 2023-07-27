@@ -1,21 +1,21 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import Stack from '@mui/material/Stack';
-import Snackbar from '@mui/material/Snackbar';
-import Alert, { AlertProps } from '@mui/material/Alert';
-import Box from '@mui/material/Box';
-import Slide from '@mui/material/Slide';
-import Tooltip from '@mui/material/Tooltip';
-import IconButton from '@mui/material/IconButton';
-import Badge from '@mui/material/Badge';
-import Typography from '@mui/material/Typography';
-import PlaylistPlayRoundedIcon from '@mui/icons-material/PlaylistPlayRounded';
-import SearchForm, { type SearchFormInstance } from '../components/search/Form';
-import { LoadingOverlay } from '../components/loading';
-import MusicPlayer, { RepeatMode } from '../components/player/MusicPlayer';
-import NoData from '../components/search/NoData';
-import SongList from '../components/search/SongList';
-import MusicPlayList from '../components/player/MusicPlayList';
-import useLocalStorageState from '../components/hook/useLocalStorageState';
+import React, { useState, useEffect, useMemo, useRef } from 'react'
+import Stack from '@mui/material/Stack'
+import Snackbar from '@mui/material/Snackbar'
+import Alert, { AlertProps } from '@mui/material/Alert'
+import Box from '@mui/material/Box'
+import Slide from '@mui/material/Slide'
+import Tooltip from '@mui/material/Tooltip'
+import IconButton from '@mui/material/IconButton'
+import Badge from '@mui/material/Badge'
+import Typography from '@mui/material/Typography'
+import PlaylistPlayRoundedIcon from '@mui/icons-material/PlaylistPlayRounded'
+import SearchForm, { type SearchFormInstance } from '~/components/search/Form'
+import { LoadingOverlay } from '~/components/loading'
+import MusicPlayer, { RepeatMode } from '~/components/player/MusicPlayer'
+import NoData from '~/components/search/NoData'
+import SongList from '~/components/search/SongList'
+import MusicPlayList from '~/components/player/MusicPlayList'
+import useLocalStorageState from '~/components/hook/useLocalStorageState'
 
 export default function MusicSearch() {
 

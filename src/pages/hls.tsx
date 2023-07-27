@@ -1,6 +1,6 @@
 import React from 'react'
 import Box from '@mui/material/Box'
-import { VideoPlayer } from '../components/player'
+import { VideoPlayer } from '~/components/player'
 
 export async function getServerData() {
     return {

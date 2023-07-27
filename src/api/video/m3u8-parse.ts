@@ -6,7 +6,7 @@ const handler: ApiHandler = async (req, res) => {
     const { url } = req.query
     const m3u8 = await Hls2Mp4.parseM3u8File(
         url,
-        (url) => getTextWithTimeout(url)
+        getTextWithTimeout
     )
     res.setHeader('content-type', 'application/vnd.apple.mpegURL')
     res.setHeader('transfer-encoding', 'chunked')

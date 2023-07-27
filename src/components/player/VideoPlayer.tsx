@@ -27,8 +27,8 @@ import VolumeSetter from './VolumeSetter';
 import RateSetter from './RateSetter';
 import MiniProcess from './MiniProcess';
 import SeekState from './SeekState';
-import { timeFormatter } from '../../util/date';
-import { isMobileDevice, isIos } from '../../util/env';
+import { timeFormatter } from '~/util/date';
+import { isMobileDevice, isIos } from '~/util/env';
 
 const Events = Hls.Events
 

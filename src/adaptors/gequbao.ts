@@ -1,6 +1,6 @@
-import { getTextWithTimeout, parseDuration, isTextNotNull } from './common';
-import { timeFormatter } from '../util/date';
-import { Api } from '../util/config';
+import { getTextWithTimeout, parseDuration, isTextNotNull } from './common'
+import { timeFormatter } from '../util/date'
+import { Api } from '../util/config'
 
 export const key = 'g';
 

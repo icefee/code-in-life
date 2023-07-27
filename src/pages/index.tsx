@@ -13,8 +13,8 @@ import MusicNoteIcon from '@mui/icons-material/MusicNote'
 import TheatersIcon from '@mui/icons-material/Theaters'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import QrCodeIcon from '@mui/icons-material/QrCode'
-import PopDialog, { PopDialogRef } from '../components/PopDialog'
-import { Spinner } from '../components/loading'
+import PopDialog, { PopDialogRef } from '~/components/layout/PopDialog'
+import { Spinner } from '~/components/loading'
 
 export function Head() {
     return (

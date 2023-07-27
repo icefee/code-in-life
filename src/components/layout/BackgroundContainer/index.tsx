@@ -1,6 +1,6 @@
 import React, { Component, PropsWithChildren } from 'react';
 import Box from '@mui/material/Box';
-import { Api } from '../../../util/config';
+import { Api } from '~/util/config';
 import * as css from './style.module.css';
 
 interface BackgroundContainerProps extends PropsWithChildren<{

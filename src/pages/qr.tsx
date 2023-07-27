@@ -4,7 +4,7 @@ import NoSsr from '@mui/material/NoSsr'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
-import useLocalStorageState from '../components/hook/useLocalStorageState'
+import useLocalStorageState from '~/components/hook/useLocalStorageState'
 
 export function Head() {
     return (

@@ -32,6 +32,16 @@ const config: GatsbyConfig = {
       options: {
         mergeSecurityHeaders: false
       }
+    },
+    {
+      resolve: 'gatsby-plugin-alias-imports',
+      options: {
+        alias: {
+          '~/adaptors': 'src/adaptors',
+          '~/components': 'src/components',
+          '~/util': 'src/util'
+        }
+      }
     }
   ]
 }

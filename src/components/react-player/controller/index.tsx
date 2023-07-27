@@ -1,7 +1,7 @@
 import React, { useContext, useMemo } from 'react';
 import PlayerContext from '../context';
 import { type PlayerContextType } from '../type';
-import { timeFormatter } from '../../../util/date';
+import { timeFormatter } from '~/util/date';
 import Slide from './Slide';
 import PlayIcon from '../icons/play';
 import './style.css';

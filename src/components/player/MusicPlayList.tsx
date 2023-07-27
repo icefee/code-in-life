@@ -22,7 +22,7 @@ import LyricsRoundedIcon from '@mui/icons-material/LyricsRounded';
 import PlaylistRemoveRoundedIcon from '@mui/icons-material/PlaylistRemoveRounded';
 import { DarkThemed } from '../theme';
 import MusicPoster from './MusicPoster';
-import MusicPlayIcon from '../loading/music';
+import { MusicPlay as MusicPlayIcon } from '../loading';
 import useMenu from '../hook/useMenu';
 
 const StyledInput = styled(InputBase)(({ theme }) => ({

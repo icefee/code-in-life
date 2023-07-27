@@ -1,10 +1,8 @@
-import React from 'react';
-import { type PageProps } from 'gatsby';
-import Box from '@mui/material/Box';
-import loadable from '@loadable/component';
-import VideoUrlParser from '../../components/search/VideoUrlParser';
-
-const VideoPlayer = loadable(() => import('../../components/player/VideoPlayer'))
+import React from 'react'
+import { type PageProps } from 'gatsby'
+import Box from '@mui/material/Box'
+import { VideoPlayer } from '~/components/player'
+import VideoUrlParser from '~/components/search/VideoUrlParser'
 
 export async function getServerData() {
     return {
@@ -40,4 +38,4 @@ const VideoParserPlayer: React.FC<PageProps<object, object, unknown, VideoParser
     )
 }
 
-export default VideoParserPlayer;
+export default VideoParserPlayer

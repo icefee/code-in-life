@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, CSSProperties } from 'react';
 import SvgIcon, { SvgIconProps } from '@mui/material/SvgIcon';
-import './music.css';
+import './style.css';
 
 interface MusicPlaySvgProps extends SvgIconProps {
     animating?: boolean;
