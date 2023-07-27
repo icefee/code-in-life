@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, ComponentType } from 'react'
 import { Link, PageProps } from 'gatsby'
 import type { SvgIconProps } from '@mui/material/SvgIcon'
 import Stack from '@mui/material/Stack'
@@ -28,7 +28,7 @@ interface App {
     id: string;
     name: string;
     url: string;
-    icon: React.ComponentType<SvgIconProps>;
+    icon: ComponentType<SvgIconProps>;
     iconForeground: string;
     iconBackground: string;
 }
