@@ -91,7 +91,6 @@ function QrcodeGenerator() {
                     transform: 'translate(-50%, -50%)',
                     px: 2,
                     transition: theme.transitions.create('top'),
-                    color: '#fff',
                     zIndex: 20,
                     [theme.breakpoints.up('sm')]: {
                         width: 450,
@@ -119,7 +118,7 @@ function QrcodeGenerator() {
                             }
                         }
                     />
-                    <Button variant="outlined" color="inherit" type="submit">生成</Button>
+                    <Button variant="outlined" type="submit">生成</Button>
                 </Stack>
                 <Stack justifyContent="center" alignItems="center" flexGrow={1}>
                     <canvas

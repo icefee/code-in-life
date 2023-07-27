@@ -149,7 +149,7 @@ export default function VideoSearch() {
                                 position: 'relative',
                                 zIndex: 120
                             }} flexGrow={1} justifyContent="center" alignItems="center">
-                                <Typography variant="body1" color="hsl(270, 100%, 100%)">🔍 输入关键词开始搜索</Typography>
+                                <Typography variant="body1" color="text.secondary">🔍 输入关键词开始搜索</Typography>
                             </Stack>
                         )
                     )

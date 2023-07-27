@@ -93,7 +93,6 @@ function AppIcon({ app, onBoot }: AppIconProps) {
                 () => onBoot?.(app)
             } disableRipple>
                 <Stack style={{
-                    color: '#fff',
                     alignItems: 'center'
                 }} rowGap={.5}>
                     <Stack sx={{

@@ -9,9 +9,7 @@ export default function NoData({ text = '😭 没有找到符合的内容.' }: {
             width: '100%',
             height: '100%',
             justifyContent: 'center',
-            alignItems: 'center',
-            p: 2,
-            color: '#fff'
+            alignItems: 'center'
         }}>
             <Typography variant="body1" color="inherit">{text}</Typography>
         </Box>
