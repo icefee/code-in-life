@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
 import Stack from '@mui/material/Stack'
 import Snackbar from '@mui/material/Snackbar'
-import Alert, { AlertProps } from '@mui/material/Alert'
+import Alert, { type AlertProps } from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Slide from '@mui/material/Slide'
 import Tooltip from '@mui/material/Tooltip'
@@ -439,19 +439,22 @@ export default function MusicSearch() {
 
 async function getSearch(s: string): Promise<SearchMusic[] | null> {
     try {
+        const searchParams = new URLSearchParams({
+            s
+        })
         const { code, data } = await fetch(
-            `/api/music/list?s=${encodeURIComponent(s)}`
+            `/api/music/list?${searchParams}`
         ).then<ApiJsonType<SearchMusic[]>>(
             response => response.json()
         );
         if (code === 0) {
-            return data;
+            return data
         }
         else {
-            throw new Error('search failed');
+            throw new Error('search failed')
         }
     }
     catch (err) {
-        return null;
+        return null
     }
 }

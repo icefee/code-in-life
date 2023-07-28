@@ -46,7 +46,7 @@ body {
 
 @media screen and (prefers-color-scheme: dark) {
   :root {
-    --linear-gradient: #90f7f960, #eccbfc60;
+    --linear-gradient: #004160, #2e0944;
   }
 
   ::-webkit-scrollbar-thumb {
