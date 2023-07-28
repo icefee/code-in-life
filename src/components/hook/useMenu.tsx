@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
-import Menu, { type MenuProps } from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import Typography from '@mui/material/Typography';
+import React, { useState } from 'react'
+import Menu, { type MenuProps } from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import Typography from '@mui/material/Typography'
+import Divider from '@mui/material/Divider'
 
-interface MenuType {
+type MenuType = {
     icon: React.ReactNode;
     text: React.ReactNode;
     onClick?: VoidFunction;
-}
+} | null
 
 type MenuOptions = Omit<MenuProps, 'anchorEl' | 'open' | 'onClose'>;
 
@@ -40,14 +41,22 @@ function useMenu<AnchorElement extends Element = HTMLButtonElement>(props?: Menu
         >
             {
                 menuItems.map(
-                    ({ icon, text, onClick }, index) => (
-                        <MenuItem key={index} onClick={onClick}>
-                            <ListItemIcon>
-                                {icon}
-                            </ListItemIcon>
-                            <Typography variant="inherit" noWrap>{text}</Typography>
-                        </MenuItem>
-                    )
+                    (menu: MenuType, index) => {
+                        if (menu) {
+                            const { icon, text, onClick } = menu
+                            return (
+                                <MenuItem key={index} onClick={onClick}>
+                                    <ListItemIcon>
+                                        {icon}
+                                    </ListItemIcon>
+                                    <Typography variant="inherit" noWrap>{text}</Typography>
+                                </MenuItem>
+                            )
+                        }
+                        return (
+                            <Divider />
+                        )
+                    }
                 )
             }
         </Menu>

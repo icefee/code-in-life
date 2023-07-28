@@ -96,6 +96,7 @@ function SongListItem({ current, divider, isCurrentPlaying, onTogglePlay, onActi
                                     text: '加入播放列表',
                                     onClick: handleMenuAction('add')
                                 },
+                                null,
                                 {
                                     icon: <DownloadRoundedIcon />,
                                     text: '下载歌曲',
@@ -106,7 +107,7 @@ function SongListItem({ current, divider, isCurrentPlaying, onTogglePlay, onActi
                                     text: '下载歌词',
                                     onClick: handleMenuAction('download-lrc')
                                 }
-                            ]);
+                            ])
                         }
                     }>
                         <MoreVertRoundedIcon />

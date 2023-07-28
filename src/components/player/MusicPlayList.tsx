@@ -1,29 +1,29 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
-import type { ReactNode, MouseEvent, MouseEventHandler } from 'react';
-import Stack from '@mui/material/Stack';
-import Box from '@mui/material/Box';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
+import React, { useState, useEffect, useRef, useMemo } from 'react'
+import type { ReactNode, MouseEvent, MouseEventHandler } from 'react'
+import Stack from '@mui/material/Stack'
+import Box from '@mui/material/Box'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemText from '@mui/material/ListItemText'
 import ListItemButton from '@mui/material/ListItemButton';
-import ListSubheader from '@mui/material/ListSubheader';
-import InputBase from '@mui/material/InputBase';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import { styled } from '@mui/material/styles';
-import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
-import ClearAllRoundedIcon from '@mui/icons-material/ClearAllRounded';
-import ManageSearchRoundedIcon from '@mui/icons-material/ManageSearchRounded';
-import PersonSearchRoundedIcon from '@mui/icons-material/PersonSearchOutlined';
-import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
-import PublishRoundedIcon from '@mui/icons-material/PublishRounded';
-import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
-import LyricsRoundedIcon from '@mui/icons-material/LyricsRounded';
-import PlaylistRemoveRoundedIcon from '@mui/icons-material/PlaylistRemoveRounded';
-import { DarkThemed } from '../theme';
-import MusicPoster from './MusicPoster';
-import { MusicPlay as MusicPlayIcon } from '../loading';
-import useMenu from '../hook/useMenu';
+import ListSubheader from '@mui/material/ListSubheader'
+import InputBase from '@mui/material/InputBase'
+import IconButton from '@mui/material/IconButton'
+import Typography from '@mui/material/Typography'
+import { styled } from '@mui/material/styles'
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
+import ClearAllRoundedIcon from '@mui/icons-material/ClearAllRounded'
+import ManageSearchRoundedIcon from '@mui/icons-material/ManageSearchRounded'
+import PersonSearchRoundedIcon from '@mui/icons-material/PersonSearchOutlined'
+import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded'
+import PublishRoundedIcon from '@mui/icons-material/PublishRounded'
+import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded'
+import LyricsRoundedIcon from '@mui/icons-material/LyricsRounded'
+import PlaylistRemoveRoundedIcon from '@mui/icons-material/PlaylistRemoveRounded'
+import { DarkThemed } from '../theme'
+import MusicPoster from './MusicPoster'
+import { MusicPlay as MusicPlayIcon } from '../loading'
+import useMenu from '../hook/useMenu'
 
 const StyledInput = styled(InputBase)(({ theme }) => ({
     fontSize: '.8em',
@@ -372,6 +372,12 @@ function PlayListItem({ music, playing, isCurrent, divider, onAction, onClick }:
                                     onClick: handleMenuAction('pin')
                                 },
                                 {
+                                    icon: <PlaylistRemoveRoundedIcon />,
+                                    text: '移出播放列表',
+                                    onClick: handleMenuAction('remove')
+                                },
+                                null,
+                                {
                                     icon: <PersonSearchRoundedIcon />,
                                     text: `搜索“${music.artist}”`,
                                     onClick: handleMenuAction('search-artist')
@@ -381,6 +387,7 @@ function PlayListItem({ music, playing, isCurrent, divider, onAction, onClick }:
                                     text: `搜索“${music.name}”`,
                                     onClick: handleMenuAction('search-name')
                                 },
+                                null,
                                 {
                                     icon: <DownloadRoundedIcon />,
                                     text: '下载歌曲',
@@ -390,13 +397,8 @@ function PlayListItem({ music, playing, isCurrent, divider, onAction, onClick }:
                                     icon: <LyricsRoundedIcon />,
                                     text: '下载歌词',
                                     onClick: handleMenuAction('download-lrc')
-                                },
-                                {
-                                    icon: <PlaylistRemoveRoundedIcon />,
-                                    text: '移出播放列表',
-                                    onClick: handleMenuAction('remove')
                                 }
-                            ]);
+                            ])
                         }
                     }>
                         <MoreVertRoundedIcon />
