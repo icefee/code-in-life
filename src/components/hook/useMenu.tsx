@@ -54,7 +54,7 @@ function useMenu<AnchorElement extends Element = HTMLButtonElement>(props?: Menu
                             )
                         }
                         return (
-                            <Divider />
+                            <Divider key={index} />
                         )
                     }
                 )
