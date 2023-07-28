@@ -372,6 +372,12 @@ function PlayListItem({ music, playing, isCurrent, divider, onAction, onClick }:
                                     onClick: handleMenuAction('pin')
                                 },
                                 {
+                                    icon: <PlaylistRemoveIcon />,
+                                    text: '移出播放列表',
+                                    onClick: handleMenuAction('remove')
+                                },
+                                null,
+                                {
                                     icon: <PersonSearchIcon />,
                                     text: `搜索“${music.artist}”`,
                                     onClick: handleMenuAction('search-artist')
@@ -381,6 +387,7 @@ function PlayListItem({ music, playing, isCurrent, divider, onAction, onClick }:
                                     text: `搜索“${music.name}”`,
                                     onClick: handleMenuAction('search-name')
                                 },
+                                null,
                                 {
                                     icon: <DownloadIcon />,
                                     text: '下载歌曲',
@@ -390,13 +397,8 @@ function PlayListItem({ music, playing, isCurrent, divider, onAction, onClick }:
                                     icon: <LyricsIcon />,
                                     text: '下载歌词',
                                     onClick: handleMenuAction('download-lrc')
-                                },
-                                {
-                                    icon: <PlaylistRemoveIcon />,
-                                    text: '移出播放列表',
-                                    onClick: handleMenuAction('remove')
                                 }
-                            ]);
+                            ])
                         }
                     }>
                         <MoreVertIcon />

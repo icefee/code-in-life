@@ -96,6 +96,7 @@ function SongListItem({ current, divider, isCurrentPlaying, onTogglePlay, onActi
                                     text: '加入播放列表',
                                     onClick: handleMenuAction('add')
                                 },
+                                null,
                                 {
                                     icon: <DownloadIcon />,
                                     text: '下载歌曲',

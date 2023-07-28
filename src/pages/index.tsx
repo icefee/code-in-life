@@ -154,7 +154,7 @@ export default function MusicSearch() {
                 maxWidth: 'var(--max-width)',
                 margin: '0 auto',
                 [theme.breakpoints.up('sm')]: {
-                    backgroundImage: activeMusic ? 'linear-gradient(0, #00000066, transparent)' : 'none'
+                    backgroundImage: activeMusic ? 'linear-gradient(0, #0000001a, transparent)' : 'none'
                 }
             })}>
                 <Stack sx={{
@@ -296,7 +296,7 @@ export default function MusicSearch() {
                                 position: 'relative',
                                 zIndex: 120
                             }} flexGrow={1} justifyContent="center" alignItems="center">
-                                <Typography variant="body1" color="hsl(270, 100%, 100%)">🔍 输入歌名/歌手名开始搜索</Typography>
+                                <Typography variant="body1" color="hsla(0, 0%, 100%, .7)">🔍 输入歌名/歌手名开始搜索</Typography>
                             </Stack>
                         )
                     )
