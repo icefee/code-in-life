@@ -167,7 +167,6 @@ function Index({ location }: PageProps<object, object, unknown, unknown>) {
             >
                 <AppBar
                     position="relative"
-                    elevation={2}
                     sx={{
                         zIndex: 8
                     }}
