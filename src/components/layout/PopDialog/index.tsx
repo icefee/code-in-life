@@ -11,7 +11,7 @@ export interface PopDialogRef {
     close: VoidFunction;
 }
 
-const PopDialog = forwardRef<PopDialogRef, PopDialogProps>(({ children }, ref) => {
+const PopDialog = forwardRef<PopDialogRef, PopDialogProps>(({ children, ...props }, ref) => {
 
     const [open, setOpen] = useState(false)
 
@@ -49,6 +49,7 @@ const PopDialog = forwardRef<PopDialogRef, PopDialogProps>(({ children }, ref) =
                 }
             }}
             TransitionComponent={Transition}
+            {...props}
         >
             {children}
         </Dialog>

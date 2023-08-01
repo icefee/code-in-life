@@ -19,7 +19,7 @@ import { Spinner } from '~/components/loading'
 export function Head() {
     return (
         <>
-            <title key="index">应用中心</title>
+            <title key="apps">应用中心</title>
         </>
     )
 }
@@ -165,7 +165,13 @@ function Index({ location }: PageProps<object, object, unknown, unknown>) {
             <PopDialog
                 ref={dialogRef}
             >
-                <AppBar position="relative">
+                <AppBar
+                    position="relative"
+                    elevation={2}
+                    sx={{
+                        zIndex: 8
+                    }}
+                >
                     <Toolbar>
                         <IconButton
                             edge="start"
