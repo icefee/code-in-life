@@ -33,27 +33,26 @@ function MediaSlider({ buffered, components, sx, showTooltip = false, tooltipFor
     const commonSx = useMemo<SxProps<Theme>>(
         () => ({
             ...sx,
-            height: 3,
             '& .MuiSlider-rail': {
+                color: '#fff',
                 opacity: 1,
-                bgcolor: 'currentcolor',
-                backgroundImage: 'linear-gradient(0, #000, #000)',
+                bgcolor: 'initial',
                 overflow: 'hidden',
                 '&:before, &:after': {
                     content: '""',
                     position: 'absolute',
                     height: 'inherit',
-                    bgcolor: 'inherit',
+                    bgcolor: 'currentcolor',
                     top: 'inherit',
                     transform: 'inherit'
                 },
                 '&:before': {
                     width: '100%',
-                    opacity: .38
+                    opacity: .1
                 },
                 '&:after': {
                     width: buffered * 100 + '%',
-                    opacity: .5,
+                    opacity: .2,
                     transition: (theme) => theme.transitions.create('width')
                 }
             },
