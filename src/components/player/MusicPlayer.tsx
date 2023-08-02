@@ -104,6 +104,7 @@ function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange,
 
     useEffect(() => {
         if (volume.init) {
+            cachedVolumeRef.current = volume.data;
             audioRef.current.volume = volume.data;
         }
     }, [volume])
