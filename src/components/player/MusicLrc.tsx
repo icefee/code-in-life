@@ -149,7 +149,6 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                 open={Boolean(anchorEl)}
                 anchorEl={anchorEl}
                 onClose={handleClose}
-                disablePortal
                 anchorOrigin={{
                     vertical: 'top',
                     horizontal: 'right',
@@ -158,11 +157,14 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                     vertical: 'bottom',
                     horizontal: 'right',
                 }}
-                PaperProps={{
-                    sx: {
-                        backgroundImage: 'none'
+                slotProps={{
+                    paper: {
+                        sx: {
+                            backgroundImage: 'none'
+                        }
                     }
                 }}
+                disablePortal
             >
                 {
                     downloading ? placeholder(downloadingPlaceholder) : lrc.length > 0 ? (

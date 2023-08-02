@@ -857,7 +857,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                                 }
                                 {
                                     !isMobile && (
-                                        <VolumeSetter
+                                        <VolumeSetter.Inline
                                             value={volume.data}
                                             onChange={
                                                 (value) => {

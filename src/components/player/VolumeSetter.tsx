@@ -1,12 +1,12 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Slider, { type SliderProps } from '@mui/material/Slider';
 import Popover from '@mui/material/Popover';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton, { type IconButtonProps } from '@mui/material/IconButton';
-import VolumeUpRoundedIcon from '@mui/icons-material/VolumeUpRounded';
-import VolumeDownRoundedIcon from '@mui/icons-material/VolumeDownRounded';
-import VolumeOffRoundedIcon from '@mui/icons-material/VolumeOffRounded';
+import VolumeUpIcon from '@mui/icons-material/VolumeUp';
+import VolumeDownIcon from '@mui/icons-material/VolumeDown';
+import VolumeOffIcon from '@mui/icons-material/VolumeOff';
 
 interface VolumeSetterProps {
     value: number;
@@ -17,10 +17,21 @@ interface VolumeSetterProps {
     SliderProps?: Pick<SliderProps, 'color'>;
 }
 
-function VolumeSetter({ value, onChange, onMute, disabled = false, IconProps, SliderProps }: VolumeSetterProps) {
+type ComponentType = React.FC<VolumeSetterProps>;
+
+interface VolumeSetterType {
+    PopUp: ComponentType;
+    Inline: ComponentType;
+}
+
+function getVolumneIcon(value: number) {
+    return value > 0 ? value > .5 ? <VolumeUpIcon /> : <VolumeDownIcon /> : <VolumeOffIcon />;
+}
+
+function PopUp({ value, onChange, onMute, disabled = false, IconProps, SliderProps }: VolumeSetterProps) {
 
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null)
-    const volumeIcon = useMemo(() => value > 0 ? value > .5 ? <VolumeUpRoundedIcon /> : <VolumeDownRoundedIcon /> : <VolumeOffRoundedIcon />, [value])
+    const volumeIcon = getVolumneIcon(value)
 
     return (
         <>
@@ -51,6 +62,7 @@ function VolumeSetter({ value, onChange, onMute, disabled = false, IconProps, Sl
                     vertical: 'bottom',
                     horizontal: 'center',
                 }}
+                disablePortal
             >
                 <Stack sx={{
                     height: 120,
@@ -73,6 +85,7 @@ function VolumeSetter({ value, onChange, onMute, disabled = false, IconProps, Sl
                     <IconButton
                         color="inherit"
                         size="small"
+                        disabled={disabled}
                         onClick={onMute}
                     >
                         {volumeIcon}
@@ -83,4 +96,49 @@ function VolumeSetter({ value, onChange, onMute, disabled = false, IconProps, Sl
     )
 }
 
-export default VolumeSetter;
+function Inline({ value, onChange, onMute, disabled = false, IconProps, SliderProps }: VolumeSetterProps) {
+
+    const volumeIcon = getVolumneIcon(value)
+
+    return (
+        <Stack
+            sx={{
+                width: 120
+            }}
+            direction="row"
+            alignItems="center"
+            columnGap={.5}
+        >
+            <Tooltip title="音量">
+                <IconButton
+                    color="inherit"
+                    disabled={disabled}
+                    onClick={onMute}
+                    {...IconProps}
+                >
+                    {volumeIcon}
+                </IconButton>
+            </Tooltip>
+            <Slider
+                size="small"
+                value={value}
+                max={1}
+                step={.00001}
+                disabled={disabled}
+                onChange={
+                    (_event, value: number) => {
+                        onChange(value)
+                    }
+                }
+                {...SliderProps}
+            />
+        </Stack>
+    )
+}
+
+const VolumeSetter: VolumeSetterType = {
+    PopUp,
+    Inline
+}
+
+export default VolumeSetter

@@ -255,7 +255,7 @@ function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange,
                         </Stack>
                         {
                             !isMobile && (
-                                <VolumeSetter
+                                <VolumeSetter.PopUp
                                     value={volume.data}
                                     onChange={
                                         (value) => {
@@ -459,4 +459,4 @@ function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange,
     )
 }
 
-export default MusicPlayer;
+export default MusicPlayer

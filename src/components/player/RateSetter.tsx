@@ -47,26 +47,29 @@ function RateSetter({ value, onChange, IconProps }: RateSetterProps) {
                     vertical: 'bottom',
                     horizontal: 'center',
                 }}
-                PaperProps={{
-                    elevation: 0,
-                    sx: {
-                        overflow: 'visible',
-                        filter: 'drop-shadow(0px 2px 8px rgba(0, 0, 0, .32))',
-                        mb: 1.5,
-                        '&:before': {
-                            content: '""',
-                            display: 'block',
-                            position: 'absolute',
-                            bottom: -8,
-                            left: '50%',
-                            width: 10,
-                            height: 10,
-                            bgcolor: 'background.paper',
-                            transform: 'translate(-50%, -50%) rotate(45deg)',
-                            zIndex: 0
+                slotProps={{
+                    paper: {
+                        elevation: 0,
+                        sx: {
+                            overflow: 'visible',
+                            filter: 'drop-shadow(0px 2px 8px rgba(0, 0, 0, .32))',
+                            mb: 1.5,
+                            '&:before': {
+                                content: '""',
+                                display: 'block',
+                                position: 'absolute',
+                                bottom: -8,
+                                left: '50%',
+                                width: 10,
+                                height: 10,
+                                bgcolor: 'background.paper',
+                                transform: 'translate(-50%, -50%) rotate(45deg)',
+                                zIndex: 0
+                            }
                         }
-                    },
+                    }
                 }}
+                disablePortal
             >
                 {
                     rates.map(
