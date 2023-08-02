@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
-import Stack from '@mui/material/Stack';
-import Slider, { type SliderProps } from '@mui/material/Slider';
-import Popover from '@mui/material/Popover';
-import Tooltip from '@mui/material/Tooltip';
-import IconButton, { type IconButtonProps } from '@mui/material/IconButton';
-import VolumeUpIcon from '@mui/icons-material/VolumeUp';
-import VolumeDownIcon from '@mui/icons-material/VolumeDown';
-import VolumeOffIcon from '@mui/icons-material/VolumeOff';
+import React, { useState } from 'react'
+import Stack from '@mui/material/Stack'
+import Slider, { type SliderProps } from '@mui/material/Slider'
+import Collapse from '@mui/material/Collapse'
+import Popover from '@mui/material/Popover'
+import Tooltip from '@mui/material/Tooltip'
+import IconButton, { type IconButtonProps } from '@mui/material/IconButton'
+import VolumeUpIcon from '@mui/icons-material/VolumeUp'
+import VolumeDownIcon from '@mui/icons-material/VolumeDown'
+import VolumeMuteIcon from '@mui/icons-material/VolumeMute'
 
 interface VolumeSetterProps {
     value: number;
@@ -25,7 +26,7 @@ interface VolumeSetterType {
 }
 
 function getVolumneIcon(value: number) {
-    return value > 0 ? value > .5 ? <VolumeUpIcon /> : <VolumeDownIcon /> : <VolumeOffIcon />;
+    return value > 0 ? value > .75 ? <VolumeUpIcon /> : <VolumeDownIcon /> : <VolumeMuteIcon />;
 }
 
 function PopUp({ value, onChange, onMute, disabled = false, IconProps, SliderProps }: VolumeSetterProps) {
@@ -99,15 +100,18 @@ function PopUp({ value, onChange, onMute, disabled = false, IconProps, SliderPro
 function Inline({ value, onChange, onMute, disabled = false, IconProps, SliderProps }: VolumeSetterProps) {
 
     const volumeIcon = getVolumneIcon(value)
+    const [active, setActive] = useState(false)
 
     return (
         <Stack
-            sx={{
-                width: 120
-            }}
             direction="row"
             alignItems="center"
-            columnGap={.5}
+            columnGap={1}
+            onMouseEnter={() => setActive(true)}
+            onMouseLeave={() => setActive(false)}
+            sx={{
+                '--slider-width': '64px'
+            }}
         >
             <Tooltip title="音量">
                 <IconButton
@@ -119,19 +123,52 @@ function Inline({ value, onChange, onMute, disabled = false, IconProps, SliderPr
                     {volumeIcon}
                 </IconButton>
             </Tooltip>
-            <Slider
-                size="small"
-                value={value}
-                max={1}
-                step={.00001}
-                disabled={disabled}
-                onChange={
-                    (_event, value: number) => {
-                        onChange(value)
+            <Collapse
+                in={active}
+                orientation="horizontal"
+                sx={{
+                    '& .MuiCollapse-root': {
+                        height: '100%'
+                    },
+                    '& .MuiCollapse-wrapperInner': {
+                        display: 'flex',
+                        alignItems: 'center'
                     }
-                }
-                {...SliderProps}
-            />
+                }}
+            >
+                <Slider
+                    sx={{
+                        width: 'var(--slider-width)',
+                        '& .MuiSlider-track': {
+                            backgroundImage: 'linear-gradient(90deg, hsl(180deg, 50%, 50%), hsl(60deg, 50%, 50%), hsl(0, 50%, 50%))',
+                            backgroundSize: 'var(--slider-width) auto'
+                        },
+                        '& .MuiSlider-thumb': {
+                            width: 0,
+                            height: 0,
+                            transition: '.2s ease',
+                            '&.Mui-focusVisible': {
+                                boxShadow: 'none'
+                            }
+                        },
+                        '&:hover .MuiSlider-thumb': {
+                            width: 12,
+                            height: 12
+                        }
+                    }}
+                    size="small"
+                    value={value}
+                    max={1}
+                    step={.00001}
+                    disabled={disabled}
+                    onChange={
+                        (_event, value: number) => {
+                            onChange(value)
+                        }
+                    }
+                    {...SliderProps}
+                />
+            </Collapse>
         </Stack>
     )
 }
