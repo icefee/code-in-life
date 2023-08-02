@@ -1,6 +1,6 @@
 :root {
   --linear-gradient: #90f7f9, #eccbfc;
-  --linear-gradient-image: linear-gradient(0, var(--linear-gradient));
+  --linear-gradient-image: linear-gradient(30deg, var(--linear-gradient));
   --scrollbar-thumb-color: rgba(0, 0, 0, .5);
   --scrollbar-thumb-hover-color: rgba(0, 0, 0, .75);
   --scrollbar-thumb-dark-mode-color: hsl(0 0% 100% / 50%);
