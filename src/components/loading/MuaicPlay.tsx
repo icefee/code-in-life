@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, CSSProperties } from 'react';
+import GlobalStyles from '@mui/material/GlobalStyles';
 import SvgIcon, { SvgIconProps } from '@mui/material/SvgIcon';
-import './music.css';
 
 interface MusicPlaySvgProps extends SvgIconProps {
     animating?: boolean;
@@ -70,6 +70,20 @@ function MusicPlay({ animating = false, fontSize = 18 }: MusicPlayProps) {
             fontSize,
             '--bar-width': '15%'
         } as CSSProperties}>
+            <GlobalStyles
+                styles={
+                    `
+                    @keyframes scale-y {
+                        from {
+                            height: 100%;
+                        }
+                        to {
+                            height: 0;
+                        }
+                    }
+                    `
+                }
+            />
             {
                 bars.map(
                     (delay, index) => (

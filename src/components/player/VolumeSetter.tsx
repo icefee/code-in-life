@@ -51,6 +51,7 @@ function VolumeSetter({ value, onChange, onMute, disabled = false, IconProps, Sl
                     vertical: 'bottom',
                     horizontal: 'center',
                 }}
+                disablePortal
             >
                 <Stack sx={{
                     height: 120,
