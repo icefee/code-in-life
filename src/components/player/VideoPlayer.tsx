@@ -357,6 +357,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
 
     useEffect(() => {
         if (volume.init) {
+            cachedVolumeRef.current = volume.data;
             videoRef.current.volume = volume.data;
         }
     }, [volume])
