@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import Fade from '@mui/material/Fade';
-import Popover from '@mui/material/Popover';
-import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
+import React, { useState, useEffect, useMemo, useRef } from 'react'
+import Grow from '@mui/material/Grow'
+import Popover from '@mui/material/Popover'
+import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 
 interface Lrc {
     time: number;
@@ -111,16 +111,15 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                 direction="row"
                 justifyContent="flex-end"
             >
-                <Typography
-                    variant="caption"
-                    noWrap
+                <Stack
+                    direction="row"
                     sx={{
                         display: 'block',
                         cursor: 'pointer'
                     }}
                     onClick={
                         (event: React.MouseEvent<HTMLDivElement>) => {
-                            setAnchorEl(event.currentTarget);
+                            setAnchorEl(event.currentTarget)
                         }
                     }
                     title={displayLrc}
@@ -129,26 +128,34 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                         displayLrc.split('').map(
                             (text, index) => {
                                 const key = lineIndex + '-' + index;
-                                const timeout = 150 * index;
+                                const timeout = 400 * index;
                                 return (
-                                    <Fade
+                                    <Grow
                                         key={key}
                                         in={show}
                                         timeout={timeout}
                                         unmountOnExit
                                     >
-                                        <span>{text}</span>
-                                    </Fade>
+                                        <Typography
+                                            sx={{
+                                                display: 'inline-flex',
+                                                letterSpacing: 1
+                                            }}
+                                            variant="caption"
+                                            noWrap
+                                        >{text}</Typography>
+                                    </Grow>
                                 )
                             }
                         )
                     }
-                </Typography>
+                </Stack>
             </Stack>
             <Popover
                 open={Boolean(anchorEl)}
                 anchorEl={anchorEl}
                 onClose={handleClose}
+                disablePortal
                 anchorOrigin={{
                     vertical: 'top',
                     horizontal: 'right',
@@ -164,7 +171,6 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                         }
                     }
                 }}
-                disablePortal
             >
                 {
                     downloading ? placeholder(downloadingPlaceholder) : lrc.length > 0 ? (
