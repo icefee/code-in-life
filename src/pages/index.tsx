@@ -439,8 +439,11 @@ export default function MusicSearch() {
 
 async function getSearch(s: string): Promise<SearchMusic[] | null> {
     try {
+        const searchParams = new URLSearchParams({
+            s
+        })
         const { code, data } = await fetch(
-            `/api/music/list?s=${encodeURIComponent(s)}`
+            `/api/music/list?${searchParams}`
         ).then<ApiJsonType<SearchMusic[]>>(
             response => response.json()
         );
