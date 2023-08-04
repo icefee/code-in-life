@@ -210,6 +210,7 @@ function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange,
                             music && (
                                 <Box sx={{
                                     flexGrow: 1,
+                                    alignSelf: 'flex-start',
                                     overflow: 'hidden'
                                 }}>
                                     <MusicLrc id={music.id} currentTime={currentTime} />
