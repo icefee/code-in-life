@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
-import Grow from '@mui/material/Grow'
+import Fade from '@mui/material/Fade'
 import Popover from '@mui/material/Popover'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
@@ -111,15 +111,16 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                 direction="row"
                 justifyContent="flex-end"
             >
-                <Stack
-                    direction="row"
+                <Typography
+                    variant="caption"
+                    noWrap
                     sx={{
                         display: 'block',
                         cursor: 'pointer'
                     }}
                     onClick={
                         (event: React.MouseEvent<HTMLDivElement>) => {
-                            setAnchorEl(event.currentTarget)
+                            setAnchorEl(event.currentTarget);
                         }
                     }
                     title={displayLrc}
@@ -130,32 +131,24 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                                 const key = lineIndex + '-' + index;
                                 const timeout = 400 * index;
                                 return (
-                                    <Grow
+                                    <Fade
                                         key={key}
                                         in={show}
                                         timeout={timeout}
                                         unmountOnExit
                                     >
-                                        <Typography
-                                            sx={{
-                                                display: 'inline-flex',
-                                                letterSpacing: 1
-                                            }}
-                                            variant="caption"
-                                            noWrap
-                                        >{text}</Typography>
-                                    </Grow>
+                                        <span>{text}</span>
+                                    </Fade>
                                 )
                             }
                         )
                     }
-                </Stack>
+                </Typography>
             </Stack>
             <Popover
                 open={Boolean(anchorEl)}
                 anchorEl={anchorEl}
                 onClose={handleClose}
-                disablePortal
                 anchorOrigin={{
                     vertical: 'top',
                     horizontal: 'right',
@@ -171,6 +164,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                         }
                     }
                 }}
+                disablePortal
             >
                 {
                     downloading ? placeholder(downloadingPlaceholder) : lrc.length > 0 ? (
