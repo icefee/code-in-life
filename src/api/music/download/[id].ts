@@ -8,7 +8,7 @@ const handler: ApiHandler = async (req, res) => {
     const response = await getResponse(url)
     const headers = response.headers
     const contentType = headers.get('Content-Type')
-    if (!/audio\/mpeg/.test(contentType)) {
+    if (!/audio\/mpeg|application\/octet-stream/.test(contentType)) {
         throw new Error('file not found.')
     }
     else {
