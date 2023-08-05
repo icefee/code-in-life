@@ -175,6 +175,7 @@ export default function MusicSearch() {
                             onChange={setKeyword}
                             onSubmit={onSearch}
                             loading={searchTask.pending}
+                            buttonColor="secondary"
                             autocompleteKey="music"
                         />
                     </Box>

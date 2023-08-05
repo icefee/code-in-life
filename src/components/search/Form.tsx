@@ -8,7 +8,7 @@ import NoSsr from '@mui/material/NoSsr';
 import CloseIcon from '@mui/icons-material/Close';
 import InputBase from '@mui/material/InputBase';
 import { alpha } from '@mui/material/styles';
-import LoadingButton from '@mui/lab/LoadingButton';
+import LoadingButton, { type LoadingButtonProps } from '@mui/lab/LoadingButton';
 import SearchIcon from '@mui/icons-material/Search';
 import useLocalStorageState from '../hook/useLocalStorageState';
 import { isTextNotNull } from '../../util/string';
@@ -23,6 +23,7 @@ interface SearchFormProps {
     placeholder?: string;
     submitText?: string;
     loadingSubmitText?: string;
+    buttonColor?: LoadingButtonProps['color'];
     autocompleteKey?: string;
 }
 
@@ -45,6 +46,7 @@ function SearchForm({
     placeholder = '输入关键词搜索...',
     submitText = '搜索',
     loadingSubmitText = '搜索中',
+    buttonColor,
     autocompleteKey = null
 }: SearchFormProps, ref: ForwardedRef<SearchFormInstance>) {
 
@@ -208,6 +210,7 @@ function SearchForm({
                             }
                             loading={loading}
                             type="submit"
+                            color={buttonColor}
                             sx={{ p: 1.5 }}
                         >{loading ? loadingSubmitText : submitText}</LoadingButton>
                     </Paper>
