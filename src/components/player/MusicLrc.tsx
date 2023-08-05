@@ -243,7 +243,7 @@ function ScrollingLrc({ lrc, currentTime }: ScrollingLrcProps) {
                                 return (
                                     <Stack sx={{
                                         height: 28,
-                                        color: isActive ? 'primary.main' : 'text.primary'
+                                        color: isActive ? 'secondary.main' : 'text.primary'
                                     }} justifyContent="center" key={index}>
                                         <Typography
                                             variant="subtitle2"

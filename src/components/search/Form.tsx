@@ -1,4 +1,4 @@
-import React, { type SyntheticEvent, useState, useRef, useMemo, forwardRef, useImperativeHandle, ForwardedRef } from 'react';
+import React, { type SyntheticEvent, useState, useRef, useMemo, forwardRef, useImperativeHandle, type ForwardedRef } from 'react';
 import Paper from '@mui/material/Paper';
 import Autocomplete from '@mui/material/Autocomplete';
 import ListItem from '@mui/material/ListItem';
@@ -8,7 +8,7 @@ import NoSsr from '@mui/material/NoSsr';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import InputBase from '@mui/material/InputBase';
 import { alpha } from '@mui/material/styles';
-import LoadingButton from '@mui/lab/LoadingButton';
+import LoadingButton, { type LoadingButtonProps } from '@mui/lab/LoadingButton';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import useLocalStorageState from '../hook/useLocalStorageState';
 import { isTextNotNull } from '~/util/string';
@@ -22,6 +22,7 @@ interface SearchFormProps {
     loading?: boolean;
     placeholder?: string;
     submitText?: string;
+    buttonColor?: LoadingButtonProps['color'];
     loadingSubmitText?: string;
     autocompleteKey?: string;
 }
@@ -44,6 +45,7 @@ function SearchForm({
     loading = false,
     placeholder = '输入关键词搜索...',
     submitText = '搜索',
+    buttonColor,
     loadingSubmitText = '搜索中',
     autocompleteKey = null
 }: SearchFormProps, ref: ForwardedRef<SearchFormInstance>) {
@@ -208,6 +210,7 @@ function SearchForm({
                             }
                             loading={loading}
                             type="submit"
+                            color={buttonColor}
                             sx={{ p: 1.5 }}
                         >{loading ? loadingSubmitText : submitText}</LoadingButton>
                     </Paper>
