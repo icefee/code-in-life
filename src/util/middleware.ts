@@ -38,3 +38,9 @@ export const proxyJson = async (url: string, res: GatsbyFunctionResponse) => {
     res.setHeader('content-type', 'application/json')
     response.body.pipe(res)
 }
+
+
+export const crossOriginIsolatedHeaders = {
+    'Cross-Origin-Embedder-Policy': 'require-corp',
+    'Cross-Origin-Opener-Policy': 'same-origin'
+}

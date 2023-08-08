@@ -1,14 +1,11 @@
 import React, { useState } from 'react'
 import { Script } from 'gatsby'
+import { crossOriginIsolatedHeaders } from '~/util/middleware'
 
 export async function getServerData() {
     return {
         status: 200,
-        headers: {
-            'Cross-Origin-Embedder-Policy': 'require-corp',
-            'Cross-Origin-Opener-Policy': 'same-origin'
-        },
-        props: {}
+        headers: crossOriginIsolatedHeaders
     }
 }
 

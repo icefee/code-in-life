@@ -18,6 +18,7 @@ import { getJson } from '~/adaptors/common'
 import VideoUrlParser from '~/components/search/VideoUrlParser'
 import { VideoPlayer, type PlayState } from '~/components/player'
 import { proxyUrl } from '~/util/proxy'
+import { crossOriginIsolatedHeaders } from '~/util/middleware'
 import * as css from './style.module.css'
 
 interface VideoParams {
@@ -490,10 +491,7 @@ export async function getServerData({ params }: GetServerDataProps): Promise<Get
     const { id } = params as ServerProps;
     return {
         status: 200,
-        headers: {
-            'Cross-Origin-Embedder-Policy': 'require-corp',
-            'Cross-Origin-Opener-Policy': 'same-origin'
-        },
+        headers: crossOriginIsolatedHeaders,
         props: {
             id
         }

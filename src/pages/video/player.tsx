@@ -1,36 +1,44 @@
 import React from 'react'
-import { type PageProps } from 'gatsby'
+import type { GetServerDataProps, GetServerDataReturn, PageProps } from 'gatsby'
 import Box from '@mui/material/Box'
 import { VideoPlayer } from '~/components/player'
 import VideoUrlParser from '~/components/search/VideoUrlParser'
+import { crossOriginIsolatedHeaders } from '~/util/middleware'
+import { M3u8 } from '~/util/regExp'
 
-export async function getServerData() {
-    return {
-        status: 200,
-        headers: {
-            'Cross-Origin-Embedder-Policy': 'require-corp',
-            'Cross-Origin-Opener-Policy': 'same-origin'
-        },
-        props: {}
-    }
-}
-
-interface VideoParserPlayerProps {
+interface ServerProps {
     url: string;
 }
 
-const VideoParserPlayer: React.FC<PageProps<object, object, unknown, VideoParserPlayerProps>> = ({ location }) => {
-    const query = new URLSearchParams(location.search);
-    const url = query.get('url');
+export async function getServerData({ query }: GetServerDataProps): Promise<GetServerDataReturn<ServerProps>> {
+    const { url } = query as Record<'url', string>;
+    return {
+        status: 200,
+        headers: crossOriginIsolatedHeaders,
+        props: {
+            url
+        }
+    }
+}
+
+const VideoParserPlayer: React.FC<PageProps<object, object, unknown, ServerProps>> = ({ serverData }) => {
+
+    const queryUrl = serverData.url
+    const hls = M3u8.isM3u8Url(queryUrl)
+
     return (
         <Box sx={{
             height: '100%',
             bgcolor: '#000'
         }}>
-            <VideoUrlParser url={url}>
+            <VideoUrlParser url={queryUrl}>
                 {
-                    parsedUrl => (
-                        <VideoPlayer autoplay hls url={parsedUrl} />
+                    (url) => (
+                        <VideoPlayer
+                            url={url}
+                            hls={hls}
+                            autoplay
+                        />
                     )
                 }
             </VideoUrlParser>

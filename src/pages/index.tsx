@@ -1,5 +1,5 @@
 import React, { useState, useRef, ComponentType } from 'react'
-import { Link, PageProps } from 'gatsby'
+import { Link } from 'gatsby'
 import type { SvgIconProps } from '@mui/material/SvgIcon'
 import Stack from '@mui/material/Stack'
 import AppBar from '@mui/material/AppBar'
@@ -112,14 +112,11 @@ function AppIcon({ app, onBoot }: AppIconProps) {
     )
 }
 
-function Index({ location }: PageProps<object, object, unknown, unknown>) {
+function Index() {
 
-    const searchParams = new URLSearchParams(location.search)
     const dialogRef = useRef<PopDialogRef | null>(null)
     const [runningApp, setRunningApp] = useState<App | null>(null)
     const [loading, setLoading] = useState(false)
-
-    const isPwaMode = searchParams.get('mode') === 'pwa'
 
     return (
         <Stack sx={(theme) => ({
@@ -147,14 +144,9 @@ function Index({ location }: PageProps<object, object, unknown, unknown>) {
                                 app={app}
                                 onBoot={
                                     (app) => {
-                                        if (isPwaMode) {
-                                            setRunningApp(app)
-                                            dialogRef.current.open()
-                                            setLoading(true)
-                                        }
-                                        else {
-                                            open(app.url)
-                                        }
+                                        setRunningApp(app)
+                                        setLoading(true)
+                                        dialogRef.current.open()
                                     }
                                 }
                             />
@@ -171,7 +163,7 @@ function Index({ location }: PageProps<object, object, unknown, unknown>) {
                         zIndex: 8
                     }}
                 >
-                    <Toolbar>
+                    <Toolbar variant="dense">
                         <IconButton
                             edge="start"
                             color="inherit"

@@ -1,14 +1,12 @@
 import React from 'react'
 import Box from '@mui/material/Box'
 import { VideoPlayer } from '~/components/player'
+import { crossOriginIsolatedHeaders } from '~/util/middleware'
 
 export async function getServerData() {
     return {
         status: 200,
-        headers: {
-            'Cross-Origin-Embedder-Policy': 'require-corp',
-            'Cross-Origin-Opener-Policy': 'same-origin'
-        }
+        headers: crossOriginIsolatedHeaders
     }
 }
 
