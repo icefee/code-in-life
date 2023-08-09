@@ -5,7 +5,12 @@ const config: GatsbyConfig = {
     DEV_SSR: true
   },
   plugins: [
-    'gatsby-plugin-netlify',
+    {
+      resolve: 'gatsby-plugin-netlify',
+      options: {
+        mergeSecurityHeaders: false
+      }
+    },
     {
       resolve: 'gatsby-plugin-manifest',
       options: {
