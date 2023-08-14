@@ -242,13 +242,13 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
             if (!hls.current) {
                 hls.current = new Hls({
                     autoStartLoad: false
-                });
-                hls.current.attachMedia(video);
-                hls.current.on(Events.ERROR, onLoadError);
+                })
+                hls.current.attachMedia(video)
+                hls.current.on(Events.ERROR, onLoadError)
             }
-            hls.current.on(Events.MANIFEST_PARSED, onMainfestParsed);
-            hls.current.on(Events.MEDIA_ATTACHED, onMediaAttached);
-            hls.current.loadSource(url);
+            hls.current.on(Events.MANIFEST_PARSED, onMainfestParsed)
+            hls.current.on(Events.MEDIA_ATTACHED, onMediaAttached)
+            hls.current.loadSource(url)
             // video.canPlayType('application/vnd.apple.mpegurl')
         }
         else {
@@ -431,14 +431,14 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                         }
                     }
                     else if (type === TaskType.downloadTs) {
-                        showStatus(`下载视频分片: ${Math.round(progress * 100)}%`, 1e4)
+                        showStatus(`下载视频分片: ${Math.round(progress * 100)}%`, 2e4)
                     }
                     else if (type === TaskType.mergeTs) {
                         if (progress === 0) {
-                            showStatus('合并视频分片', 1e4)
+                            showStatus('合并视频分片', 2e4)
                         }
                         else {
-                            showStatus('视频分片合并完成')
+                            showStatus('视频分片合并完成', 2e4)
                         }
                     }
                 })
@@ -618,11 +618,12 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                         }
                         onTimeUpdate={
                             (event: React.SyntheticEvent<HTMLVideoElement>) => {
-                                const video = event.currentTarget;
+                                const video = event.currentTarget
                                 if (!seekingRef.current) {
-                                    setCurrentTime(video.currentTime);
-                                    onTimeUpdate?.(state);
+                                    setCurrentTime(video.currentTime)
+                                    onTimeUpdate?.(state)
                                 }
+                                setError(false)
                             }
                         }
                         onProgress={
