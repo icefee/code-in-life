@@ -90,10 +90,10 @@ const SiteSearch: React.FunctionComponent<PageProps<object, object, unknown, Sea
                                                 onChange={setKeyword}
                                                 onSubmit={
                                                     (value) => {
-                                                        const searchParams = new URLSearchParams(window.location.search)
+                                                        const searchParams = new URLSearchParams(location.search)
                                                         searchParams.set('s', value)
                                                         searchParams.delete('p')
-                                                        window.location.href = `/video/${api}?${searchParams}`
+                                                        location.href = `/video/${api}?${searchParams}`
                                                     }
                                                 }
                                             />

@@ -18,7 +18,6 @@ interface SearchFormProps {
     value: string;
     onChange: (value: string) => void;
     onSubmit?: (value: string) => void;
-    staticFields?: Record<string, string>;
     loading?: boolean;
     placeholder?: string;
     submitText?: string;
@@ -41,7 +40,6 @@ function SearchForm({
     value,
     onChange,
     onSubmit,
-    staticFields,
     loading = false,
     placeholder = '输入关键词搜索...',
     submitText = '搜索',
@@ -123,6 +121,9 @@ function SearchForm({
                 onClose={
                     () => setAutoCompleteOpen(false)
                 }
+                onInputChange={
+                    (_event, value) => onChange(value)
+                }
                 onChange={
                     (_event: SyntheticEvent<Element, Event>, value: string | null) => {
                         if (value && value !== prevSubmitValue.current) {
@@ -191,13 +192,6 @@ function SearchForm({
                                 ...params.inputProps
                             }}
                         />
-                        {
-                            staticFields && Object.entries(staticFields).map(
-                                ([key, value]) => (
-                                    <input key={key} type="hidden" name={key} defaultValue={value} />
-                                )
-                            )
-                        }
                         <LoadingButton
                             loadingPosition="start"
                             startIcon={
