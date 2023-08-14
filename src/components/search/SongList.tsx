@@ -42,6 +42,7 @@ function SongList({ data, onAction, ...rest }: SongListProps) {
                     <Typography variant="button">搜索到{data.length}首歌曲</Typography>
                     <Button
                         size="small"
+                        color="secondary"
                         startIcon={<PlaylistAddIcon />}
                         onClick={
                             () => onAction('add-all')
