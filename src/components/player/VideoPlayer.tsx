@@ -222,10 +222,6 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
 
     const videoLoaded = useMemo(() => duration > 0, [duration])
 
-    const transitionStyle = useMemo<React.CSSProperties>(() => isMobile ? {
-        transitionDelay: '300ms'
-    } : undefined, [isMobile])
-
     const onMainfestParsed: HlsListeners[typeof Events.MANIFEST_PARSED] = () => {
         hls.current.startLoad(initPlayTime)
     }
@@ -235,7 +231,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
     }
 
     const onLoadError: HlsListeners[typeof Events.ERROR] = (_event, errorData) => {
-        if (errorData.fatal) {
+        if (errorData.fatal && !videoLoaded) {
             setError(true)
         }
     }
@@ -634,7 +630,6 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                                     setCurrentTime(video.currentTime)
                                     onTimeUpdate?.(state)
                                 }
-                                setError(false)
                             }
                         }
                         onProgress={
@@ -668,7 +663,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                         }} justifyContent="center" alignItems="center">
                             <Spinner
                                 sx={{
-                                    fontSize: 72
+                                    fontSize: 64
                                 }}
                                 color="inherit"
                             />
@@ -790,7 +785,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                     }
                 />
                 {outlet}
-                <Fade in={controlsShow} timeout={400} style={transitionStyle} mountOnEnter>
+                <Fade in={controlsShow} timeout={400} mountOnEnter>
                     <Stack
                         sx={{
                             position: 'absolute',
@@ -956,7 +951,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                         </Stack>
                     </Stack>
                 </Fade>
-                <Fade in={isMobile && controlsShow && !loading && !error} timeout={400} style={transitionStyle} mountOnEnter>
+                <Fade in={isMobile && controlsShow && !loading && !error} timeout={400} mountOnEnter>
                     <PlayOrPauseButton
                         playing={playing}
                         onTogglePlay={videoLoaded ? togglePlay : null}
