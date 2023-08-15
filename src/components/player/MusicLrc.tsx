@@ -127,20 +127,18 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                 >
                     {
                         displayLrc.split('').map(
-                            (text, index) => {
-                                const key = lineIndex + '-' + index;
-                                const timeout = 400 * index;
-                                return (
-                                    <Fade
-                                        key={key}
-                                        in={show}
-                                        timeout={timeout}
-                                        unmountOnExit
-                                    >
-                                        <span>{text}</span>
-                                    </Fade>
-                                )
-                            }
+                            (text, index) => (
+                                <Fade
+                                    key={lineIndex + '-' + index}
+                                    in={show}
+                                    style={{
+                                        transitionDelay: 100 * index + 'ms'
+                                    }}
+                                    unmountOnExit
+                                >
+                                    <span>{text}</span>
+                                </Fade>
+                            )
                         )
                     }
                 </Typography>
