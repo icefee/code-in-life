@@ -436,27 +436,23 @@ function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange,
                     )
                 }
             </Stack>
-            {
-                isDev && (
-                    <Box sx={{
-                        position: 'absolute',
-                        left: 0,
-                        top: 0,
-                        right: 0,
-                        bottom: 0,
-                        zIndex: 1
-                    }}>
-                        <AudioVisual
-                            audio={audioRef}
-                            colors={[
-                                '#ff000040',
-                                '#ffff0040',
-                                '#00ffff40'
-                            ]}
-                        />
-                    </Box>
-                )
-            }
+            <Box sx={{
+                position: 'absolute',
+                left: 0,
+                top: 0,
+                right: 0,
+                bottom: 0,
+                zIndex: 1
+            }}>
+                <AudioVisual
+                    audio={audioRef}
+                    colors={[
+                        '#ff000040',
+                        '#ffff0040',
+                        '#00ffff40'
+                    ]}
+                />
+            </Box>
         </Stack>
     )
 }

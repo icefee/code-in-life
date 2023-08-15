@@ -3,6 +3,8 @@ import AbortController from 'abort-controller'
 import { type Adaptor } from '.'
 export { isTextNotNull } from '../util/string'
 
+export { type HeadersInit, Headers } from 'node-fetch'
+
 export const defaultPoster = '/poster.jpg'
 
 export function getResponse(...args: Parameters<typeof fetch>): Promise<Response> {
