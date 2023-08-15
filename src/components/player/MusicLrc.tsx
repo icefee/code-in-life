@@ -131,6 +131,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                                 <Fade
                                     key={lineIndex + '-' + index}
                                     in={show}
+                                    timeout={800}
                                     style={{
                                         transitionDelay: 100 * index + 'ms'
                                     }}
