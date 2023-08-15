@@ -5,7 +5,6 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Fade from '@mui/material/Fade';
-import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 import { styled, alpha } from '@mui/material/styles';
 import Hls, { type HlsListeners } from 'hls.js';
@@ -27,6 +26,7 @@ import VolumeSetter from './VolumeSetter';
 import RateSetter from './RateSetter';
 import MiniProcess from './MiniProcess';
 import SeekState from './SeekState';
+import { Spinner } from '../loading';
 import { timeFormatter } from '~/util/date';
 import { isMobileDevice, isIos } from '~/util/env';
 
@@ -221,6 +221,10 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
     useImperativeHandle(ref, () => videoRef.current, [])
 
     const videoLoaded = useMemo(() => duration > 0, [duration])
+
+    const transitionStyle = useMemo<React.CSSProperties>(() => isMobile ? {
+        transitionDelay: '300ms'
+    } : undefined, [isMobile])
 
     const onMainfestParsed: HlsListeners[typeof Events.MANIFEST_PARSED] = () => {
         hls.current.startLoad(initPlayTime)
@@ -570,6 +574,13 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                             setSeekingDuration(null)
                         }
                     }
+                    onDoubleClick={
+                        () => {
+                            if (isMobile) {
+                                togglePlay(!playing)
+                            }
+                        }
+                    }
                 >
                     <StyledVideo
                         ref={videoRef}
@@ -655,7 +666,12 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                             zIndex: 1,
                             color: '#fff'
                         }} justifyContent="center" alignItems="center">
-                            <CircularProgress color="inherit" />
+                            <Spinner
+                                sx={{
+                                    fontSize: 72
+                                }}
+                                color="inherit"
+                            />
                         </Stack>
                     </Fade>
                     {
@@ -774,7 +790,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                     }
                 />
                 {outlet}
-                <Fade in={controlsShow} timeout={800} mountOnEnter>
+                <Fade in={controlsShow} timeout={400} style={transitionStyle} mountOnEnter>
                     <Stack
                         sx={{
                             position: 'absolute',
@@ -940,7 +956,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                         </Stack>
                     </Stack>
                 </Fade>
-                <Fade in={isMobile && controlsShow && !loading && !error} timeout={400} mountOnEnter>
+                <Fade in={isMobile && controlsShow && !loading && !error} timeout={400} style={transitionStyle} mountOnEnter>
                     <PlayOrPauseButton
                         playing={playing}
                         onTogglePlay={videoLoaded ? togglePlay : null}

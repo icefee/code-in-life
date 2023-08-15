@@ -24,7 +24,7 @@ const handler: ApiHandler = async (req, res) => {
         throw new Error(msg)
     }
     if (type === 'poster') {
-        res.redirect(301, data ? proxy === '1' ? proxyUrl(data.pic) : data.pic : `/image_fail.jpg`)
+        res.redirect(301, data ? (data.proxy || proxy === '1') ? proxyUrl(data.pic) : data.pic : `/image_fail.jpg`)
     }
     else {
         const related = await getRelatedList(api, data.tid)

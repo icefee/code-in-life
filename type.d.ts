@@ -49,6 +49,7 @@ declare interface VideoInfo {
     last: string;
     state: number;
     tid: number;
+    proxy: boolean;
     dataList: VideoSource[];
     related: VideoRelated[];
 }
