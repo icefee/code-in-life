@@ -16,6 +16,8 @@ import NoData from '~/components/search/NoData'
 import SongList from '~/components/search/SongList'
 import MusicPlayList from '~/components/player/MusicPlayList'
 import useLocalStorageState from '~/components/hook/useLocalStorageState'
+import { disableMusicProxy } from '~/util/env'
+import { Api } from '~/util/config'
 
 export default function MusicSearch() {
 
@@ -110,14 +112,17 @@ export default function MusicSearch() {
     }
 
     const downloadSong = (music: SearchMusic) => {
+        const baseUrl = disableMusicProxy ? Api.hostDomain : ''
+        const query = generateSearchParams(music)
         downloaFile(
-            `/api/music/download/${music.id}?${generateSearchParams(music)}`
+            `${baseUrl}/api/music/download/${music.id}?${query}`
         )
     }
 
     const downloadLrc = (music: SearchMusic) => {
+        const query = generateSearchParams(music)
         downloaFile(
-            `/api/music/lrc/download/${music.id}?${generateSearchParams(music)}`
+            `/api/music/lrc/download/${music.id}?${query}`
         )
     }
 

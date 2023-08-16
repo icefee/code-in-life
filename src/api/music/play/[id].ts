@@ -1,13 +1,17 @@
 import { createApiAdaptor, parseId, getResponse, Headers } from '../../../adaptors'
 import { errorHandler, ApiHandler } from '../../../util/middleware'
-import { isDev } from '../../../util/env'
+import { disableMusicProxy } from '../../../util/env'
 
 const handler: ApiHandler = async (req, res) => {
     const { key, id } = parseId(req.params.id)
     const adaptor = createApiAdaptor(key)
     const url = await adaptor.parseMusicUrl(id)
     if (url) {
-        if (isDev) {
+        if (disableMusicProxy) {
+            res.redirect(url)
+            res.end()
+        }
+        else {
             const requestHeaders = new Headers()
             if (req.headers['range']) {
                 requestHeaders.append('range', req.headers['range'])
@@ -24,10 +28,6 @@ const handler: ApiHandler = async (req, res) => {
                 res.setHeader(key, headers.get(key))
             }
             response.body.pipe(res)
-        }
-        else {
-            res.redirect(url)
-            res.end()
         }
     }
     else {
