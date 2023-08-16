@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
-import type { GetServerDataReturn, PageProps } from 'gatsby'
 import Stack from '@mui/material/Stack'
 import Snackbar from '@mui/material/Snackbar'
 import Alert, { type AlertProps } from '@mui/material/Alert'
@@ -17,16 +16,9 @@ import NoData from '~/components/search/NoData'
 import SongList from '~/components/search/SongList'
 import MusicPlayList from '~/components/player/MusicPlayList'
 import useLocalStorageState from '~/components/hook/useLocalStorageState'
-import { isMusicProxyEnabled } from '~/util/env'
 import { Api } from '~/util/config'
 
-type ServerProps = {
-    enableVisual: boolean;
-}
-
-export default function MusicSearch({ serverData }: PageProps<object, object, unknown, ServerProps>) {
-
-    const { enableVisual } = serverData
+export default function MusicSearch() {
 
     const [keyword, setKeyword] = useState('')
     const [toastMsg, setToastMsg] = useState<ToastMsg<AlertProps['severity']>>(null)
@@ -46,6 +38,8 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
 
     const [playlist, setPlaylist] = useLocalStorageState<SearchMusic[]>('__playlist', [])
     const songListWrapRef = useRef<HTMLDivElement>()
+
+    const [enableVisual, setEnableVisual] = useState(false)
 
     const handleClose = (_event?: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
@@ -96,6 +90,10 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
             data
         })
     }
+
+    useEffect(() => {
+        setEnableVisual(location.hostname.endsWith(Api.gatsbyDomain))
+    }, [])
 
     useEffect(() => {
         if (playlist.init && playlist.data.length > 0) {
@@ -470,15 +468,5 @@ async function getSearch(s: string): Promise<SearchMusic[] | null> {
     }
     catch (err) {
         return null
-    }
-}
-
-export async function getServerData(): Promise<GetServerDataReturn<ServerProps>> {
-    const enableVisual = isMusicProxyEnabled()
-    return {
-        status: 200,
-        props: {
-            enableVisual
-        }
     }
 }
