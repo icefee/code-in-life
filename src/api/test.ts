@@ -5,6 +5,8 @@ const handler: ApiHandler = async (req, res) => {
 
     let msg = 'hello';
 
+    const { env } = req.query
+
     /*
     const db = open({
         path: 'test-db',
@@ -23,6 +25,7 @@ const handler: ApiHandler = async (req, res) => {
 
     res.json({
         msg,
+        env: env ? process.env[env] : null
     })
 }
 

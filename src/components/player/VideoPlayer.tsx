@@ -381,24 +381,26 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
         }
     }
 
+    const onKeyDown = (event: KeyboardEvent) => {
+        event.preventDefault()
+    }
+
     const onKeyUp = (event: KeyboardEvent) => {
-        const bindAction = hotKeysMap[event.code];
-        if (bindAction) {
-            event.preventDefault();
-            bindAction(videoRef.current, event);
-        }
+        const bindAction = hotKeysMap[event.code]
+        bindAction?.(videoRef.current, event)
     }
 
     useEffect(() => {
         if (!isMobile) {
+            window.addEventListener('keydown', onKeyDown)
             window.addEventListener('keyup', onKeyUp)
         }
         return () => {
             if (!isMobile) {
+                window.removeEventListener('keydown', onKeyDown)
                 window.removeEventListener('keyup', onKeyUp)
             }
-            hls.current?.detachMedia();
-            hls.current?.destroy();
+            hls.current?.destroy()
         }
     }, [])
 
