@@ -83,6 +83,13 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
         return '';
     }, [downloading, lrc, currentTime])
 
+    const lineDuration = useMemo(() => {
+        if (lrc.length > 0 && lineIndex < lrc.length - 1) {
+            return lrc[lineIndex + 1].time - lrc[lineIndex].time
+        }
+        return 0
+    }, [lrc, lineIndex])
+
     const placeholder = (text: string) => (
         <Box sx={{
             p: 2
@@ -127,19 +134,23 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                 >
                     {
                         displayLrc.split('').map(
-                            (text, index) => (
-                                <Fade
-                                    key={lineIndex + '-' + index}
-                                    in={show}
-                                    timeout={800}
-                                    style={{
-                                        transitionDelay: 100 * index + 'ms'
-                                    }}
-                                    unmountOnExit
-                                >
-                                    <span>{text}</span>
-                                </Fade>
-                            )
+                            (text, index, chars) => {
+                                const totalDelay = Math.min(lineDuration, 3) * 1000
+                                const delay = totalDelay / chars.length
+                                return (
+                                    <Fade
+                                        key={lineIndex + '-' + index}
+                                        in={show}
+                                        timeout={Math.min(totalDelay / 2, 800)}
+                                        style={{
+                                            transitionDelay: delay * index + 'ms'
+                                        }}
+                                        unmountOnExit
+                                    >
+                                        <span>{text}</span>
+                                    </Fade>
+                                )
+                            }
                         )
                     }
                 </Typography>
