@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
+import type { GetServerDataReturn, PageProps } from 'gatsby'
 import Stack from '@mui/material/Stack'
 import Snackbar from '@mui/material/Snackbar'
 import Alert, { type AlertProps } from '@mui/material/Alert'
@@ -16,10 +17,16 @@ import NoData from '~/components/search/NoData'
 import SongList from '~/components/search/SongList'
 import MusicPlayList from '~/components/player/MusicPlayList'
 import useLocalStorageState from '~/components/hook/useLocalStorageState'
-import { disableMusicProxy } from '~/util/env'
+import { isMusicProxyDisabled } from '~/util/env'
 import { Api } from '~/util/config'
 
-export default function MusicSearch() {
+type ServerProps = {
+    disableVisual: boolean;
+}
+
+export default function MusicSearch({ serverData }: PageProps<object, object, unknown, ServerProps>) {
+
+    const { disableVisual } = serverData
 
     const [keyword, setKeyword] = useState('')
     const [toastMsg, setToastMsg] = useState<ToastMsg<AlertProps['severity']>>(null)
@@ -112,7 +119,7 @@ export default function MusicSearch() {
     }
 
     const downloadSong = (music: SearchMusic) => {
-        const baseUrl = disableMusicProxy ? Api.hostDomain : ''
+        const baseUrl = disableVisual ? Api.hostDomain : ''
         const query = generateSearchParams(music)
         downloaFile(
             `${baseUrl}/api/music/download/${music.id}?${query}`
@@ -320,6 +327,7 @@ export default function MusicSearch() {
                             music={activeMusic}
                             playing={playing}
                             onPlayStateChange={setPlaying}
+                            disableVisual={disableVisual}
                             repeat={repeat.data}
                             extendButtons={
                                 <Tooltip title="播放列表">
@@ -462,5 +470,15 @@ async function getSearch(s: string): Promise<SearchMusic[] | null> {
     }
     catch (err) {
         return null
+    }
+}
+
+export async function getServerData(): Promise<GetServerDataReturn<ServerProps>> {
+    const disableVisual = isMusicProxyDisabled()
+    return {
+        status: 200,
+        props: {
+            disableVisual
+        }
     }
 }

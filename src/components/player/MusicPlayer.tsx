@@ -19,7 +19,7 @@ import MediaSlider from './MediaSlider';
 import AudioVisual from 'react-audio-visual';
 import { generate } from '~/util/url';
 import { timeFormatter } from '~/util/date';
-import { isMobileDevice, isMusicProxyDisabled } from '~/util/env';
+import { isMobileDevice } from '~/util/env';
 
 export enum RepeatMode {
     All,
@@ -35,9 +35,10 @@ interface MusicPlayerProps {
     onRepeatChange(mode: RepeatMode): void;
     onPlayStateChange(state: boolean): void;
     onPlayEnd?(end: boolean): void;
+    disableVisual?: boolean;
 }
 
-function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange, onRepeatChange, onPlayEnd }: MusicPlayerProps) {
+function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange, onRepeatChange, onPlayEnd, disableVisual = false }: MusicPlayerProps) {
 
     const audioRef = useRef<HTMLAudioElement>()
     const [audioReady, setAudioReady] = useState(false)
@@ -437,7 +438,7 @@ function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange,
                 }
             </Stack>
             {
-                !isMusicProxyDisabled() && (
+                !disableVisual && (
                     <Box sx={{
                         position: 'absolute',
                         left: 0,
