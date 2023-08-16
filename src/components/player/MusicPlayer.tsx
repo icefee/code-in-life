@@ -19,7 +19,7 @@ import MediaSlider from './MediaSlider';
 import AudioVisual from 'react-audio-visual';
 import { generate } from '~/util/url';
 import { timeFormatter } from '~/util/date';
-import { isMobileDevice, disableMusicProxy } from '~/util/env';
+import { isMobileDevice, isMusicProxyDisabled } from '~/util/env';
 
 export enum RepeatMode {
     All,
@@ -437,7 +437,7 @@ function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange,
                 }
             </Stack>
             {
-                !disableMusicProxy && (
+                !isMusicProxyDisabled() && (
                     <Box sx={{
                         position: 'absolute',
                         left: 0,

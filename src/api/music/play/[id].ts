@@ -1,13 +1,13 @@
 import { createApiAdaptor, parseId, getResponse, Headers } from '../../../adaptors'
 import { errorHandler, ApiHandler } from '../../../util/middleware'
-import { disableMusicProxy } from '../../../util/env'
+import { isMusicProxyDisabled } from '../../../util/env'
 
 const handler: ApiHandler = async (req, res) => {
     const { key, id } = parseId(req.params.id)
     const adaptor = createApiAdaptor(key)
     const url = await adaptor.parseMusicUrl(id)
     if (url) {
-        if (disableMusicProxy) {
+        if (isMusicProxyDisabled()) {
             res.redirect(url)
             res.end()
         }
