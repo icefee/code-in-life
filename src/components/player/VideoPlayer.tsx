@@ -233,6 +233,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
     const onLoadError: HlsListeners[typeof Events.ERROR] = (_event, errorData) => {
         if (errorData.fatal && !videoLoaded) {
             setError(true)
+            setLoading(false)
         }
     }
 
