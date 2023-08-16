@@ -35,10 +35,10 @@ interface MusicPlayerProps {
     onRepeatChange(mode: RepeatMode): void;
     onPlayStateChange(state: boolean): void;
     onPlayEnd?(end: boolean): void;
-    disableVisual?: boolean;
+    enableVisual?: boolean;
 }
 
-function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange, onRepeatChange, onPlayEnd, disableVisual = false }: MusicPlayerProps) {
+function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange, onRepeatChange, onPlayEnd, enableVisual = false }: MusicPlayerProps) {
 
     const audioRef = useRef<HTMLAudioElement>()
     const [audioReady, setAudioReady] = useState(false)
@@ -438,7 +438,7 @@ function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange,
                 }
             </Stack>
             {
-                !disableVisual && (
+                enableVisual && (
                     <Box sx={{
                         position: 'absolute',
                         left: 0,

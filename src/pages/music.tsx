@@ -17,16 +17,16 @@ import NoData from '~/components/search/NoData'
 import SongList from '~/components/search/SongList'
 import MusicPlayList from '~/components/player/MusicPlayList'
 import useLocalStorageState from '~/components/hook/useLocalStorageState'
-import { isMusicProxyDisabled } from '~/util/env'
+import { isMusicProxyEnabled } from '~/util/env'
 import { Api } from '~/util/config'
 
 type ServerProps = {
-    disableVisual: boolean;
+    enableVisual: boolean;
 }
 
 export default function MusicSearch({ serverData }: PageProps<object, object, unknown, ServerProps>) {
 
-    const { disableVisual } = serverData
+    const { enableVisual } = serverData
 
     const [keyword, setKeyword] = useState('')
     const [toastMsg, setToastMsg] = useState<ToastMsg<AlertProps['severity']>>(null)
@@ -119,7 +119,7 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
     }
 
     const downloadSong = (music: SearchMusic) => {
-        const baseUrl = disableVisual ? Api.hostDomain : ''
+        const baseUrl = enableVisual ? '' : Api.hostDomain
         const query = generateSearchParams(music)
         downloaFile(
             `${baseUrl}/api/music/download/${music.id}?${query}`
@@ -327,7 +327,7 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
                             music={activeMusic}
                             playing={playing}
                             onPlayStateChange={setPlaying}
-                            disableVisual={disableVisual}
+                            enableVisual={enableVisual}
                             repeat={repeat.data}
                             extendButtons={
                                 <Tooltip title="播放列表">
@@ -474,11 +474,11 @@ async function getSearch(s: string): Promise<SearchMusic[] | null> {
 }
 
 export async function getServerData(): Promise<GetServerDataReturn<ServerProps>> {
-    const disableVisual = isMusicProxyDisabled()
+    const enableVisual = isMusicProxyEnabled()
     return {
         status: 200,
         props: {
-            disableVisual
+            enableVisual
         }
     }
 }
