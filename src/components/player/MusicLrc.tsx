@@ -136,14 +136,14 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                         displayLrc.split('').map(
                             (text, index, chars) => {
                                 const totalDelay = Math.min(lineDuration, 3) * 1000
-                                const delay = totalDelay / chars.length
+                                const delay = (totalDelay / chars.length / 2) * index
                                 return (
                                     <Fade
                                         key={lineIndex + '-' + index}
                                         in={show}
                                         timeout={Math.min(totalDelay / 2, 800)}
                                         style={{
-                                            transitionDelay: delay * index + 'ms'
+                                            transitionDelay: delay + 'ms'
                                         }}
                                         unmountOnExit
                                     >

@@ -226,6 +226,14 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
         hls.current.startLoad(initPlayTime)
     }
 
+    const showLoading = () => {
+        setLoading(true)
+    }
+
+    const hideLoading = () => {
+        setLoading(false)
+    }
+
     const onMediaAttached: HlsListeners[typeof Events.MEDIA_ATTACHED] = () => {
         tryToAutoPlay()
     }
@@ -233,7 +241,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
     const onLoadError: HlsListeners[typeof Events.ERROR] = (_event, errorData) => {
         if (errorData.fatal && !videoLoaded) {
             setError(true)
-            setLoading(false)
+            hideLoading()
         }
     }
 
@@ -288,14 +296,6 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
         if (autoplay) {
             playVideo()
         }
-    }
-
-    const showLoading = () => {
-        setLoading(true)
-    }
-
-    const hideLoading = () => {
-        setLoading(false)
     }
 
     const toggleFullscreen = async () => {
@@ -650,7 +650,10 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                             () => setRate(videoRef.current.playbackRate)
                         }
                         onError={
-                            () => setError(true)
+                            () => {
+                                setError(true)
+                                hideLoading()
+                            }
                         }
                         onEnded={onEnd}
                     />
