@@ -68,27 +68,29 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
 
     const lineIndex = useMemo(() => {
         const index = lrc.findIndex(
-            ({ time }) => time >= currentTime
+            ({ time }) => time > currentTime
         )
-        return index > -1 ? index > 0 ? index - 1 : 0 : lrc.length - 1;
+        return index > -1 ? index - 1 : lrc.length - 1;
     }, [lrc, currentTime])
+
+    const lineActive = useMemo(() => lrc.length > 0 && lineIndex !== -1, [lrc, lineIndex])
 
     const lrcLine = useMemo(() => {
         if (downloading) {
             return downloadingPlaceholder
         }
-        if (lrc.length > 0) {
+        if (lineActive) {
             return lrc[lineIndex].text
         }
         return '';
-    }, [downloading, lrc, currentTime])
+    }, [downloading, lineActive, lrc, lineIndex])
 
     const lineDuration = useMemo(() => {
-        if (lrc.length > 0 && lineIndex < lrc.length - 1) {
+        if (lineActive && lineIndex < lrc.length - 1) {
             return lrc[lineIndex + 1].time - lrc[lineIndex].time
         }
         return 0
-    }, [lrc, lineIndex])
+    }, [lineActive, lrc, lineIndex])
 
     const placeholder = (text: string) => (
         <Box sx={{

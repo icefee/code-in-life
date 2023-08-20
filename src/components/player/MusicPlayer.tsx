@@ -19,7 +19,7 @@ import MediaSlider from './MediaSlider';
 import AudioVisual from 'react-audio-visual';
 import { generate } from '~/util/url';
 import { timeFormatter } from '~/util/date';
-import { isMobileDevice } from '~/util/env';
+import { isMobileDevice, isDev } from '~/util/env';
 
 export enum RepeatMode {
     All,
@@ -438,7 +438,7 @@ function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange,
                 }
             </Stack>
             {
-                enableVisual && (
+                (enableVisual || isDev) && (
                     <Box sx={{
                         position: 'absolute',
                         left: 0,
