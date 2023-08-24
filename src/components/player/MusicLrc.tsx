@@ -6,7 +6,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { styled } from '@mui/material/styles'
 
-const StyledSpan = styled('span')(({ theme }) => ({}))
+const StyledSpan = styled('span')(_ => ({}))
 
 interface Lrc {
     time: number;
@@ -148,15 +148,16 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                     {
                         displayLrc.split('').map(
                             (text, index, chars) => {
-                                const totalDelay = Math.min(lineDuration, 3) * 1000
-                                const delay = (totalDelay / chars.length) * index
+                                const totalDelay = Math.max(lineDuration, 3) * 1000
+                                const averageDelay = totalDelay / chars.length
+                                const delay = averageDelay * index
                                 return (
                                     <Fade
                                         key={lineIndex + '-' + index}
                                         in={show}
                                         timeout={Math.min(totalDelay / 2, 800)}
                                         style={{
-                                            transitionDelay: delay / 3 + 'ms'
+                                            transitionDelay: delay / 4 + 'ms'
                                         }}
                                         unmountOnExit
                                     >
@@ -164,7 +165,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                                             <StyledSpan
                                                 sx={(theme) => ({
                                                     transition: theme.transitions.create('color', {
-                                                        duration: 400
+                                                        duration: averageDelay
                                                     }),
                                                     color: linePlayedDuration * 1e3 > delay ? theme.palette.secondary.light : null
                                                 })}
