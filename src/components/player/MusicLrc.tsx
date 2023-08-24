@@ -137,7 +137,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                     {
                         displayLrc.split('').map(
                             (text, index, chars) => {
-                                const totalDelay = Math.min(lineDuration, 3) * 1000
+                                const totalDelay = Math.max(lineDuration, 3) * 1000
                                 const delay = (totalDelay / chars.length / 2) * index
                                 return (
                                     <Fade
@@ -217,15 +217,16 @@ function ScrollingLrc({ lrc, currentTime }: ScrollingLrcProps) {
                 maxWidth: '75vw'
             }
         })}>
-            <Box sx={{
+            <Box sx={(theme) => ({
                 position: 'relative',
                 height: '100%',
                 overflow: 'hidden',
                 px: 2,
                 py: 1,
+                '--color-line-gradient': `transparent, ${theme.palette.background.paper}`,
                 '&::before': {
                     content: '""',
-                    background: (theme) => `linear-gradient(0deg, transparent, ${theme.palette.background.paper})`,
+                    background: 'linear-gradient(0deg, var(--color-line-gradient))',
                     position: 'absolute',
                     left: 0,
                     top: 0,
@@ -235,7 +236,7 @@ function ScrollingLrc({ lrc, currentTime }: ScrollingLrcProps) {
                 },
                 '&::after': {
                     content: '""',
-                    background: (theme) => `linear-gradient(0deg, ${theme.palette.background.paper}, transparent)`,
+                    background: 'linear-gradient(180deg, var(--color-line-gradient))',
                     position: 'absolute',
                     left: 0,
                     bottom: 0,
@@ -243,7 +244,7 @@ function ScrollingLrc({ lrc, currentTime }: ScrollingLrcProps) {
                     height: 120,
                     zIndex: 2
                 }
-            }}>
+            })}>
                 <Box sx={{
                     transition: (theme) => theme.transitions.create('transform'),
                     transform: `translate(0, calc(20vh - 24px - ${28 * activeIndex}px))`
