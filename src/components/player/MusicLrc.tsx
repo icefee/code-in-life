@@ -4,6 +4,9 @@ import Popover from '@mui/material/Popover'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { styled } from '@mui/material/styles'
+
+const StyledSpan = styled('span')(({ theme }) => ({}))
 
 interface Lrc {
     time: number;
@@ -92,6 +95,14 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
         return 0
     }, [lineActive, lrc, lineIndex])
 
+    const linePlayedDuration = useMemo(() => {
+        let timeStart = 0
+        if (lineIndex > -1 && lrc.length > 0) {
+            timeStart = lrc[lineIndex].time
+        }
+        return currentTime - timeStart
+    }, [lrc, lineIndex, currentTime])
+
     const placeholder = (text: string) => (
         <Box sx={{
             p: 2
@@ -138,18 +149,27 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                         displayLrc.split('').map(
                             (text, index, chars) => {
                                 const totalDelay = Math.min(lineDuration, 3) * 1000
-                                const delay = (totalDelay / chars.length / 2) * index
+                                const delay = (totalDelay / chars.length) * index
                                 return (
                                     <Fade
                                         key={lineIndex + '-' + index}
                                         in={show}
                                         timeout={Math.min(totalDelay / 2, 800)}
                                         style={{
-                                            transitionDelay: delay + 'ms'
+                                            transitionDelay: delay / 3 + 'ms'
                                         }}
                                         unmountOnExit
                                     >
-                                        <span>{text}</span>
+                                        <span>
+                                            <StyledSpan
+                                                sx={(theme) => ({
+                                                    transition: theme.transitions.create('color', {
+                                                        duration: 400
+                                                    }),
+                                                    color: linePlayedDuration * 1e3 > delay ? theme.palette.secondary.light : null
+                                                })}
+                                            >{text}</StyledSpan>
+                                        </span>
                                     </Fade>
                                 )
                             }
@@ -217,15 +237,16 @@ function ScrollingLrc({ lrc, currentTime }: ScrollingLrcProps) {
                 maxWidth: '75vw'
             }
         })}>
-            <Box sx={{
+            <Box sx={(theme) => ({
                 position: 'relative',
                 height: '100%',
                 overflow: 'hidden',
                 px: 2,
                 py: 1,
+                '--color-line-gradient': `transparent, ${theme.palette.background.paper}`,
                 '&::before': {
                     content: '""',
-                    background: (theme) => `linear-gradient(0deg, transparent, ${theme.palette.background.paper})`,
+                    background: 'linear-gradient(0deg, var(--color-line-gradient))',
                     position: 'absolute',
                     left: 0,
                     top: 0,
@@ -235,7 +256,7 @@ function ScrollingLrc({ lrc, currentTime }: ScrollingLrcProps) {
                 },
                 '&::after': {
                     content: '""',
-                    background: (theme) => `linear-gradient(0deg, ${theme.palette.background.paper}, transparent)`,
+                    background: 'linear-gradient(180deg, var(--color-line-gradient))',
                     position: 'absolute',
                     left: 0,
                     bottom: 0,
@@ -243,31 +264,27 @@ function ScrollingLrc({ lrc, currentTime }: ScrollingLrcProps) {
                     height: 120,
                     zIndex: 2
                 }
-            }}>
+            })}>
                 <Box sx={{
                     transition: (theme) => theme.transitions.create('transform'),
                     transform: `translate(0, calc(20vh - 24px - ${28 * activeIndex}px))`
                 }}>
                     {
                         lrc.map(
-                            ({ text }, index) => {
-                                const isActive = activeIndex === index;
-                                return (
-                                    <Stack sx={{
-                                        height: 28,
-                                        color: isActive ? 'secondary.main' : 'text.primary'
-                                    }} justifyContent="center" key={index}>
-                                        <Typography
-                                            variant="subtitle2"
-                                            color="inherit"
-                                            textOverflow="ellipsis"
-                                            textAlign="center"
-                                            title={text}
-                                            noWrap
-                                        >{text}</Typography>
-                                    </Stack>
-                                )
-                            }
+                            ({ text }, index) => (
+                                <Stack sx={{
+                                    height: 28,
+                                    color: activeIndex === index ? 'secondary.main' : 'text.primary'
+                                }} justifyContent="center" key={index}>
+                                    <Typography
+                                        variant="subtitle2"
+                                        color="inherit"
+                                        textAlign="center"
+                                        title={text}
+                                        noWrap
+                                    >{text}</Typography>
+                                </Stack>
+                            )
                         )
                     }
                 </Box>
