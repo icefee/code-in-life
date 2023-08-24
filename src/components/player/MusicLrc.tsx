@@ -217,34 +217,14 @@ function ScrollingLrc({ lrc, currentTime }: ScrollingLrcProps) {
                 maxWidth: '75vw'
             }
         })}>
-            <Box sx={(theme) => ({
+            <Box sx={{
                 position: 'relative',
                 height: '100%',
                 overflow: 'hidden',
                 px: 2,
                 py: 1,
-                '--color-line-gradient': `transparent, ${theme.palette.background.paper}`,
-                '&::before': {
-                    content: '""',
-                    background: 'linear-gradient(0deg, var(--color-line-gradient))',
-                    position: 'absolute',
-                    left: 0,
-                    top: 0,
-                    right: 0,
-                    height: 120,
-                    zIndex: 2
-                },
-                '&::after': {
-                    content: '""',
-                    background: 'linear-gradient(180deg, var(--color-line-gradient))',
-                    position: 'absolute',
-                    left: 0,
-                    bottom: 0,
-                    right: 0,
-                    height: 120,
-                    zIndex: 2
-                }
-            })}>
+                maskImage: 'linear-gradient(transparent, rgb(0 0 0 / 15%) 20%, #000 40% 60%, rgb(0 0 0 / 15%) 80%, transparent)'
+            }}>
                 <Box sx={{
                     transition: (theme) => theme.transitions.create('transform'),
                     transform: `translate(0, calc(20vh - 24px - ${28 * activeIndex}px))`
