@@ -89,7 +89,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
         if (lineActive && lineIndex < lrc.length - 1) {
             return lrc[lineIndex + 1].time - lrc[lineIndex].time
         }
-        return 0
+        return 1
     }, [lineActive, lrc, lineIndex])
 
     const placeholder = (text: string) => (
@@ -137,7 +137,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                     {
                         displayLrc.split('').map(
                             (text, index, chars) => {
-                                const totalDelay = Math.max(lineDuration, 3) * 1000
+                                const totalDelay = Math.min(lineDuration, 3) * 1000
                                 const delay = (totalDelay / chars.length / 2) * index
                                 return (
                                     <Fade
