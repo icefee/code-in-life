@@ -92,7 +92,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
         if (lineActive && lineIndex < lrc.length - 1) {
             return lrc[lineIndex + 1].time - lrc[lineIndex].time
         }
-        return 0
+        return 1
     }, [lineActive, lrc, lineIndex])
 
     const linePlayedDuration = useMemo(() => {
@@ -148,7 +148,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                     {
                         displayLrc.split('').map(
                             (text, index, chars) => {
-                                const totalDelay = Math.max(lineDuration, 3) * 1e3
+                                const totalDelay = Math.min(lineDuration, 3) * 1e3
                                 const averageDelay = totalDelay / chars.length
                                 const delay = averageDelay * index
                                 return (
@@ -167,7 +167,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                                                     transition: theme.transitions.create('color', {
                                                         duration: averageDelay
                                                     }),
-                                                    color: linePlayedDuration * 1e3 > delay ? theme.palette.secondary.main : null
+                                                    color: linePlayedDuration * 1e3 > delay ? theme.palette.secondary.light : null
                                                 })}
                                             >{text}</StyledSpan>
                                         </span>
