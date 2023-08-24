@@ -148,7 +148,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                     {
                         displayLrc.split('').map(
                             (text, index, chars) => {
-                                const totalDelay = Math.max(lineDuration, 3) * 1000
+                                const totalDelay = Math.max(lineDuration, 3) * 1e3
                                 const averageDelay = totalDelay / chars.length
                                 const delay = averageDelay * index
                                 return (
@@ -167,7 +167,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                                                     transition: theme.transitions.create('color', {
                                                         duration: averageDelay
                                                     }),
-                                                    color: linePlayedDuration * 1e3 > delay ? theme.palette.secondary.light : null
+                                                    color: linePlayedDuration * 1e3 > delay ? theme.palette.secondary.main : null
                                                 })}
                                             >{text}</StyledSpan>
                                         </span>
