@@ -4,9 +4,6 @@ import Popover from '@mui/material/Popover'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { styled } from '@mui/material/styles'
-
-const StyledSpan = styled('span')(_ => ({}))
 
 interface Lrc {
     time: number;
@@ -89,10 +86,11 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
     }, [downloading, lineActive, lrc, lineIndex])
 
     const lineDuration = useMemo(() => {
+        let duration = 1;
         if (lineActive && lineIndex < lrc.length - 1) {
-            return lrc[lineIndex + 1].time - lrc[lineIndex].time
+            duration = lrc[lineIndex + 1].time - lrc[lineIndex].time
         }
-        return 1
+        return Math.min(duration, 3)
     }, [lineActive, lrc, lineIndex])
 
     const linePlayedDuration = useMemo(() => {
@@ -100,7 +98,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
         if (lineIndex > -1 && lrc.length > 0) {
             timeStart = lrc[lineIndex].time
         }
-        return currentTime - timeStart
+        return Math.min(currentTime - timeStart, 3)
     }, [lrc, lineIndex, currentTime])
 
     const placeholder = (text: string) => (
@@ -131,13 +129,13 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                 direction="row"
                 justifyContent="flex-end"
             >
-                <Typography
-                    variant="caption"
-                    noWrap
-                    sx={{
-                        display: 'block',
-                        cursor: 'pointer'
-                    }}
+                <div
+                    style={{
+                        position: 'relative',
+                        cursor: 'pointer',
+                        overflow: 'hidden',
+                        '--line-played': linePlayedDuration / lineDuration
+                    } as React.CSSProperties}
                     onClick={
                         (event: React.MouseEvent<HTMLDivElement>) => {
                             setAnchorEl(event.currentTarget);
@@ -145,38 +143,47 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                     }
                     title={displayLrc}
                 >
-                    {
-                        displayLrc.split('').map(
-                            (text, index, chars) => {
-                                const totalDelay = Math.min(lineDuration, 3) * 1e3
-                                const averageDelay = totalDelay / chars.length
-                                const delay = averageDelay * index
-                                return (
-                                    <Fade
-                                        key={lineIndex + '-' + index}
-                                        in={show}
-                                        timeout={Math.min(totalDelay / 2, 800)}
-                                        style={{
-                                            transitionDelay: delay / 4 + 'ms'
-                                        }}
-                                        unmountOnExit
-                                    >
-                                        <span>
-                                            <StyledSpan
-                                                sx={(theme) => ({
-                                                    transition: theme.transitions.create('color', {
-                                                        duration: averageDelay
-                                                    }),
-                                                    color: linePlayedDuration * 1e3 > delay ? theme.palette.secondary.light : null
-                                                })}
-                                            >{text}</StyledSpan>
-                                        </span>
-                                    </Fade>
-                                )
-                            }
-                        )
-                    }
-                </Typography>
+                    <Typography
+                        variant="caption"
+                        sx={{
+                            display: 'block',
+                            maskImage: 'linear-gradient(0.25turn, transparent 0% calc(var(--line-played) * 100%), #000 calc(var(--line-played) * 100%) 100%)'
+                        }}
+                        noWrap
+                    >
+                        {
+                            displayLrc.split('').map(
+                                (text, index, chars) => {
+                                    const lineDurationMilliseconds = lineDuration * 1e3
+                                    const delay = (lineDurationMilliseconds / chars.length) * index
+                                    return (
+                                        <Fade
+                                            key={lineIndex + '-' + index}
+                                            in={show}
+                                            timeout={Math.min(lineDurationMilliseconds / 2, 800)}
+                                            style={{
+                                                transitionDelay: delay / 4 + 'ms'
+                                            }}
+                                            unmountOnExit
+                                        >
+                                            <span>{text}</span>
+                                        </Fade>
+                                    )
+                                }
+                            )
+                        }
+                    </Typography>
+                    <Typography
+                        variant="caption"
+                        sx={{
+                            position: 'absolute',
+                            inset: 0,
+                            color: (theme) => theme.palette.secondary.light,
+                            maskImage: 'linear-gradient(0.25turn, #000 0% calc(var(--line-played) * 100%), transparent calc(var(--line-played) * 100%) 100%)'
+                        }}
+                        noWrap
+                    >{displayLrc}</Typography>
+                </div>
             </Stack>
             <Popover
                 open={Boolean(anchorEl)}
