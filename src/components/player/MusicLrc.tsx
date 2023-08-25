@@ -4,6 +4,7 @@ import Popover from '@mui/material/Popover'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { alpha } from '@mui/material/styles'
 
 interface Lrc {
     time: number;
@@ -147,6 +148,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                         variant="caption"
                         sx={{
                             display: 'block',
+                            color: (theme) => alpha(theme.palette.text.primary, .75),
                             maskImage: 'linear-gradient(0.25turn, transparent 0% calc(var(--line-played) * 100%), #000 calc(var(--line-played) * 100%) 100%)'
                         }}
                         noWrap
