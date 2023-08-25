@@ -178,7 +178,9 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                         sx={{
                             position: 'absolute',
                             inset: 0,
-                            color: (theme) => theme.palette.secondary.light,
+                            backgroundImage: 'linear-gradient(0, cyan, #ff9800)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
                             maskImage: 'linear-gradient(0.25turn, #000 0% calc(var(--line-played) * 100%), transparent calc(var(--line-played) * 100%) 100%)'
                         }}
                         noWrap
