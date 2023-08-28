@@ -69,7 +69,7 @@ function SearchForm({
             putSuggest(value);
             prevSubmitValue.current = value;
         }
-        onSubmit(value);
+        onSubmit?.(value);
     }
 
     const relatedSuggests = useMemo(() => {
@@ -124,8 +124,9 @@ function SearchForm({
                 }
                 onKeyDown={
                     (event) => {
-                        if (event.code === 'Enter') {
+                        if (event.code === 'Enter' && onSubmit) {
                             handleSubmit(value)
+                            input.current.blur()
                         }
                     }
                 }
@@ -179,9 +180,9 @@ function SearchForm({
                         onSubmit={
                             (event: React.SyntheticEvent<HTMLFormElement>) => {
                                 if (onSubmit) {
-                                    event.preventDefault();
-                                    input.current.blur();
-                                    handleSubmit(value);
+                                    event.preventDefault()
+                                    input.current.blur()
+                                    handleSubmit(value)
                                 }
                             }
                         }
