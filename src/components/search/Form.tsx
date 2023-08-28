@@ -82,7 +82,7 @@ function SearchForm({
 
     const filteredSuggests = useMemo(() => {
         return relatedSuggests.filter(
-            (option) => new RegExp(value.replace('\\', '\\\\'), 'i').test(option)
+            (option) => new RegExp(value.replace(/\\/g, '\\\\'), 'i').test(option)
         )
     }, [relatedSuggests, value])
 
@@ -94,6 +94,7 @@ function SearchForm({
         <NoSsr>
             <Autocomplete
                 freeSolo
+                autoHighlight
                 options={relatedSuggests}
                 value={value}
                 blurOnSelect
@@ -120,6 +121,13 @@ function SearchForm({
                 }
                 onClose={
                     () => setAutoCompleteOpen(false)
+                }
+                onKeyDown={
+                    (event) => {
+                        if (event.code === 'Enter') {
+                            handleSubmit(value)
+                        }
+                    }
                 }
                 onInputChange={
                     (_event, value) => onChange(value)
@@ -167,7 +175,6 @@ function SearchForm({
                                 borderBottomLeftRadius: 0,
                                 borderBottomRightRadius: 0,
                             } : null)
-
                         }}
                         onSubmit={
                             (event: React.SyntheticEvent<HTMLFormElement>) => {
