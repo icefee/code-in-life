@@ -1,17 +1,21 @@
-import { getTextWithTimeout, parseDuration, isTextNotNull } from './common';
-import { timeFormatter } from '../util/date';
-import { Api } from '../util/config';
+import { getTextWithTimeout, parseDuration, isTextNotNull } from './common'
+import { timeFormatter } from '../util/date'
+import { Api } from '../util/config'
+import { isDev } from '../util/env'
+import { proxyUrl } from '../util/proxy'
 
-export const key = 'g';
+export const key = 'g'
 
-export const baseUrl = 'https://www.gequbao.com';
+export const baseUrl = 'https://www.gequbao.com'
 
-export const lrcFile = true;
+export const lrcFile = true
+
+const getHtml = (url: string) => getTextWithTimeout(isDev ? url : proxyUrl(url, true))
 
 export async function getMusicSearch(s: string): Promise<SearchMusic[]> {
     const url = `${baseUrl}/s/${s}`;
     try {
-        const html = await getTextWithTimeout(url)
+        const html = await getHtml(url)
         const matchBlocks = html.replace(/[\n\r]+/g, '').replace(new RegExp('&amp;', 'g'), '&').match(
             /<div class="row">\s*<div class="col-5 col-content">\s*<a href="\/music\/\d+"\s*class="text-primary font-weight-bold"\s+target="_blank">[^<]+<\/a>\s*<\/div>\s*<div class="text-success col-4 col-content">[^<]+<\/div>\s*<div class="col-3 col-content">\s*<a href="\/music\/\d+" target="_blank"><u>下载<\/u><\/a>\s*<\/div>\s*<\/div>/g
         )
@@ -49,7 +53,7 @@ function parsePosterUrl(html: string) {
 
 export async function parsePoster(id: string) {
     try {
-        const html = await getTextWithTimeout(`${baseUrl}/music/${id}`)
+        const html = await getHtml(`${baseUrl}/music/${id}`)
         const poster = parsePosterUrl(html)
         return poster;
     }
@@ -60,7 +64,7 @@ export async function parsePoster(id: string) {
 
 export async function parseMusicUrl(id: string) {
     try {
-        const html = await getTextWithTimeout(`${baseUrl}/music/${id}`)
+        const html = await getHtml(`${baseUrl}/music/${id}`)
         const matchBlock = html.match(
             /const url = 'https?:\/\/[^']+'/
         )
@@ -73,9 +77,7 @@ export async function parseMusicUrl(id: string) {
 
 export async function parseLrc(id: string) {
     try {
-        const lrc = await getTextWithTimeout(
-            getLrcUrl(id)
-        )
+        const lrc = await getHtml(getLrcUrl(id))
         const lines = lrc.split(/\n/).filter(
             line => isTextNotNull(line)
         ).map(
@@ -108,5 +110,6 @@ export async function getLrcText(id: string) {
 }
 
 export function getLrcUrl(id: string) {
-    return `${baseUrl}/download/lrc/${id}`
+    const url = `${baseUrl}/download/lrc/${id}`
+    return isDev ? url : proxyUrl(url, true)
 }
