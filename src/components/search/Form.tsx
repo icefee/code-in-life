@@ -1,4 +1,4 @@
-import React, { type SyntheticEvent, useState, useRef, useMemo, forwardRef, useImperativeHandle, ForwardedRef } from 'react';
+import React, { type SyntheticEvent, useState, useRef, useMemo, forwardRef, useImperativeHandle } from 'react';
 import Paper from '@mui/material/Paper';
 import Autocomplete from '@mui/material/Autocomplete';
 import ListItem from '@mui/material/ListItem';
@@ -46,7 +46,7 @@ function SearchForm({
     loadingSubmitText = '搜索中',
     buttonColor,
     autocompleteKey = null
-}: SearchFormProps, ref: ForwardedRef<SearchFormInstance>) {
+}: SearchFormProps, ref: React.ForwardedRef<SearchFormInstance>) {
 
     const [suggests, setSuggests] = useLocalStorageState<Suggest[]>('__autocomplete', [])
     const prevSubmitValue = useRef<string>()
@@ -69,7 +69,7 @@ function SearchForm({
             putSuggest(value);
             prevSubmitValue.current = value;
         }
-        onSubmit(value);
+        onSubmit?.(value);
     }
 
     const relatedSuggests = useMemo(() => {
@@ -124,8 +124,9 @@ function SearchForm({
                 }
                 onKeyDown={
                     (event) => {
-                        if (event.code === 'Enter') {
+                        if (event.code === 'Enter' && onSubmit) {
                             handleSubmit(value)
+                            input.current.blur()
                         }
                     }
                 }
@@ -179,9 +180,9 @@ function SearchForm({
                         onSubmit={
                             (event: React.SyntheticEvent<HTMLFormElement>) => {
                                 if (onSubmit) {
-                                    event.preventDefault();
-                                    input.current.blur();
-                                    handleSubmit(value);
+                                    event.preventDefault()
+                                    input.current.blur()
+                                    handleSubmit(value)
                                 }
                             }
                         }
