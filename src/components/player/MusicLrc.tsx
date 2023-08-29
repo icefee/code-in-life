@@ -34,9 +34,8 @@ async function downloadLrc(id: MusicLrcProps['id']): Promise<Lrc[] | null> {
 
 function MusicLrc({ id, currentTime }: MusicLrcProps) {
 
-    const [lrc, setLrc] = useState<Lrc[]>([])
     const [downloading, setDownloading] = useState(false)
-    const lrcCache = useRef(new Map<MusicLrcProps['id'], Lrc[]>())
+    const [lrcMap, setLrcMap] = useState<Record<MusicLrcProps['id'], Lrc[]>>({})
     const [anchorEl, setAnchorEl] = useState<HTMLSpanElement | null>(null)
     const downloadingPlaceholder = '正在下载歌词..'
     const emptyPlaceholder = '🎵🎵...'
@@ -48,23 +47,24 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
     }
 
     const getLrc = async (id: MusicLrcProps['id']) => {
-        if (lrcCache.current.has(id)) {
-            setLrc(lrcCache.current.get(id))
-        }
-        else {
-            setDownloading(true)
-            const data = await downloadLrc(id)
-            setLrc(data ?? [])
-            if (data) {
-                lrcCache.current.set(id, data)
-            }
-            setDownloading(false)
-        }
+        setDownloading(true)
+        const data = await downloadLrc(id)
+        setLrcMap(
+            map => ({
+                ...map,
+                [id]: data
+            })
+        )
+        setDownloading(false)
     }
 
+    const lrc = useMemo(() => lrcMap[id] ?? [], [lrcMap, id])
+
     useEffect(() => {
-        getLrc(id)
-    }, [id])
+        if (!lrcMap[id]) {
+            getLrc(id)
+        }
+    }, [lrcMap, id])
 
     const lineIndex = useMemo(() => {
         const index = lrc.findIndex(
