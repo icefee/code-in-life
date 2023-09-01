@@ -69,7 +69,7 @@ async function getMusicInfo(id: string) {
             lang: ''
         }),
         headers: {
-            'Referer': baseUrl
+            'referer': baseUrl
         }
     }).then<MusicParseApiJson<MusicInfo>>(
         response => response.json()
@@ -80,10 +80,17 @@ async function getMusicInfo(id: string) {
     return null;
 }
 
+function transformUrl(url: string): string {
+    if (url.startsWith('http')) {
+        return url
+    }
+    return baseUrl + url
+}
+
 export async function parsePoster(id: string) {
     try {
-        const info = await getMusicInfo(id);
-        return info?.pic;
+        const info = await getMusicInfo(id)
+        return transformUrl(info?.pic)
     }
     catch (err) {
         return null
@@ -93,20 +100,16 @@ export async function parsePoster(id: string) {
 
 export async function parseMusicUrl(id: string) {
     try {
-        const info = await getMusicInfo(id);
-        const url = info?.mp3;
-        if (url.startsWith('http')) {
-            return url;
-        }
-        const fullUrl = baseUrl + url;
-        if (fullUrl.match(/xplay/)) {
-            const response = await getResponse(fullUrl, {
+        const info = await getMusicInfo(id)
+        const url = transformUrl(info?.mp3)
+        if (url.match(/xplay/)) {
+            const response = await getResponse(url, {
                 redirect: 'manual'
             })
-            const audioUrl = response.headers.get('location');
-            return utf82utf16(decodeURI(audioUrl));
+            const audioUrl = response.headers.get('location')
+            return utf82utf16(decodeURI(audioUrl))
         }
-        return fullUrl;
+        return url
     }
     catch (err) {
         return null
