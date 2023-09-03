@@ -41,6 +41,6 @@ export const proxyJson = async (url: string, res: GatsbyFunctionResponse) => {
 
 
 export const crossOriginIsolatedHeaders = {
-    'Cross-Origin-Embedder-Policy': 'require-corp',
-    'Cross-Origin-Opener-Policy': 'same-origin'
+    'cross-origin-embedder-policy': 'require-corp',
+    'cross-origin-opener-policy': 'same-origin'
 }

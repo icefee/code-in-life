@@ -405,7 +405,6 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
             setDownloading(true)
             if (!hls2Mp4.current) {
                 hls2Mp4.current = new Hls2Mp4({
-                    log: true,
                     maxRetry: 5,
                     tsDownloadConcurrency: 20
                 }, (type, progress) => {
@@ -445,12 +444,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                 hls2Mp4.current.saveToFile(buffer, `${title ?? 'download'}.mp4`)
             }
             catch (err) {
-                if (/FFmpeg load failed/.test(err.message)) {
-                    showStatus('FFmpeg 下载失败, 请重试')
-                }
-                else {
-                    showStatus(`下载发生错误: ${err.message}`)
-                }
+                showStatus(`下载发生错误: ${err.message}`)
             }
             setDownloading(false)
         }

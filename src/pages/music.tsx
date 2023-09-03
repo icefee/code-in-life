@@ -17,6 +17,7 @@ import SongList from '~/components/search/SongList'
 import MusicPlayList from '~/components/player/MusicPlayList'
 import useLocalStorageState from '~/components/hook/useLocalStorageState'
 import { Api } from '~/util/config'
+import { isDev } from '~/util/env'
 
 export default function MusicSearch() {
 
@@ -38,8 +39,6 @@ export default function MusicSearch() {
 
     const [playlist, setPlaylist] = useLocalStorageState<SearchMusic[]>('__playlist', [])
     const songListWrapRef = useRef<HTMLDivElement>()
-
-    const [enableVisual, setEnableVisual] = useState(false)
 
     const handleClose = (_event?: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
@@ -92,10 +91,6 @@ export default function MusicSearch() {
     }
 
     useEffect(() => {
-        setEnableVisual(location.hostname.endsWith(Api.gatsbyDomain))
-    }, [])
-
-    useEffect(() => {
         if (playlist.init && playlist.data.length > 0) {
             setActiveMusic(playlist.data[0])
         }
@@ -117,10 +112,9 @@ export default function MusicSearch() {
     }
 
     const downloadSong = (music: SearchMusic) => {
-        const baseUrl = enableVisual ? '' : Api.hostDomain
         const query = generateSearchParams(music)
         downloaFile(
-            `${baseUrl}/api/music/download/${music.id}?${query}`
+            `/api/music/download/${music.id}?${query}`
         )
     }
 
@@ -325,7 +319,7 @@ export default function MusicSearch() {
                             music={activeMusic}
                             playing={playing}
                             onPlayStateChange={setPlaying}
-                            enableVisual={enableVisual}
+                            enableVisual={isDev}
                             repeat={repeat.data}
                             extendButtons={
                                 <Tooltip title="播放列表">

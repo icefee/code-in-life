@@ -1,13 +1,13 @@
 import { createApiAdaptor, parseId, getResponse, Headers } from '../../../adaptors'
 import { errorHandler, ApiHandler } from '../../../util/middleware'
-import { isMusicProxyEnabled, isDev } from '../../../util/env'
+import { isDev } from '../../../util/env'
 
 const handler: ApiHandler = async (req, res) => {
     const { key, id } = parseId(req.params.id)
     const adaptor = createApiAdaptor(key)
     const url = await adaptor.parseMusicUrl(id)
     if (url) {
-        if (isMusicProxyEnabled() || isDev) {
+        if (isDev) {
             const requestHeaders = new Headers()
             if (req.headers['range']) {
                 requestHeaders.append('range', req.headers['range'])
