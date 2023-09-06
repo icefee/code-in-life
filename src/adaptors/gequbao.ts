@@ -1,4 +1,4 @@
-import { getTextWithTimeout, parseDuration, isTextNotNull } from './common'
+import { getTextWithTimeout, parseLrcText } from './common'
 import { timeFormatter } from '../util/date'
 import { Api } from '../util/config'
 import { isDev } from '../util/env'
@@ -78,24 +78,11 @@ export async function parseMusicUrl(id: string) {
 export async function parseLrc(id: string) {
     try {
         const lrc = await getHtml(getLrcUrl(id))
-        const lines = lrc.split(/\n/).filter(
-            line => isTextNotNull(line)
-        ).map(
-            line => {
-                const timeMatch = line.match(/\d{1,2}:\d{1,2}\.\d*/)
-                const textMatch = line.match(/(?<=]).+(?=($|\r))/)
-                return {
-                    time: parseDuration(timeMatch[0]),
-                    text: textMatch ? textMatch[0] : ''
-                }
-            }
-        ).filter(
-            ({ text }) => isTextNotNull(text)
-        )
-        return lines;
+        const lines = parseLrcText(lrc)
+        return lines
     }
     catch (err) {
-        return null;
+        return null
     }
 }
 

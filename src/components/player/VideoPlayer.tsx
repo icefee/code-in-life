@@ -272,6 +272,20 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
         }
     }
 
+    const ActionButton = ({ children, title }: {
+        title: string;
+        children: React.ReactElement;
+    }) => {
+        if (isMobile) {
+            return children;
+        }
+        return (
+            <Tooltip title={title}>
+                {children}
+            </Tooltip>
+        )
+    }
+
     const pauseVideo = () => {
         videoRef.current.pause();
     }
@@ -665,7 +679,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                     {
                         !live && (
                             <>
-                                <Tooltip title="快退10秒">
+                                <ActionButton title="快退10秒">
                                     <Fade in={controlsShow && videoLoaded && !error} unmountOnExit>
                                         <IconButton
                                             color="inherit"
@@ -687,8 +701,8 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                                             <Replay10RoundedIcon fontSize="inherit" />
                                         </IconButton>
                                     </Fade>
-                                </Tooltip>
-                                <Tooltip title="快进10秒">
+                                </ActionButton>
+                                <ActionButton title="快进10秒">
                                     <Fade in={controlsShow && videoLoaded && !error} unmountOnExit>
                                         <IconButton
                                             color="inherit"
@@ -714,7 +728,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                                             <Forward10RoundedIcon fontSize="inherit" />
                                         </IconButton>
                                     </Fade>
-                                </Tooltip>
+                                </ActionButton>
                             </>
                         )
                     }
@@ -843,22 +857,22 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                         }
                         <Stack direction="row" justifyContent="space-between">
                             <Stack direction="row">
-                                <Tooltip title={playing ? '暂停' : '播放'}>
+                                <ActionButton title={playing ? '暂停' : '播放'}>
                                     <PlayOrPauseButton
                                         playing={playing}
                                         onTogglePlay={videoLoaded ? togglePlay : null}
                                     />
-                                </Tooltip>
+                                </ActionButton>
                                 {
                                     onNext && (
-                                        <Tooltip title="播放下一个">
+                                        <ActionButton title="播放下一个">
                                             <IconButton
                                                 color="inherit"
                                                 onClick={onNext}
                                             >
                                                 <SkipNextRoundedIcon />
                                             </IconButton>
-                                        </Tooltip>
+                                        </ActionButton>
                                     )
                                 }
                                 {
@@ -899,29 +913,29 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                                         />
                                     )
                                 }
-                                <Tooltip title={`${fullscreen ? '退出' : '进入'}全屏`}>
+                                <ActionButton title={`${fullscreen ? '退出' : '进入'}全屏`}>
                                     <IconButton
                                         color="inherit"
-                                        onClick={actionTrigger(toggleFullscreen)}
+                                        onClick={toggleFullscreen}
                                     >
                                         {
                                             fullscreen ? <FullscreenExitRoundedIcon /> : <FullscreenRoundedIcon />
                                         }
                                     </IconButton>
-                                </Tooltip>
+                                </ActionButton>
                                 {
                                     !live && !disableDownload && !ios && (
-                                        <Tooltip title="下载">
+                                        <ActionButton title="下载">
                                             <IconButton
                                                 color="inherit"
                                                 onClick={downloading ? null : actionTrigger(downloadVideo)}
                                             >
                                                 <DownloadRoundedIcon />
                                             </IconButton>
-                                        </Tooltip>
+                                        </ActionButton>
                                     )
                                 }
-                                <Tooltip title={`${pip ? '退出' : '进入'}画中画`}>
+                                <ActionButton title={`${pip ? '退出' : '进入'}画中画`}>
                                     <IconButton
                                         color="inherit"
                                         onClick={actionTrigger(
@@ -939,7 +953,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                                             pip ? <PictureInPictureAltRoundedIcon /> : <PictureInPictureRoundedIcon />
                                         }
                                     </IconButton>
-                                </Tooltip>
+                                </ActionButton>
                             </Stack>
                         </Stack>
                     </Stack>
