@@ -124,16 +124,12 @@ function MediaSlider({ buffered, components, sx, showTooltip = false, tooltipFor
     });
     */
 
-    const bufferStateWrapper = (child: React.ReactNode) => (
-        <div style={{
-            '--buffered': buffered
-        } as React.CSSProperties}>
-            {child}
-        </div>
-    )
+    const commonStyles = {
+        '--buffered': buffered
+    } as React.CSSProperties
 
     if (showTooltip && !disabled) {
-        return bufferStateWrapper(
+        return (
             <Tooltip
                 title={
                     tooltipFormatter ? tooltipFormatter(hoverRate) : hoverRate
@@ -157,6 +153,7 @@ function MediaSlider({ buffered, components, sx, showTooltip = false, tooltipFor
                     onMouseMove={handleMouseMove}
                     onKeyDown={onKeyDown}
                     disabled={disabled}
+                    style={commonStyles}
                     sx={{
                         ...commonSx,
                         '& .MuiSlider-thumb': {
@@ -185,8 +182,9 @@ function MediaSlider({ buffered, components, sx, showTooltip = false, tooltipFor
         )
     }
 
-    return bufferStateWrapper(
+    return (
         <Slider
+            style={commonStyles}
             sx={commonSx}
             onKeyDown={onKeyDown}
             disabled={disabled}
