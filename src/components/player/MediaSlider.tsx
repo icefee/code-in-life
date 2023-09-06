@@ -51,13 +51,13 @@ function MediaSlider({ buffered, components, sx, showTooltip = false, tooltipFor
                     opacity: .1
                 },
                 '&:after': {
-                    width: buffered * 100 + '%',
+                    width: 'calc(var(--buffered) * 100%)',
                     opacity: .2,
                     transition: (theme) => theme.transitions.create('width')
                 }
             }
         }),
-        [buffered, sx]
+        [sx]
     )
 
     const onKeyDown = (event: KeyboardEvent) => {
@@ -65,6 +65,10 @@ function MediaSlider({ buffered, components, sx, showTooltip = false, tooltipFor
             event.preventDefault();
         }
     }
+
+    const commonStyles = {
+        '--buffered': buffered
+    } as React.CSSProperties
 
     if (showTooltip && !disabled) {
         return (
@@ -91,6 +95,7 @@ function MediaSlider({ buffered, components, sx, showTooltip = false, tooltipFor
                     onMouseMove={handleMouseMove}
                     onKeyDown={onKeyDown}
                     disabled={disabled}
+                    style={commonStyles}
                     sx={{
                         ...commonSx,
                         '& .MuiSlider-thumb': {
@@ -107,6 +112,7 @@ function MediaSlider({ buffered, components, sx, showTooltip = false, tooltipFor
 
     return (
         <Slider
+            style={commonStyles}
             sx={commonSx}
             disabled={disabled}
             onKeyDown={onKeyDown}
