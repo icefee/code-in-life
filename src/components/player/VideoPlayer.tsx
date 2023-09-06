@@ -272,7 +272,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
         }
     }
 
-    const ActionButton = ({ children, title }: {
+    const ToolTipWrapper = ({ children, title }: {
         title: string;
         children: React.ReactElement;
     }) => {
@@ -679,7 +679,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                     {
                         !live && (
                             <>
-                                <ActionButton title="快退10秒">
+                                <ToolTipWrapper title="快退10秒">
                                     <Fade in={controlsShow && videoLoaded && !error} unmountOnExit>
                                         <IconButton
                                             color="inherit"
@@ -701,8 +701,8 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                                             <Replay10RoundedIcon fontSize="inherit" />
                                         </IconButton>
                                     </Fade>
-                                </ActionButton>
-                                <ActionButton title="快进10秒">
+                                </ToolTipWrapper>
+                                <ToolTipWrapper title="快进10秒">
                                     <Fade in={controlsShow && videoLoaded && !error} unmountOnExit>
                                         <IconButton
                                             color="inherit"
@@ -728,7 +728,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                                             <Forward10RoundedIcon fontSize="inherit" />
                                         </IconButton>
                                     </Fade>
-                                </ActionButton>
+                                </ToolTipWrapper>
                             </>
                         )
                     }
@@ -857,22 +857,22 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                         }
                         <Stack direction="row" justifyContent="space-between">
                             <Stack direction="row">
-                                <ActionButton title={playing ? '暂停' : '播放'}>
+                                <ToolTipWrapper title={playing ? '暂停' : '播放'}>
                                     <PlayOrPauseButton
                                         playing={playing}
                                         onTogglePlay={videoLoaded ? togglePlay : null}
                                     />
-                                </ActionButton>
+                                </ToolTipWrapper>
                                 {
                                     onNext && (
-                                        <ActionButton title="播放下一个">
+                                        <ToolTipWrapper title="播放下一个">
                                             <IconButton
                                                 color="inherit"
                                                 onClick={onNext}
                                             >
                                                 <SkipNextRoundedIcon />
                                             </IconButton>
-                                        </ActionButton>
+                                        </ToolTipWrapper>
                                     )
                                 }
                                 {
@@ -913,7 +913,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                                         />
                                     )
                                 }
-                                <ActionButton title={`${fullscreen ? '退出' : '进入'}全屏`}>
+                                <ToolTipWrapper title={`${fullscreen ? '退出' : '进入'}全屏`}>
                                     <IconButton
                                         color="inherit"
                                         onClick={toggleFullscreen}
@@ -922,20 +922,20 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                                             fullscreen ? <FullscreenExitRoundedIcon /> : <FullscreenRoundedIcon />
                                         }
                                     </IconButton>
-                                </ActionButton>
+                                </ToolTipWrapper>
                                 {
                                     !live && !disableDownload && !ios && (
-                                        <ActionButton title="下载">
+                                        <ToolTipWrapper title="下载">
                                             <IconButton
                                                 color="inherit"
                                                 onClick={downloading ? null : actionTrigger(downloadVideo)}
                                             >
                                                 <DownloadRoundedIcon />
                                             </IconButton>
-                                        </ActionButton>
+                                        </ToolTipWrapper>
                                     )
                                 }
-                                <ActionButton title={`${pip ? '退出' : '进入'}画中画`}>
+                                <ToolTipWrapper title={`${pip ? '退出' : '进入'}画中画`}>
                                     <IconButton
                                         color="inherit"
                                         onClick={actionTrigger(
@@ -953,7 +953,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                                             pip ? <PictureInPictureAltRoundedIcon /> : <PictureInPictureRoundedIcon />
                                         }
                                     </IconButton>
-                                </ActionButton>
+                                </ToolTipWrapper>
                             </Stack>
                         </Stack>
                     </Stack>
