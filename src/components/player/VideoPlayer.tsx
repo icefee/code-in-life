@@ -658,76 +658,74 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                         }
                         onEnded={onEnd}
                     />
-                    <Fade in={loading} unmountOnExit>
-                        <Stack sx={{
-                            position: 'absolute',
-                            left: 0,
-                            top: 0,
-                            right: 0,
-                            bottom: 0,
-                            zIndex: 1,
-                            color: '#fff'
-                        }} justifyContent="center" alignItems="center">
-                            <Spinner
-                                sx={{
-                                    fontSize: 64
-                                }}
-                                color="inherit"
-                            />
-                        </Stack>
-                    </Fade>
                     {
-                        !live && (
+                        loading && (
+                            <Stack sx={{
+                                position: 'absolute',
+                                left: 0,
+                                top: 0,
+                                right: 0,
+                                bottom: 0,
+                                zIndex: 1,
+                                color: '#fff'
+                            }} justifyContent="center" alignItems="center">
+                                <Spinner
+                                    sx={{
+                                        fontSize: 64
+                                    }}
+                                    color="inherit"
+                                />
+                            </Stack>
+                        )
+                    }
+                    {
+                        !live && controlsShow && videoLoaded && !error && (
                             <>
                                 <ToolTipWrapper title="快退10秒">
-                                    <Fade in={controlsShow && videoLoaded && !error} unmountOnExit>
-                                        <IconButton
-                                            color="inherit"
-                                            onClick={
-                                                (event: React.SyntheticEvent<HTMLButtonElement, Event>) => {
-                                                    event.stopPropagation();
-                                                    fastSeek(currentTime - 10);
-                                                }
+                                    <IconButton
+                                        color="inherit"
+                                        onClick={
+                                            (event: React.SyntheticEvent<HTMLButtonElement, Event>) => {
+                                                event.stopPropagation();
+                                                fastSeek(currentTime - 10);
                                             }
-                                            sx={{
-                                                position: 'absolute',
-                                                left: isMobile ? '50%' : 16,
-                                                top: '50%',
-                                                transform: `translate(${isMobile ? 'calc(-50% - 88px)' : 0}, -50%)`,
-                                                zIndex: 2
-                                            }}
-                                            size="large"
-                                        >
-                                            <Replay10RoundedIcon fontSize="inherit" />
-                                        </IconButton>
-                                    </Fade>
+                                        }
+                                        sx={{
+                                            position: 'absolute',
+                                            left: isMobile ? '50%' : 16,
+                                            top: '50%',
+                                            transform: `translate(${isMobile ? 'calc(-50% - 88px)' : 0}, -50%)`,
+                                            zIndex: 2
+                                        }}
+                                        size="large"
+                                    >
+                                        <Replay10RoundedIcon fontSize="inherit" />
+                                    </IconButton>
                                 </ToolTipWrapper>
                                 <ToolTipWrapper title="快进10秒">
-                                    <Fade in={controlsShow && videoLoaded && !error} unmountOnExit>
-                                        <IconButton
-                                            color="inherit"
-                                            onClick={
-                                                (event: React.SyntheticEvent<HTMLButtonElement, Event>) => {
-                                                    event.stopPropagation();
-                                                    fastSeek(currentTime + 10);
-                                                }
+                                    <IconButton
+                                        color="inherit"
+                                        onClick={
+                                            (event: React.SyntheticEvent<HTMLButtonElement, Event>) => {
+                                                event.stopPropagation();
+                                                fastSeek(currentTime + 10);
                                             }
-                                            sx={{
-                                                position: 'absolute',
-                                                top: '50%',
-                                                transform: `translate(${isMobile ? 'calc(-50% + 88px)' : 0}, -50%)`,
-                                                zIndex: 2,
-                                                ...(isMobile ? {
-                                                    left: '50%'
-                                                } : {
-                                                    right: 16
-                                                })
-                                            }}
-                                            size="large"
-                                        >
-                                            <Forward10RoundedIcon fontSize="inherit" />
-                                        </IconButton>
-                                    </Fade>
+                                        }
+                                        sx={{
+                                            position: 'absolute',
+                                            top: '50%',
+                                            transform: `translate(${isMobile ? 'calc(-50% + 88px)' : 0}, -50%)`,
+                                            zIndex: 2,
+                                            ...(isMobile ? {
+                                                left: '50%'
+                                            } : {
+                                                right: 16
+                                            })
+                                        }}
+                                        size="large"
+                                    >
+                                        <Forward10RoundedIcon fontSize="inherit" />
+                                    </IconButton>
                                 </ToolTipWrapper>
                             </>
                         )
@@ -751,32 +749,36 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                         )
                     }
                 </Box>
-                <Fade in={poster && !videoLoaded} mountOnEnter unmountOnExit>
-                    <Box
-                        sx={{
+                {
+                    poster && !videoLoaded && (
+                        <Box
+                            sx={{
+                                position: 'absolute',
+                                left: 0,
+                                top: 0,
+                                right: 0,
+                                bottom: 0,
+                                zIndex: 4,
+                                background: `url(${poster}) no-repeat center center`,
+                                backgroundSize: 'cover'
+                            }}
+                        />
+                    )
+                }
+                {
+                    error && (
+                        <Stack sx={{
                             position: 'absolute',
                             left: 0,
                             top: 0,
                             right: 0,
                             bottom: 0,
-                            zIndex: 4,
-                            background: `url(${poster}) no-repeat center center`,
-                            backgroundSize: 'cover'
-                        }}
-                    />
-                </Fade>
-                <Fade in={error} unmountOnExit>
-                    <Stack sx={{
-                        position: 'absolute',
-                        left: 0,
-                        top: 0,
-                        right: 0,
-                        bottom: 0,
-                        zIndex: 3
-                    }} justifyContent="center" alignItems="center">
-                        <Alert severity="error">视频加载失败</Alert>
-                    </Stack>
-                </Fade>
+                            zIndex: 3
+                        }} justifyContent="center" alignItems="center">
+                            <Alert severity="error">视频加载失败</Alert>
+                        </Stack>
+                    )
+                }
                 <CancelMutedButton
                     show={muted && !error}
                     sx={{
