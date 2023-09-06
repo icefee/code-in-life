@@ -272,20 +272,6 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
         }
     }
 
-    const ToolTipWrapper = ({ children, title }: {
-        title: string;
-        children: React.ReactElement;
-    }) => {
-        if (isMobile) {
-            return children;
-        }
-        return (
-            <Tooltip title={title}>
-                {children}
-            </Tooltip>
-        )
-    }
-
     const pauseVideo = () => {
         videoRef.current.pause();
     }
@@ -658,30 +644,28 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                         }
                         onEnded={onEnd}
                     />
+                    <Fade in={loading} unmountOnExit>
+                        <Stack sx={{
+                            position: 'absolute',
+                            left: 0,
+                            top: 0,
+                            right: 0,
+                            bottom: 0,
+                            zIndex: 1,
+                            color: '#fff'
+                        }} justifyContent="center" alignItems="center">
+                            <Spinner
+                                sx={{
+                                    fontSize: 64
+                                }}
+                                color="inherit"
+                            />
+                        </Stack>
+                    </Fade>
                     {
-                        loading && (
-                            <Stack sx={{
-                                position: 'absolute',
-                                left: 0,
-                                top: 0,
-                                right: 0,
-                                bottom: 0,
-                                zIndex: 1,
-                                color: '#fff'
-                            }} justifyContent="center" alignItems="center">
-                                <Spinner
-                                    sx={{
-                                        fontSize: 64
-                                    }}
-                                    color="inherit"
-                                />
-                            </Stack>
-                        )
-                    }
-                    {
-                        !live && controlsShow && videoLoaded && !error && (
+                        !live && (
                             <>
-                                <ToolTipWrapper title="快退10秒">
+                                <Fade in={controlsShow && videoLoaded && !error} unmountOnExit>
                                     <IconButton
                                         color="inherit"
                                         onClick={
@@ -701,8 +685,8 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                                     >
                                         <Replay10RoundedIcon fontSize="inherit" />
                                     </IconButton>
-                                </ToolTipWrapper>
-                                <ToolTipWrapper title="快进10秒">
+                                </Fade>
+                                <Fade in={controlsShow && videoLoaded && !error} unmountOnExit>
                                     <IconButton
                                         color="inherit"
                                         onClick={
@@ -726,7 +710,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                                     >
                                         <Forward10RoundedIcon fontSize="inherit" />
                                     </IconButton>
-                                </ToolTipWrapper>
+                                </Fade>
                             </>
                         )
                     }
@@ -749,36 +733,32 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                         )
                     }
                 </Box>
-                {
-                    poster && !videoLoaded && (
-                        <Box
-                            sx={{
-                                position: 'absolute',
-                                left: 0,
-                                top: 0,
-                                right: 0,
-                                bottom: 0,
-                                zIndex: 4,
-                                background: `url(${poster}) no-repeat center center`,
-                                backgroundSize: 'cover'
-                            }}
-                        />
-                    )
-                }
-                {
-                    error && (
-                        <Stack sx={{
+                <Fade in={poster && !videoLoaded} mountOnEnter unmountOnExit>
+                    <Box
+                        sx={{
                             position: 'absolute',
                             left: 0,
                             top: 0,
                             right: 0,
                             bottom: 0,
-                            zIndex: 3
-                        }} justifyContent="center" alignItems="center">
-                            <Alert severity="error">视频加载失败</Alert>
-                        </Stack>
-                    )
-                }
+                            zIndex: 4,
+                            background: `url(${poster}) no-repeat center center`,
+                            backgroundSize: 'cover'
+                        }}
+                    />
+                </Fade>
+                <Fade in={error} unmountOnExit>
+                    <Stack sx={{
+                        position: 'absolute',
+                        left: 0,
+                        top: 0,
+                        right: 0,
+                        bottom: 0,
+                        zIndex: 3
+                    }} justifyContent="center" alignItems="center">
+                        <Alert severity="error">视频加载失败</Alert>
+                    </Stack>
+                </Fade>
                 <CancelMutedButton
                     show={muted && !error}
                     sx={{
@@ -859,22 +839,22 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                         }
                         <Stack direction="row" justifyContent="space-between">
                             <Stack direction="row">
-                                <ToolTipWrapper title={playing ? '暂停' : '播放'}>
+                                <Tooltip title={playing ? '暂停' : '播放'}>
                                     <PlayOrPauseButton
                                         playing={playing}
                                         onTogglePlay={videoLoaded ? togglePlay : null}
                                     />
-                                </ToolTipWrapper>
+                                </Tooltip>
                                 {
                                     onNext && (
-                                        <ToolTipWrapper title="播放下一个">
+                                        <Tooltip title="播放下一个">
                                             <IconButton
                                                 color="inherit"
                                                 onClick={onNext}
                                             >
                                                 <SkipNextRoundedIcon />
                                             </IconButton>
-                                        </ToolTipWrapper>
+                                        </Tooltip>
                                     )
                                 }
                                 {
@@ -915,29 +895,29 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                                         />
                                     )
                                 }
-                                <ToolTipWrapper title={`${fullscreen ? '退出' : '进入'}全屏`}>
+                                <Tooltip title={`${fullscreen ? '退出' : '进入'}全屏`}>
                                     <IconButton
                                         color="inherit"
-                                        onClick={toggleFullscreen}
+                                        onClick={actionTrigger(toggleFullscreen)}
                                     >
                                         {
                                             fullscreen ? <FullscreenExitRoundedIcon /> : <FullscreenRoundedIcon />
                                         }
                                     </IconButton>
-                                </ToolTipWrapper>
+                                </Tooltip>
                                 {
                                     !live && !disableDownload && !ios && (
-                                        <ToolTipWrapper title="下载">
+                                        <Tooltip title="下载">
                                             <IconButton
                                                 color="inherit"
                                                 onClick={downloading ? null : actionTrigger(downloadVideo)}
                                             >
                                                 <DownloadRoundedIcon />
                                             </IconButton>
-                                        </ToolTipWrapper>
+                                        </Tooltip>
                                     )
                                 }
-                                <ToolTipWrapper title={`${pip ? '退出' : '进入'}画中画`}>
+                                <Tooltip title={`${pip ? '退出' : '进入'}画中画`}>
                                     <IconButton
                                         color="inherit"
                                         onClick={actionTrigger(
@@ -955,7 +935,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                                             pip ? <PictureInPictureAltRoundedIcon /> : <PictureInPictureRoundedIcon />
                                         }
                                     </IconButton>
-                                </ToolTipWrapper>
+                                </Tooltip>
                             </Stack>
                         </Stack>
                     </Stack>

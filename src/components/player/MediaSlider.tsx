@@ -51,7 +51,7 @@ function MediaSlider({ buffered, components, sx, showTooltip = false, tooltipFor
                     opacity: .1
                 },
                 '&:after': {
-                    width: buffered * 100 + '%',
+                    width: 'calc(var(--buffered) * 100%)',
                     opacity: .2,
                     transition: (theme) => theme.transitions.create('width')
                 }
@@ -60,7 +60,7 @@ function MediaSlider({ buffered, components, sx, showTooltip = false, tooltipFor
                 backgroundImage: 'linear-gradient(90deg, hsl(0, 50%, 50%), hsl(60deg, 50%, 50%), hsl(180deg, 50%, 50%), currentColor)'
             }
         }),
-        [buffered, sx]
+        [sx]
     )
 
     const onKeyDown = (event: KeyboardEvent) => {
@@ -124,8 +124,16 @@ function MediaSlider({ buffered, components, sx, showTooltip = false, tooltipFor
     });
     */
 
+    const bufferStateWrapper = (child: React.ReactNode) => (
+        <div style={{
+            '--buffered': buffered
+        } as React.CSSProperties}>
+            {child}
+        </div>
+    )
+
     if (showTooltip && !disabled) {
-        return (
+        return bufferStateWrapper(
             <Tooltip
                 title={
                     tooltipFormatter ? tooltipFormatter(hoverRate) : hoverRate
@@ -177,7 +185,7 @@ function MediaSlider({ buffered, components, sx, showTooltip = false, tooltipFor
         )
     }
 
-    return (
+    return bufferStateWrapper(
         <Slider
             sx={commonSx}
             onKeyDown={onKeyDown}
