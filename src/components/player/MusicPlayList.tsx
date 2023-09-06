@@ -412,6 +412,7 @@ function PlayListItem({ music, playing, isCurrent, divider, onAction, onClick }:
                     position: 'relative',
                     width: 45,
                     height: 45,
+                    flexShrink: 0,
                     mr: 2
                 }}>
                     <Box sx={{
@@ -440,6 +441,9 @@ function PlayListItem({ music, playing, isCurrent, divider, onAction, onClick }:
                 </Box>
                 <ListItemText
                     primary={music.match ? music.match.name : music.name}
+                    primaryTypographyProps={{
+                        noWrap: true
+                    }}
                     secondary={music.match ? music.match.artist : music.artist}
                 />
             </ListItemButton>
