@@ -711,6 +711,14 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                                         <Forward10RoundedIcon fontSize="inherit" />
                                     </IconButton>
                                 </Fade>
+                                <MiniProcess
+                                    visible={videoLoaded && !controlsShow}
+                                    state={state}
+                                />
+                                <SeekState
+                                    state={state}
+                                    seek={seekingDuration}
+                                />
                             </>
                         )
                     }
@@ -954,20 +962,6 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                         }}
                     />
                 </Fade>
-                {
-                    !live && (
-                        <>
-                            <MiniProcess
-                                visible={videoLoaded && !controlsShow}
-                                state={state}
-                            />
-                            <SeekState
-                                state={state}
-                                seek={seekingDuration}
-                            />
-                        </>
-                    )
-                }
             </Stack>
         </DarkThemed>
     )
