@@ -124,7 +124,7 @@ function SearchForm({
                 }
                 onKeyDown={
                     (event) => {
-                        if (event.code === 'Enter' && onSubmit) {
+                        if (event.key === 'Enter' && onSubmit) {
                             handleSubmit(value)
                             input.current.blur()
                         }
