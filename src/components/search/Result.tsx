@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
@@ -156,6 +156,11 @@ function TabType({ videoList, keyword }: SearchResultProps) {
 
     const [activeTab, setActiveTab] = useState(0)
     const activeList = useMemo(() => videoList[activeTab], [videoList, activeTab])
+    const scroller = useRef<HTMLDivElement | null>(null)
+
+    useEffect(() => {
+        scroller.current?.scrollTo(0, 0)
+    }, [activeTab])
 
     return (
         <Stack sx={{
@@ -221,7 +226,7 @@ function TabType({ videoList, keyword }: SearchResultProps) {
                 flexGrow: 1,
                 p: theme.spacing(14, 1.5, 2),
                 overflowY: 'auto'
-            })}>
+            })} ref={scroller}>
                 <SearchList
                     data={activeList.data}
                     api={activeList.key}

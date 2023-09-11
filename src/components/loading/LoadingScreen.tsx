@@ -1,7 +1,7 @@
 import React from 'react';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import ColorSpin from './circular/Color';
+import Spinner from './Spinner';
 import { alpha } from '@mui/material/styles';
 
 interface LoadingScreenProps {
@@ -20,7 +20,11 @@ function LoadingScreen({ label = '数据加载中...' }: LoadingScreenProps) {
                 filter: 'drop-shadow(2px 4px 15px #00000030)',
                 borderRadius: 1.5
             })} direction="row" alignItems="center" columnGap={1}>
-                <ColorSpin size={32} />
+                <Spinner
+                    sx={{
+                        fontSize: 32
+                    }}
+                />
                 <Typography color="inherit">{label}</Typography>
             </Stack>
         </Stack>

@@ -16,7 +16,6 @@ import NoData from '~/components/search/NoData'
 import SongList from '~/components/search/SongList'
 import MusicPlayList from '~/components/player/MusicPlayList'
 import useLocalStorageState from '~/components/hook/useLocalStorageState'
-import { Api } from '~/util/config'
 import { isDev } from '~/util/env'
 
 export default function MusicSearch() {

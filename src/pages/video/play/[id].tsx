@@ -17,7 +17,7 @@ import NoData from '~/components/search/NoData'
 import { getJson } from '~/adaptors/common'
 import VideoUrlParser from '~/components/search/VideoUrlParser'
 import { VideoPlayer, type PlayState } from '~/components/player'
-import { proxyUrl } from '~/util/proxy'
+import { getParamsUrl, proxyUrl } from '~/util/proxy'
 import { crossOriginIsolatedHeaders } from '~/util/middleware'
 import * as css from './style.module.css'
 
@@ -201,7 +201,7 @@ class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
                                                 <VideoPlayer
                                                     ref={this.videoRef}
                                                     title={this.playingVideoTitle}
-                                                    url={url}
+                                                    url={getParamsUrl('/api/video/m3u8-pure', { url })}
                                                     hls
                                                     autoplay
                                                     initPlayTime={this.videoParams ? this.videoParams.seek : 0}

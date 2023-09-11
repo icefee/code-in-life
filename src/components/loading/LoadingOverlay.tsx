@@ -3,7 +3,7 @@ import Stack from '@mui/material/Stack';
 import Fade from '@mui/material/Fade';
 import Backdrop from '@mui/material/Backdrop';
 import Typography, { type TypographyProps } from '@mui/material/Typography';
-import ColorSpin from './circular/Color';
+import Spinner from './Spinner';
 import { type Theme } from '@mui/material/styles';
 
 type PropsType = {
@@ -32,12 +32,16 @@ export default function LoadingOverlay({
 
     const inner = (
         <>
-            <ColorSpin size={spinSize} />
+            <Spinner
+                sx={{
+                    fontSize: spinSize
+                }}
+            />
             {
                 label && (
                     <Typography
                         sx={{
-                            ml: 1
+                            ml: 1.5
                         }}
                         variant={labelVariant}
                         color="inherit"
