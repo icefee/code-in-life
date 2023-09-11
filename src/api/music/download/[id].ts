@@ -16,9 +16,7 @@ const handler: ApiHandler = async (req, res) => {
         throw new Error('file not found.')
     }
     else {
-        for (const key of headers.keys()) {
-            res.setHeader(key, headers.get(key))
-        }
+        res.setHeader('content-type', headers.get('content-type') || 'audio/mpeg')
         response.body.pipe(appendContentDisposition(req, res, 'mp3'))
     }
 }
