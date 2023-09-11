@@ -2,9 +2,9 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import { alpha } from '@mui/material/styles';
 // import PictureInPictureAltRoundedIcon from '@mui/icons-material/PictureInPictureAltRounded';
 // import PictureInPictureRoundedIcon from '@mui/icons-material/PictureInPictureRounded';
 import RepeatOneRoundedIcon from '@mui/icons-material/RepeatOneRounded';
@@ -16,6 +16,7 @@ import PlayOrPauseButton from './PlayOrPauseButton';
 import VolumeSetter from './VolumeSetter';
 import useLocalStorageState from '../hook/useLocalStorageState';
 import MediaSlider from './MediaSlider';
+import { Spinner } from '../loading';
 import AudioVisual from 'react-audio-visual';
 import { generate } from '~/util/url';
 import { timeFormatter } from '~/util/date';
@@ -152,16 +153,28 @@ function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange,
                 })} justifyContent="center" alignItems="center" flexShrink={0}>
                     {
                         music && (
-                            <Box sx={{
+                            <Box sx={(theme) => ({
                                 width: '100%',
                                 height: '100%',
-                                opacity: .75
-                            }}>
-                                <MusicPoster
-                                    alt={`${music.name}-${music.artist}`}
-                                    src={music.poster}
-                                    spinning={playing && !loading}
-                                />
+                                bgcolor: '#000',
+                                border: '6px solid hsla(0, 0%, 100%, .02)',
+                                p: .75,
+                                borderRadius: '50%',
+                                boxShadow: playing ? `0 0 16px 0 ${alpha(theme.palette.secondary.main, .4)}` : 'none',
+                                opacity: loading ? .4 : .8,
+                                transition: theme.transitions.create(['opacity', 'box-shadow'])
+                            })}>
+                                <Box sx={{
+                                    height: '100%',
+                                    border: '1px solid #333',
+                                    borderRadius: '50%'
+                                }}>
+                                    <MusicPoster
+                                        alt={`${music.name}-${music.artist}`}
+                                        src={music.poster}
+                                        spinning={playing && !loading}
+                                    />
+                                </Box>
                             </Box>
                         )
                     }
@@ -175,9 +188,12 @@ function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange,
                     }}>
                         {
                             loading ? (
-                                <CircularProgress sx={{
-                                    display: 'block'
-                                }} color="inherit" />
+                                <Spinner
+                                    sx={{
+                                        display: 'block',
+                                        fontSize: 64
+                                    }}
+                                />
                             ) : (
                                 <PlayOrPauseButton
                                     playing={playing}

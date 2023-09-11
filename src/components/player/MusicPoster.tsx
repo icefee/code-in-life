@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import Box from '@mui/material/Box';
-import Avatar from '@mui/material/Avatar';
-import Skeleton from '@mui/material/Skeleton';
+import React, { useState, useEffect } from 'react'
+import Box from '@mui/material/Box'
+import Avatar from '@mui/material/Avatar'
+import Skeleton from '@mui/material/Skeleton'
 
 interface MusicPosterProps {
     spinning?: boolean;
