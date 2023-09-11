@@ -1,11 +1,16 @@
 import { createApiAdaptor, parseId, getResponse } from '../../../../adaptors'
 import { appendContentDisposition, errorHandler, ApiHandler } from '../../../../util/middleware'
+import { proxyUrl } from '../../../../util/proxy'
+import { isDev } from '../../../../util/env'
 
 const handler: ApiHandler = async (req, res) => {
     const { key, id } = parseId(req.params.id)
     const adaptor = createApiAdaptor(key)
     if (adaptor.lrcFile) {
-        const response = await getResponse(adaptor.getLrcUrl(id))
+        const url = adaptor.getLrcUrl(id)
+        const response = await getResponse(
+            isDev ? url : proxyUrl(url, true)
+        )
         const headers = response.headers
         for (const key of headers.keys()) {
             res.setHeader(key, headers.get(key))
