@@ -1,7 +1,13 @@
+import { GatsbyFunctionResponse } from 'gatsby'
 import { createApiAdaptor, parseId, getResponse } from '../../../../adaptors'
 import { appendContentDisposition, errorHandler, ApiHandler } from '../../../../util/middleware'
 import { proxyUrl } from '../../../../util/proxy'
 import { isDev } from '../../../../util/env'
+
+function setHeader(res: GatsbyFunctionResponse) {
+    res.setHeader('content-type', 'text/lrc')
+    return res
+}
 
 const handler: ApiHandler = async (req, res) => {
     const { key, id } = parseId(req.params.id)
@@ -11,16 +17,18 @@ const handler: ApiHandler = async (req, res) => {
         const response = await getResponse(
             isDev ? url : proxyUrl(url, true)
         )
-        const headers = response.headers
-        for (const key of headers.keys()) {
-            res.setHeader(key, headers.get(key))
-        }
-        response.body.pipe(appendContentDisposition(req, res, 'lrc'))
+        response.body.pipe(
+            setHeader(
+                appendContentDisposition(req, res, 'lrc')
+            )
+        )
     }
     else {
         const lrcText = await adaptor.getLrcText(id)
         if (lrcText) {
-            appendContentDisposition(req, res, 'lrc').setHeader('content-type', 'text/lrc').send(lrcText)
+            setHeader(
+                appendContentDisposition(req, res, 'lrc')
+            ).end(lrcText)
         }
         else {
             throw new Error('lrc file not found.')
