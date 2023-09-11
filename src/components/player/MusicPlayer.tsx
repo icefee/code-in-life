@@ -157,12 +157,12 @@ function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange,
                                 width: '100%',
                                 height: '100%',
                                 bgcolor: '#000',
-                                border: '6px solid hsla(0, 0%, 100%, .02)',
+                                border: '6px solid hsla(0, 0%, 100%, .04)',
                                 p: .75,
                                 borderRadius: '50%',
-                                boxShadow: playing ? `0 0 16px 0 ${alpha(theme.palette.secondary.main, .4)}` : 'none',
+                                filter: playing ? `drop-shadow(0px 0px 16px ${alpha(theme.palette.secondary.main, .4)})` : 'none',
                                 opacity: loading ? .4 : .8,
-                                transition: theme.transitions.create(['opacity', 'box-shadow'])
+                                transition: theme.transitions.create(['opacity', 'filter'])
                             })}>
                                 <Box sx={{
                                     height: '100%',
@@ -172,7 +172,7 @@ function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange,
                                     <MusicPoster
                                         alt={`${music.name}-${music.artist}`}
                                         src={music.poster}
-                                        spinning={playing && !loading}
+                                        spinning={playing}
                                     />
                                 </Box>
                             </Box>
