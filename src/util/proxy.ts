@@ -1,8 +1,10 @@
 import { Api } from './config'
 
+export function getParamsUrl(url: string, params: Record<string, string>) {
+    const urlSearchParams = new URLSearchParams(params)
+    return `${url}?${urlSearchParams}`
+}
+
 export function proxyUrl(url: string, remote: boolean = false) {
-    const searchParams = new URLSearchParams({
-        url
-    })
-    return `${remote ? Api.assetSite : ''}/api/proxy?${searchParams}`
+    return getParamsUrl(`${remote ? Api.assetSite : ''}/api/proxy`, { url })
 }

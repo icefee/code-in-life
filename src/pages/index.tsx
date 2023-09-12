@@ -16,6 +16,8 @@ import NoData from '../components/search/NoData';
 import SongList from '../components/search/SongList';
 import MusicPlayList from '../components/player/MusicPlayList';
 import useLocalStorageState from '../components/hook/useLocalStorageState';
+import { Api } from '../util/config';
+import { getParamsUrl } from '../util/proxy';
 
 export default function MusicSearch() {
 
@@ -103,21 +105,27 @@ export default function MusicSearch() {
         }
     }, [searchTask.success, searchTask.data])
 
-    const generateSearchParams = ({ name, artist }: SearchMusic) => {
-        return new URLSearchParams({
+    const generateSearchQuery = ({ name, artist }: SearchMusic) => {
+        return {
             name: `${artist}-${name}`
-        })
+        }
     }
 
     const downloadSong = (music: SearchMusic) => {
         downloaFile(
-            `/api/music/download/${music.id}?${generateSearchParams(music)}`
+            getParamsUrl(
+                `${Api.proxyServer}/api/music/download/${music.id}`,
+                generateSearchQuery(music)
+            )
         )
     }
 
     const downloadLrc = (music: SearchMusic) => {
         downloaFile(
-            `/api/music/lrc/download/${music.id}?${generateSearchParams(music)}`
+            getParamsUrl(
+                `${Api.proxyServer}/api/music/lrc/download/${music.id}`,
+                generateSearchQuery(music)
+            )
         )
     }
 

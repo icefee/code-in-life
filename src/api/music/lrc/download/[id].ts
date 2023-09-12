@@ -1,8 +1,6 @@
 import { GatsbyFunctionResponse } from 'gatsby'
 import { createApiAdaptor, parseId, getResponse } from '../../../../adaptors'
 import { appendContentDisposition, errorHandler, ApiHandler } from '../../../../util/middleware'
-import { proxyUrl } from '../../../../util/proxy'
-import { isDev } from '../../../../util/env'
 
 function setHeader(res: GatsbyFunctionResponse) {
     res.setHeader('content-type', 'text/lrc')
@@ -14,9 +12,7 @@ const handler: ApiHandler = async (req, res) => {
     const adaptor = createApiAdaptor(key)
     if (adaptor.lrcFile) {
         const url = adaptor.getLrcUrl(id)
-        const response = await getResponse(
-            isDev ? url : proxyUrl(url, true)
-        )
+        const response = await getResponse(url)
         response.body.pipe(
             setHeader(
                 appendContentDisposition(req, res, 'lrc')

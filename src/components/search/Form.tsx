@@ -94,7 +94,6 @@ function SearchForm({
         <NoSsr>
             <Autocomplete
                 freeSolo
-                autoHighlight
                 options={relatedSuggests}
                 value={value}
                 blurOnSelect
