@@ -1,17 +1,13 @@
 import { createApiAdaptor, parseId, getResponse } from '../../../adaptors'
 import { appendContentDisposition, errorHandler, ApiHandler } from '../../../util/middleware'
-import { proxyUrl } from '../../../util/proxy'
-import { isDev } from '../../../util/env'
 
 const handler: ApiHandler = async (req, res) => {
     const { key, id } = parseId(req.params.id)
     const adaptor = createApiAdaptor(key)
     const url = await adaptor.parseMusicUrl(id)
-    const response = await getResponse(
-        isDev ? url : proxyUrl(url, true)
-    )
+    const response = await getResponse(url)
     const headers = response.headers
-    const contentType = headers.get('Content-Type')
+    const contentType = headers.get('content-type')
     if (!/audio\/mpeg|application\/octet-stream/.test(contentType)) {
         throw new Error('file not found.')
     }
