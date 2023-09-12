@@ -213,7 +213,7 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
                             rowGap={1}>
                             <Typography>{status}</Typography>
                             <LinearProgress
-                                variant={downloading ? 'determinate' : 'indeterminate'}
+                                variant={downloading ? 'determinate' : 'query'}
                                 value={progress}
                             />
                         </Stack>
