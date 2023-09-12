@@ -13,6 +13,7 @@ import MusicNoteIcon from '@mui/icons-material/MusicNote'
 import TheatersIcon from '@mui/icons-material/Theaters'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import QrCodeIcon from '@mui/icons-material/QrCode'
+import SaveAltIcon from '@mui/icons-material/SaveAlt'
 import PopDialog, { PopDialogRef } from '~/components/layout/PopDialog'
 import { Spinner } from '~/components/loading'
 
@@ -40,7 +41,7 @@ const apps: App[] = [
         url: '/music/',
         icon: AlbumIcon,
         iconForeground: '#222222bd',
-        iconBackground: 'linear-gradient(15deg, #2196F3, #FF5722)'
+        iconBackground: 'linear-gradient(15deg, #2196f3, #ff5722)'
     },
     {
         id: 'video',
@@ -56,12 +57,20 @@ const apps: App[] = [
         url: '/mmj/',
         icon: MusicNoteIcon,
         iconForeground: '#fff',
-        iconBackground: 'linear-gradient(45deg, #FF5722, #E91E63)'
+        iconBackground: 'linear-gradient(45deg, #ff5722, #e91e63)'
+    },
+    {
+        id: 'hls-download',
+        name: 'hls视频下载',
+        url: '/hls-download/',
+        icon: SaveAltIcon,
+        iconForeground: '#fff',
+        iconBackground: 'linear-gradient(60deg, #FF9800, #4ac375)'
     },
     {
         id: 'qr',
         name: '二维码生成',
-        url: '/qr',
+        url: '/qr/',
         icon: QrCodeIcon,
         iconForeground: '#ffffffcf',
         iconBackground: 'linear-gradient(300deg, #ff5722, #00bcd4)'

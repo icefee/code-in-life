@@ -3,7 +3,6 @@ import type { GetServerDataProps, GetServerDataReturn, PageProps } from 'gatsby'
 import Box from '@mui/material/Box'
 import { VideoPlayer } from '~/components/player'
 import VideoUrlParser from '~/components/search/VideoUrlParser'
-import { crossOriginIsolatedHeaders } from '~/util/middleware'
 import { M3u8 } from '~/util/regExp'
 
 interface ServerProps {
@@ -13,8 +12,6 @@ interface ServerProps {
 export async function getServerData({ query }: GetServerDataProps): Promise<GetServerDataReturn<ServerProps>> {
     const { url } = query as Record<'url', string>;
     return {
-        status: 200,
-        headers: crossOriginIsolatedHeaders,
         props: {
             url
         }

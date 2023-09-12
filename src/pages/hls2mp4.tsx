@@ -1,136 +1,142 @@
-import React, { useState } from 'react'
-import { Script } from 'gatsby'
-import { crossOriginIsolatedHeaders } from '~/util/middleware'
+import React, { useState, useEffect, useRef } from 'react'
+import Hls from 'hls.js'
+import Hls2Mp4 from 'hls2mp4'
 
-export async function getServerData() {
-    return {
-        status: 200,
-        headers: crossOriginIsolatedHeaders
-    }
-}
-
-export async function config() {
-    return () => {
-        return {
-            defer: true,
-        }
-    }
+export function Head() {
+    return (
+        <>
+            <title key="hls2mp4">hls2mp4 demo</title>
+        </>
+    )
 }
 
 function Hls2Mp4Demo() {
 
-    const [hlsLoaded, setHlsLoaded] = useState(false)
-    const [ffmpegLoaded, setFFmpegLoaded] = useState(false)
+    const [logs, setLogs] = useState<{
+        id: number;
+        text: string;
+    }[]>([])
+    const [downloading, setDownloading] = useState(false)
+    const hls2Mp4 = useRef<Hls2Mp4 | null>(null)
+    const videoRef = useRef<HTMLVideoElement | null>(null)
+    const logScrollerRef = useRef<HTMLUListElement | null>(null)
+    const nextId = useRef(0)
+    const testUrl = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
+
+    const addLog = (log: string) => {
+        setLogs(
+            logs => {
+                nextId.current++
+                return [
+                    ...logs,
+                    {
+                        id: nextId.current,
+                        text: log
+                    }
+                ]
+            }
+        )
+    }
+
+    useEffect(() => {
+        logScrollerRef.current.scrollTop = logScrollerRef.current.scrollHeight
+    }, [logs])
+
+    useEffect(() => {
+        const video = videoRef.current
+        if (Hls.isSupported()) {
+            var hls = new Hls()
+            hls.loadSource(testUrl)
+            hls.attachMedia(video)
+            hls.on(Hls.Events.MEDIA_ATTACHED, () => {
+                video.muted = true
+                video.play()
+            })
+        }
+        else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.src = testUrl
+            video.addEventListener('canplay', () => {
+                video.play()
+            })
+        }
+
+        hls2Mp4.current = new Hls2Mp4({
+            maxRetry: 5,
+            tsDownloadConcurrency: 20
+        }, (type, progress) => {
+            const TaskType = Hls2Mp4.TaskType;
+            if (type === TaskType.loadFFmeg) {
+                if (progress === 0) {
+                    addLog('load FFmpeg')
+                }
+                else {
+                    addLog('FFmpeg load complete')
+                }
+            }
+            else if (type === TaskType.parseM3u8) {
+                if (progress === 0) {
+                    addLog('parse m3u8')
+                }
+                else {
+                    addLog('m3u8 parsed complete')
+                }
+            }
+            else if (type === TaskType.downloadTs) {
+                addLog('download ts segments: ' + Math.round(progress * 100) + '%')
+            }
+            else if (type === TaskType.mergeTs) {
+                if (progress === 0) {
+                    addLog('merge ts segments')
+                }
+                else {
+                    addLog('ts segments merged complete')
+                }
+            }
+        })
+    }, [])
 
     return (
-        <>
-            <Script src="/api/proxy?url=https://hlsjs.video-dev.org/dist/hls.js" onLoad={
-                () => setHlsLoaded(true)
-            } />
-            <Script src="/api/proxy?url=https://unpkg.com/@ffmpeg.wasm/main@0.12.0/dist/ffmpeg.min.js" onLoad={
-                () => setFFmpegLoaded(true)
-            } />
-            {
-                ffmpegLoaded && (
-                    <Script src="/api/proxy?url=https://unpkg.com/hls2mp4@1.1.9/hls2mp4.js" />
-                )
-            }
-            <div className="hls-demo">
-                <video style={{
+        <div className="hls-demo">
+            <video
+                style={{
                     display: 'block',
                     width: '100%'
-                }} height="400" id="video" controls />
+                }}
+                height="400"
+                ref={videoRef}
+                controls
+            />
 
-                <div style={{
-                    margin: 10
-                }}>
-                    <button id="dl-btn">Download to mp4</button>
-                </div>
-                <ul id="logs" style={{
+            <div style={{
+                margin: 10
+            }}>
+                <button
+                    disabled={downloading}
+                    onClick={
+                        async () => {
+                            setDownloading(true)
+                            const buffer = await hls2Mp4.current.download(testUrl)
+                            hls2Mp4.current.saveToFile(buffer, 'test.mp4')
+                            setDownloading(false)
+                        }
+                    }>Download to mp4</button>
+            </div>
+            <ul
+                style={{
                     maxHeight: 200,
                     overflowY: 'auto'
-                }} />
-            </div>
-            {
-                hlsLoaded && (
-                    <Script defer>
-                        {`
-                           var video = document.getElementById('video');            
-                           var testUrl = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8';
-                           if (Hls.isSupported()) {
-                            var hls = new Hls();
-                            hls.loadSource(testUrl);
-                            hls.attachMedia(video);
-                            hls.on(Hls.Events.MEDIA_ATTACHED, function () {
-                              video.muted = true;
-                              video.play();
-                            });
-                          }
-                          else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                            video.src = testUrl;
-                            video.addEventListener('canplay', function () {
-                              video.play();
-                            });
-                          }
-
-                          const logs = document.getElementById('logs')
-
-                          function logMsg(msg) {
-                            var li = document.createElement('li')
-                            li.innerText = msg;
-                            logs.appendChild(li);
-                            logs.scrollTop = logs.scrollHeight + logs.clientHeight;
-                          }
-                          
-                          const downloadBtn = document.getElementById('dl-btn')
-                          downloadBtn.addEventListener('click', async function() {
-
-                            this.setAttribute('disabled', 'disabled')
-                            
-                            const hls2Mp4 = new Hls2Mp4({
-                                log: true,
-                                maxRetry: 5,
-                                tsDownloadConcurrency: 20
-                            }, (type, progress) => {
-                                const TaskType = Hls2Mp4.TaskType;
-                                if (type === TaskType.loadFFmeg) {
-                                    if (progress === 0) {
-                                        logMsg('load FFmpeg')
-                                    }
-                                    else {
-                                        logMsg('FFmpeg load complete')
-                                    }
-                                }
-                                else if (type === TaskType.parseM3u8) {
-                                    if (progress === 0) {
-                                        logMsg('parse m3u8')
-                                    }
-                                    else {
-                                        logMsg('m3u8 parsed complete')
-                                    }
-                                }
-                                else if (type === TaskType.downloadTs) {
-                                    logMsg('download ts segments: ' + Math.round(progress * 100) + '%')
-                                }
-                                else if (type === TaskType.mergeTs) {
-                                    if (progress === 0) {
-                                        logMsg('merge ts segments')
-                                    }
-                                    else {
-                                        logMsg('ts segments merged complete')
-                                    }
-                                }
-                            })
-                            const buffer = await hls2Mp4.download(testUrl)
-                            hls2Mp4.saveToFile(buffer, 'test.mp4')
-                            this.removeAttribute('disabled')
-                          });
-
-                        `}
-                    </Script>
-                )
-            }
-        </>
+                }}
+                ref={logScrollerRef}
+            >
+                {
+                    logs.map(
+                        ({ id, text }) => (
+                            <li key={id}>{text}</li>
+                        )
+                    )
+                }
+            </ul>
+        </div>
     )
 }
 

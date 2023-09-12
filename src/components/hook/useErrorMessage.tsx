@@ -44,5 +44,8 @@ export default function useErrorMessage() {
             autoHideDuration
         })
     }
-    return showErrorMessage;
+    return {
+        showErrorMessage,
+        ...context
+    }
 }
