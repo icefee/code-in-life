@@ -32,7 +32,7 @@ export async function getServerData({ query }: GetServerDataProps): Promise<GetS
 
 function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerProps>) {
 
-    const { url } = serverData
+    const url = serverData?.url
     const [input, setInput] = useState(url ?? '')
     const [busy, setBusy] = useState(false)
     const hls2Mp4 = useRef<Hls2Mp4 | null>(null)
@@ -185,7 +185,7 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
                 <Stack sx={(theme) => ({
                     position: 'relative',
                     width: '100%',
-                    maxWidth: 800,
+                    maxWidth: 600,
                     height: '100%',
                     transition: theme.transitions.create(['opacity']),
                     transitionDelay: busy ? '.4s' : 0,
@@ -208,7 +208,7 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
                             rowGap={1}>
                             <Typography>{status}</Typography>
                             <LinearProgress
-                                variant={downloading ? 'determinate' : 'query'}
+                                variant={downloading ? 'determinate' : 'indeterminate'}
                                 value={progress}
                             />
                         </Stack>
