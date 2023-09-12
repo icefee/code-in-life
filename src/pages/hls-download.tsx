@@ -52,7 +52,7 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
         try {
             const response = await fetch(url)
             const contentType = response.headers.get('content-type')
-            return contentType === 'application/vnd.apple.mpegURL'
+            return /application\/vnd.apple.mpegURL/i.test(contentType)
         }
         catch (err) {
             return false
