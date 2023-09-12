@@ -4,18 +4,13 @@ const config: GatsbyConfig = {
   flags: {
     DEV_SSR: true
   },
-  headers: [
-    {
-      source: '*',
-      headers: [
-        {
-          key: 'x-frame-options',
-          value: 'SAMEORIGIN'
-        }
-      ]
-    }
-  ],
   plugins: [
+    {
+      resolve: 'gatsby-plugin-netlify',
+      options: {
+        mergeSecurityHeaders: false
+      }
+    },
     {
       resolve: 'gatsby-plugin-manifest',
       options: {
@@ -35,6 +30,12 @@ const config: GatsbyConfig = {
         workboxConfig: {
           globPatterns: ['**/static*']
         }
+      }
+    },
+    {
+      resolve: 'gatsby-plugin-gatsby-cloud',
+      options: {
+        mergeSecurityHeaders: false
       }
     },
     {

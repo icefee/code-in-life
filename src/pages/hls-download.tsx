@@ -41,7 +41,7 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
     const [progress, setProgress] = useState(0)
 
     const { showErrorMessage: showError, hideAll } = useErrorMessage()
-    const urlMatchRegExp = new RegExp('^https?://[\\w\\u4e00-\\u9fa5-./@%?:]+?\\.m3u8$', 'i')
+    // const urlMatchRegExp = new RegExp('^https?://[\\w\\u4e00-\\u9fa5-./@%?:]+?\\.m3u8$', 'i')
 
     const getFileName = (url: string) => {
         const fileNameMatch = url.match(/[^\/]+$/)
@@ -61,22 +61,17 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
 
     const startDownload = async () => {
         try {
-            if (urlMatchRegExp.test(input)) {
-                setBusy(true)
-                setStatus('检测hls地址..')
-                const payloadValid = await testUrl(input)
-                if (payloadValid) {
-                    const buffer = await hls2Mp4.current.download(input)
-                    const fileName = getFileName(input)
-                    hls2Mp4.current.saveToFile(buffer, `${fileName}.mp4`)
-                    setBusy(false)
-                }
-                else {
-                    throw new Error('非法的hls内容')
-                }
+            setBusy(true)
+            setStatus('检测hls地址..')
+            const payloadValid = await testUrl(input)
+            if (payloadValid) {
+                const buffer = await hls2Mp4.current.download(input)
+                const fileName = getFileName(input)
+                hls2Mp4.current.saveToFile(buffer, `${fileName}.mp4`)
+                setBusy(false)
             }
             else {
-                throw new Error('非法的hls地址')
+                throw new Error('非法的hls内容')
             }
         }
         catch (err) {
