@@ -35,7 +35,7 @@ async function downloadLrc(id: MusicLrcProps['id']): Promise<Lrc[] | null> {
 function MusicLrc({ id, currentTime }: MusicLrcProps) {
 
     const [downloading, setDownloading] = useState(false)
-    const [lrcMap, setLrcMap] = useState<Record<MusicLrcProps['id'], Lrc[]>>({})
+    const [lrcMap, setLrcMap] = useState<Record<MusicLrcProps['id'], Lrc[] | null>>({})
     const [anchorEl, setAnchorEl] = useState<HTMLSpanElement | null>(null)
     const downloadingPlaceholder = '正在下载歌词..'
     const emptyPlaceholder = '🎵🎵...'
