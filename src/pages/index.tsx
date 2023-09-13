@@ -1,21 +1,13 @@
-import React, { useState, useRef, ComponentType } from 'react'
-import { Link } from 'gatsby'
+import React, { ComponentType } from 'react'
 import type { SvgIconProps } from '@mui/material/SvgIcon'
 import Stack from '@mui/material/Stack'
-import AppBar from '@mui/material/AppBar'
-import Toolbar from '@mui/material/Toolbar'
-import IconButton from '@mui/material/IconButton'
 import ButtonBase from '@mui/material/ButtonBase'
-import Backdrop from '@mui/material/Backdrop'
 import Typography from '@mui/material/Typography'
 import AlbumIcon from '@mui/icons-material/Album'
 import MusicNoteIcon from '@mui/icons-material/MusicNote'
 import TheatersIcon from '@mui/icons-material/Theaters'
-import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import QrCodeIcon from '@mui/icons-material/QrCode'
 import SaveAltIcon from '@mui/icons-material/SaveAlt'
-import PopDialog, { PopDialogRef } from '~/components/layout/PopDialog'
-import { Spinner } from '~/components/loading'
 
 export function Head() {
     return (
@@ -75,32 +67,24 @@ const apps: App[] = [
         iconForeground: '#ffffffcf',
         iconBackground: 'linear-gradient(300deg, #ff5722, #00bcd4)'
     }
-];
-
-interface GatsbyLinkProps {
-    href: string;
-}
-
-function GatsbyLink({ href, ...rest }: GatsbyLinkProps) {
-    return (
-        <Link to={href} {...rest} />
-    )
-}
+]
 
 interface AppIconProps {
     app: App;
     onBoot?(app: App): void;
 }
 
-function AppIcon({ app, onBoot }: AppIconProps) {
+function AppIcon({ app }: AppIconProps) {
     const Icon = app.icon;
     return (
         <Stack sx={{
             width: 'var(--icon-size)',
         }}>
-            <ButtonBase onClick={
-                () => onBoot?.(app)
-            } disableRipple>
+            <ButtonBase
+                href={app.url}
+                target="_blank"
+                disableRipple
+            >
                 <Stack style={{
                     alignItems: 'center'
                 }} rowGap={.5}>
@@ -122,11 +106,6 @@ function AppIcon({ app, onBoot }: AppIconProps) {
 }
 
 function Index() {
-
-    const dialogRef = useRef<PopDialogRef | null>(null)
-    const [runningApp, setRunningApp] = useState<App | null>(null)
-    const [loading, setLoading] = useState(false)
-
     return (
         <Stack sx={(theme) => ({
             height: '100%',
@@ -151,76 +130,11 @@ function Index() {
                             <AppIcon
                                 key={app.id}
                                 app={app}
-                                onBoot={
-                                    (app) => {
-                                        setRunningApp(app)
-                                        setLoading(true)
-                                        dialogRef.current.open()
-                                    }
-                                }
                             />
                         )
                     )
                 }
             </Stack>
-            <PopDialog
-                ref={dialogRef}
-            >
-                <AppBar
-                    position="relative"
-                    sx={{
-                        zIndex: 8
-                    }}
-                >
-                    <Toolbar variant="dense">
-                        <IconButton
-                            edge="start"
-                            color="inherit"
-                            onClick={() => dialogRef.current.close()}
-                            aria-label="close"
-                        >
-                            <ArrowBackIcon />
-                        </IconButton>
-                        <Typography
-                            sx={{
-                                ml: 2,
-                                flex: 1
-                            }}
-                            variant="h6"
-                            component="div"
-                        >{runningApp?.name}</Typography>
-                    </Toolbar>
-                </AppBar>
-                <Stack sx={{
-                    position: 'relative',
-                    flexGrow: 1,
-                    overflow: 'hidden'
-                }}>
-                    <iframe
-                        style={{
-                            display: 'block',
-                            border: 'none',
-                            height: '100%'
-                        }}
-                        src={runningApp?.url}
-                        onLoad={
-                            () => setLoading(false)
-                        }
-                    />
-                    <Backdrop
-                        sx={{
-                            position: 'absolute',
-                            color: '#fff'
-                        }}
-                        open={loading}>
-                        <Spinner
-                            sx={{
-                                fontSize: 40
-                            }}
-                        />
-                    </Backdrop>
-                </Stack>
-            </PopDialog>
         </Stack>
     )
 }

@@ -8,12 +8,6 @@ const config: GatsbyConfig = {
   },
   plugins: [
     {
-      resolve: 'gatsby-plugin-netlify',
-      options: {
-        mergeSecurityHeaders: false
-      }
-    },
-    {
       resolve: 'gatsby-plugin-manifest',
       options: {
         name: '应用中心',
@@ -32,12 +26,6 @@ const config: GatsbyConfig = {
         workboxConfig: {
           globPatterns: ['**/static*']
         }
-      }
-    },
-    {
-      resolve: 'gatsby-plugin-gatsby-cloud',
-      options: {
-        mergeSecurityHeaders: false
       }
     },
     {
