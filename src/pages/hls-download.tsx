@@ -52,10 +52,17 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
         try {
             const response = await fetch(url)
             const contentType = response.headers.get('content-type')
-            return /application\/vnd.apple.mpegURL/i.test(contentType)
+            const valid = /application\/vnd.apple.mpegurl/i.test(contentType)
+            return {
+                url: response.url,
+                valid
+            }
         }
         catch (err) {
-            return false
+            return {
+                url,
+                valid: false
+            }
         }
     }
 
@@ -63,9 +70,9 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
         try {
             setBusy(true)
             setStatus('检测hls地址..')
-            const payloadValid = await testUrl(input)
-            if (payloadValid) {
-                const buffer = await hls2Mp4.current.download(input)
+            const { valid, url } = await testUrl(input)
+            if (valid) {
+                const buffer = await hls2Mp4.current.download(url)
                 const fileName = getFileName(input)
                 hls2Mp4.current.saveToFile(buffer, `${fileName}.mp4`)
                 setBusy(false)
