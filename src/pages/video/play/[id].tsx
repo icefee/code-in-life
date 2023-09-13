@@ -17,7 +17,7 @@ import NoData from '~/components/search/NoData'
 import { getJson } from '~/adaptors/common'
 import VideoUrlParser from '~/components/search/VideoUrlParser'
 import { VideoPlayer, type PlayState } from '~/components/player'
-import { getParamsUrl, proxyUrl } from '~/util/proxy'
+import { getParamsUrl } from '~/util/proxy'
 import * as css from './style.module.css'
 
 interface VideoParams {
@@ -389,7 +389,8 @@ function VideoProfile({ video }: VideoProfileProps) {
                 mr: 1.5
             })}>
                 <ThumbLoader
-                    src={proxyUrl(video.pic)}
+                    src={video.pic}
+                    alt={video.name}
                 />
             </Box>
             <Box>
@@ -446,7 +447,7 @@ function RelatedList({ data }: RelatedListProps) {
                                             flexShrink: 0
                                         }}>
                                             <ThumbLoader
-                                                src={`/api/video/${id}?type=poster&proxy=1`}
+                                                src={`/api/video/${id}?type=poster`}
                                                 aspectRatio="3 / 4"
                                             />
                                         </Box>
