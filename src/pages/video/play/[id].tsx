@@ -442,8 +442,8 @@ function RelatedList({ data }: RelatedListProps) {
                                 <CardActionArea href={`/video/play/${id}/`}>
                                     <Stack direction="row">
                                         <Box sx={{
-                                            width: 90,
-                                            height: 120,
+                                            width: 96,
+                                            height: 128,
                                             flexShrink: 0
                                         }}>
                                             <ThumbLoader
@@ -498,8 +498,8 @@ export async function getServerData({ params }: GetServerDataProps): Promise<Get
 
 export default function Page({ serverData }: PageProps<object, object, unknown, ServerProps>) {
 
-    const { id } = serverData;
-    const [videoInfo, setVideoInfo] = useState<VideoInfo>();
+    const id = serverData?.id
+    const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null)
 
     useEffect(() => {
         (async function getVideoInfo() {

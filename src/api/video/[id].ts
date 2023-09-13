@@ -20,27 +20,29 @@ const handler: ApiHandler = async (req, res) => {
     const { type } = req.query
     const url = `${Api.site}/api/video/${api}/${id}`
     const { code, data, msg } = await getJson<ApiJsonType<VideoInfo>>(url)
-    if (code !== 0) {
-        throw new Error(msg)
-    }
-    if (type === 'poster') {
-        res.redirect(301, data ? data.proxy ? proxyUrl(data.pic) : data.pic : `/image_fail.jpg`)
+    if (code === 0) {
+        if (type === 'poster') {
+            res.redirect(301, data ? data.proxy ? proxyUrl(data.pic) : data.pic : `/image_fail.jpg`)
+        }
+        else {
+            const related = await getRelatedList(api, data.tid)
+            data.related = related.filter(
+                ({ id }) => id !== data.id
+            ).map(
+                ({ id, ...rest }) => ({
+                    id: Clue.create(api, id),
+                    ...rest
+                })
+            )
+            res.json({
+                code: 0,
+                data,
+                msg: '成功'
+            })
+        }
     }
     else {
-        const related = await getRelatedList(api, data.tid)
-        data.related = related.filter(
-            ({ id }) => id !== data.id
-        ).map(
-            ({ id, ...rest }) => ({
-                id: Clue.create(api, id),
-                ...rest
-            })
-        )
-        res.json({
-            code: 0,
-            data,
-            msg: '成功'
-        })
+        throw new Error(msg)
     }
 }
 
