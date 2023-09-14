@@ -82,7 +82,6 @@ function AppIcon({ app }: AppIconProps) {
         }}>
             <ButtonBase
                 href={app.url}
-                target="_blank"
                 disableRipple
             >
                 <Stack style={{
@@ -117,7 +116,7 @@ function Index() {
             }
         })}>
             <Stack sx={(theme) => ({
-                '--icon-size': `clamp(75px, calc((100vw - ${theme.spacing(10)}) / 4), 90px)`,
+                '--icon-size': `clamp(80px, calc((100vw - ${theme.spacing(10)}) / 4), 90px)`,
                 gap: 2,
                 [theme.breakpoints.up('sm')]: {
                     '--icon-size': '96px',

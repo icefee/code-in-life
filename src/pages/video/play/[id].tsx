@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect, createRef } from 'react'
+import React, { useState, useEffect, useMemo, useRef } from 'react'
 import type { PageProps, GetServerDataProps, GetServerDataReturn } from 'gatsby'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
@@ -11,6 +11,7 @@ import CardActionArea from '@mui/material/CardActionArea'
 import Typography from '@mui/material/Typography'
 import { TabPanel } from '~/components/layout'
 import ThumbLoader from '~/components/search/ThumbLoader'
+import useLocalStorageState from '~/components/hook/useLocalStorageState'
 import RowClipTypography from '~/components/layout/element/RowClipTypography'
 import { LoadingScreen } from '~/components/loading'
 import NoData from '~/components/search/NoData'
@@ -32,337 +33,281 @@ function createVideoParams(): VideoParams {
 
 type PlayHistory = {
     params: VideoParams;
-    sourceIndex?: number;
-    episodeIndex?: number;
+    sourceIndex: number;
+    episodeIndex: number;
 }
 
-function getHistory({ id }: VideoDetailProps): PlayHistory {
-    const params = createVideoParams();
-    const defaultHistory: PlayHistory = {
-        params,
-        episodeIndex: 0,
-        sourceIndex: 0
-    };
-    const store = localStorage.getItem(id);
-    return store ? JSON.parse(store) : defaultHistory;
-}
-
-function setHistory({ id }: VideoDetailProps, history: Partial<PlayHistory>): void {
-    const store = localStorage.getItem(id);
-    localStorage.setItem(id, JSON.stringify({
-        ...(store ? JSON.parse(store) : null),
-        ...history
-    }))
-}
-
-interface VideoDetailProps {
+interface VideoPlayProps {
     id: string;
     video: VideoInfo;
 }
 
-interface VideoDetailState {
-    activeView: number; /* 0 简介, 1 选集 */
-    activeSource: number;
-    playingIndex: number;
-}
+function VideoPlay({ id, video }: VideoPlayProps) {
 
-class VideoDetail extends Component<VideoDetailProps, VideoDetailState> {
+    const [activeTab, setActiveTab] = useState(0)
+    const [playHistory, setPlayHistory] = useLocalStorageState<PlayHistory>(id, {
+        params: createVideoParams(),
+        sourceIndex: 0,
+        episodeIndex: 0
+    })
+    const paramsLastCache = useRef(+new Date())
+    const { data } = playHistory
+    const { sourceIndex, episodeIndex, params } = data
 
-    public videoParams?: VideoParams;
-    private lastUpdateTime = 0;
-    public videoRef = createRef<HTMLVideoElement>()
+    const pageTitle = useMemo(() => video.name, [video])
+    const activeSource = useMemo(() => video?.dataList[sourceIndex], [video, sourceIndex])
+    const playingVideo = useMemo(() => activeSource.urls[episodeIndex], [activeSource, episodeIndex])
 
-    state: Readonly<VideoDetailState> = {
-        activeView: 0,
-        activeSource: 0,
-        playingIndex: 0
-    }
+    const isLast = useMemo(() => episodeIndex === activeSource?.urls.length - 1, [episodeIndex])
 
-    componentDidMount() {
-        const { params, sourceIndex = 0, episodeIndex = 0 } = getHistory(this.props);
-        this.setState({
-            activeSource: sourceIndex,
-            playingIndex: episodeIndex
-        })
-        this.videoParams = params;
-    }
+    const videoFullTitle = useMemo(() => video?.name + ' - ' + playingVideo.label, [video, playingVideo])
 
-    public get activeSource() {
-        const { activeSource } = this.state;
-        return this.props.video.dataList[activeSource];
-    }
-
-    public get playingVideo() {
-        const { playingIndex } = this.state;
-        return this.activeSource.urls[playingIndex]
-    }
-
-    public get isLastVideo() {
-        return this.state.playingIndex === this.activeSource.urls.length - 1
-    }
-
-    public onPlaying({ duration, progress }: PlayState) {
-        const nowTime = Date.now();
-        if (nowTime - this.lastUpdateTime > 3e3) {
-            const { activeSource, playingIndex } = this.state;
+    const onTimeUpdate = ({ progress, duration }: PlayState) => {
+        const nowTime = Date.now()
+        if (nowTime - paramsLastCache.current > 3e3) {
             const params = {
-                seek: duration * progress
+                seek: progress * duration
             };
-            this.updateHistory({
-                params,
-                sourceIndex: activeSource,
-                episodeIndex: playingIndex
-            });
-            this.videoParams = params;
-            this.lastUpdateTime = nowTime;
+            setPlayHistory(history => ({
+                ...history,
+                params
+            }))
+            paramsLastCache.current = nowTime;
         }
     }
 
-    public updateHistory(history: Partial<PlayHistory>) {
-        setHistory(this.props, history);
-    }
-
-    public onPlayEnd() {
-        const { playingIndex } = this.state;
-        if (playingIndex < this.activeSource.urls.length - 1) {
-            this.setPlayingIndex(playingIndex + 1)
-        }
-    }
-
-    public setPlayingIndex(indexOrSetter: number | ((prev: number) => number)) {
-        this.setState(
-            typeof indexOrSetter === 'number' ? { playingIndex: indexOrSetter } : state => ({
-                playingIndex: indexOrSetter(state.playingIndex)
+    const playVideo = (episode: number) => {
+        setPlayHistory(
+            ({ episodeIndex, params, ...rest }) => ({
+                episodeIndex: episode,
+                params: createVideoParams(),
+                ...rest
             })
         )
-        this.updateHistory({
-            episodeIndex: typeof indexOrSetter === 'number' ? indexOrSetter : indexOrSetter(this.state.playingIndex)
-        })
-        this.videoParams = null;
     }
 
-    public get playingVideoTitle() {
-        return this.props.video.name + ' - ' + this.playingVideo.label
-    }
-
-    public get pageTitle() {
-        if (this.props.video) {
-            return this.props.video.name
+    const playNext = () => {
+        if (!isLast) {
+            playVideo(episodeIndex + 1)
         }
-        return '数据解析错误'
     }
 
-    public render(): React.ReactNode {
-
-        const { video } = this.props;
-
-        return (
-            <Box sx={{
-                height: '100%',
-                backgroundImage: 'var(--linear-gradient-image)'
-            }}>
-                <title>{this.pageTitle}</title>
-                {
-                    video ? (
-                        <Box sx={{
-                            position: 'relative',
-                            width: '100%',
-                            maxWidth: 1200,
-                            height: '100%',
-                            zIndex: 5,
-                            overflow: 'hidden',
-                            margin: '0 auto',
-                            boxShadow: 'rgb(0 0 0 / 50%) 2px 2px 15px'
-                        }}>
-                            <Box sx={
-                                (theme) => ({
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    height: '100%',
-                                    [theme.breakpoints.up('sm')]: {
-                                        overflowY: 'auto'
-                                    }
-                                })
-                            }>
-                                <Box sx={(theme) => ({
-                                    background: '#000',
-                                    overflow: 'hidden',
-                                    height: '45%',
-                                    flexShrink: 0,
-                                    [theme.breakpoints.up('sm')]: {
-                                        height: 'min(calc(min(100vw, 1200px) * 10 / 16), 600px)',
-                                        maxHeight: '100vh'
-                                    }
-                                })}>
-                                    <VideoUrlParser url={this.playingVideo.url}>
-                                        {
-                                            (url) => (
-                                                <VideoPlayer
-                                                    ref={this.videoRef}
-                                                    title={this.playingVideoTitle}
-                                                    url={getParamsUrl('/api/video/m3u8-pure', { url })}
-                                                    hls
-                                                    autoplay
-                                                    initPlayTime={this.videoParams ? this.videoParams.seek : 0}
-                                                    onTimeUpdate={this.onPlaying.bind(this)}
-                                                    onNext={
-                                                        this.isLastVideo ? null : () => this.setPlayingIndex(prev => prev + 1)
-                                                    }
-                                                    onEnd={this.onPlayEnd.bind(this)}
-                                                />
-                                            )
-                                        }
-                                    </VideoUrlParser>
-                                </Box>
-                                {
-                                    this.activeSource.urls.length > 1 && (
-                                        <Box sx={{
-                                            position: 'relative',
-                                            bgcolor: 'background.paper',
-                                            p: 1.5
-                                        }}>
-                                            <Typography
-                                                variant="subtitle1"
-                                                align="center"
-                                                sx={{
-                                                    position: 'relative',
-                                                    zIndex: 2
-                                                }}
-                                            >{this.playingVideoTitle}</Typography>
-                                        </Box>
-                                    )
+    return (
+        <Box sx={{
+            height: '100%',
+            backgroundImage: 'var(--linear-gradient-image)'
+        }}>
+            <title>{pageTitle}</title>
+            {
+                video ? (
+                    <Box sx={{
+                        position: 'relative',
+                        width: '100%',
+                        maxWidth: 1200,
+                        height: '100%',
+                        zIndex: 5,
+                        overflow: 'hidden',
+                        margin: '0 auto',
+                        boxShadow: 'rgb(0 0 0 / 50%) 2px 2px 15px'
+                    }}>
+                        <Box sx={
+                            (theme) => ({
+                                display: 'flex',
+                                flexDirection: 'column',
+                                height: '100%',
+                                [theme.breakpoints.up('sm')]: {
+                                    overflowY: 'auto'
                                 }
-                                <Box sx={(theme) => ({
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    flexGrow: 1,
-                                    [theme.breakpoints.only('xs')]: {
-                                        overflow: 'hidden'
+                            })
+                        }>
+                            <Box sx={(theme) => ({
+                                background: '#000',
+                                overflow: 'hidden',
+                                height: '45%',
+                                flexShrink: 0,
+                                [theme.breakpoints.up('sm')]: {
+                                    height: 'min(calc(min(100vw, 1200px) * 10 / 16), 600px)',
+                                    maxHeight: '100vh'
+                                }
+                            })}>
+                                <VideoUrlParser url={playingVideo.url}>
+                                    {
+                                        (url: string) => (
+                                            <VideoPlayer
+                                                title={videoFullTitle}
+                                                url={getParamsUrl('/api/video/m3u8-pure', { url })}
+                                                hls
+                                                autoplay
+                                                initPlayTime={params.seek}
+                                                onTimeUpdate={onTimeUpdate}
+                                                onNext={isLast ? undefined : playNext}
+                                                onEnd={playNext}
+                                            />
+                                        )
                                     }
-                                })}>
+                                </VideoUrlParser>
+                            </Box>
+                            {
+                                activeSource.urls.length > 1 && (
                                     <Box sx={{
-                                        width: '100%',
+                                        position: 'relative',
                                         bgcolor: 'background.paper',
-                                        borderBottom: 1,
-                                        borderColor: 'divider'
+                                        p: 1.5
                                     }}>
-                                        <Tabs value={this.state.activeView} onChange={
-                                            (_event, active: number) => {
-                                                this.setState({
-                                                    activeView: active
-                                                })
-                                            }
-                                        } centered>
-                                            <Tab label="简介" />
-                                            <Tab label="选集" />
-                                            <Tab label="同类推荐" />
-                                        </Tabs>
+                                        <Typography
+                                            variant="subtitle1"
+                                            align="center"
+                                            sx={{
+                                                position: 'relative',
+                                                zIndex: 2
+                                            }}
+                                        >{videoFullTitle}</Typography>
                                     </Box>
-                                    <TabPanel index={0} value={this.state.activeView}>
-                                        <VideoProfile video={video} />
-                                    </TabPanel>
-                                    <TabPanel index={1} value={this.state.activeView} disablePadding>
-                                        <Box sx={(theme) => ({
-                                            display: 'flex',
-                                            flexDirection: 'row',
-                                            height: '100%',
-                                            py: 1.5,
-                                            [theme.breakpoints.up('sm')]: {
-                                                minHeight: 250
-                                            }
-                                        })}>
-                                            {
-                                                video.dataList.length > 1 && (
-                                                    <Tabs sx={{
+                                )
+                            }
+                            <Box sx={(theme) => ({
+                                display: 'flex',
+                                flexDirection: 'column',
+                                flexGrow: 1,
+                                [theme.breakpoints.only('xs')]: {
+                                    overflow: 'hidden'
+                                }
+                            })}>
+                                <Box sx={{
+                                    width: '100%',
+                                    bgcolor: 'background.paper',
+                                    borderBottom: 1,
+                                    borderColor: 'divider'
+                                }}>
+                                    <Tabs
+                                        value={activeTab}
+                                        onChange={
+                                            (_event, active: number) => setActiveTab(active)
+                                        }
+                                        centered
+                                    >
+                                        <Tab label="简介" />
+                                        <Tab label="选集" />
+                                        <Tab label="同类推荐" />
+                                    </Tabs>
+                                </Box>
+                                <TabPanel index={0} value={activeTab}>
+                                    <VideoProfile video={video} />
+                                </TabPanel>
+                                <TabPanel index={1} value={activeTab} disablePadding>
+                                    <Box sx={(theme) => ({
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        height: '100%',
+                                        py: 1.5,
+                                        [theme.breakpoints.up('sm')]: {
+                                            minHeight: 250
+                                        }
+                                    })}>
+                                        {
+                                            video.dataList.length > 1 && (
+                                                <Tabs
+                                                    sx={{
                                                         borderRight: 1,
                                                         borderColor: 'divider',
                                                         flexShrink: 0
-                                                    }} orientation="vertical" variant="scrollable" value={this.state.activeSource} onChange={
-                                                        (_event, active: number) => {
-                                                            this.updateHistory({
-                                                                sourceIndex: active
+                                                    }}
+                                                    orientation="vertical"
+                                                    variant="scrollable"
+                                                    value={sourceIndex}
+                                                    onChange={
+                                                        (_event, active: number) => setPlayHistory(
+                                                            ({ sourceIndex, ...rest }) => ({
+                                                                sourceIndex: active,
+                                                                ...rest
                                                             })
-                                                            this.setState({
-                                                                activeSource: active
-                                                            })
-                                                        }
+                                                        )
                                                     }>
-                                                        {
-                                                            video.dataList.map(
-                                                                (source: VideoSource, index: number) => (
-                                                                    <Tab label={source.name} key={index} />
-                                                                )
+                                                    {
+                                                        video.dataList.map(
+                                                            (source: VideoSource, index: number) => (
+                                                                <Tab label={source.name} key={index} />
                                                             )
-                                                        }
-                                                    </Tabs>
-                                                )
+                                                        )
+                                                    }
+                                                </Tabs>
+                                            )
+                                        }
+                                        <Box sx={(theme) => ({
+                                            width: '100%',
+                                            [theme.breakpoints.only('xs')]: {
+                                                flexGrow: 1,
+                                                overflowY: 'auto'
                                             }
-                                            <Box sx={(theme) => ({
-                                                width: '100%',
-                                                [theme.breakpoints.only('xs')]: {
-                                                    flexGrow: 1,
-                                                    overflowY: 'auto'
-                                                }
-                                            })}>
-                                                {
-                                                    video.dataList.map(
-                                                        (source: VideoSource, index: number) => (
-                                                            <TabPanel index={index} value={this.state.activeSource} key={index} disablePadding>
-                                                                <Box sx={(theme) => ({
-                                                                    display: 'flex',
-                                                                    flexFlow: 'row wrap',
-                                                                    flexGrow: 1,
-                                                                    px: 1.5,
-                                                                    [theme.breakpoints.only('xs')]: {
-                                                                        overflowY: 'auto'
-                                                                    }
-                                                                })}>
-                                                                    {
-                                                                        source.urls.map(
-                                                                            (video: VideoItem, index: number) => (
-                                                                                <Box className={css.cell} key={index}>
-                                                                                    <Button fullWidth disableElevation variant={
-                                                                                        this.state.playingIndex === index ? 'contained' : 'outlined'
+                                        })}>
+                                            {
+                                                video.dataList.map(
+                                                    (source: VideoSource, index: number) => (
+                                                        <TabPanel
+                                                            index={index}
+                                                            value={sourceIndex}
+                                                            key={index}
+                                                            disablePadding
+                                                        >
+                                                            <Box sx={(theme) => ({
+                                                                display: 'flex',
+                                                                flexFlow: 'row wrap',
+                                                                flexGrow: 1,
+                                                                px: 1.5,
+                                                                [theme.breakpoints.only('xs')]: {
+                                                                    overflowY: 'auto'
+                                                                }
+                                                            })}>
+                                                                {
+                                                                    source.urls.map(
+                                                                        (video: VideoItem, index: number) => (
+                                                                            <Box className={css.cell} key={index}>
+                                                                                <Button
+                                                                                    fullWidth
+                                                                                    disableElevation
+                                                                                    variant={
+                                                                                        episodeIndex === index ? 'contained' : 'outlined'
                                                                                     } sx={{
-                                                                                        whiteSpace: 'nowrap'
+                                                                                        whiteSpace: 'nowrap',
+                                                                                        overflow: 'hidden',
+                                                                                        textOverflow: 'ellipsis'
                                                                                     }} size="small" onClick={
                                                                                         () => {
-                                                                                            if (this.state.playingIndex !== index) {
-                                                                                                this.setPlayingIndex(index);
+                                                                                            if (episodeIndex !== index) {
+                                                                                                playVideo(index)
                                                                                             }
                                                                                         }
                                                                                     }>{video.label}</Button>
-                                                                                </Box>
-                                                                            )
+                                                                            </Box>
                                                                         )
-                                                                    }
-                                                                </Box>
-                                                            </TabPanel>
-                                                        )
+                                                                    )
+                                                                }
+                                                            </Box>
+                                                        </TabPanel>
                                                     )
-                                                }
-                                            </Box>
+                                                )
+                                            }
                                         </Box>
-                                    </TabPanel>
-                                    <TabPanel index={2} value={this.state.activeView} disablePadding>
-                                        <Box sx={{
-                                            height: '100%',
-                                            p: 1.5,
-                                            overflowY: 'auto'
-                                        }}>
-                                            <RelatedList data={video.related} />
-                                        </Box>
-                                    </TabPanel>
-                                </Box>
+                                    </Box>
+                                </TabPanel>
+                                <TabPanel index={2} value={activeTab} disablePadding>
+                                    <Box sx={{
+                                        height: '100%',
+                                        p: 1.5,
+                                        overflowY: 'auto'
+                                    }}>
+                                        <RelatedList data={video.related} />
+                                    </Box>
+                                </TabPanel>
                             </Box>
                         </Box>
-                    ) : (
-                        <NoData text="💔 数据解析错误.." />
-                    )
-                }
-            </Box>
-        )
-    }
+                    </Box>
+                ) : (
+                    <NoData text="💔 数据解析错误.." />
+                )
+            }
+        </Box>
+    )
 }
 
 interface VideoProfileProps {
@@ -372,13 +317,14 @@ interface VideoProfileProps {
 function VideoProfile({ video }: VideoProfileProps) {
 
     return (
-        <Box sx={(theme) => ({
-            display: 'flex',
-            height: '100%',
-            [theme.breakpoints.only('xs')]: {
-                overflowY: 'auto',
-            }
-        })}>
+        <Stack
+            direction="row"
+            sx={(theme) => ({
+                height: '100%',
+                [theme.breakpoints.only('xs')]: {
+                    overflowY: 'auto',
+                }
+            })}>
             <Box sx={(theme) => ({
                 width: '36%',
                 aspectRatio: '2 / 3',
@@ -418,11 +364,13 @@ function VideoProfile({ video }: VideoProfileProps) {
                         <Typography variant="body1">演员:{video.actor}</Typography>
                     )
                 }
-                <Box dangerouslySetInnerHTML={{
-                    __html: video.des
-                }} />
+                <Box
+                    dangerouslySetInnerHTML={{
+                        __html: video.des
+                    }}
+                />
             </Box>
-        </Box>
+        </Stack>
     )
 }
 
@@ -519,7 +467,7 @@ export default function Page({ serverData }: PageProps<object, object, unknown, 
         })()
     }, [])
     return videoInfo ? (
-        <VideoDetail
+        <VideoPlay
             id={id}
             video={videoInfo}
         />

@@ -1,97 +1,85 @@
-import React, { Component, PropsWithChildren } from 'react';
-import Box from '@mui/material/Box';
-import { Api } from '~/util/config';
-import * as css from './style.module.css';
+import React, { useState, useEffect, useMemo, PropsWithChildren } from 'react'
+import Box from '@mui/material/Box'
+import { Api } from '~/util/config'
 
 interface BackgroundContainerProps extends PropsWithChildren<{
-    prefer18?: boolean;
+    prefer?: boolean;
     style?: React.CSSProperties;
 }> { }
 
-interface BackgroundContainerState {
-    blurDisabled: boolean;
-    backgroundImage: string;
-}
+function BackgroundContainer({
+    prefer = false,
+    children,
+    style
+}: BackgroundContainerProps) {
 
-class BackgroundContainer extends Component<BackgroundContainerProps, BackgroundContainerState> {
+    const [blurDisabled, setBlurDisabled] = useState(false)
+    const [image, setImage] = useState('')
 
-    public state: BackgroundContainerState = {
-        blurDisabled: false,
-        backgroundImage: ''
-    }
+    const getRnd = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min)
 
-    componentDidMount(): void {
-        this.state.backgroundImage = this.getNextImage()
-    }
-
-    private getRnd(min: number, max: number) {
-        return Math.floor(Math.random() * (max - min + 1) + min);
-    }
-
-    public static defaultProps: Partial<BackgroundContainerProps> = {
-        prefer18: false
-    }
-
-    public getNextImage(): string {
+    const getNextImage = () => {
         const prefix = Api.assetSite + '/assets';
-        return this.props.prefer18 ?
-            `${prefix}/background_18_${this.getRnd(1, 100)}.jpg`
-            : `${prefix}/background_${this.getRnd(1, 28)}.jpg`;
+        return prefer ?
+            `${prefix}/background_18_${getRnd(1, 100)}.jpg`
+            : `${prefix}/background_${getRnd(1, 28)}.jpg`;
     }
 
-    public setBackgroundBlur() {
-        this.setState(({ blurDisabled }) => ({
-            blurDisabled: !blurDisabled
-        }))
+    const absoluteStyle: React.CSSProperties = {
+        position: 'absolute',
+        width: '100%',
+        height: '100%',
+        left: 0,
+        top: 0,
     }
 
-    public get absoluteStyle(): React.CSSProperties {
-        return {
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
-            left: 0,
-            top: 0,
-        }
-    }
-
-    public get backgroundImage() {
-        const { backgroundImage } = this.state;
-        if (backgroundImage === '') {
+    const backgroundImage = useMemo(() => {
+        if (image === '') {
             return 'var(--linear-gradient-image)'
         }
-        return `url(${backgroundImage})`;
-    }
+        return `url(${image})`
+    }, [image])
 
-    public render(): React.ReactNode {
-        return (
-            <Box
-                className={css.container}
-                sx={{
-                    position: 'relative',
-                    height: '100%',
-                    ...this.props.style
-                }}>
-                <Box
-                    className={css.imageLayer}
-                    sx={{
-                        ...this.absoluteStyle,
-                        transition: 'background-image 2.5s ease-in-out',
-                        backgroundImage: this.backgroundImage,
-                    }}
-                />
-                <Box
-                    sx={{
-                        ...this.absoluteStyle,
-                        transition: 'all ease .8s',
-                        backdropFilter: this.state.blurDisabled ? 'none' : 'blur(10px)'
-                    }}
-                    onClick={this.setBackgroundBlur.bind(this)}
-                />
-                {this.props.children}
-            </Box>
+    useEffect(() => {
+        setImage(
+            getNextImage()
         )
-    }
+    }, [])
+
+    return (
+        <Box
+            sx={{
+                position: 'relative',
+                height: '100%',
+                bgcolor: (theme) => theme.palette.mode === 'dark' ? 'background.paper' : 'initial',
+                ...style
+            }}>
+            <Box
+                sx={{
+                    ...absoluteStyle,
+                    opacity: (theme) => theme.palette.mode === 'dark' ? .45 : 'initial',
+                    transition: 'background-image 2.5s ease-in-out',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: 'center',
+                    backgroundSize: 'cover',
+                    backgroundImage: backgroundImage,
+                }}
+            />
+            <Box
+                sx={{
+                    ...absoluteStyle,
+                    transition: 'all ease .8s',
+                    backdropFilter: blurDisabled ? 'none' : 'blur(10px)'
+                }}
+                onClick={
+                    () => setBlurDisabled(
+                        blur => !blur
+                    )
+                }
+            />
+            {children}
+        </Box>
+    )
 }
 
 export default BackgroundContainer;

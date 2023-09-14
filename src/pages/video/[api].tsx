@@ -61,7 +61,7 @@ const SiteSearch: React.FunctionComponent<PageProps<object, object, unknown, Sea
                     responseError ? (
                         <NoData text="💔 数据获取失败." />
                     ) : (
-                        <BackgroundContainer prefer18={data.prefer18}>
+                        <BackgroundContainer prefer={data.prefer18}>
                             <Box sx={{
                                 position: 'relative',
                                 height: '100%',
