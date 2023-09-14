@@ -57,7 +57,7 @@ const apps: App[] = [
         url: '/hls-download/',
         icon: SaveAltIcon,
         iconForeground: '#fff',
-        iconBackground: 'linear-gradient(60deg, #FF9800, #4ac375)'
+        iconBackground: 'linear-gradient(60deg, #ff9800, #4ac375)'
     },
     {
         id: 'qr',
@@ -76,6 +76,7 @@ interface AppIconProps {
 
 function AppIcon({ app }: AppIconProps) {
     const Icon = app.icon;
+    const iconColor = app.iconBackground.match(/#[\da-f]{6}/g)?.[0]
     return (
         <Stack sx={{
             width: 'var(--icon-size)',
@@ -84,8 +85,12 @@ function AppIcon({ app }: AppIconProps) {
                 href={app.url}
                 disableRipple
             >
-                <Stack style={{
-                    alignItems: 'center'
+                <Stack sx={{
+                    alignItems: 'center',
+                    transition: (theme) => theme.transitions.create('filter'),
+                    '&:hover': {
+                        filter: `drop-shadow(0 0 16px ${iconColor})`
+                    }
                 }} rowGap={.5}>
                     <Stack sx={{
                         width: 'calc(var(--icon-size) * .8)',
@@ -97,7 +102,12 @@ function AppIcon({ app }: AppIconProps) {
                     }} justifyContent="center" alignItems="center">
                         <Icon fontSize="inherit" />
                     </Stack>
-                    <Typography variant="button">{app.name}</Typography>
+                    <Typography
+                        variant="button"
+                        sx={{
+                            fontSize: 'calc(var(--icon-size) * .16)'
+                        }}
+                    >{app.name}</Typography>
                 </Stack>
             </ButtonBase>
         </Stack>
@@ -116,7 +126,7 @@ function Index() {
             }
         })}>
             <Stack sx={(theme) => ({
-                '--icon-size': `clamp(80px, calc((100vw - ${theme.spacing(10)}) / 4), 90px)`,
+                '--icon-size': `min(calc((100vw - ${theme.spacing(10)}) / 4), 90px)`,
                 gap: 2,
                 [theme.breakpoints.up('sm')]: {
                     '--icon-size': '96px',
