@@ -1,4 +1,5 @@
 import React, { ComponentType } from 'react'
+import { navigate, type PageProps, type GetServerDataProps, type GetServerDataReturn } from 'gatsby'
 import type { SvgIconProps } from '@mui/material/SvgIcon'
 import Stack from '@mui/material/Stack'
 import ButtonBase from '@mui/material/ButtonBase'
@@ -69,52 +70,91 @@ const apps: App[] = [
     }
 ]
 
-interface AppIconProps {
-    app: App;
-    onBoot?(app: App): void;
+enum AppMode {
+    website = 'website',
+    pwa = 'pwa'
 }
 
-function AppIcon({ app }: AppIconProps) {
+interface AppIconProps {
+    app: App;
+    mode: AppMode;
+    // onBoot?(app: App): void;
+}
+
+function AppIcon({ app, mode }: AppIconProps) {
     const Icon = app.icon;
     const iconColor = app.iconBackground.match(/#[\da-f]{6}/g)?.[0]
+
+    const iconNode = (
+        <Stack sx={{
+            alignItems: 'center',
+            transition: (theme) => theme.transitions.create('filter'),
+            '&:hover': {
+                filter: `drop-shadow(0 0 24px ${iconColor})`
+            }
+        }} rowGap={.5}>
+            <Stack sx={{
+                width: 'calc(var(--icon-size) * .8)',
+                aspectRatio: '1 / 1',
+                background: app.iconBackground,
+                borderRadius: 2,
+                fontSize: 'calc(var(--icon-size) * .6)',
+                color: app.iconForeground
+            }} justifyContent="center" alignItems="center">
+                <Icon fontSize="inherit" />
+            </Stack>
+            <Typography
+                variant="button"
+                sx={{
+                    fontSize: 'calc(var(--icon-size) * .16)'
+                }}
+            >{app.name}</Typography>
+        </Stack>
+    )
+
     return (
         <Stack sx={{
             width: 'var(--icon-size)',
         }}>
-            <ButtonBase
-                href={app.url}
-                disableRipple
-            >
-                <Stack sx={{
-                    alignItems: 'center',
-                    transition: (theme) => theme.transitions.create('filter'),
-                    '&:hover': {
-                        filter: `drop-shadow(0 0 16px ${iconColor})`
-                    }
-                }} rowGap={.5}>
-                    <Stack sx={{
-                        width: 'calc(var(--icon-size) * .8)',
-                        aspectRatio: '1 / 1',
-                        background: app.iconBackground,
-                        borderRadius: 2,
-                        fontSize: 'calc(var(--icon-size) * .6)',
-                        color: app.iconForeground
-                    }} justifyContent="center" alignItems="center">
-                        <Icon fontSize="inherit" />
-                    </Stack>
-                    <Typography
-                        variant="button"
-                        sx={{
-                            fontSize: 'calc(var(--icon-size) * .16)'
-                        }}
-                    >{app.name}</Typography>
-                </Stack>
-            </ButtonBase>
+            {
+                mode === AppMode.pwa ? (
+                    <ButtonBase
+                        href={app.url}
+                        target="_blank"
+                        disableRipple
+                    >
+                        {iconNode}
+                    </ButtonBase>
+                ) : (
+                    <ButtonBase
+                        onClick={
+                            () => navigate(app.url)
+                        }
+                        disableRipple
+                    >
+                        {iconNode}
+                    </ButtonBase>
+                )
+            }
         </Stack>
     )
 }
 
-function Index() {
+interface ServerProps {
+    mode: AppMode;
+}
+
+export async function getServerData({ query }: GetServerDataProps): Promise<GetServerDataReturn<ServerProps>> {
+    const { mode } = query as Record<'mode', string>;
+    return {
+        props: {
+            mode: mode === AppMode.pwa ? AppMode.pwa : AppMode.website
+        }
+    }
+}
+
+function Index({ serverData }: PageProps<object, object, unknown, ServerProps>) {
+    const mode = serverData.mode;
     return (
         <Stack sx={(theme) => ({
             height: '100%',
@@ -138,6 +178,7 @@ function Index() {
                         (app) => (
                             <AppIcon
                                 key={app.id}
+                                mode={mode}
                                 app={app}
                             />
                         )

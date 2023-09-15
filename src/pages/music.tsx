@@ -163,7 +163,7 @@ export default function MusicSearch() {
                 maxWidth: 'var(--max-width)',
                 margin: '0 auto',
                 [theme.breakpoints.up('sm')]: {
-                    backgroundImage: activeMusic ? 'linear-gradient(0, #0000000a, transparent)' : 'none'
+                    backgroundImage: activeMusic ? 'linear-gradient(0, #0000002e, transparent)' : 'none'
                 }
             })}>
                 <Stack sx={{
