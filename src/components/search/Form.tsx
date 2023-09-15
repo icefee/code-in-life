@@ -93,10 +93,11 @@ function SearchForm({
     return (
         <NoSsr>
             <Autocomplete
-                freeSolo
-                options={relatedSuggests}
                 value={value}
                 blurOnSelect
+                freeSolo
+                options={filteredSuggests}
+                filterOptions={(o) => o}
                 componentsProps={{
                     clearIndicator: {
                         size: 'large'
