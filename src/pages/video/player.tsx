@@ -1,8 +1,10 @@
 import React from 'react'
 import type { GetServerDataProps, GetServerDataReturn, PageProps } from 'gatsby'
+import NoSsr from '@mui/material/NoSsr'
 import Box from '@mui/material/Box'
 import { VideoPlayer } from '~/components/player'
 import VideoUrlParser from '~/components/search/VideoUrlParser'
+import { getParamsUrl } from '~/util/proxy'
 import { M3u8 } from '~/util/regExp'
 
 interface ServerProps {
@@ -24,22 +26,24 @@ const VideoParserPlayer: React.FC<PageProps<object, object, unknown, ServerProps
     const hls = M3u8.isM3u8Url(queryUrl)
 
     return (
-        <Box sx={{
-            height: '100%',
-            bgcolor: '#000'
-        }}>
-            <VideoUrlParser url={queryUrl}>
-                {
-                    (url) => (
-                        <VideoPlayer
-                            url={url}
-                            hls={hls}
-                            autoplay
-                        />
-                    )
-                }
-            </VideoUrlParser>
-        </Box>
+        <NoSsr>
+            <Box sx={{
+                height: '100%',
+                bgcolor: '#000'
+            }}>
+                <VideoUrlParser url={queryUrl}>
+                    {
+                        (url) => (
+                            <VideoPlayer
+                                url={getParamsUrl('/api/video/m3u8-pure', { url })}
+                                hls={hls}
+                                autoplay
+                            />
+                        )
+                    }
+                </VideoUrlParser>
+            </Box>
+        </NoSsr>
     )
 }
 

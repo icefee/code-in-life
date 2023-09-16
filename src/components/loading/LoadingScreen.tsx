@@ -19,7 +19,7 @@ function LoadingScreen({ label = '数据加载中...' }: LoadingScreenProps) {
                 backgroundColor: alpha(theme.palette.background.paper, .75),
                 filter: 'drop-shadow(2px 4px 15px #00000030)',
                 borderRadius: 1.5
-            })} direction="row" alignItems="center" columnGap={1}>
+            })} direction="row" alignItems="center" columnGap={1.5}>
                 <Spinner
                     sx={{
                         fontSize: 32

@@ -1,40 +1,48 @@
-import { getTextWithTimeout, getResponse } from '../../adaptors'
+import { Buffer } from 'buffer'
+import { getResponse } from '../../adaptors'
 import { errorHandler, ApiHandler } from '../../util/middleware'
-import { proxyUrl, removeAds } from '../../util/proxy'
+import { proxyUrl, parseUrl, removeAds } from '../../util/proxy'
 
 const handler: ApiHandler = async (req, res) => {
     const { url } = req.query
     try {
-        const source = await getTextWithTimeout(
-            proxyUrl(url, true)
-        )
-        if (source.match(/.+\/mixed\.m3u8$/m)) {
-            const lines = source.split(/\n/)
-            const line = lines.find(
-                line => line.match(/.+\/mixed\.m3u8$/)
-            )
-            if (line) {
-                const puredLine = line.replace(/mixed\.m3u8/g, 'index.m3u8')
-                const playList = puredLine.startsWith('http') ? puredLine : new URL(puredLine, url).href
-                const response = await getResponse(playList)
-                response.headers.forEach(
-                    (header, key) => {
-                        res.setHeader(key, header)
+        let actualUrl = url;
+        let response = await getResponse(proxyUrl(url, true))
+        let playList = await response.text()
+        const streamInfoMatcher = /#EXT-X-STREAM-INF/
+        const streamInfos = playList.match(streamInfoMatcher)
+        if (streamInfos) {
+            const lines = playList.split(/\n/)
+            const bandwidthMatcher = /BANDWIDTH=\d+/
+            let bandwidth = 0, maxBandwidthUrl: string | null = null
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                if (line.match(streamInfoMatcher)) {
+                    const currentBandwidth = Number(
+                        line.match(bandwidthMatcher)?.[0]?.match(/\d+/)?.[0]
+                    )
+                    if (currentBandwidth > bandwidth) {
+                        maxBandwidthUrl = lines[i + 1]
+                        bandwidth = currentBandwidth
                     }
-                )
-                const content = await response.text()
-                const pured = removeAds(content, '01o')
-                const buffer = Buffer.from(pured)
-                res.setHeader('content-length', buffer.byteLength)
-                res.end(pured)
+                }
             }
-            else {
-                throw new Error('no mixed file matched')
+            actualUrl = parseUrl(maxBandwidthUrl.replace(/mixed\.m3u8/g, 'index.m3u8'), url)
+            response = await getResponse(actualUrl)
+            playList = await response.text()
+        }
+        response.headers.forEach(
+            (header, key) => {
+                res.setHeader(key, header)
             }
-        }
-        else {
-            throw new Error('no need to pure required')
-        }
+        )
+        const pured = removeAds( // /01o/,
+            playList,
+            (url) => parseUrl(url, actualUrl)
+        )
+        const buffer = Buffer.from(pured)
+        res.setHeader('content-length', buffer.byteLength)
+        res.end(pured)
     }
     catch (err) {
         res.redirect(url)

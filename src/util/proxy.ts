@@ -12,24 +12,55 @@ export function proxyUrl(url: string, remote: boolean = false, extend = {}) {
     })
 }
 
-export function removeAds(content: string, mark: string) {
+export function parseUrl(url: string, base: string) {
+    return url.startsWith('http') ? url : new URL(url, base).href
+}
+
+export function removeAds(
+    content: string,
+    urlParser: (url: string) => string = (url) => url
+) {
     const discontinuityTag = /#EXT-X-DISCONTINUITY/
-    const infReg = new RegExp('#EXTINF:\\d+(.\\d+)?,')
+    const extInfMatcher = new RegExp('#EXTINF:\\d+(.\\d+)?,')
+    const keyLineMatcher = /URI=".+\.key"/
     const lines = content.split(/\n/)
     const parts = []
-    let extLine = false
+    let extLine = false, pathLength: number | null = null
+    let segmentIndex: number | null = null, segmentLinearSize = 0
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i]
         if (line.match(discontinuityTag)) {
             continue;
         }
-        if (extLine && line.indexOf(mark) !== -1) {
-            parts.pop()
+        const keyLineMatch = line.match(keyLineMatcher)
+        if (keyLineMatch) {
+            const keyMatcher = /(?<=URI=").+\.key(?=")/
+            const key = keyLineMatch[0].match(keyMatcher)?.[0]
+            parts.push(
+                line.replace(keyMatcher, urlParser(key))
+            )
+        }
+        else if (extLine) {
+            pathLength = pathLength ?? line.length
+            const segmentIndexMatch = line.match(/\d+(?=\.ts(\?=\w+)?$)/)
+            if (segmentIndexMatch) {
+                const index = Number(segmentIndexMatch[0])
+                if (segmentIndex !== null && index === segmentLinearSize + 1) {
+                    segmentLinearSize++
+                }
+                segmentIndex = index
+            }
+            if ((!segmentIndexMatch || segmentIndex !== segmentLinearSize) && segmentLinearSize > 1 || line.length > pathLength + 1) {
+                parts.pop()
+            }
+            else {
+                parts.push(urlParser(line))
+            }
         }
         else {
             parts.push(line)
         }
-        extLine = Boolean(line.match(infReg))
+        extLine = Boolean(line.match(extInfMatcher))
     }
     return parts.join('\n')
 }

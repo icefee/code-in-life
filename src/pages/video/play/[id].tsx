@@ -173,12 +173,18 @@ function VideoPlay({ id, video }: VideoPlayProps) {
                                     overflow: 'hidden'
                                 }
                             })}>
-                                <Box sx={{
+                                <Box sx={(theme) => ({
+                                    position: 'relative',
+                                    zIndex: 4,
                                     width: '100%',
                                     bgcolor: 'background.paper',
                                     borderBottom: 1,
-                                    borderColor: 'divider'
-                                }}>
+                                    borderColor: 'divider',
+                                    [theme.breakpoints.only('xs')]: {
+                                        transition: theme.transitions.create('box-shadow'),
+                                        boxShadow: 'rgb(0 0 0 / 10%) 0 4px 4px'
+                                    }
+                                })}>
                                     <Tabs
                                         value={activeTab}
                                         onChange={
@@ -191,7 +197,7 @@ function VideoPlay({ id, video }: VideoPlayProps) {
                                         <Tab label="同类推荐" />
                                     </Tabs>
                                 </Box>
-                                <TabPanel index={0} value={activeTab}>
+                                <TabPanel index={0} value={activeTab} disablePadding>
                                     <VideoProfile video={video} />
                                 </TabPanel>
                                 <TabPanel index={1} value={activeTab} disablePadding>
@@ -317,60 +323,67 @@ interface VideoProfileProps {
 function VideoProfile({ video }: VideoProfileProps) {
 
     return (
-        <Stack
-            direction="row"
+        <Box
             sx={(theme) => ({
                 height: '100%',
+                p: 1.5,
                 [theme.breakpoints.only('xs')]: {
                     overflowY: 'auto',
                 }
             })}>
-            <Box sx={(theme) => ({
-                width: '36%',
-                aspectRatio: '2 / 3',
-                flexShrink: 0,
-                [theme.breakpoints.up('sm')]: {
-                    width: 180
-                },
-                mr: 1.5
-            })}>
-                <ThumbLoader
-                    src={video.pic}
-                    alt={video.name}
-                />
-            </Box>
-            <Box>
-                <Typography variant="h5" lineHeight={1.2}>{video.name}</Typography>
-                <Typography variant="body1" gutterBottom>{video.note}</Typography>
-                {
-                    video.subname && (
-                        <Typography>又名:{video.subname}</Typography>
-                    )
-                }
-                <Typography variant="body1">类别:{video.type}</Typography>
-                <Typography variant="body1">年份:{video.year}</Typography>
-                {
-                    video.area && (
-                        <Typography variant="body1">地区:{video.area}</Typography>
-                    )
-                }
-                {
-                    video.director && (
-                        <Typography variant="body1">导演:{video.director}</Typography>
-                    )
-                }
-                {
-                    video.actor && (
-                        <Typography variant="body1">演员:{video.actor}</Typography>
-                    )
-                }
-                <Box
-                    dangerouslySetInnerHTML={{
-                        __html: video.des
-                    }}
-                />
-            </Box>
-        </Stack>
+            <Stack
+                direction="row"
+                columnGap={1.5}
+                sx={{
+                    pb: 3
+                }}
+            >
+                <Box sx={(theme) => ({
+                    width: '36%',
+                    aspectRatio: '2 / 3',
+                    flexShrink: 0,
+                    [theme.breakpoints.up('sm')]: {
+                        width: 180
+                    }
+                })}>
+                    <ThumbLoader
+                        src={video.pic}
+                        alt={video.name}
+                    />
+                </Box>
+                <Box>
+                    <Typography variant="h5" lineHeight={1.2}>{video.name}</Typography>
+                    <Typography variant="body1" gutterBottom>{video.note}</Typography>
+                    {
+                        video.subname && (
+                            <Typography>又名:{video.subname}</Typography>
+                        )
+                    }
+                    <Typography variant="body1">类别:{video.type}</Typography>
+                    <Typography variant="body1">年份:{video.year}</Typography>
+                    {
+                        video.area && (
+                            <Typography variant="body1">地区:{video.area}</Typography>
+                        )
+                    }
+                    {
+                        video.director && (
+                            <Typography variant="body1">导演:{video.director}</Typography>
+                        )
+                    }
+                    {
+                        video.actor && (
+                            <Typography variant="body1">演员:{video.actor}</Typography>
+                        )
+                    }
+                    <Box
+                        dangerouslySetInnerHTML={{
+                            __html: video.des
+                        }}
+                    />
+                </Box>
+            </Stack>
+        </Box>
     )
 }
 

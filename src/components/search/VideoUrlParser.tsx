@@ -51,12 +51,8 @@ function VideoUrlParser({ url, children }: VideoUrlParserProps) {
         }
     }, [url])
 
-    const encodeUrl = (url: string) => {
-        return url // `/api/video/m3u8-parse?url=${url}`
-    }
-
     if (isVideoUrl) {
-        return children(encodeUrl(url))
+        return children(url)
     }
     return (
         <Box sx={{
@@ -64,7 +60,7 @@ function VideoUrlParser({ url, children }: VideoUrlParserProps) {
             height: '100%'
         }}>
             {
-                videoUrl && children(encodeUrl(videoUrl))
+                videoUrl && children(videoUrl)
             }
             <LoadingOverlay
                 open={videoUrl === null && !error}
@@ -95,13 +91,13 @@ function VideoUrlParser({ url, children }: VideoUrlParserProps) {
                                     _parseUrl()
                                 }
                             }>重试</Button>
-                            <Button color="inherit" variant="outlined" size="small" sx={{
-                                whiteSpace: 'nowrap'
-                            }} onClick={
-                                () => {
-                                    window.open(url)
-                                }
-                            }>源地址播放</Button>
+                            <Button
+                                color="inherit"
+                                variant="outlined"
+                                size="small"
+                                href={url}
+                                target="_blank"
+                            >源地址播放</Button>
                         </Stack>
                     </Alert>
                 )
