@@ -957,7 +957,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                             left: '50%',
                             top: '50%',
                             transform: 'translate(-50%, -50%)',
-                            zIndex: 3,
+                            zIndex: 2,
                             fontSize: '3.2rem'
                         }}
                     />

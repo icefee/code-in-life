@@ -346,7 +346,12 @@ function VideoProfile({ video }: VideoProfileProps) {
                         alt={video.name}
                     />
                 </Box>
-                <Box>
+                <Box
+                    sx={{
+                        flexGrow: 1,
+                        overflow: 'hidden'
+                    }}
+                >
                     <Typography variant="h5" lineHeight={1.2}>{video.name}</Typography>
                     <Typography variant="body1" gutterBottom>{video.note}</Typography>
                     {
