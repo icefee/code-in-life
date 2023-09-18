@@ -150,17 +150,12 @@ function VideoPlay({ id, video }: VideoPlayProps) {
                             {
                                 activeSource.urls.length > 1 && (
                                     <Box sx={{
-                                        position: 'relative',
                                         bgcolor: 'background.paper',
                                         p: 1.5
                                     }}>
                                         <Typography
                                             variant="subtitle1"
                                             align="center"
-                                            sx={{
-                                                position: 'relative',
-                                                zIndex: 2
-                                            }}
                                         >{videoFullTitle}</Typography>
                                     </Box>
                                 )

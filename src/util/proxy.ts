@@ -27,6 +27,9 @@ export function removeAds(
     const parts = []
     let extLine = false, pathLength: number | null = null
     let segmentIndex: number | null = null, segmentLinearSize = 0
+    const segmentSize = lines.filter(
+        line => line.match(extInfMatcher)
+    ).length;
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i]
         if (line.match(discontinuityTag)) {
@@ -44,13 +47,14 @@ export function removeAds(
             pathLength = pathLength ?? line.length
             const segmentIndexMatch = line.match(/\d+(?=\.ts(\?=\w+)?$)/)
             if (segmentIndexMatch) {
-                const index = Number(segmentIndexMatch[0])
-                if (segmentIndex !== null && index === segmentLinearSize + 1) {
+                const matchedIndex = segmentIndexMatch[0]
+                const index = Number(matchedIndex)
+                if (Math.pow(10, matchedIndex.length) > segmentSize && segmentIndex !== null && index === segmentLinearSize + 1) {
                     segmentLinearSize++
                 }
                 segmentIndex = index
             }
-            if ((!segmentIndexMatch || segmentIndex !== segmentLinearSize) && segmentLinearSize > 1 || line.length > pathLength + 1) {
+            if ((!segmentIndexMatch || segmentIndex !== segmentLinearSize) && segmentLinearSize > 2 || line.length > pathLength + 1) {
                 parts.pop()
             }
             else {

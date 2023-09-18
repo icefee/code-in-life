@@ -27,15 +27,23 @@ const handler: ApiHandler = async (req, res) => {
                     }
                 }
             }
-            actualUrl = parseUrl(maxBandwidthUrl.replace(/mixed\.m3u8/g, 'index.m3u8'), url)
+            actualUrl = parseUrl(maxBandwidthUrl, url)
             response = await getResponse(actualUrl)
             playList = await response.text()
         }
-        response.headers.forEach(
-            (header, key) => {
-                res.setHeader(key, header)
+        const inheritedHeaders = [
+            'content-type',
+            'content-range',
+            'accept-ranges',
+            'transfer-encoding',
+            'connection'
+        ]
+        const headers = response.headers
+        for (const header of inheritedHeaders) {
+            if (headers.has(header)) {
+                res.setHeader(header, headers.get(header))
             }
-        )
+        }
         const pured = removeAds( // /01o/,
             playList,
             (url) => parseUrl(url, actualUrl)
