@@ -35,7 +35,7 @@ const handler: ApiHandler = async (req, res) => {
             'content-type',
             'content-range',
             'accept-ranges',
-            'transfer-encoding',
+            // 'transfer-encoding',
             'connection'
         ]
         const headers = response.headers
