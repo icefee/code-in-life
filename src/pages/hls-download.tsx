@@ -51,8 +51,10 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
     const testUrl = async (url: string) => {
         try {
             const response = await fetch(url)
-            const contentType = response.headers.get('content-type')
-            const valid = /application\/vnd.apple.mpegurl/i.test(contentType)
+            // const contentType = response.headers.get('content-type')
+            // const valid = /application\/vnd.apple.mpegurl|application\/octet-stream/i.test(contentType)
+            const content = await response.text()
+            const valid = content.match(/^#EXTM3U/m)
             return {
                 url: response.url,
                 valid
