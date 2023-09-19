@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, useRef } from 'react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
@@ -33,11 +33,16 @@ function VideoUrlParser({ url, children }: VideoUrlParserProps) {
     const [videoUrl, setVideoUrl] = useState(null)
     const [error, setError] = useState(false)
     const isVideoUrl = useMemo(() => Video.isVideoUrl(url), [url])
+    const parseRetryTimes = useRef(1)
 
     const _parseUrl = async () => {
         const parsedUrl = await parseUrl(url)
         if (parsedUrl) {
             setVideoUrl(parsedUrl)
+        }
+        else if (parseRetryTimes.current < 3) {
+            parseRetryTimes.current++
+            _parseUrl()
         }
         else {
             setError(true)

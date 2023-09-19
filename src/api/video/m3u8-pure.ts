@@ -28,7 +28,7 @@ const handler: ApiHandler = async (req, res) => {
                 }
             }
             actualUrl = parseUrl(maxBandwidthUrl, url)
-            response = await getResponse(actualUrl)
+            response = await getResponse(proxyUrl(actualUrl, true))
             playList = await response.text()
         }
         const inheritedHeaders = [
