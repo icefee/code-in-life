@@ -51,7 +51,8 @@ function VideoPlay({ id, video }: VideoPlayProps) {
         episodeIndex: 0
     })
     const paramsLastCache = useRef(+new Date())
-    const { data } = playHistory
+    const [ready, setReady] = useState(false)
+    const { data, init } = playHistory
     const { sourceIndex, episodeIndex, params } = data
 
     const pageTitle = useMemo(() => video.name, [video])
@@ -92,6 +93,12 @@ function VideoPlay({ id, video }: VideoPlayProps) {
         }
     }
 
+    useEffect(() => {
+        if (init) {
+            setReady(true)
+        }
+    }, [init])
+
     return (
         <Box sx={{
             height: '100%',
@@ -130,22 +137,26 @@ function VideoPlay({ id, video }: VideoPlayProps) {
                                     maxHeight: '100vh'
                                 }
                             })}>
-                                <VideoUrlParser url={playingVideo.url}>
-                                    {
-                                        (url: string) => (
-                                            <VideoPlayer
-                                                title={videoFullTitle}
-                                                url={getParamsUrl('/api/video/m3u8-pure', { url })}
-                                                hls
-                                                autoplay
-                                                initPlayTime={params.seek}
-                                                onTimeUpdate={onTimeUpdate}
-                                                onNext={isLast ? undefined : playNext}
-                                                onEnd={playNext}
-                                            />
-                                        )
-                                    }
-                                </VideoUrlParser>
+                                {
+                                    ready && (
+                                        <VideoUrlParser url={playingVideo.url}>
+                                            {
+                                                (url: string) => (
+                                                    <VideoPlayer
+                                                        title={videoFullTitle}
+                                                        url={getParamsUrl('/api/video/m3u8-pure', { url })}
+                                                        hls
+                                                        autoplay
+                                                        initPlayTime={params.seek}
+                                                        onTimeUpdate={onTimeUpdate}
+                                                        onNext={isLast ? undefined : playNext}
+                                                        onEnd={playNext}
+                                                    />
+                                                )
+                                            }
+                                        </VideoUrlParser>
+                                    )
+                                }
                             </Box>
                             {
                                 activeSource.urls.length > 1 && (
