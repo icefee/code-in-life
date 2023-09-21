@@ -33,7 +33,7 @@ function VideoUrlParser({ url, children }: VideoUrlParserProps) {
     const [videoUrl, setVideoUrl] = useState(null)
     const [error, setError] = useState(false)
     const isVideoUrl = useMemo(() => Video.isVideoUrl(url), [url])
-    const parseRetryTimes = useRef(1)
+    const parseRetryTimes = useRef(0)
 
     const _parseUrl = async () => {
         const parsedUrl = await parseUrl(url)
@@ -51,8 +51,13 @@ function VideoUrlParser({ url, children }: VideoUrlParserProps) {
 
     useEffect(() => {
         if (!isVideoUrl) {
-            setVideoUrl(null)
             _parseUrl()
+        }
+        return () => {
+            if (!isVideoUrl) {
+                setError(false)
+                setVideoUrl(null)
+            }
         }
     }, [url])
 
