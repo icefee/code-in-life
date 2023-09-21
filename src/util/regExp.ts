@@ -12,6 +12,8 @@ export namespace M3u8 {
     export function isM3u8Url(url: string) {
         return test.test(url)
     }
+
+    export const checkContent = (content: string) => content.match(/^#EXTM3U/m)
 }
 
 export namespace Video {

@@ -2,6 +2,7 @@ import { Buffer } from 'buffer'
 import { getResponse } from '../../adaptors'
 import { errorHandler, ApiHandler } from '../../util/middleware'
 import { proxyUrl, parseUrl, removeAds } from '../../util/proxy'
+import { M3u8 } from '../../util/regExp'
 
 const handler: ApiHandler = async (req, res) => {
     const { url } = req.query
@@ -9,6 +10,9 @@ const handler: ApiHandler = async (req, res) => {
         let actualUrl = url;
         let response = await getResponse(proxyUrl(url, true))
         let playList = await response.text()
+        if (!M3u8.checkContent(playList)) {
+            throw new Error('invalid m3u8 format')
+        }
         const streamInfoMatcher = /#EXT-X-STREAM-INF/
         const streamInfos = playList.match(streamInfoMatcher)
         if (streamInfos) {

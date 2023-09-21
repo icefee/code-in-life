@@ -8,6 +8,7 @@ import Button from '@mui/material/Button'
 import LinearProgress from '@mui/material/LinearProgress'
 import Hls2Mp4 from 'hls2mp4'
 import useErrorMessage from '~/components/hook/useErrorMessage'
+import { M3u8 } from '~/util/regExp'
 
 export function Head() {
     return (
@@ -54,7 +55,7 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
             // const contentType = response.headers.get('content-type')
             // const valid = /application\/vnd.apple.mpegurl|application\/octet-stream/i.test(contentType)
             const content = await response.text()
-            const valid = content.match(/^#EXTM3U/m)
+            const valid = M3u8.checkContent(content)
             return {
                 url: response.url,
                 valid

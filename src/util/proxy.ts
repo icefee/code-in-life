@@ -22,7 +22,7 @@ export function removeAds(
 ) {
     const discontinuityTag = /#EXT-X-DISCONTINUITY/
     const extInfMatcher = new RegExp('#EXTINF:\\d+(.\\d+)?,')
-    const keyLineMatcher = /URI=".+\.key"/
+    const keyLineMatcher = /URI=".+\.k(ey)?"/
     const lines = content.split(/\n/)
     const parts = []
     let extLine = false, pathLength: number | null = null
@@ -37,7 +37,7 @@ export function removeAds(
         }
         const keyLineMatch = line.match(keyLineMatcher)
         if (keyLineMatch) {
-            const keyMatcher = /(?<=URI=").+\.key(?=")/
+            const keyMatcher = /(?<=URI=").+\.k(ey)?(?=")/
             const key = keyLineMatch[0].match(keyMatcher)?.[0]
             parts.push(
                 line.replace(keyMatcher, urlParser(key))
@@ -45,7 +45,7 @@ export function removeAds(
         }
         else if (extLine) {
             pathLength = pathLength ?? line.length
-            const segmentIndexMatch = line.match(/\d+(?=\.ts(\?=\w+)?$)/)
+            const segmentIndexMatch = line.match(/\d+(?=\.(ts|png|csv)(\?=\w+)?$)/)
             if (segmentIndexMatch) {
                 const matchedIndex = segmentIndexMatch[0]
                 const index = Number(matchedIndex)
