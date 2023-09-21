@@ -24,7 +24,7 @@ interface SearchResultProps {
 function SearchResult({ keyword, videoList }: SearchResultProps) {
 
     const total = useMemo(() => videoList.reduce((prev, current) => prev + current.data.length, 0), [videoList])
-    const tabTypeThreshold = 100
+    const tabTypeThreshold = 40
 
     return (
         <Box sx={{
@@ -89,7 +89,7 @@ function ListType({ videoList, keyword }: SearchResultProps) {
                                     <Typography>{name}</Typography>
                                     <Rating
                                         defaultValue={rating}
-                                        precision={.5}
+                                        precision={.1}
                                         size="small"
                                         readOnly
                                     />
@@ -232,10 +232,12 @@ function TabType({ videoList, keyword }: SearchResultProps) {
                 {
                     activeList.page.pagecount > 1 && (
                         <Stack
+                            flexDirection="row"
                             justifyContent="flex-end"
                             sx={{
                                 mt: 2
-                            }}>
+                            }}
+                        >
                             <Button
                                 LinkComponent="a"
                                 variant="outlined"
