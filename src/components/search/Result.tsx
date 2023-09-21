@@ -232,7 +232,7 @@ function TabType({ videoList, keyword }: SearchResultProps) {
                 {
                     activeList.page.pagecount > 1 && (
                         <Stack
-                            flexDirection="row"
+                            direction="row"
                             justifyContent="flex-end"
                             sx={{
                                 mt: 2
@@ -255,4 +255,4 @@ function TabType({ videoList, keyword }: SearchResultProps) {
     )
 }
 
-export default SearchResult;
+export default SearchResult
