@@ -28,7 +28,6 @@ function SearchResult({ keyword, videoList }: SearchResultProps) {
 
     return (
         <Box sx={{
-            position: 'relative',
             height: '100%'
         }}>
             {
@@ -43,16 +42,7 @@ function SearchResult({ keyword, videoList }: SearchResultProps) {
                         keyword={keyword}
                     />
                 ) : (
-                    <Box sx={{
-                        position: 'absolute',
-                        zIndex: 1,
-                        left: 0,
-                        top: 0,
-                        right: 0,
-                        bottom: 0
-                    }}>
-                        <NoData />
-                    </Box>
+                    <NoData />
                 )
             }
         </Box>
@@ -199,14 +189,22 @@ function TabType({ videoList, keyword }: SearchResultProps) {
                     }
                 </Tabs>
                 <Divider />
-                <Stack sx={{
-                    p: 1
-                }} direction="row" alignItems="center" justifyContent="space-between">
+                <Stack
+                    sx={{
+                        p: 1
+                    }}
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                >
                     <Stack direction="row" alignItems="center" columnGap={1}>
-                        <Typography variant="subtitle2" color="text.secondary">当前{Math.min(activeList.page.pagesize, activeList.page.recordcount)} / {activeList.page.recordcount}条记录</Typography>
+                        <Typography
+                            variant="subtitle2"
+                            color="text.secondary"
+                        >当前{Math.min(activeList.page.pagesize, activeList.page.recordcount)} / {activeList.page.recordcount}条记录</Typography>
                         <Rating
-                            defaultValue={activeList.rating}
-                            precision={.5}
+                            value={activeList.rating}
+                            precision={.1}
                             size="small"
                             readOnly
                         />
@@ -233,23 +231,21 @@ function TabType({ videoList, keyword }: SearchResultProps) {
                 />
                 {
                     activeList.page.pagecount > 1 && (
-                        <Box sx={{
-                            display: 'flex',
-                            justifyContent: 'flex-end',
-                            pt: 2,
-                            color: '#fff'
-                        }}>
+                        <Stack
+                            justifyContent="flex-end"
+                            sx={{
+                                mt: 2
+                            }}>
                             <Button
                                 LinkComponent="a"
                                 variant="outlined"
-                                color="inherit"
                                 endIcon={
                                     <ArrowForwardIosIcon />
                                 }
                                 href={'/video/' + activeList.key + '?s=' + keyword + '&p=2'}
                                 target="_blank"
                             >更多</Button>
-                        </Box>
+                        </Stack>
                     )
                 }
             </Box>
