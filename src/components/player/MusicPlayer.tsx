@@ -156,7 +156,7 @@ function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange,
                                 p: .75,
                                 borderRadius: '50%',
                                 filter: playing ? `drop-shadow(0px 0px 16px ${alpha(theme.palette.secondary.main, .4)})` : 'none',
-                                opacity: loading ? .4 : .8,
+                                opacity: loading ? .5 : .8,
                                 transition: theme.transitions.create(['opacity', 'filter'])
                             })}>
                                 <Box sx={{
@@ -167,7 +167,7 @@ function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange,
                                     <MusicPoster
                                         alt={`${music.name}-${music.artist}`}
                                         src={music.poster}
-                                        spinning={playing}
+                                        spinning={playing && !loading}
                                     />
                                 </Box>
                             </Box>
