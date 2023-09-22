@@ -41,7 +41,6 @@ export async function fetchFileChunks(
             }
         )
     )
-    console.log(totalBytes)
     const dataArray = new Uint8Array(totalBytes)
     let dataArrayByteOffset = 0;
     for (let chunk of [firstChunk, ...chunks]) {
