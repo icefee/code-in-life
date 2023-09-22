@@ -2,6 +2,7 @@ import fetch, { Response } from 'node-fetch';
 import AbortController from 'abort-controller';
 import { type Adaptor } from '.';
 import { isTextNotNull } from '../util/string'
+export { type HeadersInit, Headers } from 'node-fetch'
 
 export const defaultPoster = './poster.jpg'
 
