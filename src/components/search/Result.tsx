@@ -24,7 +24,7 @@ interface SearchResultProps {
 function SearchResult({ keyword, videoList }: SearchResultProps) {
 
     const total = useMemo(() => videoList.reduce((prev, current) => prev + current.data.length, 0), [videoList])
-    const tabTypeThreshold = 40
+    const tabTypeThreshold = 60
 
     return (
         <Box sx={{

@@ -18,7 +18,7 @@ import NoData from '~/components/search/NoData'
 import { getJson } from '~/adaptors/common'
 import VideoUrlParser from '~/components/search/VideoUrlParser'
 import { VideoPlayer, type PlayState } from '~/components/player'
-import { getParamsUrl } from '~/util/proxy'
+import { pureHlsUrl } from '~/util/proxy'
 import * as css from './style.module.css'
 
 interface VideoParams {
@@ -144,7 +144,7 @@ function VideoPlay({ id, video }: VideoPlayProps) {
                                                 (url: string) => (
                                                     <VideoPlayer
                                                         title={videoFullTitle}
-                                                        url={getParamsUrl('/api/video/m3u8-pure', { url })}
+                                                        url={pureHlsUrl(url)}
                                                         hls
                                                         autoplay
                                                         initPlayTime={params.seek}

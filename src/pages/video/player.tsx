@@ -4,7 +4,7 @@ import NoSsr from '@mui/material/NoSsr'
 import Box from '@mui/material/Box'
 import { VideoPlayer } from '~/components/player'
 import VideoUrlParser from '~/components/search/VideoUrlParser'
-import { getParamsUrl } from '~/util/proxy'
+import { pureHlsUrl } from '~/util/proxy'
 import { M3u8 } from '~/util/regExp'
 
 interface ServerProps {
@@ -35,7 +35,7 @@ const VideoParserPlayer: React.FC<PageProps<object, object, unknown, ServerProps
                     {
                         (url) => (
                             <VideoPlayer
-                                url={getParamsUrl('/api/video/m3u8-pure', { url })}
+                                url={pureHlsUrl(url)}
                                 hls={hls}
                                 autoplay
                             />

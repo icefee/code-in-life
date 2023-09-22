@@ -16,8 +16,9 @@ import NoData from '~/components/search/NoData'
 import SongList from '~/components/search/SongList'
 import MusicPlayList from '~/components/player/MusicPlayList'
 import useLocalStorageState from '~/components/hook/useLocalStorageState'
-import { getParamsUrl } from '~/util/proxy'
+import { getParamsUrl, fetchFileChunks } from '~/util/proxy'
 import { isDev } from '~/util/env'
+import { blobToFile } from '~/util/blobToFile'
 import { Api } from '~/util/config'
 
 export default function MusicSearch() {
@@ -41,11 +42,13 @@ export default function MusicSearch() {
     const [playlist, setPlaylist] = useLocalStorageState<SearchMusic[]>('__playlist', [])
     const songListWrapRef = useRef<HTMLDivElement>()
 
+    const [downloading, setDownloading] = useState(false)
+
     const handleClose = (_event?: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
             return;
         }
-        setToastMsg(null);
+        setToastMsg(null)
     }
 
     const generateRandomIndex = (max: number, current: number) => {
@@ -112,13 +115,34 @@ export default function MusicSearch() {
         }
     }
 
-    const downloadSong = (music: SearchMusic) => {
-        downloaFile(
-            getParamsUrl(
-                `${Api.proxyServer}/api/music/download/${music.id}`,
-                generateSearchQuery(music)
-            )
-        )
+    const downloadSong = async (music: SearchMusic) => {
+        if (downloading) {
+            setToastMsg({
+                type: 'warning',
+                msg: '已经有文件下载中..'
+            })
+            return;
+        }
+        try {
+            setDownloading(true)
+            const url = `/api/music/download/${music.id}`
+            const data = await fetchFileChunks(url, {
+                chunkSize: Math.pow(2, 20) * 4 // 4mb
+            })
+            const { name } = generateSearchQuery(music)
+            const blob = new Blob([data], { type: 'audio/mpeg' })
+            blobToFile(blob, `${name}.mp3`)
+        }
+        catch (err) {
+            console.log(err)
+            setToastMsg({
+                type: 'error',
+                msg: '文件下载失败: ' + err
+            })
+        }
+        finally {
+            setDownloading(false)
+        }
     }
 
     const downloadLrc = (music: SearchMusic) => {
@@ -423,6 +447,12 @@ export default function MusicSearch() {
                 <LoadingOverlay
                     open={searchTask.pending}
                     label="搜索中.."
+                    withBackground
+                    labelColor="#fff"
+                />
+                <LoadingOverlay
+                    open={downloading}
+                    label="歌曲下载中.."
                     withBackground
                     labelColor="#fff"
                 />
