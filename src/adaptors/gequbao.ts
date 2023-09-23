@@ -10,7 +10,11 @@ export const baseUrl = 'https://www.gequbao.com'
 
 export const lrcFile = true
 
-const getHtml = (url: string) => getTextWithTimeout(isDev ? url : proxyUrl(url, true))
+const getHtml = (url: string) => getTextWithTimeout(isDev ? url : proxyUrl(url, true), {
+    headers: {
+        'cache-control': 'no-cache'
+    }
+})
 
 export async function getMusicSearch(s: string): Promise<SearchMusic[]> {
     const url = `${baseUrl}/s/${s}`;

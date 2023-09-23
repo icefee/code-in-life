@@ -61,7 +61,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
     const lrc = useMemo(() => lrcMap[id] ?? [], [lrcMap, id])
 
     useEffect(() => {
-        if (!(id in lrcMap)) {
+        if (!lrcMap[id]) {
             getLrc(id)
         }
     }, [lrcMap, id])
