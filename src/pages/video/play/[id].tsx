@@ -117,10 +117,8 @@ function VideoPlay({ id, video }: VideoPlayProps) {
                         margin: '0 auto',
                         boxShadow: 'rgb(0 0 0 / 50%) 2px 2px 15px'
                     }}>
-                        <Box sx={
+                        <Stack sx={
                             (theme) => ({
-                                display: 'flex',
-                                flexDirection: 'column',
                                 height: '100%',
                                 [theme.breakpoints.up('sm')]: {
                                     overflowY: 'auto'
@@ -171,14 +169,14 @@ function VideoPlay({ id, video }: VideoPlayProps) {
                                     </Box>
                                 )
                             }
-                            <Box sx={(theme) => ({
-                                display: 'flex',
-                                flexDirection: 'column',
-                                flexGrow: 1,
-                                [theme.breakpoints.only('xs')]: {
-                                    overflow: 'hidden'
-                                }
-                            })}>
+                            <Stack
+                                flexGrow={1}
+                                sx={(theme) => ({
+                                    [theme.breakpoints.only('xs')]: {
+                                        overflow: 'hidden'
+                                    }
+                                })}
+                            >
                                 <Box sx={(theme) => ({
                                     position: 'relative',
                                     zIndex: 4,
@@ -207,22 +205,23 @@ function VideoPlay({ id, video }: VideoPlayProps) {
                                     <VideoProfile video={video} />
                                 </TabPanel>
                                 <TabPanel index={1} value={activeTab} disablePadding>
-                                    <Box sx={(theme) => ({
-                                        display: 'flex',
-                                        flexDirection: 'row',
-                                        height: '100%',
-                                        py: 1.5,
-                                        [theme.breakpoints.up('sm')]: {
-                                            minHeight: 250
-                                        }
-                                    })}>
+                                    <Stack
+                                        direction="row"
+                                        sx={(theme) => ({
+                                            height: '100%',
+                                            [theme.breakpoints.up('sm')]: {
+                                                minHeight: 250
+                                            }
+                                        })}
+                                    >
                                         {
                                             video.dataList.length > 1 && (
                                                 <Tabs
                                                     sx={{
                                                         borderRight: 1,
                                                         borderColor: 'divider',
-                                                        flexShrink: 0
+                                                        flexShrink: 0,
+                                                        my: 1.5
                                                     }}
                                                     orientation="vertical"
                                                     variant="scrollable"
@@ -245,13 +244,15 @@ function VideoPlay({ id, video }: VideoPlayProps) {
                                                 </Tabs>
                                             )
                                         }
-                                        <Box sx={(theme) => ({
-                                            width: '100%',
-                                            [theme.breakpoints.only('xs')]: {
-                                                flexGrow: 1,
-                                                overflowY: 'auto'
-                                            }
-                                        })}>
+                                        <Box
+                                            sx={(theme) => ({
+                                                width: '100%',
+                                                [theme.breakpoints.only('xs')]: {
+                                                    flexGrow: 1,
+                                                    overflowY: 'auto'
+                                                }
+                                            })}
+                                        >
                                             {
                                                 video.dataList.map(
                                                     (source: VideoSource, index: number) => (
@@ -261,15 +262,17 @@ function VideoPlay({ id, video }: VideoPlayProps) {
                                                             key={index}
                                                             disablePadding
                                                         >
-                                                            <Box sx={(theme) => ({
-                                                                display: 'flex',
-                                                                flexFlow: 'row wrap',
-                                                                flexGrow: 1,
-                                                                px: 1.5,
-                                                                [theme.breakpoints.only('xs')]: {
-                                                                    overflowY: 'auto'
-                                                                }
-                                                            })}>
+                                                            <Stack
+                                                                direction="row"
+                                                                flexWrap="wrap"
+                                                                flexGrow={1}
+                                                                sx={(theme) => ({
+                                                                    p: 1.5,
+                                                                    [theme.breakpoints.only('xs')]: {
+                                                                        overflowY: 'auto'
+                                                                    }
+                                                                })}
+                                                            >
                                                                 {
                                                                     source.urls.map(
                                                                         (video: VideoItem, index: number) => (
@@ -294,13 +297,13 @@ function VideoPlay({ id, video }: VideoPlayProps) {
                                                                         )
                                                                     )
                                                                 }
-                                                            </Box>
+                                                            </Stack>
                                                         </TabPanel>
                                                     )
                                                 )
                                             }
                                         </Box>
-                                    </Box>
+                                    </Stack>
                                 </TabPanel>
                                 <TabPanel index={2} value={activeTab} disablePadding>
                                     <Box sx={{
@@ -311,8 +314,8 @@ function VideoPlay({ id, video }: VideoPlayProps) {
                                         <RelatedList data={video.related} />
                                     </Box>
                                 </TabPanel>
-                            </Box>
-                        </Box>
+                            </Stack>
+                        </Stack>
                     </Box>
                 ) : (
                     <NoData text="💔 数据解析错误.." />
