@@ -47,7 +47,7 @@ interface VideoItemProps extends Pick<ListProps, 'api' | 'typed'> {
 function VideoItem({ video, api, typed }: VideoItemProps) {
 
     const id = useMemo(() => Clue.create(api, video.id), [api, video.id])
-    const videoUrl = useMemo(() => `/video/play/${id}/`, [id])
+    const videoUrl = useMemo(() => `/video/play/${id}`, [id])
 
     return (
         <Card elevation={2}>

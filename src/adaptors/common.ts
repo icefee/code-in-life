@@ -1,5 +1,4 @@
 import fetch, { Response } from 'node-fetch'
-import AbortController from 'abort-controller'
 import { type Adaptor } from '.'
 import { userAgent } from '../util/config'
 import { isTextNotNull } from '../util/string'
@@ -27,27 +26,23 @@ export async function getText(...args: Parameters<typeof fetch>): Promise<string
 
 export async function getTextWithTimeout(...args: Parameters<typeof fetch>): Promise<string> {
     const [url, init] = args;
-    const abortController = new AbortController();
-    const timeout = setTimeout(() => abortController.abort(), 8e3);
     try {
         const text = await getText(url, {
             ...init,
             headers: {
                 'user-agent': userAgent
             },
-            signal: abortController.signal as AbortSignal
+            timeout: 8e3
         })
-        return text;
+        return text
     }
     catch (err) {
-        return null;
-    } finally {
-        clearTimeout(timeout);
+        return null
     }
 }
 
 export function parseId(id: string) {
-    const key = id[0] as Adaptor;
+    const key = id[0] as Adaptor
     return {
         key,
         id: id.slice(1)

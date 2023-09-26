@@ -8,7 +8,9 @@ const handler: ApiHandler = async (req, res) => {
     const { url } = req.query
     try {
         let actualUrl = url;
-        let response = await getResponse(proxyUrl(url, true))
+        let response = await getResponse(proxyUrl(url, true), {
+            timeout: 8e3
+        })
         let playList = await response.text()
         if (!M3u8.checkContent(playList)) {
             throw new Error('invalid m3u8 format')

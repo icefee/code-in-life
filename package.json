@@ -21,7 +21,6 @@
     "@mui/icons-material": "^5.14.8",
     "@mui/lab": "^5.0.0-alpha.143",
     "@mui/material": "^5.14.8",
-    "abort-controller": "^3.0.0",
     "gatsby": "^5.12.4",
     "gatsby-adapter-netlify": "^1.0.0",
     "gatsby-plugin-alias-imports": "^1.0.5",
