@@ -220,11 +220,15 @@ function TabType({ videoList, keyword }: SearchResultProps) {
                     >站内查询</Button>
                 </Stack>
             </Paper>
-            <Box sx={(theme) => ({
-                flexGrow: 1,
-                p: theme.spacing(14, 1.5, 2),
-                overflowY: 'auto'
-            })} ref={scroller}>
+            <Box
+                sx={{
+                    flexGrow: 1,
+                    p: (theme) => theme.spacing(13.5, 1.5, 2),
+                    maskImage: 'linear-gradient(to bottom, transparent 0%, rgb(0 0 0 / 25%) 10%, #000 15% 100%)',
+                    overflowY: 'auto'
+                }}
+                ref={scroller}
+            >
                 <SearchList
                     data={activeList.data}
                     api={activeList.key}

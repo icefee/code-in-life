@@ -25,7 +25,6 @@ import PlayOrPauseButton from './PlayOrPauseButton';
 import VolumeSetter from './VolumeSetter';
 import RateSetter from './RateSetter';
 import MiniProcess from './MiniProcess';
-import SeekState from './SeekState';
 import { Spinner } from '../loading';
 import { timeFormatter } from '~/util/date';
 import { isMobileDevice, isIos } from '~/util/env';
@@ -215,8 +214,6 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
     const [downloading, setDownloading] = useState(false)
 
     const [error, setError] = useState(false)
-    const [touchOrigin, setTouchOrigin] = useState(0)
-    const [seekingDuration, setSeekingDuration] = useState<number | null>(null)
 
     useImperativeHandle(ref, () => videoRef.current, [])
 
@@ -527,39 +524,6 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                             }
                         }
                     }
-                    onTouchStart={
-                        (event: React.TouchEvent<HTMLDivElement>) => {
-                            if (!live && videoLoaded) {
-                                const touchs = event.changedTouches;
-                                setTouchOrigin(touchs[0].clientX);
-                            }
-                        }
-                    }
-                    onTouchMove={
-                        (event: React.TouchEvent<HTMLDivElement>) => {
-                            if (!live && videoLoaded) {
-                                const touchs = event.changedTouches;
-                                const wrapWidth = event.currentTarget.clientWidth;
-                                const seekingDuration = (touchs[0].clientX - touchOrigin) * Math.max(duration / wrapWidth / 2, 1);
-                                setSeekingDuration(seekingDuration);
-                            }
-                        }
-                    }
-                    onTouchEnd={
-                        () => {
-                            if (!live && videoLoaded) {
-                                if (Math.abs(seekingDuration) > 1) {
-                                    fastSeek(currentTime + seekingDuration)
-                                }
-                                setSeekingDuration(null)
-                            }
-                        }
-                    }
-                    onTouchCancel={
-                        () => {
-                            setSeekingDuration(null)
-                        }
-                    }
                     onDoubleClick={
                         () => {
                             if (isMobile) {
@@ -714,10 +678,6 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                                 <MiniProcess
                                     visible={videoLoaded && !controlsShow}
                                     state={state}
-                                />
-                                <SeekState
-                                    state={state}
-                                    seek={seekingDuration}
                                 />
                             </>
                         )
