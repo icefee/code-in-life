@@ -372,7 +372,9 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
     }
 
     const onKeyDown = (event: KeyboardEvent) => {
-        event.preventDefault()
+        if (hotKeysMap[event.code]) {
+            event.preventDefault()
+        }
     }
 
     const onKeyUp = (event: KeyboardEvent) => {
