@@ -3,7 +3,7 @@ function bufferSupported() {
     return 'Buffer' in globalThis;
 }
 
-export function utf8Tobase64(text: string) {
+export function utf8ToBase64(text: string) {
     if (bufferSupported()) {
         return Buffer.from(text).toString('base64')
     }

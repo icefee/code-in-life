@@ -1,4 +1,4 @@
-import { utf8Tobase64, base64ToUtf8 } from './base64'
+import { utf8ToBase64, base64ToUtf8 } from './base64'
 
 type VideoClue = {
     api: string;
@@ -17,7 +17,7 @@ export abstract class Base64Params {
     }
 
     public static create(text: string): string {
-        return utf8Tobase64(text).replace(/\={1,2}$/, '')
+        return utf8ToBase64(text).replace(/\={1,2}$/, '')
     }
 }
 
