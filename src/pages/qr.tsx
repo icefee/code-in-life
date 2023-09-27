@@ -118,7 +118,7 @@ function QrcodeGenerator() {
                             }
                         }
                     />
-                    <Button variant="outlined" type="submit">生成</Button>
+                    <Button variant="outlined" disabled={!libLoaded} type="submit">生成</Button>
                 </Stack>
                 <Stack justifyContent="center" alignItems="center" flexGrow={1}>
                     <canvas
