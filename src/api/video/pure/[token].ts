@@ -1,14 +1,16 @@
 import { Buffer } from 'buffer'
-import { getResponse } from '../../adaptors'
-import { errorHandler, ApiHandler } from '../../util/middleware'
-import { proxyUrl, parseUrl, removeAds } from '../../util/proxy'
-import { M3u8 } from '../../util/regExp'
+import { getResponse } from '../../../adaptors'
+import { errorHandler, ApiHandler } from '../../../util/middleware'
+import { proxyUrl, parseUrl, removeAds } from '../../../util/proxy'
+import { M3u8 } from '../../../util/regExp'
+import { Base64Params } from '../../../util/clue'
 
 const handler: ApiHandler = async (req, res) => {
-    const { url } = req.query
+    const { token } = req.params
+    const url = Base64Params.parse(token)
     try {
         let actualUrl = url;
-        let response = await getResponse(proxyUrl(url, true), {
+        let response = await getResponse(url, {
             timeout: 8e3
         })
         let playList = await response.text()

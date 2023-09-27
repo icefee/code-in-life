@@ -1,7 +1,7 @@
 import { getJson } from '../../adaptors'
 import { errorHandler, ApiHandler } from '../../util/middleware'
 import { Api } from '../../util/config'
-import Clue from '../../util/clue'
+import { Clue } from '../../util/clue'
 import { proxyUrl } from '../../util/proxy'
 
 async function getRelatedList(api: string, typeId: number) {

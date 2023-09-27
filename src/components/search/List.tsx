@@ -1,15 +1,15 @@
-import React, { useMemo } from 'react';
-import Grid from '@mui/material/Grid';
-import Card from '@mui/material/Card';
-import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
-import Chip from '@mui/material/Chip';
-import Link from '@mui/material/Link';
-import Typography from '@mui/material/Typography';
-import CardActionArea from '@mui/material/CardActionArea';
-import ThumbLoader from './ThumbLoader';
-import { RowClipTypography } from '../layout';
-import Clue from '~/util/clue';
+import React, { useMemo } from 'react'
+import Grid from '@mui/material/Grid'
+import Card from '@mui/material/Card'
+import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
+import Chip from '@mui/material/Chip'
+import Link from '@mui/material/Link'
+import Typography from '@mui/material/Typography'
+import CardActionArea from '@mui/material/CardActionArea'
+import ThumbLoader from './ThumbLoader'
+import { RowClipTypography } from '../layout'
+import { Clue } from '~/util/clue'
 
 type ListData = VideoListItem[];
 

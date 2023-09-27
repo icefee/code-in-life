@@ -1,4 +1,5 @@
 import { Api } from './config'
+import { Base64Params } from './clue'
 
 export function getParamsUrl(url: string, params: Record<string, string>) {
     const urlSearchParams = new URLSearchParams(params)
@@ -13,7 +14,8 @@ export function proxyUrl(url: string, remote: boolean = false, extend = {}) {
 }
 
 export function pureHlsUrl(url: string) {
-    return getParamsUrl('/api/video/m3u8-pure', { url })
+    const token = Base64Params.create(url)
+    return `/api/video/pure/${token}`
 }
 
 export function parseUrl(url: string, base: string) {
@@ -68,7 +70,7 @@ export function removeAds(
 ) {
     const discontinuityTag = /#EXT-X-DISCONTINUITY/
     const extInfMatcher = new RegExp('#EXTINF:\\d+(.\\d+)?,')
-    const keyLineMatcher = /URI=".+\.k(ey)?"/
+    const keyLineMatcher = /#EXT-X-KEY:METHOD=[\w\-]+,URI=".+\.k(ey)?"/
     const lines = content.split(/\n/)
     const parts = []
     let extLine = false, pathLength: number | null = null

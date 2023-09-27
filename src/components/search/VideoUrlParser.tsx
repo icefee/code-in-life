@@ -7,6 +7,7 @@ import AlertTitle from '@mui/material/AlertTitle'
 import Typography from '@mui/material/Typography'
 import LoadingOverlay from '../loading/LoadingOverlay'
 import { Video } from '~/util/regExp'
+import { Base64Params } from '~/util/clue'
 
 type VideoUrlParserProps = {
     url: string;
@@ -15,7 +16,8 @@ type VideoUrlParserProps = {
 
 const parseUrl = async (url: string) => {
     try {
-        const { code, data } = await fetch('/api/video/parse?url=' + url).then<ApiJsonType<string>>(
+        const token = Base64Params.create(url)
+        const { code, data } = await fetch(`/api/video/parse/${token}`).then<ApiJsonType<string>>(
             response => response.json()
         )
         if (code === 0) {

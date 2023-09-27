@@ -5,23 +5,37 @@ type VideoClue = {
     id: string | number;
 }
 
-export default abstract class Clue {
+export abstract class Base64Params {
+
+    public static parse(text: string): string | null {
+        try {
+            return base64ToUtf8(text + '='.repeat(4 - text.length % 4))
+        }
+        catch (err) {
+            return null
+        }
+    }
+
+    public static create(text: string): string {
+        return utf8Tobase64(text).replace(/\={1,2}$/, '')
+    }
+}
+
+export abstract class Clue {
 
     public static parse(text: string): VideoClue | null {
-        try {
-            const origin = base64ToUtf8(text + '='.repeat(4 - text.length % 4));
-            const [api, id] = origin.split('|');
+        const origin = Base64Params.parse(text)
+        if (origin !== null) {
+            const [api, id] = origin.split('|')
             return {
                 api,
                 id
             }
         }
-        catch (err) {
-            return null;
-        }
+        return null
     }
 
     public static create(api: VideoClue['api'], id: VideoClue['id']): string {
-        return utf8Tobase64(`${api}|${id}`).replace(/\={1,2}$/, '')
+        return Base64Params.create(`${api}|${id}`)
     }
 }
