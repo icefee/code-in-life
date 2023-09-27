@@ -2,7 +2,7 @@ import { createApiAdaptor, defaultPoster, parseId, getResponse } from '../../../
 import { errorHandler, ApiHandler } from '../../../util/middleware'
 
 const handler: ApiHandler = async (req, res) => {
-    const { key, id } = parseId(req.params.id)
+    const { key, id } = parseId(req.params.token)
     const adaptor = createApiAdaptor(key)
     const poster = await adaptor.parsePoster(id)
     if (poster) {

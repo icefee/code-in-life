@@ -1,4 +1,5 @@
 import { isDev } from './env'
+import { Clue } from './clue'
 
 export abstract class Api {
     private static localhost = 'localhost'

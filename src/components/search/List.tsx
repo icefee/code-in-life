@@ -58,7 +58,7 @@ function VideoItem({ video, api, typed }: VideoItemProps) {
                     flexShrink: 0
                 }} href={videoUrl} target="_blank">
                     <ThumbLoader
-                        src={`/api/video/${id}?type=poster`}
+                        src={`/api/video/poster/${id}`}
                         aspectRatio="125 / 180"
                     />
                 </CardActionArea>

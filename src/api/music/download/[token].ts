@@ -2,7 +2,7 @@ import { createApiAdaptor, parseId, getResponse, Headers } from '../../../adapto
 import { errorHandler, ApiHandler } from '../../../util/middleware'
 
 const handler: ApiHandler = async (req, res) => {
-    const { key, id } = parseId(req.params.id)
+    const { key, id } = parseId(req.params.token)
     const adaptor = createApiAdaptor(key)
     const url = await adaptor.parseMusicUrl(id)
     const requestHeaders = new Headers()

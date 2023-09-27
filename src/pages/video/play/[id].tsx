@@ -423,7 +423,7 @@ function RelatedList({ data }: RelatedListProps) {
                                             flexShrink: 0
                                         }}>
                                             <ThumbLoader
-                                                src={`${Api.assetSite}/api/video/${id}?type=poster`}
+                                                src={`${Api.assetSite}/api/video/poster/${id}`}
                                                 aspectRatio="3 / 4"
                                             />
                                         </Box>
@@ -480,7 +480,7 @@ export default function Page({ serverData }: PageProps<object, object, unknown, 
     useEffect(() => {
         (async function getVideoInfo() {
             try {
-                const { code, data } = await getJson<ApiJsonType<VideoInfo>>(`/api/video/${id}`)
+                const { code, data } = await getJson<ApiJsonType<VideoInfo>>(`/api/video/detail/${id}`)
                 if (code === 0) {
                     setVideoInfo(data)
                 }
@@ -490,7 +490,7 @@ export default function Page({ serverData }: PageProps<object, object, unknown, 
             }
             catch (err) {
                 console.error('💔 Get data error: ' + err)
-                setTimeout(getVideoInfo, 1e3);
+                setTimeout(getVideoInfo, 1e3)
             }
         })()
     }, [])

@@ -8,7 +8,7 @@ function setHeader(res: GatsbyFunctionResponse) {
 }
 
 const handler: ApiHandler = async (req, res) => {
-    const { key, id } = parseId(req.params.id)
+    const { key, id } = parseId(req.params.token)
     const adaptor = createApiAdaptor(key)
     if (adaptor.lrcFile) {
         const url = adaptor.getLrcUrl(id)

@@ -3,7 +3,7 @@ import { errorHandler, ApiHandler } from '../../../util/middleware'
 import { isDev } from '../../../util/env'
 
 const handler: ApiHandler = async (req, res) => {
-    const { key, id } = parseId(req.params.id)
+    const { key, id } = parseId(req.params.token)
     const adaptor = createApiAdaptor(key)
     const url = await adaptor.parseMusicUrl(id)
     if (url) {
