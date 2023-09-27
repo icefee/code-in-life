@@ -19,7 +19,6 @@ import { getJson } from '~/adaptors/common'
 import VideoUrlParser from '~/components/search/VideoUrlParser'
 import { VideoPlayer, type PlayState } from '~/components/player'
 import { pureHlsUrl } from '~/util/proxy'
-import { Api } from '~/util/config'
 import * as css from './style.module.css'
 
 interface VideoParams {
@@ -423,7 +422,7 @@ function RelatedList({ data }: RelatedListProps) {
                                             flexShrink: 0
                                         }}>
                                             <ThumbLoader
-                                                src={`${Api.assetSite}/api/video/poster/${id}`}
+                                                src={`/api/video/poster/${id}`}
                                                 aspectRatio="3 / 4"
                                             />
                                         </Box>
