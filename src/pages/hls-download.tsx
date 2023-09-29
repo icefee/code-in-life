@@ -76,8 +76,13 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
             const { valid, url } = await testUrl(input)
             if (valid) {
                 const buffer = await hls2Mp4.current.download(url)
-                const fileName = getFileName(input)
-                hls2Mp4.current.saveToFile(buffer, `${fileName}.mp4`)
+                if (buffer !== null) {
+                    const fileName = getFileName(input)
+                    hls2Mp4.current.saveToFile(buffer, `${fileName}.mp4`)
+                }
+                else {
+                    throw new Error('下载出错')
+                }
                 setBusy(false)
             }
             else {
