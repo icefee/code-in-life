@@ -1,7 +1,7 @@
 import { isDev } from './env'
 
 export abstract class Api {
-    public static proxyServer = isDev ? '' : (process.env.POSTER_Server ?? 'https://code-app.netlify.app')
+    public static proxyServer = isDev ? '' : (process.env.POSTER_SERVER ?? 'https://code-app.netlify.app')
     public static assetSite = 'https://spacedeta-5-f1000878.deta.app'
 }
 
