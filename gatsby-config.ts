@@ -23,12 +23,6 @@ const config: GatsbyConfig = {
           globPatterns: ['**/static*']
         }
       }
-    },
-    {
-      resolve: 'gatsby-plugin-gatsby-cloud',
-      options: {
-        mergeSecurityHeaders: false
-      }
     }
   ]
 }
