@@ -3,17 +3,6 @@ import adapter from 'gatsby-adapter-netlify'
 
 const config: GatsbyConfig = {
   adapter: adapter(),
-  headers: [
-    {
-      source: '*',
-      headers: [
-        {
-          key: 'content-security-policy',
-          value: 'frame-src https://*.deta.space https://*.onrender.com'
-        }
-      ]
-    }
-  ],
   plugins: [
     {
       resolve: 'gatsby-plugin-manifest',

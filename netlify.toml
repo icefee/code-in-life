@@ -1,4 +1,4 @@
 [[headers]]
   for = "/*"
   [headers.values]
-    Content-Security-Policy = "frame-src https://*.deta.space https://*.onrender.com"
+    Content-Security-Policy = "frame-ancestors https://*.deta.space https://*.onrender.com"
