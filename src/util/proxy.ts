@@ -70,17 +70,27 @@ export function removeAds(
 ) {
     const discontinuityTag = /#EXT-X-DISCONTINUITY/
     const extInfMatcher = new RegExp('#EXTINF:\\d+(.\\d+)?,')
-    const keyLineMatcher = /#EXT-X-KEY:METHOD=[\w\-]+,URI=".+\.k(ey)?"/
-    const lines = content.split(/\n/)
+    const keyLineMatcher = /URI=".+\.k(ey)?"/
+    const lines = content.split(/\n/).filter(line => line.trim().length > 0)
     const parts = []
     let extLine = false, pathLength: number | null = null
     let segmentIndex: number | null = null, segmentLinearSize = 0
+    let inDiscontinuity = false
     const segmentSize = lines.filter(
         line => line.match(extInfMatcher)
+    ).length;
+    const discontinuitySize = lines.filter(
+        line => line.match(discontinuityTag)
     ).length;
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i]
         if (line.match(discontinuityTag)) {
+            if (discontinuitySize === 2) {
+                inDiscontinuity = !inDiscontinuity
+            }
+            continue;
+        }
+        if (inDiscontinuity) {
             continue;
         }
         const keyLineMatch = line.match(keyLineMatcher)

@@ -58,6 +58,7 @@ const handler: ApiHandler = async (req, res) => {
         )
         const buffer = Buffer.from(pured)
         res.setHeader('content-length', buffer.byteLength)
+        res.setHeader('cache-control', 'public, max-age=604800')
         res.end(pured)
     }
     catch (err) {
