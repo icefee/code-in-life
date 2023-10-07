@@ -1,6 +1,6 @@
-import fetch, { Response } from 'node-fetch';
-import AbortController from 'abort-controller';
-import { type Adaptor } from '.';
+import fetch, { Response } from 'node-fetch'
+import { type Adaptor } from '.'
+import { userAgent } from '../util/config'
 import { isTextNotNull } from '../util/string'
 export { type HeadersInit, Headers } from 'node-fetch'
 
@@ -18,22 +18,18 @@ export async function getText(...args: Parameters<typeof fetch>): Promise<string
 
 export async function getTextWithTimeout(...args: Parameters<typeof fetch>): Promise<string> {
     const [url, init] = args;
-    const abortController = new AbortController();
-    const timeout = setTimeout(() => abortController.abort(), 5e3);
     try {
         const text = await getText(url, {
             ...init,
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.5615.121 Safari/537.36'
+                'user-agent': userAgent
             },
-            signal: abortController.signal
+            timeout: 8e3
         })
         return text;
     }
     catch (err) {
         return null;
-    } finally {
-        clearTimeout(timeout);
     }
 }
 
