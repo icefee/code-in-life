@@ -102,7 +102,7 @@ export function removeAds(
                 }
                 segmentIndex = index
             }
-            if ((!segmentIndexMatch || segmentIndex !== segmentLinearSize) && segmentLinearSize > 2 || line.length > pathLength + 1) {
+            if ((!segmentIndexMatch || segmentIndex !== segmentLinearSize) && segmentLinearSize > 3 || line.length > pathLength + 3) {
                 parts.pop()
             }
             else {
