@@ -19,7 +19,6 @@ import useLocalStorageState from '~/components/hook/useLocalStorageState'
 import { getParamsUrl, fetchFileChunks } from '~/util/proxy'
 import { isDev } from '~/util/env'
 import { blobToFile } from '~/util/blobToFile'
-import { Api } from '~/util/config'
 
 export default function MusicSearch() {
 
@@ -148,7 +147,7 @@ export default function MusicSearch() {
     const downloadLrc = (music: SearchMusic) => {
         downloaFile(
             getParamsUrl(
-                `${Api.proxyServer}/api/music/lrc/download/${music.id}`,
+                `/api/music/lrc/download/${music.id}`,
                 generateSearchQuery(music)
             )
         )
