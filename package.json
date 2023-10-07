@@ -21,6 +21,7 @@
     "gatsby": "^5.12.4",
     "gatsby-adapter-netlify": "^1.0.0",
     "gatsby-plugin-manifest": "^5.11.0",
+    "gatsby-plugin-netlify": "^5.1.1",
     "gatsby-plugin-offline": "^6.11.0",
     "react": "^18.2.0",
     "react-audio-visual": "^1.0.3",

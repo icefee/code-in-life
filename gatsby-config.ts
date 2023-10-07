@@ -23,6 +23,12 @@ const config: GatsbyConfig = {
           globPatterns: ['**/static*']
         }
       }
+    },
+    {
+      resolve: 'gatsby-plugin-netlify',
+      options: {
+        mergeSecurityHeaders: false
+      }
     }
   ]
 }
