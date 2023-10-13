@@ -61,7 +61,9 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
     }
 
     useEffect(() => {
-        getLrc(id)
+        getLrc(id).then(
+            data => setLrc(data ?? [])
+        )
     }, [id])
 
     const lineIndex = useMemo(() => {
