@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, useRef } from 'react'
 import Fade from '@mui/material/Fade'
 import Popover from '@mui/material/Popover'
 import Box from '@mui/material/Box'
@@ -35,7 +35,8 @@ async function downloadLrc(id: MusicLrcProps['id']): Promise<Lrc[] | null> {
 function MusicLrc({ id, currentTime }: MusicLrcProps) {
 
     const [downloading, setDownloading] = useState(false)
-    const [lrcMap, setLrcMap] = useState<Record<MusicLrcProps['id'], Lrc[] | null>>({})
+    const [lrc, setLrc] = useState<Lrc[]>([])
+    const lrcCache = useRef<Map<MusicLrcProps['id'], Lrc[]>>(new Map())
     const [anchorEl, setAnchorEl] = useState<HTMLSpanElement | null>(null)
     const downloadingPlaceholder = '正在下载歌词..'
     const emptyPlaceholder = '🎵🎵...'
@@ -47,24 +48,21 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
     }
 
     const getLrc = async (id: MusicLrcProps['id']) => {
+        if (lrcCache.current.has(id)) {
+            return lrcCache.current.get(id)
+        }
         setDownloading(true)
         const data = await downloadLrc(id)
-        setLrcMap(
-            map => ({
-                ...map,
-                [id]: data
-            })
-        )
+        if (data) {
+            lrcCache.current.set(id, data)
+        }
         setDownloading(false)
+        return data
     }
 
-    const lrc = useMemo(() => lrcMap[id] ?? [], [lrcMap, id])
-
     useEffect(() => {
-        if (!lrcMap[id]) {
-            getLrc(id)
-        }
-    }, [lrcMap, id])
+        getLrc(id)
+    }, [id])
 
     const lineIndex = useMemo(() => {
         const index = lrc.findIndex(
