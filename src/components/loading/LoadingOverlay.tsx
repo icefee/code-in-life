@@ -20,7 +20,7 @@ type PropsType = {
 
 export default function LoadingOverlay({
     open,
-    spinSize = 32,
+    spinSize = 36,
     zIndex,
     fixed = true,
     label,

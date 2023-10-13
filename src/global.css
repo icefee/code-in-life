@@ -7,7 +7,7 @@ body,
 }
 
 :root {
-  --linear-gradient: #03a9f4, #3f51b5;
+  --linear-gradient: #90f7f9, #eccbfc;
   --linear-gradient-image: linear-gradient(0, var(--linear-gradient));
   --scrollbar-thumb-color: rgba(0, 0, 0, .5);
   --scrollbar-thumb-hover-color: rgba(0, 0, 0, .75);
