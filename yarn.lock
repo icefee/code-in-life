@@ -5474,10 +5474,10 @@ functions-have-names@^1.2.2, functions-have-names@^1.2.3:
   resolved "https://registry.npmjs.org/functions-have-names/-/functions-have-names-1.2.3.tgz"
   integrity sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==
 
-gatsby-adapter-netlify@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/gatsby-adapter-netlify/-/gatsby-adapter-netlify-1.0.0.tgz#f984d92f5af690a33e300a0e8c7520ed9794c328"
-  integrity sha512-9dcKF2Xq5KV5R2QUcRjPFZS0gJ8efb+PSkc4cnsYz+hx1NOlAqXRN4h7hJAuQvaTAhjsaPfgs9r62d9g+JSyhQ==
+gatsby-adapter-netlify@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/gatsby-adapter-netlify/-/gatsby-adapter-netlify-1.0.1.tgz#becf547d3794bbb72645c52c24ee8b899d9e5160"
+  integrity sha512-sS3tIqpxh0bM9P36IMOh0UUbdbujaOATEwYnQ0yTIz6IQSQ4Hn7RPdEEyhzR9TRSn5AkAM9yXs+7m0n0MYbsWg==
   dependencies:
     "@babel/runtime" "^7.20.13"
     "@netlify/cache-utils" "^5.1.5"
