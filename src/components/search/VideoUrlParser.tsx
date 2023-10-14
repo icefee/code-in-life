@@ -6,12 +6,12 @@ import Alert from '@mui/material/Alert'
 import AlertTitle from '@mui/material/AlertTitle'
 import Typography from '@mui/material/Typography'
 import LoadingOverlay from '../loading/LoadingOverlay'
-import { Video } from '~/util/regExp'
+import { Video, M3u8 } from '~/util/regExp'
 import { Base64Params } from '~/util/clue'
 
 type VideoUrlParserProps = {
     url: string;
-    children: (url: string) => React.ReactElement;
+    children: (url: string, hls: boolean) => React.ReactElement;
 }
 
 const parseUrl = async (url: string) => {
@@ -51,6 +51,8 @@ function VideoUrlParser({ url, children }: VideoUrlParserProps) {
         }
     }
 
+    const _isHls = (url: string) => M3u8.isM3u8Url(url)
+
     useEffect(() => {
         if (!isVideoUrl) {
             _parseUrl()
@@ -64,7 +66,7 @@ function VideoUrlParser({ url, children }: VideoUrlParserProps) {
     }, [url])
 
     if (isVideoUrl) {
-        return children(url)
+        return children(url, _isHls(url))
     }
     return (
         <Box sx={{
@@ -72,13 +74,13 @@ function VideoUrlParser({ url, children }: VideoUrlParserProps) {
             height: '100%'
         }}>
             {
-                videoUrl && children(videoUrl)
+                videoUrl && children(videoUrl, _isHls(videoUrl))
             }
             <LoadingOverlay
                 open={videoUrl === null && !error}
                 spinSize={28}
                 fixed={false}
-                label="地址解析中"
+                label="地址解析中.."
                 labelColor="#fff"
             />
             {

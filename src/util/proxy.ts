@@ -13,6 +13,13 @@ export function proxyUrl(url: string, remote: boolean = false, extend = {}) {
     })
 }
 
+export function proxyHlsUrl(url: string) {
+    const token = Base64Params.create(url)
+    return getParamsUrl(`${Api.assetSite}/api/video/hls/proxy/${token}`, {
+        cors: '1'
+    })
+}
+
 export function pureHlsUrl(url: string) {
     const token = Base64Params.create(url)
     return `/api/video/pure/${token}`

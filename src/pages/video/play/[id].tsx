@@ -18,7 +18,7 @@ import NoData from '~/components/search/NoData'
 import { getJson } from '~/adaptors/common'
 import VideoUrlParser from '~/components/search/VideoUrlParser'
 import { VideoPlayer, type PlayState } from '~/components/player'
-import { pureHlsUrl } from '~/util/proxy'
+import { pureHlsUrl, proxyHlsUrl, proxyUrl } from '~/util/proxy'
 import * as css from './style.module.css'
 
 interface VideoParams {
@@ -139,11 +139,17 @@ function VideoPlay({ id, video }: VideoPlayProps) {
                                     ready && (
                                         <VideoUrlParser url={playingVideo.url}>
                                             {
-                                                (url: string) => (
+                                                (url: string, hls: boolean) => (
                                                     <VideoPlayer
                                                         title={videoFullTitle}
-                                                        url={pureHlsUrl(url)}
-                                                        hls
+                                                        url={
+                                                            Reflect.apply(
+                                                                video.proxy ? proxyHlsUrl : pureHlsUrl,
+                                                                undefined,
+                                                                [url]
+                                                            )
+                                                        }
+                                                        hls={hls}
                                                         autoplay
                                                         initPlayTime={params.seek}
                                                         onTimeUpdate={onTimeUpdate}
@@ -331,6 +337,8 @@ interface VideoProfileProps {
 
 function VideoProfile({ video }: VideoProfileProps) {
 
+    const posterUrl = useMemo(() => video.proxy ? proxyUrl(video.pic) : video.pic, [video])
+
     return (
         <Box
             sx={(theme) => ({
@@ -356,7 +364,7 @@ function VideoProfile({ video }: VideoProfileProps) {
                     }
                 })}>
                     <ThumbLoader
-                        src={video.pic}
+                        src={posterUrl}
                         alt={video.name}
                     />
                 </Box>
