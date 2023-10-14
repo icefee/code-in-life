@@ -329,7 +329,7 @@ export default function MusicSearch() {
                                 position: 'relative',
                                 zIndex: 120
                             }} flexGrow={1} justifyContent="center" alignItems="center">
-                                <Typography variant="body1" color="hsla(0, 0%, 100%, .7)">🔍 输入歌名/歌手名开始搜索</Typography>
+                                <Typography color="text.secondary" variant="body1">🔍 输入歌名/歌手名开始搜索</Typography>
                             </Stack>
                         )
                     )
