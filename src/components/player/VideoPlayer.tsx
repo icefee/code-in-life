@@ -7,7 +7,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Fade from '@mui/material/Fade';
 import Alert from '@mui/material/Alert';
 import { styled, alpha } from '@mui/material/styles';
-import Hls, { type HlsListeners } from 'hls.js';
+import Hls, { type HlsListeners, Loader, LoaderContext, HlsConfig, LoaderConfiguration, LoaderCallbacks } from 'hls.js';
 import Hls2Mp4 from 'hls2mp4';
 import SkipNextRoundedIcon from '@mui/icons-material/SkipNextRounded';
 import PictureInPictureRoundedIcon from '@mui/icons-material/PictureInPictureRounded';
@@ -28,6 +28,7 @@ import MiniProcess from './MiniProcess';
 import { Spinner } from '../loading';
 import { timeFormatter } from '~/util/date';
 import { isMobileDevice, isIos } from '~/util/env';
+import { fetchFileChunks } from '~/util/proxy';
 
 const Events = Hls.Events
 
@@ -148,6 +149,54 @@ function debounce(delay: number, callback: (args: any[]) => void) {
     return wrapper;
 }
 
+class FragmentLoader extends Hls.DefaultConfig.loader implements Loader<LoaderContext> {
+
+    private abortControl: AbortController;
+
+    public static chunkSize: number;
+
+    constructor(config: HlsConfig) {
+        super(config)
+    }
+
+    async load(
+        context: LoaderContext,
+        config: LoaderConfiguration,
+        callbacks: LoaderCallbacks<LoaderContext>
+    ) {
+        const { url } = context
+        this.abortControl = new AbortController()
+        try {
+            const data = await fetchFileChunks(url, {
+                chunkSize: FragmentLoader.chunkSize,
+                signal: this.abortControl.signal
+            })
+            this.stats.loaded = data.byteLength
+            callbacks.onSuccess(
+                {
+                    url,
+                    data,
+                    code: 200
+                },
+                this.stats,
+                context,
+                null
+            )
+        }
+        catch (err) {
+            callbacks.onError(
+                {
+                    code: 404,
+                    text: String(err)
+                },
+                context,
+                null,
+                this.stats
+            )
+        }
+    }
+}
+
 export interface PlayState {
     duration: number;
     progress: number;
@@ -159,6 +208,7 @@ export interface VideoPlayerProps {
     title?: string;
     poster?: string;
     hls?: boolean;
+    maxFragmentBytes?: number;
     live?: boolean;
     autoplay?: boolean;
     initPlayTime?: number;
@@ -173,6 +223,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
     title,
     poster,
     hls: hlsType = false,
+    maxFragmentBytes,
     live = false,
     autoplay = false,
     initPlayTime = 0,
@@ -239,9 +290,15 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
         const video = videoRef.current;
         if (hlsType && Hls.isSupported()) {
             if (!hls.current) {
-                hls.current = new Hls({
+                const config: Partial<HlsConfig> = {
                     autoStartLoad: false
-                })
+                }
+                if (maxFragmentBytes) {
+                    FragmentLoader.chunkSize = maxFragmentBytes
+                    /* @ts-ignore */
+                    config.fLoader = FragmentLoader
+                }
+                hls.current = new Hls(config)
                 hls.current.attachMedia(video)
                 // hls.current.on(Events.ERROR, onLoadError)
             }

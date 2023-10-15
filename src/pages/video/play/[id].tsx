@@ -149,6 +149,7 @@ function VideoPlay({ id, video }: VideoPlayProps) {
                                                                 [url]
                                                             )
                                                         }
+                                                        maxFragmentBytes={video.proxy ? Math.pow(2, 20) * 4 : undefined}
                                                         hls={hls}
                                                         autoplay
                                                         initPlayTime={params.seek}

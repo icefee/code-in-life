@@ -48,22 +48,33 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
     }
 
     const getLrc = async (id: MusicLrcProps['id']) => {
+        let data: Lrc[] | null = null
         if (lrcCache.current.has(id)) {
-            return lrcCache.current.get(id)
+            data = lrcCache.current.get(id)
         }
-        setDownloading(true)
-        const data = await downloadLrc(id)
-        if (data) {
-            lrcCache.current.set(id, data)
+        else {
+            data = await downloadLrc(id)
+            if (data) {
+                lrcCache.current.set(id, data)
+            }
         }
-        setDownloading(false)
-        return data
+        return {
+            id,
+            data
+        }
     }
 
     useEffect(() => {
+        setDownloading(true)
         getLrc(id).then(
-            data => setLrc(data ?? [])
-        )
+            ({ data, id: rid }) => {
+                if (id === rid) {
+                    setLrc(data ?? [])
+                }
+            }
+        ).finally(() => {
+            setDownloading(false)
+        })
     }, [id])
 
     const lineIndex = useMemo(() => {
