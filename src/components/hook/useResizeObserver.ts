@@ -3,7 +3,7 @@ import useWindowSize from 'react-use/lib/useWindowSize';
 
 function useResizeObserver<T extends HTMLElement = HTMLDivElement>() {
 
-    const wraperRef = useRef<T>()
+    const wrapperRef = useRef<T>()
     const [wraperSize, setWraperSize] = useState({
         width: 0,
         height: 0
@@ -11,15 +11,15 @@ function useResizeObserver<T extends HTMLElement = HTMLDivElement>() {
     const { width, height } = useWindowSize();
 
     useLayoutEffect(() => {
-        const elm = wraperRef.current;
+        const wrapper = wrapperRef.current;
         setWraperSize({
-            width: elm.clientWidth,
-            height: elm.clientHeight
+            width: wrapper.clientWidth,
+            height: wrapper.clientHeight
         })
     }, [width, height])
 
     return {
-        ref: wraperRef,
+        ref: wrapperRef,
         ...wraperSize
     }
 
