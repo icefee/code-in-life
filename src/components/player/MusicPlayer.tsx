@@ -347,12 +347,6 @@ function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange,
                 {
                     music && (
                         <audio
-                            style={{
-                                position: 'absolute',
-                                zIndex: -100,
-                                width: 0,
-                                height: 0
-                            }}
                             ref={audioRef}
                             preload="auto"
                             onLoadStart={
