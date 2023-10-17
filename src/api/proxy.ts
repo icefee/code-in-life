@@ -26,6 +26,10 @@ const handler: ApiHandler = async (req, res) => {
             defaultValue: 'text/plain'
         },
         {
+            key: 'cache-control',
+            defaultValue: 'public, max-age=604800'
+        },
+        {
             key: 'content-range',
             defaultValue: null
         }

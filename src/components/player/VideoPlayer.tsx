@@ -933,7 +933,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                                     </IconButton>
                                 </Tooltip>
                                 {
-                                    !live && !disableDownload && !ios && (
+                                    !live && !disableDownload && !ios && !maxFragmentBytes && (
                                         <Tooltip title="下载">
                                             <IconButton
                                                 color="inherit"

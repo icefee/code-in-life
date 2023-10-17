@@ -1,6 +1,6 @@
-import React, { memo, useState, useRef } from 'react';
-import Box from '@mui/material/Box';
-import Skeleton from '@mui/material/Skeleton';
+import React, { memo, useState, useEffect, useRef } from 'react'
+import Box from '@mui/material/Box'
+import Skeleton from '@mui/material/Skeleton'
 
 type ThumbLoaderProps = {
     src: string;
@@ -10,8 +10,18 @@ type ThumbLoaderProps = {
 
 function ThumbLoader({ src, alt, aspectRatio = '2 / 3' }: ThumbLoaderProps) {
     const [loading, setLoading] = useState(true)
-    const [error, setError] = useState(false)
     const imageRef = useRef<HTMLImageElement | null>(null)
+
+    const hideLoading = () => {
+        setLoading(false)
+    }
+
+    useEffect(() => {
+        if (imageRef.current.complete) {
+            hideLoading()
+        }
+    }, [])
+
     return (
         <Box sx={{
             position: 'relative',
@@ -23,39 +33,39 @@ function ThumbLoader({ src, alt, aspectRatio = '2 / 3' }: ThumbLoaderProps) {
                     display: 'block',
                     width: '100%',
                     height: '100%',
-                    objectFit: 'cover'
+                    objectFit: 'cover',
+                    opacity: loading ? 0 : 1
                 }}
-                onLoad={
-                    () => {
-                        setLoading(false)
-                        setError(false)
-                    }
-                }
+                onLoad={hideLoading}
                 onError={
                     () => {
-                        setLoading(false)
-                        setError(true)
+                        hideLoading
                         imageRef.current.src = `/image_fail.jpg`;
                     }
                 }
-                hidden={loading || error}
                 src={src}
                 alt={alt}
             />
             {
                 loading && (
-                    <Skeleton
+                    <Box
                         sx={{
                             position: 'absolute',
                             left: 0,
                             top: 0,
-                            right: 0,
+                            width: '100%',
                             height: '100%'
                         }}
-                        animation="wave"
-                        variant="rectangular"
-                        component="div"
-                    />
+                    >
+                        <Skeleton
+                            sx={{
+                                height: '100%'
+                            }}
+                            animation="wave"
+                            variant="rectangular"
+                            component="div"
+                        />
+                    </Box>
                 )
             }
         </Box>
