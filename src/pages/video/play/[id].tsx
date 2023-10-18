@@ -18,7 +18,8 @@ import NoData from '~/components/search/NoData'
 import { getJson } from '~/adaptors/common'
 import VideoUrlParser from '~/components/search/VideoUrlParser'
 import { VideoPlayer, type PlayState } from '~/components/player'
-import { pureHlsUrl, proxyHlsUrl, proxyUrl } from '~/util/proxy'
+import { pureHlsUrl } from '~/util/proxy'
+import { Api } from '~/util/config'
 import * as css from './style.module.css'
 
 interface VideoParams {
@@ -142,14 +143,7 @@ function VideoPlay({ id, video }: VideoPlayProps) {
                                                 (url: string, hls: boolean) => (
                                                     <VideoPlayer
                                                         title={videoFullTitle}
-                                                        url={
-                                                            Reflect.apply(
-                                                                video.proxy ? proxyHlsUrl : pureHlsUrl,
-                                                                undefined,
-                                                                [url]
-                                                            )
-                                                        }
-                                                        maxFragmentBytes={video.proxy ? Math.pow(2, 20) * 4 : undefined}
+                                                        url={pureHlsUrl(url)}
                                                         hls={hls}
                                                         autoplay
                                                         initPlayTime={params.seek}
@@ -337,9 +331,6 @@ interface VideoProfileProps {
 }
 
 function VideoProfile({ video }: VideoProfileProps) {
-
-    const posterUrl = useMemo(() => video.proxy ? proxyUrl(video.pic) : video.pic, [video])
-
     return (
         <Box
             sx={(theme) => ({
@@ -365,7 +356,7 @@ function VideoProfile({ video }: VideoProfileProps) {
                     }
                 })}>
                     <ThumbLoader
-                        src={posterUrl}
+                        src={video.pic}
                         alt={video.name}
                     />
                 </Box>
@@ -490,7 +481,12 @@ export default function Page({ serverData }: PageProps<object, object, unknown, 
             try {
                 const { code, data } = await getJson<ApiJsonType<VideoInfo>>(`/api/video/detail/${id}`)
                 if (code === 0) {
-                    setVideoInfo(data)
+                    if (data.proxy) {
+                        location.replace(`${Api.assetSite}/video/play/${id}`)
+                    }
+                    else {
+                        setVideoInfo(data)
+                    }
                 }
                 else {
                     throw new Error('request failed')
