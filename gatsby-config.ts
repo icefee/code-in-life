@@ -23,6 +23,9 @@ const config: GatsbyConfig = {
           globPatterns: ['**/static*']
         }
       }
+    },
+    {
+      resolve: 'gatsby-plugin-no-sourcemaps'
     }
   ]
 }
