@@ -10,8 +10,7 @@ export default function NoData({ text = '😭 没有找到符合的内容.' }: {
             height: '100%',
             justifyContent: 'center',
             alignItems: 'center',
-            p: 2,
-            color: '#fff'
+            p: 2
         }}>
             <Typography variant="body1" color="inherit">{text}</Typography>
         </Box>
