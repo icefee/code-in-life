@@ -414,7 +414,7 @@ function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange,
                                     }
                                     else {
                                         hasError.current = true;
-                                        reloadSong()
+                                        setTimeout(reloadSong, 400);
                                     }
                                 }
                             }
