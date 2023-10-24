@@ -3,31 +3,31 @@ import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import Fade from '@mui/material/Fade';
-import Alert from '@mui/material/Alert';
-import { styled, alpha } from '@mui/material/styles';
-import Hls, { type HlsListeners, HlsConfig } from 'hls.js';
-import Hls2Mp4 from 'hls2mp4';
-import SkipNextRoundedIcon from '@mui/icons-material/SkipNextRounded';
-import PictureInPictureRoundedIcon from '@mui/icons-material/PictureInPictureRounded';
-import PictureInPictureAltRoundedIcon from '@mui/icons-material/PictureInPictureAltRounded';
-import FullscreenRoundedIcon from '@mui/icons-material/FullscreenRounded';
-import FullscreenExitRoundedIcon from '@mui/icons-material/FullscreenExitRounded';
-import Replay10RoundedIcon from '@mui/icons-material/Replay10Rounded';
-import Forward10RoundedIcon from '@mui/icons-material/Forward10Rounded';
-import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
-import useLocalStorageState from '../hook/useLocalStorageState';
-import MediaSlider from './MediaSlider';
-import CancelMutedButton from './CancelMutedButton';
-import { DarkThemed } from '../theme';
-import PlayOrPauseButton from './PlayOrPauseButton';
-import VolumeSetter from './VolumeSetter';
-import RateSetter from './RateSetter';
-import MiniProcess from './MiniProcess';
-import { Spinner } from '../loading';
-import { timeFormatter } from '~/util/date';
-import { isMobileDevice, isIos } from '~/util/env';
+import Tooltip from '@mui/material/Tooltip'
+import Fade from '@mui/material/Fade'
+import Alert from '@mui/material/Alert'
+import { styled, alpha } from '@mui/material/styles'
+import Hls, { type HlsListeners } from 'hls.js'
+import Hls2Mp4 from 'hls2mp4'
+import SkipNextRoundedIcon from '@mui/icons-material/SkipNextRounded'
+import PictureInPictureRoundedIcon from '@mui/icons-material/PictureInPictureRounded'
+import PictureInPictureAltRoundedIcon from '@mui/icons-material/PictureInPictureAltRounded'
+import FullscreenRoundedIcon from '@mui/icons-material/FullscreenRounded'
+import FullscreenExitRoundedIcon from '@mui/icons-material/FullscreenExitRounded'
+import Replay10RoundedIcon from '@mui/icons-material/Replay10Rounded'
+import Forward10RoundedIcon from '@mui/icons-material/Forward10Rounded'
+import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded'
+import useLocalStorageState from '../hook/useLocalStorageState'
+import MediaSlider from './MediaSlider'
+import CancelMutedButton from './CancelMutedButton'
+import { DarkThemed } from '../theme'
+import PlayOrPauseButton from './PlayOrPauseButton'
+import VolumeSetter from './VolumeSetter'
+import RateSetter from './RateSetter'
+import MiniProcess from './MiniProcess'
+import { Spinner } from '../loading'
+import { timeFormatter } from '~/util/date'
+import { isMobileDevice, isIos } from '~/util/env'
 
 const Events = Hls.Events
 
@@ -61,11 +61,11 @@ function usePipEvent(ref: React.MutableRefObject<HTMLVideoElement>) {
     }
 
     useEffect(() => {
-        ref.current?.addEventListener('enterpictureinpicture', onEnter);
-        ref.current?.addEventListener('leavepictureinpicture', onExit);
+        ref.current?.addEventListener('enterpictureinpicture', onEnter)
+        ref.current?.addEventListener('leavepictureinpicture', onExit)
         return () => {
-            ref.current?.removeEventListener('enterpictureinpicture', onEnter);
-            ref.current?.removeEventListener('leavepictureinpicture', onExit);
+            ref.current?.removeEventListener('enterpictureinpicture', onEnter)
+            ref.current?.removeEventListener('leavepictureinpicture', onExit)
         }
     }, [])
 
@@ -84,9 +84,9 @@ function useFullscreenEvent() {
     }
 
     useEffect(() => {
-        document.addEventListener('fullscreenchange', onChange);
+        document.addEventListener('fullscreenchange', onChange)
         return () => {
-            document.removeEventListener('fullscreenchange', onChange);
+            document.removeEventListener('fullscreenchange', onChange)
         }
     }, [])
 
@@ -159,7 +159,6 @@ export interface VideoPlayerProps {
     title?: string;
     poster?: string;
     hls?: boolean;
-    maxFragmentBytes?: number;
     live?: boolean;
     autoplay?: boolean;
     initPlayTime?: number;
