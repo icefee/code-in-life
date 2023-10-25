@@ -13,19 +13,7 @@ function MusicPoster({ spinning = false, src, alt }: MusicPosterProps) {
 
     const [poster, setPoster] = useState(null)
 
-    const loadImage = (url: string) => {
-        const image = new Image();
-        image.src = url;
-        image.onload = () => {
-            setPoster(url)
-        }
-        image.onerror = () => {
-            setPoster('/poster.jpg')
-        }
-    }
-
     useEffect(() => {
-        loadImage(src)
         return () => {
             setPoster(null)
         }
@@ -41,7 +29,13 @@ function MusicPoster({ spinning = false, src, alt }: MusicPosterProps) {
                 alt={alt}
                 src={poster}
                 imgProps={{
-                    loading: 'lazy'
+                    loading: 'lazy',
+                    onLoad() {
+                        setPoster(src)
+                    },
+                    onError() {
+                        setPoster('/poster.jpg')
+                    }
                 }}
                 sx={{
                     width: '100%',
@@ -73,4 +67,4 @@ function MusicPoster({ spinning = false, src, alt }: MusicPosterProps) {
     )
 }
 
-export default MusicPoster;
+export default MusicPoster
