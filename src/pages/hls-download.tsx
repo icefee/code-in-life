@@ -74,6 +74,7 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
             showError({
                 message: '非法的地址'
             })
+            return
         }
         try {
             setBusy(true)
