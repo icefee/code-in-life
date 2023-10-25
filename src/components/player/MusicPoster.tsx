@@ -27,7 +27,7 @@ function MusicPoster({ spinning = false, src, alt }: MusicPosterProps) {
         }}>
             <Avatar
                 alt={alt}
-                src={src}
+                src={poster ?? src}
                 imgProps={{
                     loading: 'lazy',
                     onLoad() {
