@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import Box from '@mui/material/Box';
-import Avatar from '@mui/material/Avatar';
-import Skeleton from '@mui/material/Skeleton';
+import React, { useState, useEffect } from 'react'
+import Box from '@mui/material/Box'
+import Avatar from '@mui/material/Avatar'
+import Skeleton from '@mui/material/Skeleton'
 
 interface MusicPosterProps {
     spinning?: boolean;
@@ -13,19 +13,7 @@ function MusicPoster({ spinning = false, src, alt }: MusicPosterProps) {
 
     const [poster, setPoster] = useState(null)
 
-    const loadImage = (url: string) => {
-        const image = new Image();
-        image.src = url;
-        image.onload = () => {
-            setPoster(url)
-        }
-        image.onerror = () => {
-            setPoster('/poster.jpg')
-        }
-    }
-
     useEffect(() => {
-        loadImage(src)
         return () => {
             setPoster(null)
         }
@@ -39,7 +27,16 @@ function MusicPoster({ spinning = false, src, alt }: MusicPosterProps) {
         }}>
             <Avatar
                 alt={alt}
-                src={poster}
+                src={src}
+                imgProps={{
+                    loading: 'lazy',
+                    onLoad() {
+                        setPoster(src)
+                    },
+                    onError() {
+                        setPoster('/poster.jpg')
+                    }
+                }}
                 sx={{
                     width: '100%',
                     height: '100%',
@@ -70,4 +67,4 @@ function MusicPoster({ spinning = false, src, alt }: MusicPosterProps) {
     )
 }
 
-export default MusicPoster;
+export default MusicPoster
