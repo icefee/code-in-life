@@ -40,6 +40,9 @@ function MusicPoster({ spinning = false, src, alt }: MusicPosterProps) {
             <Avatar
                 alt={alt}
                 src={poster}
+                imgProps={{
+                    loading: 'lazy'
+                }}
                 sx={{
                     width: '100%',
                     height: '100%',

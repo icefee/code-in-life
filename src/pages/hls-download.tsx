@@ -69,15 +69,20 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
         }
     }
 
-    const startDownload = async () => {
+    const startDownload = async (source: string) => {
+        if (!/^https?:\/\/.+\.[a-z]{2,5}.*/.test(source)) {
+            showError({
+                message: '非法的地址'
+            })
+        }
         try {
             setBusy(true)
             setStatus('检测hls地址..')
-            const { valid, url } = await testUrl(input)
+            const { valid, url } = await testUrl(source)
             if (valid) {
                 const buffer = await hls2Mp4.current.download(url)
                 if (buffer !== null) {
-                    const fileName = getFileName(input)
+                    const fileName = getFileName(source)
                     hls2Mp4.current.saveToFile(buffer, `${fileName}.mp4`)
                 }
                 else {
@@ -144,7 +149,7 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
 
     useEffect(() => {
         if (url) {
-            startDownload()
+            startDownload(url)
         }
     }, [url])
 
@@ -173,7 +178,7 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
                     (event: React.FormEvent<HTMLFormElement>) => {
                         event.preventDefault();
                         if (!busy) {
-                            startDownload()
+                            startDownload(input)
                         }
                     }
                 }>
