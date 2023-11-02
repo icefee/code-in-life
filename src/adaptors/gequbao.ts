@@ -70,7 +70,7 @@ export async function parseMusicUrl(id: string) {
     try {
         const html = await getHtml(`${baseUrl}/music/${id}`)
         const matchBlock = html.match(
-            /const url = 'https?:\/\/[^']+'/
+            /window.mp3_url = 'https?:\/\/[^']+'/
         )
         return matchBlock[0].match(/https?:\/\/[^']+/)[0];
     }
