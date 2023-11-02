@@ -10,6 +10,12 @@ export function getResponse(...args: Parameters<typeof fetch>): Promise<Response
     return fetch(...args)
 }
 
+export async function getJson<T = any>(...args: Parameters<typeof fetch>): Promise<T> {
+    return getResponse(...args).then<T>(
+        response => response.json()
+    )
+}
+
 export async function getText(...args: Parameters<typeof fetch>): Promise<string> {
     return getResponse(...args).then(
         response => response.text()

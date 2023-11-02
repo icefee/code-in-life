@@ -1,8 +1,6 @@
-import { getTextWithTimeout, parseLrcText } from './common'
+import { getTextWithTimeout, getJson, parseLrcText } from './common'
 import { timeFormatter } from '../util/date'
 import { Api } from '../util/config'
-import { isDev } from '../util/env'
-import { proxyUrl } from '../util/proxy'
 
 export const key = 'g'
 
@@ -10,7 +8,7 @@ export const baseUrl = 'https://www.gequbao.com'
 
 export const lrcFile = true
 
-const getHtml = (url: string) => getTextWithTimeout(isDev ? url : proxyUrl(url, true), {
+const getHtml = (url: string) => getTextWithTimeout(url, {
     headers: {
         'cache-control': 'no-cache'
     }
@@ -66,13 +64,31 @@ export async function parsePoster(id: string) {
     }
 }
 
+async function getPlayUrl(id: string) {
+    const searchParams = new URLSearchParams({
+        id,
+        json: '1'
+    })
+    const { data } = await getJson<{
+        code: number;
+        data: {
+            url: string;
+        };
+    }>(`${baseUrl}/api/play_url?${searchParams}`)
+    return data.url
+}
+
 export async function parseMusicUrl(id: string) {
     try {
         const html = await getHtml(`${baseUrl}/music/${id}`)
+        const urlMatcher = /https?:\/\/[^']+/
         const matchBlock = html.match(
-            /window.mp3_url = 'https?:\/\/[^']+'/
+            new RegExp(`window.mp3_url = '${urlMatcher.source}'`)
         )
-        return matchBlock[0].match(/https?:\/\/[^']+/)[0];
+        if (matchBlock) {
+            return matchBlock[0].match(urlMatcher)[0]
+        }
+        return getPlayUrl(id)
     }
     catch (err) {
         return null
@@ -101,6 +117,5 @@ export async function getLrcText(id: string) {
 }
 
 export function getLrcUrl(id: string) {
-    const url = `${baseUrl}/download/lrc/${id}`
-    return isDev ? url : proxyUrl(url, true)
+    return `${baseUrl}/download/lrc/${id}`
 }
