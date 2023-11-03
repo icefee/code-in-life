@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Box from '@mui/material/Box'
 import Avatar from '@mui/material/Avatar'
 import Skeleton from '@mui/material/Skeleton'
@@ -12,9 +12,11 @@ interface MusicPosterProps {
 function MusicPoster({ spinning = false, src, alt }: MusicPosterProps) {
 
     const [poster, setPoster] = useState(null)
+    const loadError = useRef(false)
 
     useEffect(() => {
         return () => {
+            loadError.current = false
             setPoster(null)
         }
     }, [src])
@@ -31,9 +33,12 @@ function MusicPoster({ spinning = false, src, alt }: MusicPosterProps) {
                 imgProps={{
                     loading: 'lazy',
                     onLoad() {
-                        setPoster(src)
+                        if (!loadError.current) {
+                            setPoster(src)
+                        }
                     },
                     onError() {
+                        loadError.current = true
                         setPoster('/poster.jpg')
                     }
                 }}
