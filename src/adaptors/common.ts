@@ -64,10 +64,10 @@ export function parseLrcText(text: string) {
     const lrcs = []
     for (const line of lines) {
         const timeMatchReg = /\[\d{1,2}:\d{1,2}\.\d*\]/g
-        const timeMatchs = line.match(timeMatchReg)
+        const timeMatches = line.match(timeMatchReg)
         const text = line.replace(timeMatchReg, '')
-        if (timeMatchs && isTextNotNull(text)) {
-            for (const timeMatch of timeMatchs) {
+        if (timeMatches && isTextNotNull(text)) {
+            for (const timeMatch of timeMatches) {
                 lrcs.push({
                     time: parseDuration(timeMatch.replace(/(\[|\])/g, '')),
                     text
