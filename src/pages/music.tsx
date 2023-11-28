@@ -20,6 +20,14 @@ import { getParamsUrl, fetchFileChunks } from '~/util/proxy'
 import { isDev } from '~/util/env'
 import { blobToFile } from '~/util/blobToFile'
 
+export function Head() {
+    return (
+        <>
+            <meta name="referrer" content="no-referrer" />
+        </>
+    )
+}
+
 export default function MusicSearch() {
 
     const [keyword, setKeyword] = useState('')
