@@ -21,7 +21,7 @@
     "@mui/icons-material": "^5.14.18",
     "@mui/lab": "^5.0.0-alpha.153",
     "@mui/material": "^5.14.18",
-    "gatsby": "^5.12.4",
+    "gatsby": "^5.12.11",
     "gatsby-adapter-netlify": "^1.0.1",
     "gatsby-plugin-alias-imports": "^1.0.5",
     "gatsby-plugin-manifest": "^5.11.0",
