@@ -9,6 +9,7 @@ import LinearProgress from '@mui/material/LinearProgress'
 import Hls2Mp4 from 'hls2mp4'
 import useErrorMessage from '~/components/hook/useErrorMessage'
 import { M3u8 } from '~/util/regExp'
+import { proxyUrl } from '~/util/proxy'
 
 export function Head() {
     return (
@@ -112,7 +113,8 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
     useEffect(() => {
         hls2Mp4.current = new Hls2Mp4({
             maxRetry: 5,
-            tsDownloadConcurrency: 20
+            tsDownloadConcurrency: 20,
+            ffmpegBaseUrl: proxyUrl('https://unpkg.com/@ffmpeg/core@0.12.2/dist/umd')
         }, (type, progress) => {
             const TaskType = Hls2Mp4.TaskType;
             if (type === TaskType.loadFFmeg) {
