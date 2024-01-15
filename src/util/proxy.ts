@@ -1,12 +1,6 @@
-import { Api } from './config'
-
 export function getParamsUrl(url: string, params: Record<string, string>) {
     const urlSearchParams = new URLSearchParams(params)
     return `${url}?${urlSearchParams}`
-}
-
-export function proxyUrl(url: string, remote: boolean = false) {
-    return getParamsUrl(`${remote ? Api.assetSite : ''}/api/proxy`, { url })
 }
 
 async function loadFileChunk(url: string, [start, end]: [number, number], init?: RequestInit) {
