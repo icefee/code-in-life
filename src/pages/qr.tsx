@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Script } from 'gatsby';
+import { Script } from 'gatsby'
 import NoSsr from '@mui/material/NoSsr'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import useLocalStorageState from '~/components/hook/useLocalStorageState'
+import useErrorMessage from '~/components/hook/useErrorMessage'
 
 export function Head() {
     return (
@@ -51,6 +52,8 @@ function QrcodeGenerator() {
     const [libLoaded, setLibLoaded] = useState(false)
     const [done, setDone] = useState(false)
 
+    const { showErrorMessage } = useErrorMessage()
+
     const generate = () => {
         if (input.data.trim() !== '') {
             QRCode.toCanvas(canvasRef.current, input.data, {
@@ -58,7 +61,9 @@ function QrcodeGenerator() {
                 margin: 2,
             }, (error) => {
                 if (error) {
-                    alert(error)
+                    showErrorMessage({
+                        message: error
+                    })
                 }
                 else {
                     setDone(true)
@@ -75,9 +80,12 @@ function QrcodeGenerator() {
 
     return (
         <NoSsr>
-            <Script src="https://unpkg.com/qrcode@1.5.1/build/qrcode.js" onLoad={
-                () => setLibLoaded(true)
-            } />
+            <Script
+                src="/scripts/qrcode.js"
+                onLoad={
+                    () => setLibLoaded(true)
+                }
+            />
             <Stack sx={{
                 position: 'relative',
                 height: '100%',

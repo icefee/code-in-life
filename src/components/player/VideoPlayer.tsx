@@ -1,8 +1,8 @@
-import React, { useState, useRef, useMemo, useEffect, useCallback, useImperativeHandle, forwardRef } from 'react';
-import Stack from '@mui/material/Stack';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
+import React, { useState, useRef, useMemo, useEffect, useCallback, useImperativeHandle, forwardRef } from 'react'
+import Stack from '@mui/material/Stack'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import IconButton from '@mui/material/IconButton'
 import Tooltip from '@mui/material/Tooltip'
 import Fade from '@mui/material/Fade'
 import Alert from '@mui/material/Alert'
@@ -189,8 +189,9 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
     const [duration, setDuration] = useState(0)
     const [currentTime, setCurrentTime] = useState(0)
 
-    const [volume, setVolume] = useLocalStorageState<number>('__volume', 1)
-    const cachedVolumeRef = useRef<number>(1)
+    const defaultVolume = .7
+    const [volume, setVolume] = useLocalStorageState<number>('__volume', defaultVolume)
+    const cachedVolumeRef = useRef<number>(defaultVolume)
 
     const [buffered, setBuffered] = useState(0)
     const [muted, setMuted] = useState(false)
