@@ -41,7 +41,7 @@ export const proxyJson = async (url: string, res: GatsbyFunctionResponse) => {
         response.body.pipe(res)
     }
     else {
-        proxyJson(url, res)
+        return proxyJson(url, res)
     }
 }
 
