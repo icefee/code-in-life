@@ -1,21 +1,21 @@
-import React, { useState, useMemo } from 'react';
-import type { GetServerDataProps, HeadProps, PageProps } from 'gatsby';
-import fetch from 'node-fetch';
-import NoSsr from '@mui/material/NoSsr';
-import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Pagination from '@mui/material/Pagination';
-import PaginationItem from '@mui/material/PaginationItem';
-import Link from '@mui/material/Link';
-import Typography from '@mui/material/Typography';
-import { alpha } from '@mui/material/styles';
-import { SearchList } from '~/components/search/List';
-import BackgroundContainer from '~/components/layout/BackgroundContainer';
-import SearchForm from '~/components/search/Form';
-import NoData from '~/components/search/NoData';
-import { Api } from '~/util/config';
+import React, { useState, useMemo } from 'react'
+import type { GetServerDataProps, HeadProps, PageProps } from 'gatsby'
+import NoSsr from '@mui/material/NoSsr'
+import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
+import Tabs from '@mui/material/Tabs'
+import Tab from '@mui/material/Tab'
+import Pagination from '@mui/material/Pagination'
+import PaginationItem from '@mui/material/PaginationItem'
+import Link from '@mui/material/Link'
+import Typography from '@mui/material/Typography'
+import { alpha } from '@mui/material/styles'
+import { SearchList } from '~/components/search/List'
+import BackgroundContainer from '~/components/layout/BackgroundContainer'
+import SearchForm from '~/components/search/Form'
+import NoData from '~/components/search/NoData'
+import { getJson } from '~/adaptors'
+import { Api } from '~/util/config'
 
 interface SearchResultProps {
     api: string;
@@ -62,21 +62,27 @@ const SiteSearch: React.FunctionComponent<PageProps<object, object, unknown, Sea
                         <NoData text="💔 数据获取失败." />
                     ) : (
                         <BackgroundContainer prefer={data.prefer18}>
-                            <Box sx={{
-                                position: 'relative',
-                                height: '100%',
-                                backdropFilter: 'contrast(.5)',
-                                zIndex: 1
-                            }}>
+                            <Box
+                                sx={{
+                                    position: 'relative',
+                                    height: '100%',
+                                    backdropFilter: 'contrast(.5)',
+                                    zIndex: 1
+                                }}
+                            >
                                 <Box sx={{
                                     display: 'flex',
                                     flexDirection: 'column',
                                     height: '100%',
                                     pr: .5
                                 }}>
-                                    <Stack sx={{
-                                        p: (theme) => theme.spacing(1.5, 1.5, 1)
-                                    }} direction="row" justifyContent="center">
+                                    <Stack
+                                        sx={{
+                                            p: (theme) => theme.spacing(1.5, 1.5, 1)
+                                        }}
+                                        direction="row"
+                                        justifyContent="center"
+                                    >
                                         <Box sx={
                                             (theme) => ({
                                                 width: '100%',
@@ -113,7 +119,7 @@ const SiteSearch: React.FunctionComponent<PageProps<object, object, unknown, Sea
                                     <Tabs
                                         value={data.type ? String(data.type) : ''}
                                         variant="scrollable"
-                                        scrollButtons="auto"
+                                        scrollButtons
                                         allowScrollButtonsMobile
                                     >
                                         <Tab
@@ -139,21 +145,27 @@ const SiteSearch: React.FunctionComponent<PageProps<object, object, unknown, Sea
                                     {
                                         hasListData ? (
                                             <>
-                                                <Box sx={{
-                                                    flexGrow: 1,
-                                                    py: 1,
-                                                    px: 2,
-                                                    overflowY: 'auto'
-                                                }}>
+                                                <Box
+                                                    sx={{
+                                                        flexGrow: 1,
+                                                        py: 1,
+                                                        px: 2,
+                                                        overflowY: 'auto'
+                                                    }}
+                                                >
                                                     <SearchList
                                                         data={data.video}
                                                         api={api}
                                                         typed={Boolean(data.type)}
                                                     />
                                                 </Box>
-                                                <Stack sx={{
-                                                    my: 1
-                                                }} direction="row" justifyContent="center">
+                                                <Stack
+                                                    sx={{
+                                                        my: 1
+                                                    }}
+                                                    direction="row"
+                                                    justifyContent="center"
+                                                >
                                                     <Pagination
                                                         page={data.page.page ?? searchPage}
                                                         count={data.page.pagecount}
@@ -224,8 +236,8 @@ export async function getServerData({ query, params }: GetServerDataProps) {
     const { api } = params as Record<'api', string>;
     searchParams.set('api', api);
     try {
-        const { code, data } = await fetch(`${Api.site}/api/video/list?${searchParams}`).then<ApiJsonType<SearchResultProps['data']>>(
-            response => response.json()
+        const { code, data } = await getJson<ApiJsonType<SearchResultProps['data']>>(
+            `${Api.site}/api/video/list?${searchParams}`
         )
         if (code === 0 && 'video' in data) {
             return {
@@ -246,4 +258,4 @@ export async function getServerData({ query, params }: GetServerDataProps) {
     }
 }
 
-export default SiteSearch;
+export default SiteSearch

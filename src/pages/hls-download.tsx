@@ -145,6 +145,8 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
                 }
             }
             setDownloading(type === TaskType.downloadTs)
+        }, (err) => {
+            console.log(err)
         })
     }, [])
 
