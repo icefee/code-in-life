@@ -1,13 +1,17 @@
-import React, { useState, useMemo } from 'react';
-import Stack from '@mui/material/Stack';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Snackbar from '@mui/material/Snackbar';
-import Alert, { AlertProps } from '@mui/material/Alert';
-import SearchResult from '~/components/search/Result';
-import SearchForm from '~/components/search/Form';
-import NoData from '~/components/search/NoData';
-import { LoadingOverlay } from '~/components/loading';
+import React, { useState, useMemo } from 'react'
+import Stack from '@mui/material/Stack'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import Snackbar from '@mui/material/Snackbar'
+import Alert, { AlertProps } from '@mui/material/Alert'
+import SearchResult from '~/components/search/Result'
+import SearchForm from '~/components/search/Form'
+import NoData from '~/components/search/NoData'
+import { LoadingOverlay } from '~/components/loading'
+
+const parseKeyword = (s: string) => {
+    return s.startsWith('$') ? s.slice(1) : s
+}
 
 const getSearch = async (s: string) => {
     try {
@@ -30,12 +34,8 @@ const getSearch = async (s: string) => {
         }
     }
     catch (err) {
-        return null;
+        return null
     }
-}
-
-const parseKeyword = (s: string) => {
-    return s.startsWith('$') ? s.slice(1) : s;
 }
 
 export default function VideoSearch() {

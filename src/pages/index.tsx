@@ -86,21 +86,28 @@ function AppIcon({ app, mode }: AppIconProps) {
     const iconColor = app.iconBackground.match(/#[\da-f]{6}/g)?.[0]
 
     const iconNode = (
-        <Stack sx={{
-            alignItems: 'center',
-            transition: (theme) => theme.transitions.create('filter'),
-            '&:hover': {
-                filter: `drop-shadow(0 0 24px ${iconColor})`
-            }
-        }} rowGap={.5}>
-            <Stack sx={{
-                width: 'calc(var(--icon-size) * .8)',
-                aspectRatio: '1 / 1',
-                background: app.iconBackground,
-                borderRadius: 2,
-                fontSize: 'calc(var(--icon-size) * .6)',
-                color: app.iconForeground
-            }} justifyContent="center" alignItems="center">
+        <Stack
+            sx={{
+                alignItems: 'center',
+                transition: (theme) => theme.transitions.create('filter'),
+                '&:hover': {
+                    filter: `drop-shadow(0 0 24px ${iconColor})`
+                }
+            }}
+            rowGap={.5}
+        >
+            <Stack
+                sx={{
+                    width: 'calc(var(--icon-size) * .8)',
+                    aspectRatio: '1 / 1',
+                    background: app.iconBackground,
+                    borderRadius: 2,
+                    fontSize: 'calc(var(--icon-size) * .6)',
+                    color: app.iconForeground
+                }}
+                justifyContent="center"
+                alignItems="center"
+            >
                 <Icon fontSize="inherit" />
             </Stack>
             <Typography
@@ -165,14 +172,18 @@ function Index({ serverData }: PageProps<object, object, unknown, ServerProps>) 
                 p: 3
             }
         })}>
-            <Stack sx={(theme) => ({
-                '--icon-size': `min(calc((100vw - ${theme.spacing(10)}) / 4), 90px)`,
-                gap: 2,
-                [theme.breakpoints.up('sm')]: {
-                    '--icon-size': '96px',
-                    gap: 3
-                }
-            })} direction="row" flexWrap="wrap">
+            <Stack
+                sx={(theme) => ({
+                    '--icon-size': `min(calc((100vw - ${theme.spacing(10)}) / 4), 90px)`,
+                    gap: 2,
+                    [theme.breakpoints.up('sm')]: {
+                        '--icon-size': '96px',
+                        gap: 3
+                    }
+                })}
+                direction="row"
+                flexWrap="wrap"
+            >
                 {
                     apps.map(
                         (app) => (

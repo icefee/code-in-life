@@ -35,8 +35,7 @@ export const errorHandler: ApiHandlerMiddleware = (handler: ApiHandler) => {
 
 export const proxyJson = async (url: string, res: GatsbyFunctionResponse) => {
     const response = await getResponse(url)
-    const contentType = response.headers.get('content-type')
-    if (/application\/json/.test(contentType)) {
+    if (response.ok) {
         res.setHeader('content-type', 'application/json')
         response.body.pipe(res)
     }
