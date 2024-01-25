@@ -13,16 +13,20 @@ const parseKeyword = (s: string) => {
     return s.startsWith('$') ? s.slice(1) : s
 }
 
-const getSearch = async (s: string) => {
+const getSearchParams = (s: string) => {
+    const searchParams = new URLSearchParams()
+    if (s.startsWith('$')) {
+        searchParams.set('s', parseKeyword(s))
+        searchParams.set('prefer', '18')
+    }
+    else {
+        searchParams.set('s', s)
+    }
+    return searchParams
+}
+
+const getSearch = async (searchParams: URLSearchParams, firstLoad = true) => {
     try {
-        const searchParams = new URLSearchParams()
-        if (s.startsWith('$')) {
-            searchParams.set('s', parseKeyword(s))
-            searchParams.set('prefer', '18')
-        }
-        else {
-            searchParams.set('s', s)
-        }
         const { code, data } = await fetch(
             `/api/video/list?${searchParams}`
         ).then<ApiJsonType<SearchVideo[]>>(response => response.json())
@@ -30,10 +34,13 @@ const getSearch = async (s: string) => {
             return data;
         }
         else {
-            throw new Error('get search failed');
+            throw new Error('get search failed')
         }
     }
     catch (err) {
+        if (firstLoad) {
+            return getSearch(searchParams, true)
+        }
         return null
     }
 }
@@ -72,12 +79,16 @@ export default function VideoSearch() {
                 backgroundImage: 'var(--linear-gradient-image)'
             }}>
             <title>{pageTitle}</title>
-            <Stack sx={{
-                position: 'absolute',
-                width: '100%',
-                zIndex: 150,
-                p: 1.5
-            }} direction="row" justifyContent="center">
+            <Stack
+                sx={{
+                    position: 'absolute',
+                    width: '100%',
+                    zIndex: 150,
+                    p: 1.5
+                }}
+                direction="row"
+                justifyContent="center"
+            >
                 <Box sx={
                     (theme) => ({
                         width: '100%',
@@ -96,7 +107,9 @@ export default function VideoSearch() {
                                     completed: false,
                                     pending: true
                                 }))
-                                const data = await getSearch(s)
+                                const data = await getSearch(
+                                    getSearchParams(s)
+                                )
                                 if (data) {
                                     setSearchTask({
                                         pending: false,
@@ -123,10 +136,13 @@ export default function VideoSearch() {
                     />
                 </Box>
             </Stack>
-            <Stack sx={{
-                position: 'relative',
-                overflow: 'hidden'
-            }} flexGrow={1}>
+            <Stack
+                sx={{
+                    position: 'relative',
+                    overflow: 'hidden'
+                }}
+                flexGrow={1}
+            >
                 {
                     searchTask.success ? (
                         searchTask.data.length > 0 ? (
@@ -145,10 +161,15 @@ export default function VideoSearch() {
                         )
                     ) : (
                         !searchTask.pending && (
-                            <Stack sx={{
-                                position: 'relative',
-                                zIndex: 120
-                            }} flexGrow={1} justifyContent="center" alignItems="center">
+                            <Stack
+                                sx={{
+                                    position: 'relative',
+                                    zIndex: 120
+                                }}
+                                flexGrow={1}
+                                justifyContent="center"
+                                alignItems="center"
+                            >
                                 <Typography variant="body1" color="text.secondary">🔍 输入关键词开始搜索</Typography>
                             </Stack>
                         )
