@@ -108,7 +108,7 @@ function useStatus() {
                 p: 1,
                 zIndex: 3
             }}>
-                <Typography variant="caption">{statusText}</Typography>
+                <Typography>{statusText}</Typography>
             </Box>
         </Fade>
     )
@@ -236,6 +236,10 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
         tryToAutoPlay()
     }
 
+    const onError = () => {
+        setError(true)
+    }
+
     const initPlayer = () => {
         const video = videoRef.current;
         if (hlsType && Hls.isSupported()) {
@@ -248,6 +252,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
             }
             hls.current.on(Events.MANIFEST_PARSED, onMainfestParsed)
             hls.current.on(Events.MEDIA_ATTACHED, onMediaAttached)
+            hls.current.on(Hls.Events.ERROR, onError)
             hls.current.loadSource(url)
             // video.canPlayType('application/vnd.apple.mpegurl')
         }
@@ -257,15 +262,21 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
         }
     }
 
+    const setMutedState = (state: boolean) => {
+        setMuted(state)
+        if (videoRef.current) {
+            videoRef.current.muted = state
+        }
+    }
+
     const playVideo = async () => {
         try {
             await videoRef.current.play()
         }
         catch (err) {
             if (err.name === 'NotAllowedError') {
-                videoRef.current.muted = true;
-                setMuted(true);
-                setTimeout(playVideo, 0);
+                setMutedState(true)
+                setTimeout(playVideo, 0)
             }
         }
     }
@@ -337,13 +348,11 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
             setCurrentTime(0)
             setBuffered(0)
             setDuration(0)
-            setMuted(false)
+            setMutedState(false)
             setError(false)
-            if (videoRef.current) {
-                videoRef.current.muted = false
-            }
             canPlayEventFired.current = false
             hls.current?.off(Hls.Events.MANIFEST_PARSED, onMainfestParsed)
+            hls.current?.off(Hls.Events.ERROR, onError)
         }
     }, [url])
 
@@ -611,16 +620,20 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                         }
                         onEnded={onEnd}
                     />
-                    <Fade in={loading} unmountOnExit>
-                        <Stack sx={{
-                            position: 'absolute',
-                            left: 0,
-                            top: 0,
-                            right: 0,
-                            bottom: 0,
-                            zIndex: 1,
-                            color: '#fff'
-                        }} justifyContent="center" alignItems="center">
+                    <Fade in={loading && !error} unmountOnExit>
+                        <Stack
+                            sx={{
+                                position: 'absolute',
+                                left: 0,
+                                top: 0,
+                                right: 0,
+                                bottom: 0,
+                                zIndex: 1,
+                                color: '#fff'
+                            }}
+                            justifyContent="center"
+                            alignItems="center"
+                        >
                             <Spinner
                                 sx={{
                                     fontSize: 64
@@ -645,7 +658,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                                             position: 'absolute',
                                             left: isMobile ? '50%' : 16,
                                             top: '50%',
-                                            transform: `translate(${isMobile ? 'calc(-50% - 88px)' : 0}, -50%)`,
+                                            transform: `translate(${isMobile ? 'calc(-50% - 96px)' : 0}, -50%)`,
                                             zIndex: 2
                                         }}
                                         size="large"
@@ -665,7 +678,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                                         sx={{
                                             position: 'absolute',
                                             top: '50%',
-                                            transform: `translate(${isMobile ? 'calc(-50% + 88px)' : 0}, -50%)`,
+                                            transform: `translate(${isMobile ? 'calc(-50% + 96px)' : 0}, -50%)`,
                                             zIndex: 2,
                                             ...(isMobile ? {
                                                 left: '50%'
@@ -719,19 +732,23 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                     />
                 </Fade>
                 <Fade in={error} unmountOnExit>
-                    <Stack sx={{
-                        position: 'absolute',
-                        left: 0,
-                        top: 0,
-                        right: 0,
-                        bottom: 0,
-                        zIndex: 3
-                    }} justifyContent="center" alignItems="center">
+                    <Stack
+                        sx={{
+                            position: 'absolute',
+                            left: 0,
+                            top: 0,
+                            right: 0,
+                            bottom: 0,
+                            zIndex: 3
+                        }}
+                        justifyContent="center"
+                        alignItems="center"
+                    >
                         <Alert severity="error">视频加载失败</Alert>
                     </Stack>
                 </Fade>
                 <CancelMutedButton
-                    show={muted && !error}
+                    show={videoLoaded && !error && muted}
                     sx={{
                         left: 16,
                         bottom: controlsShow ? live ? 60 : 100 : 25,
@@ -739,13 +756,16 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                     }}
                     onClick={
                         () => {
-                            videoRef.current.muted = false;
-                            setMuted(false);
+                            setMutedState(false)
                         }
                     }
                 />
                 {outlet}
-                <Fade in={controlsShow} timeout={400} mountOnEnter>
+                <Fade
+                    in={controlsShow && !error}
+                    timeout={400}
+                    mountOnEnter
+                >
                     <Stack
                         sx={{
                             position: 'absolute',
