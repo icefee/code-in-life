@@ -7,7 +7,7 @@ import Tooltip from '@mui/material/Tooltip'
 import Fade from '@mui/material/Fade'
 import Alert from '@mui/material/Alert'
 import { styled, alpha } from '@mui/material/styles'
-import Hls, { type HlsListeners } from 'hls.js'
+import Hls, { ErrorTypes, type HlsListeners, type ErrorData } from 'hls.js'
 import Hls2Mp4 from 'hls2mp4'
 import SkipNextRoundedIcon from '@mui/icons-material/SkipNextRounded'
 import PictureInPictureRoundedIcon from '@mui/icons-material/PictureInPictureRounded'
@@ -108,7 +108,7 @@ function useStatus() {
                 p: 1,
                 zIndex: 3
             }}>
-                <Typography>{statusText}</Typography>
+                <Typography variant="body2">{statusText}</Typography>
             </Box>
         </Fade>
     )
@@ -183,7 +183,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
 }, ref) => {
 
     const videoRef = useRef<HTMLVideoElement>()
-    const hls = useRef<Hls>()
+    const hls = useRef<Hls | null>(null)
 
     const [playing, setPlaying] = useState(false)
     const [duration, setDuration] = useState(0)
@@ -236,8 +236,20 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
         tryToAutoPlay()
     }
 
-    const onError = () => {
-        setError(true)
+    const onError = (_event: string, data: ErrorData) => {
+        if (data.fatal) {
+            switch (data.type) {
+                case ErrorTypes.MEDIA_ERROR:
+                    hls.current?.recoverMediaError();
+                    break;
+                case ErrorTypes.NETWORK_ERROR:
+                    console.error('fatal network error encountered', data);
+                    break;
+                default:
+                    setError(true);
+                    break;
+            }
+        }
     }
 
     const initPlayer = () => {
@@ -692,7 +704,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                                     </IconButton>
                                 </Fade>
                                 <MiniProcess
-                                    visible={videoLoaded && !controlsShow}
+                                    visible={videoLoaded && !controlsShow && !error}
                                     state={state}
                                 />
                             </>
