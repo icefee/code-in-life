@@ -244,9 +244,10 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                     break;
                 case ErrorTypes.NETWORK_ERROR:
                     console.error('fatal network error encountered', data);
+                    setError(true);
                     break;
                 default:
-                    setError(true);
+                    console.error('unexpected error', data);
                     break;
             }
         }
