@@ -258,7 +258,23 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
         if (hlsType && Hls.isSupported()) {
             if (!hls.current) {
                 hls.current = new Hls({
-                    autoStartLoad: false
+                    autoStartLoad: false,
+                    fragLoadPolicy: {
+                        default: {
+                            maxTimeToFirstByteMs: 20000,
+                            maxLoadTimeMs: 120000,
+                            timeoutRetry: {
+                                maxNumRetry: 20,
+                                retryDelayMs: 0,
+                                maxRetryDelayMs: 0
+                            },
+                            errorRetry: {
+                                maxNumRetry: 6,
+                                retryDelayMs: 1000,
+                                maxRetryDelayMs: 8000
+                            }
+                        }
+                    }
                 })
                 hls.current.attachMedia(video)
                 // hls.current.on(Events.ERROR, onLoadError)

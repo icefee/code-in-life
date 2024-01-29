@@ -27,10 +27,10 @@
     "gatsby-plugin-manifest": "^5.13.0",
     "gatsby-plugin-no-sourcemaps": "^5.13.0",
     "gatsby-plugin-offline": "^6.13.0",
-    "hls.js": "^1.5.1",
+    "hls.js": "^1.5.2",
     "hls2mp4": "^1.2.7",
     "react": "^18.2.0",
-    "react-audio-visual": "^1.0.6",
+    "react-audio-visual": "^1.0.7",
     "react-dom": "^18.2.0",
     "react-use": "^17.4.0"
   },
