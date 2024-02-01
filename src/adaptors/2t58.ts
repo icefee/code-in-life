@@ -1,7 +1,6 @@
 import { getTextWithTimeout, getResponse, parseLrcText, escapeSymbols } from './common'
 import { timeFormatter } from '../util/date'
-import { userAgent } from '../util/config'
-import { Api } from '../util/config'
+import { userAgent, Api } from '../util/config'
 
 export const key = 't'
 
