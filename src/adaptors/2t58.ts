@@ -1,6 +1,6 @@
 import { getTextWithTimeout, getResponse, parseLrcText, escapeSymbols } from './common'
 import { timeFormatter } from '../util/date'
-import { userAgent } from '../util/config'
+import { userAgent, Api } from '../util/config'
 
 export const key = 't'
 
@@ -27,7 +27,7 @@ async function matchSongs(source: string) {
                     name,
                     artist,
                     url: `/api/music/play/${id}`,
-                    poster: `/api/music/poster/${id}`
+                    poster: `${Api.proxyServer}/api/music/poster/${id}`
                 }
             }
         )
