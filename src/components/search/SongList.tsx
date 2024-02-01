@@ -1,4 +1,4 @@
-import React, { type MouseEvent } from 'react';
+import React, { useState, useMemo, type MouseEvent } from 'react';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import List from '@mui/material/List';
@@ -31,6 +31,12 @@ interface SongListProps {
 
 function SongList({ data, onAction, ...rest }: SongListProps) {
 
+    const pageSize = 20
+    const pages = Math.ceil(data.length / pageSize)
+    const [page, setPage] = useState(1)
+
+    const renderData = useMemo(() => data.slice(0, Math.min(page * pageSize, data.length)), [data, page])
+
     return (
         <List sx={{
             bgcolor: 'background.paper'
@@ -52,7 +58,7 @@ function SongList({ data, onAction, ...rest }: SongListProps) {
             </ListSubheader>
         }>
             {
-                data.map(
+                renderData.map(
                     (music, index) => (
                         <SongListItem
                             key={music.id}
@@ -62,6 +68,29 @@ function SongList({ data, onAction, ...rest }: SongListProps) {
                             {...rest}
                         />
                     )
+                )
+            }
+            {
+                pages > 1 && (
+                    <Stack
+                        direction="row"
+                        justifyContent="center"
+                        sx={{
+                            p: (theme) => theme.spacing(1, 1, 0)
+                        }}
+                    >
+                        {
+                            page < pages ? (
+                                <Button
+                                    onClick={
+                                        () => setPage(page => page + 1)
+                                    }
+                                >加载更多</Button>
+                            ) : (
+                                <Typography variant="button" color="text.secondary">已显示全部</Typography>
+                            )
+                        }
+                    </Stack>
                 )
             }
         </List>

@@ -141,7 +141,6 @@ export default function MusicSearch() {
             blobToFile(blob, `${name}.mp3`)
         }
         catch (err) {
-            console.log(err)
             setToastMsg({
                 type: 'error',
                 msg: '文件下载失败: ' + err
