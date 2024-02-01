@@ -26,3 +26,8 @@ declare interface SearchMusic {
     url: string;
     poster: string;
 }
+
+declare interface Lrc {
+    time: number;
+    text: string;
+}
