@@ -61,7 +61,7 @@ function parseDuration(time: string) {
     return toPrecision(parseInt(m) * 60 + parseInt(s) + (Number.isNaN(mills) ? 0 : mills))
 }
 
-export function parseLrcText(text: string) {
+export function parseLrcText(text: string): Lrc[] {
     const lines = text.split(/\r?\n/)
     const lrcs = []
     for (const line of lines) {
@@ -80,4 +80,16 @@ export function parseLrcText(text: string) {
     return lrcs.sort(
         (prev, next) => prev.time - next.time
     )
+}
+
+export function escapeSymbols(source: string) {
+    if (source) {
+        return source
+            .replace('&nbsp;', ' ')
+            .replace('&lt;', '<')
+            .replace('&gt;', '>')
+            .replace('&quot;', '"')
+            .replace('&amp;', '&')
+    }
+    return ''
 }

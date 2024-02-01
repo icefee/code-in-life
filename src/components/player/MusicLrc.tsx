@@ -5,11 +5,6 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 
-interface Lrc {
-    time: number;
-    text: string;
-}
-
 interface MusicLrcProps {
     id: SearchMusic['id'];
     currentTime: number;

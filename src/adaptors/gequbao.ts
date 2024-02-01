@@ -2,11 +2,11 @@ import { getTextWithTimeout, getJson, parseLrcText } from './common'
 import { timeFormatter } from '../util/date'
 import { Api } from '../util/config'
 
-export const key = 'g';
+export const key = 'g'
 
-export const baseUrl = 'https://www.gequbao.com';
+export const baseUrl = 'https://www.gequbao.com'
 
-export const lrcFile = true;
+export const lrcFile = true
 
 const getHtml = (url: string) => getTextWithTimeout(url, {
     headers: {
@@ -39,11 +39,10 @@ export async function getMusicSearch(s: string): Promise<SearchMusic[]> {
                 }
             )
         }
-        return [];
+        return []
     }
     catch (err) {
-        console.log(err)
-        return null;
+        return null
     }
 }
 
