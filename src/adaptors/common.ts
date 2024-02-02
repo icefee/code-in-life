@@ -85,11 +85,11 @@ export function parseLrcText(text: string): Lrc[] {
 export function escapeSymbols(source: string) {
     if (source) {
         return source
-            .replace('&nbsp;', ' ')
-            .replace('&lt;', '<')
-            .replace('&gt;', '>')
-            .replace('&quot;', '"')
-            .replace('&amp;', '&')
+            .replaceAll('&nbsp;', ' ')
+            .replaceAll('&lt;', '<')
+            .replaceAll('&gt;', '>')
+            .replaceAll('&quot;', '"')
+            .replaceAll('&amp;', '&')
     }
     return ''
 }
