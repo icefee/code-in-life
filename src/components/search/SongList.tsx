@@ -42,7 +42,13 @@ function SongList({ data, onAction, ...rest }: SongListProps) {
             bgcolor: 'background.paper'
         }} subheader={
             <ListSubheader disableGutters component="li">
-                <Typography variant="button">搜索到{data.length}首歌曲</Typography>
+                <Box
+                    sx={{
+                        p: (theme) => theme.spacing(1, 1, 1, 1.5)
+                    }}
+                >
+                    <Typography variant="button">搜索到{data.length}首歌曲</Typography>
+                </Box>
             </ListSubheader>
         }>
             {
