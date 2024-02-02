@@ -44,7 +44,7 @@ function SongList({ data, onAction, ...rest }: SongListProps) {
             <ListSubheader disableGutters component="li">
                 <Box
                     sx={{
-                        p: (theme) => theme.spacing(1, 1, 1, 1.5)
+                        p: (theme) => theme.spacing(0, 1.5)
                     }}
                 >
                     <Typography variant="button">搜索到{data.length}首歌曲</Typography>
