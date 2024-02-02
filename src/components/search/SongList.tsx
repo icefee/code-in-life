@@ -41,14 +41,14 @@ function SongList({ data, onAction, ...rest }: SongListProps) {
         <List sx={{
             bgcolor: 'background.paper'
         }} subheader={
-            <ListSubheader disableGutters component="li">
-                <Box
-                    sx={{
-                        p: (theme) => theme.spacing(0, 1.5)
-                    }}
-                >
-                    <Typography variant="button">搜索到{data.length}首歌曲</Typography>
-                </Box>
+            <ListSubheader
+                disableGutters
+                component="li"
+                sx={{
+                    p: (theme) => theme.spacing(0, 1.5)
+                }}
+            >
+                <Typography variant="button">搜索到{data.length}首歌曲</Typography>
             </ListSubheader>
         }>
             {
@@ -76,6 +76,7 @@ function SongList({ data, onAction, ...rest }: SongListProps) {
                         {
                             page < pages ? (
                                 <Button
+                                    color="secondary"
                                     onClick={
                                         () => setPage(page => page + 1)
                                     }
