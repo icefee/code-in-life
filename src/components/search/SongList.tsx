@@ -17,7 +17,7 @@ import MusicPoster from '../player/MusicPoster';
 import MusicPlayIcon from '../loading/MuaicPlay';
 import useMenu from '../hook/useMenu';
 
-type MenuAction = 'add' | 'add-all' | 'download-song' | 'download-lrc';
+type MenuAction = 'add' | 'download-song' | 'download-lrc';
 
 interface SongListProps {
     data: SearchMusic[];
@@ -42,19 +42,7 @@ function SongList({ data, onAction, ...rest }: SongListProps) {
             bgcolor: 'background.paper'
         }} subheader={
             <ListSubheader disableGutters component="li">
-                <Stack sx={{
-                    p: (theme) => theme.spacing(1, 1, 1, 1.5)
-                }} direction="row" justifyContent="space-between" alignItems="center">
-                    <Typography variant="button">搜索到{data.length}首歌曲</Typography>
-                    <Button
-                        size="small"
-                        color="secondary"
-                        startIcon={<PlaylistAddIcon />}
-                        onClick={
-                            () => onAction('add-all')
-                        }
-                    >加入播放列表</Button>
-                </Stack>
+                <Typography variant="button">搜索到{data.length}首歌曲</Typography>
             </ListSubheader>
         }>
             {
