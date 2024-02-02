@@ -266,60 +266,35 @@ export default function MusicSearch() {
                                             }
                                             onAction={
                                                 async (cmd, music) => {
-                                                    if (cmd === 'add-all') {
-                                                        const dataList = searchTask.data.filter(
-                                                            m => !playlist.data.find(
-                                                                music => music.id === m.id
-                                                            )
-                                                        )
-                                                        if (dataList.length > 0) {
-                                                            setPlaylist(list => [...list, ...dataList])
+                                                    const playIndex = playlist.data.findIndex(
+                                                        m => m.id === music.id
+                                                    )
+                                                    if (playIndex !== -1 && cmd === 'add') {
+                                                        setToastMsg({
+                                                            type: 'warning',
+                                                            msg: '当前歌曲已经在播放列表中'
+                                                        })
+                                                        return;
+                                                    }
+                                                    switch (cmd) {
+                                                        case 'add':
+                                                            setPlaylist(list => [...list, music])
                                                             if (playlist.data.length === 0) {
-                                                                setActiveMusic(dataList[0])
+                                                                setActiveMusic(music)
                                                             }
                                                             setToastMsg({
                                                                 type: 'success',
-                                                                msg: `已将${dataList.length}首歌曲加入播放列表`
+                                                                msg: '已加入播放列表'
                                                             })
-                                                        }
-                                                        else {
-                                                            setToastMsg({
-                                                                type: 'warning',
-                                                                msg: '所有歌曲都已在播放列表中'
-                                                            })
-                                                        }
-                                                    }
-                                                    else {
-                                                        const playIndex = playlist.data.findIndex(
-                                                            m => m.id === music.id
-                                                        )
-                                                        if (playIndex !== -1 && cmd === 'add') {
-                                                            setToastMsg({
-                                                                type: 'warning',
-                                                                msg: '当前歌曲已经在播放列表中'
-                                                            })
-                                                            return;
-                                                        }
-                                                        switch (cmd) {
-                                                            case 'add':
-                                                                setPlaylist(list => [...list, music])
-                                                                if (playlist.data.length === 0) {
-                                                                    setActiveMusic(music)
-                                                                }
-                                                                setToastMsg({
-                                                                    type: 'success',
-                                                                    msg: '已加入播放列表'
-                                                                })
-                                                                break;
-                                                            case 'download-song':
-                                                                downloadSong(music)
-                                                                break;
-                                                            case 'download-lrc':
-                                                                downloadLrc(music)
-                                                                break;
-                                                            default:
-                                                                break;
-                                                        }
+                                                            break;
+                                                        case 'download-song':
+                                                            downloadSong(music)
+                                                            break;
+                                                        case 'download-lrc':
+                                                            downloadLrc(music)
+                                                            break;
+                                                        default:
+                                                            break;
                                                     }
                                                 }
                                             }
