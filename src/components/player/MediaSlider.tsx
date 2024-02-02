@@ -55,6 +55,9 @@ function MediaSlider({ buffered, components, sx, showTooltip = false, tooltipFor
                     opacity: .2,
                     transition: (theme) => theme.transitions.create('width')
                 }
+            },
+            '& .MuiSlider-track': {
+                backgroundImage: 'linear-gradient(90deg, hsl(0, 50%, 50%), hsl(60deg, 50%, 50%), hsl(180deg, 50%, 50%), currentColor)'
             }
         }),
         [sx]
