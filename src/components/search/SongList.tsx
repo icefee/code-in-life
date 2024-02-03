@@ -1,4 +1,4 @@
-import React, { useState, useMemo, type MouseEvent } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import List from '@mui/material/List';
@@ -37,20 +37,28 @@ function SongList({ data, onAction, ...rest }: SongListProps) {
 
     const renderData = useMemo(() => data.slice(0, Math.min(page * pageSize, data.length)), [data, page])
 
+    useEffect(() => {
+        setPage(1)
+    }, [data])
+
     return (
-        <List sx={{
-            bgcolor: 'background.paper'
-        }} subheader={
-            <ListSubheader
-                disableGutters
-                component="li"
-                sx={{
-                    p: (theme) => theme.spacing(0, 1.5)
-                }}
-            >
-                <Typography variant="button">搜索到{data.length}首歌曲</Typography>
-            </ListSubheader>
-        }>
+        <List
+            sx={{
+                bgcolor: 'background.paper'
+            }}
+            subheader={
+                <ListSubheader
+                    disableGutters
+                    component="li"
+                    sx={{
+                        p: (theme) => theme.spacing(0, 1.5)
+                    }}
+                >
+                    <Typography variant="button">搜索到{data.length}首歌曲</Typography>
+                </ListSubheader>
+            }
+            disablePadding
+        >
             {
                 renderData.map(
                     (music, index) => (
@@ -66,26 +74,36 @@ function SongList({ data, onAction, ...rest }: SongListProps) {
             }
             {
                 pages > 1 && (
-                    <Stack
-                        direction="row"
-                        justifyContent="center"
-                        sx={{
-                            p: (theme) => theme.spacing(1, 1, 0)
-                        }}
-                    >
+                    <ListItem disablePadding>
                         {
                             page < pages ? (
-                                <Button
-                                    color="secondary"
+                                <ListItemButton
+                                    sx={{
+                                        p: 1.5,
+                                        justifyContent: 'center'
+                                    }}
                                     onClick={
                                         () => setPage(page => page + 1)
                                     }
-                                >加载更多</Button>
+                                >
+                                    <Typography variant="button" color="secondary.main">加载更多</Typography>
+                                </ListItemButton>
                             ) : (
-                                <Typography variant="button" color="text.secondary">已显示全部</Typography>
+                                <Stack
+                                    direction="row"
+                                    sx={{
+                                        width: '100%',
+                                        borderTop: '1px solid',
+                                        borderColor: 'divider',
+                                        p: 1.5,
+                                        justifyContent: 'center'
+                                    }}
+                                >
+                                    <Typography variant="button" color="text.secondary">已显示全部</Typography>
+                                </Stack>
                             )
                         }
-                    </Stack>
+                    </ListItem>
                 )
             }
         </List>
@@ -114,7 +132,7 @@ function SongListItem({ current, divider, isCurrentPlaying, onTogglePlay, onActi
             secondaryAction={
                 <>
                     <IconButton onClick={
-                        (event: MouseEvent<HTMLButtonElement>) => {
+                        (event: React.MouseEvent<HTMLButtonElement>) => {
                             showMenu(event.currentTarget, [
                                 {
                                     icon: <PlaylistAddRoundedcon />,
@@ -143,17 +161,21 @@ function SongListItem({ current, divider, isCurrentPlaying, onTogglePlay, onActi
             divider={divider}
             disablePadding
         >
-            <ListItemButton onClick={
-                () => onTogglePlay(current)
-            }>
-                <Box sx={{
-                    position: 'relative',
-                    width: 48,
-                    height: 48,
-                    mr: 2,
-                    flexShrink: 0,
-                    color: '#fff'
-                }}>
+            <ListItemButton
+                onClick={
+                    () => onTogglePlay(current)
+                }
+            >
+                <Box
+                    sx={{
+                        position: 'relative',
+                        width: 48,
+                        height: 48,
+                        mr: 2,
+                        flexShrink: 0,
+                        color: '#fff'
+                    }}
+                >
                     <MusicPoster
                         src={current.poster}
                         alt={`${current.name}-${current.artist}`}
