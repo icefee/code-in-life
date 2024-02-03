@@ -1,4 +1,4 @@
-import React, { type SyntheticEvent, useState, useRef, useMemo, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useRef, useMemo, forwardRef, useImperativeHandle } from 'react';
 import Paper from '@mui/material/Paper';
 import Autocomplete from '@mui/material/Autocomplete';
 import ListItem from '@mui/material/ListItem';
@@ -49,25 +49,29 @@ function SearchForm({
 }: SearchFormProps, ref: React.ForwardedRef<SearchFormInstance>) {
 
     const [suggests, setSuggests] = useLocalStorageState<Suggest[]>('__autocomplete', [])
-    const prevSubmitValue = useRef<string>()
-    const input = useRef<HTMLInputElement>(null)
+    const prevSubmitValue = useRef<string | null>(null)
+    const input = useRef<HTMLInputElement | null>(null)
     const [autoCompleteOpen, setAutoCompleteOpen] = useState(false)
+    const highlightValue = useRef<string | null>(null)
 
     const putSuggest = (value: string) => {
         setSuggests(
-            sugs => [{
-                key: autocompleteKey,
-                value
-            }, ...sugs.filter(
-                sug => sug.value !== value
-            )]
+            sugs => [
+                {
+                    key: autocompleteKey,
+                    value
+                },
+                ...sugs.filter(
+                    sug => sug.value !== value
+                )
+            ]
         )
     }
 
     const handleSubmit = (value: string) => {
         if (isTextNotNull(value)) {
-            putSuggest(value);
-            prevSubmitValue.current = value;
+            putSuggest(value)
+            prevSubmitValue.current = value
         }
         onSubmit?.(value);
     }
@@ -124,7 +128,7 @@ function SearchForm({
                 }
                 onKeyDown={
                     (event) => {
-                        if (event.code === 'Enter' && onSubmit) {
+                        if (event.code === 'Enter' && !highlightValue.current) {
                             handleSubmit(value)
                             input.current.blur()
                         }
@@ -134,11 +138,16 @@ function SearchForm({
                     (_event, value) => onChange(value)
                 }
                 onChange={
-                    (_event: SyntheticEvent<Element, Event>, value: string | null) => {
+                    (_event: React.SyntheticEvent<Element, Event>, value: string | null) => {
                         if (value && value !== prevSubmitValue.current) {
                             handleSubmit(value)
                         }
                         onChange(value ?? '')
+                    }
+                }
+                onHighlightChange={
+                    (_event, value) => {
+                        highlightValue.current = value
                     }
                 }
                 renderOption={(props, option) => (
@@ -188,7 +197,9 @@ function SearchForm({
                         }
                     >
                         <InputBase
-                            sx={{ flex: 1 }}
+                            sx={{
+                                flex: 1
+                            }}
                             placeholder={placeholder}
                             inputRef={input}
                             type="search"

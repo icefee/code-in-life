@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Stack from '@mui/material/Stack';
 import Snackbar from '@mui/material/Snackbar';
-import Alert, { AlertProps } from '@mui/material/Alert';
+import Alert, { type AlertProps } from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Slide from '@mui/material/Slide';
 import Tooltip from '@mui/material/Tooltip';
@@ -38,16 +38,16 @@ export default function MusicSearch() {
         complete: false,
         success: false
     })
-    const searchFormRef = useRef<SearchFormInstance>()
+    const searchFormRef = useRef<SearchFormInstance | null>(null)
 
-    const [activeMusic, setActiveMusic] = useState<SearchMusic>(null)
+    const [activeMusic, setActiveMusic] = useState<SearchMusic | null>(null)
     const [playing, setPlaying] = useState(false)
 
     const [playlistShow, setPlaylistShow] = useState(false)
     const [repeat, setRepeat] = useLocalStorageState<RepeatMode>('__repeat_mode', RepeatMode.All)
 
     const [playlist, setPlaylist] = useLocalStorageState<SearchMusic[]>('__playlist', [])
-    const songListWrapRef = useRef<HTMLDivElement>()
+    const songListWrapRef = useRef<HTMLDivElement | null>(null)
 
     const [downloading, setDownloading] = useState(false)
 
@@ -66,8 +66,9 @@ export default function MusicSearch() {
         return random;
     }
 
-    const onSearch = async (s: string) => {
-        if (s.trim().length === 0) {
+    const onSearch = async (text: string) => {
+        const s = text.trim()
+        if (s.length === 0) {
             setToastMsg({
                 type: 'warning',
                 msg: '关键词不能为空'
@@ -161,7 +162,7 @@ export default function MusicSearch() {
     }
 
     const downloaFile = (url: string) => {
-        window.open(url)
+        open(url)
     }
 
     const pageTitle = useMemo(() => {
@@ -178,36 +179,47 @@ export default function MusicSearch() {
     }, [activeMusic])
 
     return (
-        <Stack sx={{
-            height: '100%',
-            backgroundImage: 'var(--linear-gradient-image)'
-        }} direction="column">
-            <title>{pageTitle}</title>
-            <Box sx={(theme) => ({
-                position: 'relative',
-                display: 'flex',
-                flexDirection: 'column',
-                width: '100%',
+        <Stack
+            sx={{
                 height: '100%',
-                '--max-width': '600px',
-                maxWidth: 'var(--max-width)',
-                margin: '0 auto',
-                [theme.breakpoints.up('sm')]: {
-                    backgroundImage: activeMusic ? 'linear-gradient(0, #0000001a, transparent)' : 'none'
-                }
-            })}>
-                <Stack sx={{
-                    position: 'absolute',
+                backgroundImage: 'var(--linear-gradient-image)'
+            }}
+            direction="column"
+        >
+            <title>{pageTitle}</title>
+            <Box
+                sx={(theme) => ({
+                    position: 'relative',
+                    display: 'flex',
+                    flexDirection: 'column',
                     width: '100%',
-                    zIndex: 150,
-                    p: 1.5
-                }} direction="row" justifyContent="center">
-                    <Box sx={(theme) => ({
+                    height: '100%',
+                    '--max-width': '600px',
+                    maxWidth: 'var(--max-width)',
+                    margin: '0 auto',
+                    [theme.breakpoints.up('sm')]: {
+                        backgroundImage: activeMusic ? 'linear-gradient(0, #0000001a, transparent)' : 'none'
+                    }
+                })}
+            >
+                <Stack
+                    sx={{
+                        position: 'absolute',
                         width: '100%',
-                        [theme.breakpoints.up('sm')]: {
-                            maxWidth: 320
-                        }
-                    })}>
+                        zIndex: 150,
+                        p: 1.5
+                    }}
+                    direction="row"
+                    justifyContent="center"
+                >
+                    <Box
+                        sx={(theme) => ({
+                            width: '100%',
+                            [theme.breakpoints.up('sm')]: {
+                                maxWidth: 320
+                            }
+                        })}
+                    >
                         <SearchForm
                             ref={searchFormRef}
                             value={keyword}
@@ -221,22 +233,27 @@ export default function MusicSearch() {
                 </Stack>
                 {
                     searchTask.success ? (
-                        <Box sx={{
-                            flexGrow: 1,
-                            overflow: 'hidden',
-                            pt: 9
-                        }}>
+                        <Box
+                            sx={{
+                                flexGrow: 1,
+                                overflow: 'hidden',
+                                pt: 9
+                            }}
+                        >
                             {
                                 searchTask.data.length > 0 ? (
-                                    <Box sx={(theme) => ({
-                                        height: '100%',
-                                        px: 1.5,
-                                        overflowY: 'auto',
-                                        pb: activeMusic ? 13 : 2,
-                                        [theme.breakpoints.up('sm')]: {
-                                            pb: activeMusic ? 14 : 2
-                                        }
-                                    })} ref={songListWrapRef}>
+                                    <Box
+                                        sx={(theme) => ({
+                                            height: '100%',
+                                            px: 1.5,
+                                            overflowY: 'auto',
+                                            pb: activeMusic ? 13 : 2,
+                                            [theme.breakpoints.up('sm')]: {
+                                                pb: activeMusic ? 14 : 2
+                                            }
+                                        })}
+                                        ref={songListWrapRef}
+                                    >
                                         <SongList
                                             data={searchTask.data}
                                             isCurrentPlaying={(music: SearchMusic) => ({
@@ -307,24 +324,31 @@ export default function MusicSearch() {
                         </Box>
                     ) : (
                         !searchTask.pending && (
-                            <Stack sx={{
-                                position: 'relative',
-                                zIndex: 120
-                            }} flexGrow={1} justifyContent="center" alignItems="center">
+                            <Stack
+                                sx={{
+                                    position: 'relative',
+                                    zIndex: 120
+                                }}
+                                flexGrow={1}
+                                justifyContent="center"
+                                alignItems="center"
+                            >
                                 <Typography color="text.secondary" variant="body1">🔍 输入歌名/歌手名开始搜索</Typography>
                             </Stack>
                         )
                     )
                 }
                 <Slide direction="up" in={Boolean(activeMusic)} mountOnEnter unmountOnExit>
-                    <Stack sx={{
-                        position: 'absolute',
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        boxShadow: '0px -4px 12px 0px rgb(0 0 0 / 80%)',
-                        zIndex: 1250
-                    }}>
+                    <Stack
+                        sx={{
+                            position: 'absolute',
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            boxShadow: '0px -4px 12px 0px rgb(0 0 0 / 80%)',
+                            zIndex: 1250
+                        }}
+                    >
                         <MusicPlayer
                             music={activeMusic}
                             playing={playing}
