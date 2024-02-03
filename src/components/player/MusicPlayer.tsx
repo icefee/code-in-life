@@ -36,9 +36,17 @@ interface MusicPlayerProps {
     onPlayEnd?(end: boolean): void;
 }
 
-function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange, onRepeatChange, onPlayEnd }: MusicPlayerProps) {
+function MusicPlayer({
+    music,
+    playing,
+    repeat,
+    extendButtons,
+    onPlayStateChange,
+    onRepeatChange,
+    onPlayEnd
+}: MusicPlayerProps) {
 
-    const audioRef = useRef<HTMLAudioElement>()
+    const audioRef = useRef<HTMLAudioElement | null>(null)
     const [audioReady, setAudioReady] = useState(false)
     const [duration, setDuration] = useState<number | null>(null)
     const [currentTime, setCurrentTime] = useState<number>(0)
@@ -114,7 +122,7 @@ function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange,
         catch (err) {
             onPlayStateChange(false)
             setLoading(false)
-            console.warn('auto play failed because of browser security policy.')
+            console.warn('auto play blocked in case of browser security policy.')
         }
     }
 
@@ -124,46 +132,62 @@ function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange,
     }
 
     return (
-        <Stack sx={{
-            position: 'relative',
-            bgcolor: '#111',
-            color: '#fff'
-        }}>
-            <Stack sx={{
+        <Stack
+            sx={{
                 position: 'relative',
-                p: 1,
-                zIndex: 5
-            }} direction="row" alignItems="stretch" columnGap={2}>
-                <Stack sx={(theme) => ({
+                bgcolor: '#111',
+                color: '#fff'
+            }}
+        >
+            <Stack
+                sx={{
                     position: 'relative',
-                    width: 60,
-                    height: 60,
-                    aspectRatio: '1 / 1',
-                    color: '#fff',
-                    borderRadius: '50%',
-                    [theme.breakpoints.up('sm')]: {
-                        width: 72,
-                        height: 72
-                    }
-                })} justifyContent="center" alignItems="center" flexShrink={0}>
+                    p: 1,
+                    zIndex: 5
+                }}
+                direction="row"
+                alignItems="stretch"
+                columnGap={2}
+            >
+                <Stack
+                    sx={(theme) => ({
+                        position: 'relative',
+                        width: 60,
+                        height: 60,
+                        aspectRatio: '1 / 1',
+                        color: '#fff',
+                        borderRadius: '50%',
+                        [theme.breakpoints.up('sm')]: {
+                            width: 72,
+                            height: 72
+                        }
+                    })}
+                    justifyContent="center"
+                    alignItems="center"
+                    flexShrink={0}
+                >
                     {
                         music && (
-                            <Box sx={(theme) => ({
-                                width: '100%',
-                                height: '100%',
-                                bgcolor: '#000',
-                                border: '6px solid hsla(0, 0%, 100%, .04)',
-                                p: .75,
-                                borderRadius: '50%',
-                                filter: playing ? `drop-shadow(0px 0px 16px ${alpha(theme.palette.secondary.main, .4)})` : 'none',
-                                opacity: loading ? .5 : .8,
-                                transition: theme.transitions.create(['opacity', 'filter'])
-                            })}>
-                                <Box sx={{
+                            <Box
+                                sx={(theme) => ({
+                                    width: '100%',
                                     height: '100%',
-                                    border: '1px solid #333',
-                                    borderRadius: '50%'
-                                }}>
+                                    bgcolor: '#000',
+                                    border: '6px solid hsla(0, 0%, 100%, .04)',
+                                    p: .75,
+                                    borderRadius: '50%',
+                                    filter: playing ? `drop-shadow(0px 0px 16px ${alpha(theme.palette.secondary.main, .4)})` : 'none',
+                                    opacity: loading ? .5 : .8,
+                                    transition: theme.transitions.create(['opacity', 'filter'])
+                                })}
+                            >
+                                <Box
+                                    sx={{
+                                        height: '100%',
+                                        border: '1px solid #333',
+                                        borderRadius: '50%'
+                                    }}
+                                >
                                     <MusicPoster
                                         alt={`${music.name}-${music.artist}`}
                                         src={music.poster}
@@ -173,14 +197,16 @@ function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange,
                             </Box>
                         )
                     }
-                    <Box sx={{
-                        position: 'absolute',
-                        left: '50%',
-                        top: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        opacity: .8,
-                        zIndex: 20
-                    }}>
+                    <Box
+                        sx={{
+                            position: 'absolute',
+                            left: '50%',
+                            top: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            opacity: .8,
+                            zIndex: 20
+                        }}
+                    >
                         {
                             loading ? (
                                 <Spinner
@@ -210,35 +236,62 @@ function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange,
                         overflow: 'hidden'
                     }}
                 >
-                    <Stack flexDirection="row" alignItems="center" rowGap={1} columnGap={1}>
-                        <Stack sx={(theme) => ({
-                            maxWidth: 180,
-                            [theme.breakpoints.up('sm')]: {
-                                maxWidth: 300
-                            }
-                        })}>
-                            <Typography variant="body2" title={music?.name} noWrap>{music?.name}</Typography>
+                    <Stack
+                        direction="row"
+                        alignItems="center"
+                        rowGap={1}
+                        columnGap={1}
+                    >
+                        <Stack
+                            sx={(theme) => ({
+                                maxWidth: 180,
+                                [theme.breakpoints.up('sm')]: {
+                                    maxWidth: 300
+                                }
+                            })}
+                        >
+                            <Typography
+                                variant="body2"
+                                title={music?.name}
+                                noWrap
+                            >{music?.name}</Typography>
                         </Stack>
                         <Stack>
-                            <Typography variant="caption" color="#ffffffcc" title={music?.artist} lineHeight={1} noWrap>{music?.artist}</Typography>
+                            <Typography
+                                variant="caption"
+                                color="#ffffffcc"
+                                title={music?.artist}
+                                lineHeight={1}
+                                noWrap
+                            >{music?.artist}</Typography>
                         </Stack>
                         {
                             music && (
-                                <Box sx={{
-                                    flexGrow: 1,
-                                    alignSelf: 'flex-start',
-                                    overflow: 'hidden'
-                                }}>
+                                <Box
+                                    sx={{
+                                        flexGrow: 1,
+                                        alignSelf: 'flex-start',
+                                        overflow: 'hidden'
+                                    }}
+                                >
                                     <MusicLrc id={music.id} currentTime={currentTime} />
                                 </Box>
                             )
                         }
                     </Stack>
-                    <Stack direction="row" alignItems="center">
-                        <Typography variant="button">{timeFormatter(currentTime)} / {duration ? timeFormatter(duration) : durationPlaceholder}</Typography>
-                        <Stack sx={{
-                            mx: 2
-                        }} flexGrow={1}>
+                    <Stack
+                        direction="row"
+                        alignItems="center"
+                    >
+                        <Typography
+                            variant="button"
+                        >{timeFormatter(currentTime)} / {duration ? timeFormatter(duration) : durationPlaceholder}</Typography>
+                        <Stack
+                            sx={{
+                                mx: 2
+                            }}
+                            flexGrow={1}
+                        >
                             <MediaSlider
                                 size="small"
                                 color="secondary"
@@ -425,14 +478,16 @@ function MusicPlayer({ music, playing, repeat, extendButtons, onPlayStateChange,
             </Stack>
             {
                 isDev && (
-                    <Box sx={{
-                        position: 'absolute',
-                        left: 0,
-                        top: 0,
-                        right: 0,
-                        bottom: 0,
-                        zIndex: 1
-                    }}>
+                    <Box
+                        sx={{
+                            position: 'absolute',
+                            left: 0,
+                            top: 0,
+                            right: 0,
+                            bottom: 0,
+                            zIndex: 1
+                        }}
+                    >
                         <AudioVisual
                             audio={audioRef}
                             colors={[
