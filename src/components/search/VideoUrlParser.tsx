@@ -69,10 +69,12 @@ function VideoUrlParser({ url, children }: VideoUrlParserProps) {
         return children(url, _isHls(url))
     }
     return (
-        <Box sx={{
-            position: 'relative',
-            height: '100%'
-        }}>
+        <Box
+            sx={{
+                position: 'relative',
+                height: '100%'
+            }}
+        >
             {
                 videoUrl && children(videoUrl, _isHls(videoUrl))
             }
@@ -85,26 +87,41 @@ function VideoUrlParser({ url, children }: VideoUrlParserProps) {
             />
             {
                 error && (
-                    <Alert severity="error" sx={
-                        (theme) => ({
-                            position: 'absolute',
-                            left: '50%',
-                            top: '50%',
-                            transform: 'translate(-50%, -50%)',
-                            [theme.breakpoints.only('xs')]: {
-                                width: '90%'
-                            }
-                        })
-                    }>
-                        <AlertTitle>解析失败</AlertTitle>
-                        <Typography variant="caption" paragraph>第三方云播放地址解析失败, 请尝试用m3u8源观看或从源地址播放</Typography>
-                        <Stack direction="row" justifyContent="flex-end" columnGap={1}>
-                            <Button color="inherit" variant="outlined" size="small" onClick={
-                                () => {
-                                    setError(false);
-                                    _parseUrl()
+                    <Alert
+                        severity="error"
+                        sx={
+                            (theme) => ({
+                                position: 'absolute',
+                                left: '50%',
+                                top: '50%',
+                                transform: 'translate(-50%, -50%)',
+                                [theme.breakpoints.only('xs')]: {
+                                    width: '90%'
                                 }
-                            }>重试</Button>
+                            })
+                        }
+                    >
+                        <AlertTitle>解析失败</AlertTitle>
+                        <Typography
+                            variant="caption"
+                            paragraph
+                        >第三方云播放地址解析失败, 请尝试用m3u8源观看或从源地址播放</Typography>
+                        <Stack
+                            direction="row"
+                            justifyContent="flex-end"
+                            columnGap={1}
+                        >
+                            <Button
+                                color="inherit"
+                                variant="outlined"
+                                size="small"
+                                onClick={
+                                    () => {
+                                        setError(false);
+                                        _parseUrl()
+                                    }
+                                }
+                            >重试</Button>
                             <Button
                                 color="inherit"
                                 variant="outlined"

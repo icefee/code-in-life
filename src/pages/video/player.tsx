@@ -23,23 +23,30 @@ export async function getServerData({ query }: GetServerDataProps): Promise<GetS
 const VideoParserPlayer: React.FC<PageProps<object, object, unknown, ServerProps>> = ({ serverData }) => {
 
     const queryUrl = serverData.url
-    const hls = M3u8.isM3u8Url(queryUrl)
 
     return (
         <NoSsr>
-            <Box sx={{
-                height: '100%',
-                bgcolor: '#000'
-            }}>
-                <VideoUrlParser url={queryUrl}>
+            <Box
+                sx={{
+                    height: '100%',
+                    bgcolor: '#000'
+                }}
+            >
+                <VideoUrlParser
+                    url={queryUrl}
+                >
                     {
-                        (url) => (
-                            <VideoPlayer
-                                url={pureHlsUrl(url)}
-                                hls={hls}
-                                autoplay
-                            />
-                        )
+                        (parsedUrl) => {
+                            const url = pureHlsUrl(parsedUrl)
+                            const hls = M3u8.isM3u8Url(url)
+                            return (
+                                <VideoPlayer
+                                    url={url}
+                                    hls={hls}
+                                    autoplay
+                                />
+                            )
+                        }
                     }
                 </VideoUrlParser>
             </Box>

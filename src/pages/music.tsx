@@ -66,8 +66,9 @@ export default function MusicSearch() {
         return random;
     }
 
-    const onSearch = async (s: string) => {
-        if (s.trim().length === 0) {
+    const onSearch = async (text: string) => {
+        const s = text.trim()
+        if (s.length === 0) {
             setToastMsg({
                 type: 'warning',
                 msg: '关键词不能为空'

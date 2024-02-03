@@ -101,7 +101,8 @@ export default function VideoSearch() {
                         value={keyword}
                         onChange={setKeyword}
                         onSubmit={
-                            async (s) => {
+                            async (text) => {
+                                const s = text.trim()
                                 setSearchTask(t => ({
                                     ...t,
                                     completed: false,
