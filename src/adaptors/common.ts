@@ -87,6 +87,7 @@ export function escapeSymbols(source: string) {
             .replaceAll('&lt;', '<')
             .replaceAll('&gt;', '>')
             .replaceAll('&quot;', '"')
+            .replaceAll('&apos;', '\'')
             .replaceAll('&amp;', '&')
     }
     return ''
