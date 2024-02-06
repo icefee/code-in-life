@@ -6,8 +6,6 @@ export const key = 'g'
 
 export const baseUrl = 'https://www.gequbao.com'
 
-export const lrcFile = true
-
 const getHtml = (url: string) => getTextWithTimeout(url, {
     headers: {
         'cache-control': 'no-cache'
@@ -95,6 +93,8 @@ export async function parseMusicUrl(id: string) {
     }
 }
 
+const getLrcUrl = (id: string) => `${baseUrl}/download/lrc/${id}`
+
 export async function parseLrc(id: string) {
     try {
         const lrc = await getHtml(getLrcUrl(id))
@@ -114,8 +114,4 @@ export async function getLrcText(id: string) {
             return `[${timeFormatter(seconds)}:${Math.round((time - seconds) * 1000)}]${text}`
         }
     ).join('\n');
-}
-
-export function getLrcUrl(id: string) {
-    return `${baseUrl}/download/lrc/${id}`
 }
