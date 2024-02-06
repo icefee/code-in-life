@@ -1,5 +1,5 @@
 import { GatsbyFunctionResponse } from 'gatsby'
-import { createApiAdaptor, parseId, getResponse } from '../../../../adaptors'
+import { createApiAdaptor, parseId } from '../../../../adaptors'
 import { appendContentDisposition, errorHandler, ApiHandler } from '../../../../util/middleware'
 
 function setHeader(res: GatsbyFunctionResponse) {
@@ -10,25 +10,14 @@ function setHeader(res: GatsbyFunctionResponse) {
 const handler: ApiHandler = async (req, res) => {
     const { key, id } = parseId(req.params.token)
     const adaptor = createApiAdaptor(key)
-    if (adaptor.lrcFile) {
-        const url = adaptor.getLrcUrl(id)
-        const response = await getResponse(url)
-        response.body.pipe(
-            setHeader(
-                appendContentDisposition(req, res, 'lrc')
-            )
-        )
+    const lrcText = await adaptor.getLrcText(id)
+    if (lrcText) {
+        setHeader(
+            appendContentDisposition(req, res, 'lrc')
+        ).end(lrcText)
     }
     else {
-        const lrcText = await adaptor.getLrcText(id)
-        if (lrcText) {
-            setHeader(
-                appendContentDisposition(req, res, 'lrc')
-            ).end(lrcText)
-        }
-        else {
-            throw new Error('lrc file not found.')
-        }
+        throw new Error('lrc file not found.')
     }
 }
 

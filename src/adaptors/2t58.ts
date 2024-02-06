@@ -6,8 +6,6 @@ export const key = 't'
 
 export const baseUrl = 'http://www.2t58.com'
 
-export const lrcFile = true
-
 async function matchSongs(source: string) {
     const matchBlocks = source.match(
         new RegExp(`<div class="name"><a href="/song/\\w+.html" target="_mp3">.+? - .+?</a></div>`, 'gm')
@@ -114,6 +112,8 @@ export async function parseMusicUrl(id: string) {
     return result?.url
 }
 
+const getLrcUrl = (id: string) => `${baseUrl}/plug/down.php?ac=music&lk=lrc&id=${id}`
+
 export async function parseLrc(id: string) {
     try {
         const lrc = await getTextWithTimeout(getLrcUrl(id))
@@ -139,8 +139,4 @@ export async function getLrcText(id: string) {
             return `[${timeFormatter(seconds)}:${Math.round((time - seconds) * 1000)}]${text}`
         }
     ).join('\n');
-}
-
-export function getLrcUrl(id: string) {
-    return `${baseUrl}/plug/down.php?ac=music&lk=lrc&id=${id}`
 }
