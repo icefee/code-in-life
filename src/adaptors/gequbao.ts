@@ -6,8 +6,6 @@ export const key = 'g'
 
 export const baseUrl = 'https://www.gequbao.com'
 
-export const lrcFile = true
-
 const getHtml = (url: string) => getTextWithTimeout(url, {
     headers: {
         'cache-control': 'no-cache'
