@@ -2,6 +2,7 @@ import fetch, { Response } from 'node-fetch'
 import { type Adaptor } from '.'
 import { userAgent } from '../util/config'
 import { isTextNotNull } from '../util/string'
+export { escapeSymbols } from '../util/string'
 export { type HeadersInit, Headers } from 'node-fetch'
 
 export const defaultPoster = './poster.jpg'
@@ -78,17 +79,4 @@ export function parseLrcText(text: string): Lrc[] {
     return lrcs.sort(
         (prev, next) => prev.time - next.time
     )
-}
-
-export function escapeSymbols(source: string) {
-    if (source) {
-        return source
-            .replaceAll('&nbsp;', ' ')
-            .replaceAll('&lt;', '<')
-            .replaceAll('&gt;', '>')
-            .replaceAll('&quot;', '"')
-            .replaceAll('&apos;', '\'')
-            .replaceAll('&amp;', '&')
-    }
-    return ''
 }
