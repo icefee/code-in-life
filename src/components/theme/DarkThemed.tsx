@@ -1,6 +1,6 @@
-import React from 'react';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
+import React from 'react'
+import { ThemeProvider, createTheme } from '@mui/material/styles'
+import CssBaseline from '@mui/material/CssBaseline'
 
 export const darkTheme = createTheme({
     palette: {
@@ -14,7 +14,9 @@ const DarkThemed = ({ children, enableCssBaseline = false }: React.PropsWithChil
     return (
         <ThemeProvider theme={darkTheme}>
             {
-                enableCssBaseline && <CssBaseline enableColorScheme />
+                enableCssBaseline && (
+                    <CssBaseline enableColorScheme />
+                )
             }
             {children}
         </ThemeProvider>

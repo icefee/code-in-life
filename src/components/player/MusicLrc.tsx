@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
+import GlobalStyles from '@mui/material/GlobalStyles'
 import Fade from '@mui/material/Fade'
 import Popover from '@mui/material/Popover'
 import Box from '@mui/material/Box'
@@ -135,6 +136,17 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                 direction="row"
                 justifyContent="flex-end"
             >
+                <GlobalStyles
+                    styles={
+                        `
+                        @property --line-played {
+                            syntax: "<number>";
+                            inherits: true;
+                            initial-value: 0;
+                        }
+                        `
+                    }
+                />
                 <div
                     style={{
                         position: 'relative',
@@ -154,6 +166,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                         sx={{
                             display: 'block',
                             opacity: .75,
+                            transition: 'all .4s linear',
                             maskImage: 'linear-gradient(0.25turn, transparent 0% calc(var(--line-played) * 100%), #000 calc(var(--line-played) * 100%) 100%)'
                         }}
                         noWrap
@@ -185,7 +198,8 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                         sx={{
                             position: 'absolute',
                             inset: 0,
-                            backgroundImage: 'linear-gradient(0, cyan, #ff9800)',
+                            transition: 'all .4s linear',
+                            backgroundImage: 'linear-gradient(0, #ff9800, cyan)',
                             WebkitBackgroundClip: 'text',
                             WebkitTextFillColor: 'transparent',
                             maskImage: 'linear-gradient(0.25turn, #000 0% calc(var(--line-played) * 100%), transparent calc(var(--line-played) * 100%) 100%)'

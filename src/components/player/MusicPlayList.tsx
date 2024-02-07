@@ -21,7 +21,7 @@ import LyricsIcon from '@mui/icons-material/Lyrics';
 import PlaylistRemoveIcon from '@mui/icons-material/PlaylistRemove';
 import { DarkThemed } from '../theme';
 import MusicPoster from './MusicPoster';
-import MusicPlayIcon from '../loading/MuaicPlay';
+import MusicPlayIcon from '../loading/MusicPlay';
 import useMenu from '../hook/useMenu';
 
 const StyledInput = styled(InputBase)(({ theme }) => ({
