@@ -74,7 +74,7 @@ export function removeAds(
     const lines = content.split(/\n/).filter(line => line.trim().length > 0)
     const parts = []
     let extLine = false, pathLength: number | null = null
-    let segmentIndex: number | null = null, segmentLinearSize = 0
+    let segmentIndex: number | null = null, segmentLinearSize: number | null = null
     let inDiscontinuity = false
     const segmentSize = lines.filter(
         line => line.match(extInfMatcher)
@@ -102,11 +102,12 @@ export function removeAds(
             )
         }
         else if (extLine) {
-            pathLength = pathLength ?? line.length
+            pathLength ??= line.length
             const segmentIndexMatch = line.match(/\d+(?=\.(ts|png|csv)(\?=\w+)?$)/)
             if (segmentIndexMatch) {
                 const matchedIndex = segmentIndexMatch[0]
                 const index = Number(matchedIndex)
+                segmentLinearSize ??= index
                 if (Math.pow(10, matchedIndex.length) > segmentSize && segmentIndex !== null && index === segmentLinearSize + 1) {
                     segmentLinearSize++
                 }

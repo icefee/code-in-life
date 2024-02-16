@@ -10,7 +10,7 @@ const handler: ApiHandler = async (req, res) => {
     const url = Base64Params.parse(token)
     try {
         let actualUrl = url;
-        let response = await getResponse(url, {
+        let response = await getResponse(actualUrl, {
             timeout: 8e3
         })
         let playList = await response.text()
@@ -36,7 +36,7 @@ const handler: ApiHandler = async (req, res) => {
                 }
             }
             actualUrl = parseUrl(maxBandwidthUrl, url)
-            response = await getResponse(proxyUrl(actualUrl, true))
+            response = await getResponse(actualUrl)
             playList = await response.text()
         }
         const inheritedHeaders = [
