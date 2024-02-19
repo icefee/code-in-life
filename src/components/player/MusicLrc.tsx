@@ -259,34 +259,43 @@ function ScrollingLrc({ lrc, currentTime }: ScrollingLrcProps) {
     }, [lrc, currentTime])
 
     return (
-        <Box sx={(theme) => ({
-            height: '40vh',
-            maxHeight: 400,
-            minWidth: 240,
-            maxWidth: 'var(--max-width)',
-            [theme.breakpoints.only('xs')]: {
-                maxWidth: '75vw'
-            }
-        })}>
-            <Box sx={{
-                position: 'relative',
-                height: '100%',
-                overflow: 'hidden',
-                px: 2,
-                py: 1,
-                maskImage: 'linear-gradient(transparent, rgb(0 0 0 / 15%) 20%, #000 40% 60%, rgb(0 0 0 / 15%) 80%, transparent)'
-            }}>
-                <Box sx={{
-                    transition: (theme) => theme.transitions.create('transform'),
-                    transform: `translate(0, calc(20vh - 24px - ${28 * activeIndex}px))`
-                }}>
+        <Box
+            sx={(theme) => ({
+                height: '40vh',
+                maxHeight: 400,
+                minWidth: 240,
+                maxWidth: 'var(--max-width)',
+                [theme.breakpoints.only('xs')]: {
+                    maxWidth: '75vw'
+                }
+            })}
+        >
+            <Box
+                sx={{
+                    height: '100%',
+                    overflow: 'hidden',
+                    px: 2,
+                    py: 1,
+                    maskImage: 'linear-gradient(transparent, rgb(0 0 0 / 15%) 20%, #000 40% 60%, rgb(0 0 0 / 15%) 80%, transparent)'
+                }}
+            >
+                <Box
+                    sx={{
+                        transition: (theme) => theme.transitions.create('transform'),
+                        transform: `translate(0, calc(20vh - 24px - ${28 * activeIndex}px))`
+                    }}
+                >
                     {
                         lrc.map(
                             ({ text }, index) => (
-                                <Stack sx={{
-                                    height: 28,
-                                    color: activeIndex === index ? 'secondary.main' : 'text.primary'
-                                }} justifyContent="center" key={index}>
+                                <Stack
+                                    sx={{
+                                        height: 28,
+                                        color: activeIndex === index ? 'secondary.main' : 'text.primary'
+                                    }}
+                                    justifyContent="center"
+                                    key={index}
+                                >
                                     <Typography
                                         variant="subtitle2"
                                         color="inherit"
