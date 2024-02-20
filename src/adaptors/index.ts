@@ -7,8 +7,8 @@ export * from './common';
 export type Adaptor = typeof g.key | typeof z.key | typeof t.key
 
 export const adaptors: Adaptor[] = [
-    t.key,
     g.key,
+    t.key,
     z.key
 ]
 
