@@ -8,7 +8,7 @@ export function getParamsUrl(url: string, params: ParamsType) {
     return `${url}?${urlSearchParams}`
 }
 
-export function proxyUrl(url: string, remote: boolean = false, extend = <ParamsType>{}) {
+export function proxyUrl(url: string, remote: boolean = false, extend: ParamsType = {}) {
     return getParamsUrl(`${remote ? Api.assetSite : ''}/api/proxy`, {
         url,
         ...extend
@@ -51,17 +51,21 @@ export async function fetchFileChunks(
             },
             async (_, index) => {
                 let byteOffset = chunkSize * (index + 1)
-                const response = await loadFileChunk(url, [byteOffset, Math.min(byteOffset + chunkSize - 1, totalBytes - 1)], init);
-                return response.arrayBuffer();
+                const response = await loadFileChunk(
+                    url,
+                    [byteOffset, Math.min(byteOffset + chunkSize - 1, totalBytes - 1)],
+                    init
+                )
+                return response.arrayBuffer()
             }
         )
     )
     const dataArray = new Uint8Array(totalBytes)
-    let dataArrayByteOffset = 0;
+    let dataArrayByteOffset = 0
     for (let chunk of [firstChunk, ...chunks]) {
-        const dataPart = new Uint8Array(chunk);
-        dataArray.set(dataPart, dataArrayByteOffset);
-        dataArrayByteOffset += dataPart.byteLength;
+        const dataPart = new Uint8Array(chunk)
+        dataArray.set(dataPart, dataArrayByteOffset)
+        dataArrayByteOffset += dataPart.byteLength
     }
     return dataArray.buffer
 }
