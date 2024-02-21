@@ -1,12 +1,14 @@
 import { Api } from './config'
 import { Base64Params } from './clue'
 
-export function getParamsUrl(url: string, params: Record<string, string>) {
+type ParamsType = Record<string, string>
+
+export function getParamsUrl(url: string, params: ParamsType) {
     const urlSearchParams = new URLSearchParams(params)
     return `${url}?${urlSearchParams}`
 }
 
-export function proxyUrl(url: string, remote: boolean = false, extend = {}) {
+export function proxyUrl(url: string, remote: boolean = false, extend = <ParamsType>{}) {
     return getParamsUrl(`${remote ? Api.assetSite : ''}/api/proxy`, {
         url,
         ...extend
@@ -108,12 +110,24 @@ export function removeAds(
                 const matchedIndex = segmentIndexMatch[0]
                 const index = Number(matchedIndex)
                 segmentLinearSize ??= index
-                if (Math.pow(10, matchedIndex.length) > segmentSize && segmentIndex !== null && index === segmentLinearSize + 1) {
+                const maxSegmentSize = Math.pow(10, matchedIndex.length)
+                if (
+                    segmentSize < maxSegmentSize
+                    && segmentIndex !== null
+                    && index === segmentLinearSize + 1
+                ) {
                     segmentLinearSize++
                 }
                 segmentIndex = index
             }
-            if ((!segmentIndexMatch || segmentIndex !== segmentLinearSize) && segmentLinearSize > 3 || line.length > pathLength + 3) {
+            else {
+                segmentLinearSize = 0
+            }
+            if (
+                (!segmentIndexMatch || segmentIndex !== segmentLinearSize)
+                && segmentLinearSize > 3
+                || line.length > pathLength + 3
+            ) {
                 parts.pop()
             }
             else {
