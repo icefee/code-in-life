@@ -9071,10 +9071,10 @@ rc@1.2.8, rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-audio-visual@^1.0.7:
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/react-audio-visual/-/react-audio-visual-1.0.7.tgz#70bc0f2918a12ec93d5528076ae6dc1b0c467968"
-  integrity sha512-yWp/JHDgYCePpXAb8gECVbxOIJswvT/FmNWkTU9X+OPI/aQYUcArXEC/r5ilb7I7dSE7/14gP1Kqn04XlpX8ag==
+react-audio-visual@^1.0.10:
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/react-audio-visual/-/react-audio-visual-1.0.10.tgz#b75990aee39034c08be8129fc59d6f18f5b3ef92"
+  integrity sha512-WdZnhjckVdpvcxty2PF0HRyGCh5NgC9QCL3nAAiabf61n+dwGlZNeCNNcA7Mk/dFp9NWELKQTjFPOJhTxmd7uQ==
 
 react-dev-utils@^12.0.1:
   version "12.0.1"

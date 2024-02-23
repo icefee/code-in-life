@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react'
-import type { ReactNode, MouseEvent, MouseEventHandler } from 'react'
 import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
 import List from '@mui/material/List'
@@ -20,7 +19,6 @@ import PublishRoundedIcon from '@mui/icons-material/PublishRounded'
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded'
 import LyricsRoundedIcon from '@mui/icons-material/LyricsRounded'
 import PlaylistRemoveRoundedIcon from '@mui/icons-material/PlaylistRemoveRounded'
-import { DarkThemed } from '../theme'
 import MusicPoster from './MusicPoster'
 import { MusicPlay as MusicPlayIcon } from '../loading'
 import useMenu from '../hook/useMenu'
@@ -42,15 +40,14 @@ const MatchText = styled('span')(({ theme }) => ({
 
 type ListMatch = {
     id: SearchMusic['id'];
-    name: ReactNode;
-    artist: ReactNode;
+    name: React.ReactNode;
+    artist: React.ReactNode;
     firstMatch: boolean;
 }
 
 type SearchMusicWithMatch = SearchMusic & { match?: Omit<ListMatch, 'id'> };
 
 interface MusicPlayListProps {
-    show: boolean;
     data: SearchMusic[];
     onChange: React.Dispatch<React.SetStateAction<SearchMusic[]>>;
     current: SearchMusic;
@@ -61,11 +58,19 @@ interface MusicPlayListProps {
     onSearch?(keyword: string): void;
 }
 
-function MusicPlayList({ show, data, onChange, current, playing, onPlay, onTogglePlay, onSearch, onDownload }: MusicPlayListProps) {
+function MusicPlayList({
+    data,
+    onChange,
+    current,
+    playing,
+    onPlay,
+    onTogglePlay,
+    onSearch,
+    onDownload
+}: MusicPlayListProps) {
 
     const [keyword, setKeyword] = useState('')
     const { outlet, showMenu, hideMenu } = useMenu()
-    const [rendered, setRendered] = useState(false)
 
     const pinToTop = (music: SearchMusic) => {
         onChange(
@@ -120,7 +125,7 @@ function MusicPlayList({ show, data, onChange, current, playing, onPlay, onToggl
             ({ text, pattern, match }) => {
                 if (match) {
                     const fragments = text.split(pattern);
-                    const nodes: ReactNode[] = [];
+                    const nodes: React.ReactNode[] = [];
                     for (let i = 0; i < fragments.length + match.length; i++) {
                         if (i % 2 === 0) {
                             const fragment = fragments[i / 2]
@@ -176,140 +181,113 @@ function MusicPlayList({ show, data, onChange, current, playing, onPlay, onToggl
         return matched;
     }, [data, keyword])
 
-    useEffect(() => {
-        if (show) {
-            setRendered(true)
-        }
-    }, [show, rendered])
-
-    if (!rendered) {
-        return null;
-    }
-
     return (
-        <DarkThemed>
-            <Stack sx={{
-                display: show ? 'flex' : 'none',
-                height: '50vh',
-                bgcolor: 'background.paper',
-                color: '#fff',
-                overflowY: 'auto',
-                borderTop: (theme) => `1px solid ${theme.palette.divider}`,
-                '&::-webkit-scrollbar-thumb': {
-                    bgcolor: 'var(--scrollbar-thumb-dark-mode-color)'
-                },
-                '&::-webkit-scrollbar-thumb:hover': {
-                    bgcolor: 'var(--scrollbar-thumb-dark-mode-hover-color)'
-                }
-            }}>
-                <List subheader={
-                    <ListSubheader disableGutters component="li">
+        <List subheader={
+            <ListSubheader disableGutters component="li">
+                <Stack sx={{
+                    pl: 2,
+                    pr: 1,
+                    py: .5
+                }} direction="row" justifyContent="space-between" alignItems="center">
+                    <Typography variant="subtitle2">播放列表</Typography>
+                    <Stack direction="row" alignItems="center" columnGap={1}>
                         <Stack sx={{
-                            pl: 2,
-                            pr: 1,
-                            py: .5
-                        }} direction="row" justifyContent="space-between" alignItems="center">
-                            <Typography variant="subtitle2">播放列表</Typography>
-                            <Stack direction="row" alignItems="center" columnGap={1}>
-                                <Stack sx={{
-                                    px: 1,
-                                    py: .5,
-                                    bgcolor: '#ffffff10',
-                                    borderRadius: 1
-                                }} direction="row" alignItems="center" columnGap={1}>
-                                    <SearchRoundedIcon fontSize="small" />
-                                    <StyledInput
-                                        placeholder="输入关键词搜索.."
-                                        value={keyword}
-                                        onChange={
-                                            (event: React.ChangeEvent<HTMLInputElement>) => {
-                                                setKeyword(event.target.value)
-                                            }
-                                        }
-                                    />
-                                </Stack>
-                                <IconButton onClick={
-                                    (event: MouseEvent<HTMLButtonElement>) => {
-                                        showMenu(event.currentTarget, [
-                                            {
-                                                icon: <ClearAllRoundedIcon />,
-                                                text: '清空播放列表',
-                                                onClick: () => {
-                                                    clearPlayList()
-                                                    hideMenu()
-                                                }
-                                            }
-                                        ]);
+                            px: 1,
+                            py: .5,
+                            bgcolor: '#ffffff10',
+                            borderRadius: 1
+                        }} direction="row" alignItems="center" columnGap={1}>
+                            <SearchRoundedIcon fontSize="small" />
+                            <StyledInput
+                                placeholder="输入关键词搜索.."
+                                value={keyword}
+                                onChange={
+                                    (event: React.ChangeEvent<HTMLInputElement>) => {
+                                        setKeyword(event.target.value)
                                     }
-                                }>
-                                    <MoreVertRoundedIcon />
-                                </IconButton>
-                                {outlet}
-                            </Stack>
+                                }
+                            />
                         </Stack>
-                    </ListSubheader>
-                } disablePadding dense>
-                    {
-                        data.map(
-                            (music, index) => {
-                                const isCurrentPlaying = music.id === current.id;
-                                const match = matchedList.find(
-                                    ({ id }) => id === music.id
-                                )
-                                return (
-                                    <PlayListItem
-                                        key={music.id}
-                                        divider={index < data.length - 1}
-                                        music={{
-                                            ...music,
-                                            match
-                                        }}
-                                        isCurrent={isCurrentPlaying}
-                                        playing={playing}
-                                        onClick={
-                                            () => {
-                                                if (isCurrentPlaying) {
-                                                    onTogglePlay?.()
-                                                }
-                                                else {
-                                                    onPlay(music)
-                                                }
-                                            }
+                        <IconButton onClick={
+                            (event: React.MouseEvent<HTMLButtonElement>) => {
+                                showMenu(event.currentTarget, [
+                                    {
+                                        icon: <ClearAllRoundedIcon />,
+                                        text: '清空播放列表',
+                                        onClick: () => {
+                                            clearPlayList()
+                                            hideMenu()
                                         }
-                                        onAction={
-                                            (cmd: MenuAction, music: SearchMusic) => {
-                                                switch (cmd) {
-                                                    case 'pin':
-                                                        pinToTop(music);
-                                                        break;
-                                                    case 'search-artist':
-                                                        onSearch?.(music.artist);
-                                                        break;
-                                                    case 'search-name':
-                                                        onSearch?.(music.name);
-                                                        break;
-                                                    case 'download-song':
-                                                        onDownload?.(music, 'song');
-                                                        break;
-                                                    case 'download-lrc':
-                                                        onDownload?.(music, 'lrc');
-                                                        break;
-                                                    case 'remove':
-                                                        removeSong(music);
-                                                        break;
-                                                    default:
-                                                        break;
-                                                }
-                                            }
-                                        }
-                                    />
-                                )
+                                    }
+                                ]);
                             }
+                        }>
+                            <MoreVertRoundedIcon />
+                        </IconButton>
+                        {outlet}
+                    </Stack>
+                </Stack>
+            </ListSubheader>
+        } disablePadding dense>
+            {
+                data.map(
+                    (music, index) => {
+                        const isCurrentPlaying = music.id === current.id;
+                        const match = matchedList.find(
+                            ({ id }) => id === music.id
+                        )
+                        return (
+                            <PlayListItem
+                                key={music.id}
+                                divider={index < data.length - 1}
+                                music={{
+                                    ...music,
+                                    match
+                                }}
+                                isCurrent={isCurrentPlaying}
+                                playing={playing}
+                                onClick={
+                                    () => {
+                                        if (isCurrentPlaying) {
+                                            onTogglePlay?.()
+                                        }
+                                        else {
+                                            onPlay(music)
+                                        }
+                                    }
+                                }
+                                onAction={
+                                    (cmd: MenuAction, music: SearchMusic) => {
+                                        switch (cmd) {
+                                            case 'pin':
+                                                pinToTop(music);
+                                                break;
+                                            case 'search-artist':
+                                                onSearch?.(music.artist);
+                                                break;
+                                            case 'search-name':
+                                                onSearch?.(music.name);
+                                                break;
+                                            case 'download-song':
+                                                onDownload?.(music, 'song');
+                                                break;
+                                            case 'download-lrc':
+                                                onDownload?.(music, 'lrc');
+                                                break;
+                                            case 'remove':
+                                                removeSong(music);
+                                                break;
+                                            default:
+                                                break;
+                                        }
+                                    }
+                                }
+                            />
                         )
                     }
-                </List>
-            </Stack>
-        </DarkThemed>
+                )
+            }
+        </List>
     )
 }
 
@@ -320,7 +298,7 @@ interface PlayListItemProps {
     playing: boolean;
     isCurrent: boolean;
     divider: boolean;
-    onClick: MouseEventHandler<HTMLDivElement>;
+    onClick: React.MouseEventHandler<HTMLDivElement>;
     onAction(cmd: MenuAction, music: SearchMusicWithMatch): void;
 }
 
@@ -364,7 +342,7 @@ function PlayListItem({ music, playing, isCurrent, divider, onAction, onClick }:
             secondaryAction={
                 <>
                     <IconButton onClick={
-                        (event: MouseEvent<HTMLButtonElement>) => {
+                        (event: React.MouseEvent<HTMLButtonElement>) => {
                             showMenu(event.currentTarget, [
                                 {
                                     icon: <PublishRoundedIcon />,

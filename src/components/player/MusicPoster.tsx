@@ -30,16 +30,18 @@ function MusicPoster({ spinning = false, src, alt }: MusicPosterProps) {
             <Avatar
                 alt={alt}
                 src={poster ?? src}
-                imgProps={{
-                    loading: 'lazy',
-                    onLoad() {
-                        if (!loadError.current) {
-                            setPoster(src)
+                slotProps={{
+                    img: {
+                        loading: 'lazy',
+                        onLoad() {
+                            if (!loadError.current) {
+                                setPoster(src)
+                            }
+                        },
+                        onError() {
+                            loadError.current = true
+                            setPoster('/poster.jpg')
                         }
-                    },
-                    onError() {
-                        loadError.current = true
-                        setPoster('/poster.jpg')
                     }
                 }}
                 sx={{
