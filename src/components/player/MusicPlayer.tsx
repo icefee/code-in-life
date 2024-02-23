@@ -1,24 +1,24 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import { alpha } from '@mui/material/styles';
-import RepeatOneIcon from '@mui/icons-material/RepeatOne';
-import LoopIcon from '@mui/icons-material/Loop';
-import ShuffleIcon from '@mui/icons-material/Shuffle';
-import MusicPoster from './MusicPoster';
-import MusicLrc from './MusicLrc';
-import PlayOrPauseButton from './PlayOrPauseButton';
-import VolumeSetter from './VolumeSetter';
-import useLocalStorageState from '../hook/useLocalStorageState';
-import MediaSlider from './MediaSlider';
-import { Spinner } from '../loading';
-import AudioVisual from 'react-audio-visual';
-import { generate } from '../../util/url';
-import { timeFormatter } from '../../util/date';
-import { isDev } from '../../util/env';
+import React, { useState, useEffect, useMemo, useRef } from 'react'
+import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import IconButton from '@mui/material/IconButton'
+import Tooltip from '@mui/material/Tooltip'
+import { alpha } from '@mui/material/styles'
+import RepeatOneIcon from '@mui/icons-material/RepeatOne'
+import LoopIcon from '@mui/icons-material/Loop'
+import ShuffleIcon from '@mui/icons-material/Shuffle'
+import MusicPoster from './MusicPoster'
+import MusicLrc from './MusicLrc'
+import PlayOrPauseButton from './PlayOrPauseButton'
+import VolumeSetter from './VolumeSetter'
+import useLocalStorageState from '../hook/useLocalStorageState'
+import MediaSlider from './MediaSlider'
+import { Spinner } from '../loading'
+import AudioVisual from 'react-audio-visual'
+import { generate } from '../../util/url'
+import { timeFormatter } from '../../util/date'
+import { isDev } from '../../util/env'
 
 export enum RepeatMode {
     All,
@@ -109,8 +109,8 @@ function MusicPlayer({
 
     useEffect(() => {
         if (volume.init) {
-            cachedVolumeRef.current = volume.data;
-            audioRef.current.volume = volume.data;
+            cachedVolumeRef.current = volume.data
+            audioRef.current.volume = volume.data
         }
     }, [volume])
 
@@ -156,10 +156,11 @@ function MusicPlayer({
                         height: 60,
                         aspectRatio: '1 / 1',
                         color: '#fff',
+                        transition: theme.transitions.create(['width', 'height']),
                         borderRadius: '50%',
                         [theme.breakpoints.up('sm')]: {
-                            width: 72,
-                            height: 72
+                            width: 64,
+                            height: 64
                         }
                     })}
                     justifyContent="center"
@@ -466,8 +467,8 @@ function MusicPlayer({
                                         onPlayStateChange(false)
                                     }
                                     else {
-                                        hasError.current = true;
-                                        setTimeout(reloadSong, 400);
+                                        hasError.current = true
+                                        setTimeout(reloadSong, 400)
                                     }
                                 }
                             }
@@ -490,11 +491,9 @@ function MusicPlayer({
                     >
                         <AudioVisual
                             audio={audioRef}
-                            colors={[
-                                '#ff000040',
-                                '#ffff0040',
-                                '#00ffff40'
-                            ]}
+                            barInternal={1}
+                            barSpace={0}
+                            capHeight={1}
                         />
                     </Box>
                 )
