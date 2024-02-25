@@ -63,7 +63,6 @@ function PopUp({ value, onChange, onMute, disabled = false, IconProps, SliderPro
                     vertical: 'bottom',
                     horizontal: 'center',
                 }}
-                disablePortal
             >
                 <Stack sx={{
                     height: 120,
