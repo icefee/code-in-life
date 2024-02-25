@@ -1,12 +1,12 @@
-import React, { useState, useMemo } from 'react';
-import Stack from '@mui/material/Stack';
-import Slider, { type SliderProps } from '@mui/material/Slider';
-import Popover from '@mui/material/Popover';
-import Tooltip from '@mui/material/Tooltip';
-import IconButton, { type IconButtonProps } from '@mui/material/IconButton';
-import VolumeUpIcon from '@mui/icons-material/VolumeUp';
-import VolumeDownIcon from '@mui/icons-material/VolumeDown';
-import VolumeOffIcon from '@mui/icons-material/VolumeOff';
+import React, { useState, useMemo } from 'react'
+import Stack from '@mui/material/Stack'
+import Slider, { type SliderProps } from '@mui/material/Slider'
+import Popover from '@mui/material/Popover'
+import Tooltip from '@mui/material/Tooltip'
+import IconButton, { type IconButtonProps } from '@mui/material/IconButton'
+import VolumeUpIcon from '@mui/icons-material/VolumeUp'
+import VolumeDownIcon from '@mui/icons-material/VolumeDown'
+import VolumeOffIcon from '@mui/icons-material/VolumeOff'
 
 interface VolumeSetterProps {
     value: number;
@@ -49,9 +49,8 @@ function VolumeSetter({ value, onChange, onMute, disabled = false, IconProps, Sl
                 }}
                 transformOrigin={{
                     vertical: 'bottom',
-                    horizontal: 'center',
+                    horizontal: 'center'
                 }}
-                disablePortal
             >
                 <Stack sx={{
                     height: 120,

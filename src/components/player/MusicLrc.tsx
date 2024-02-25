@@ -227,7 +227,6 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                         }
                     }
                 }}
-                disablePortal
             >
                 {
                     downloading ? placeholder(downloadingPlaceholder) : lrc.length > 0 ? (
