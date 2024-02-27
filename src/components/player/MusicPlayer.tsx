@@ -29,7 +29,7 @@ export enum RepeatMode {
 }
 
 interface MusicPlayerProps {
-    music?: SearchMusic;
+    music: SearchMusic;
     playing: boolean;
     repeat: RepeatMode;
     extendButtons: React.ReactNode;
@@ -77,7 +77,7 @@ function MusicPlayer({
                 hasError.current = false
             }
         }
-    }, [music?.url])
+    }, [music.url])
 
     const togglePlay = async (play: boolean) => {
         try {
@@ -262,18 +262,18 @@ function MusicPlayer({
                         >
                             <Typography
                                 variant="body2"
-                                title={music?.name}
+                                title={music.name}
                                 noWrap
-                            >{music?.name}</Typography>
+                            >{music.name}</Typography>
                         </Stack>
                         <Stack>
                             <Typography
                                 variant="caption"
                                 color="#ffffffcc"
-                                title={music?.artist}
+                                title={music.artist}
                                 lineHeight={1}
                                 noWrap
-                            >{music?.artist}</Typography>
+                            >{music.artist}</Typography>
                         </Stack>
                         {
                             music && (
