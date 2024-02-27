@@ -133,8 +133,8 @@ function MusicPlayer({
     }
 
     const reloadSong = () => {
-        audioRef.current.src = generate(music.url);
-        audioRef.current.load();
+        audioRef.current.src = generate(music.url)
+        audioRef.current.load()
     }
 
     return (
@@ -173,37 +173,33 @@ function MusicPlayer({
                     alignItems="center"
                     flexShrink={0}
                 >
-                    {
-                        music && (
-                            <Box
-                                sx={(theme) => ({
-                                    width: '100%',
-                                    height: '100%',
-                                    bgcolor: '#000',
-                                    border: '6px solid hsla(0, 0%, 100%, .04)',
-                                    p: .75,
-                                    borderRadius: '50%',
-                                    filter: playing ? `drop-shadow(0px 0px 16px ${alpha(theme.palette.secondary.main, .4)})` : 'none',
-                                    opacity: loading ? .5 : .8,
-                                    transition: theme.transitions.create(['opacity', 'filter'])
-                                })}
-                            >
-                                <Box
-                                    sx={{
-                                        height: '100%',
-                                        border: '1px solid #333',
-                                        borderRadius: '50%'
-                                    }}
-                                >
-                                    <MusicPoster
-                                        alt={`${music.name}-${music.artist}`}
-                                        src={music.poster}
-                                        spinning={playing && !loading}
-                                    />
-                                </Box>
-                            </Box>
-                        )
-                    }
+                    <Box
+                        sx={(theme) => ({
+                            width: '100%',
+                            height: '100%',
+                            bgcolor: '#000',
+                            border: '6px solid hsla(0, 0%, 100%, .04)',
+                            p: .75,
+                            borderRadius: '50%',
+                            filter: playing ? `drop-shadow(0px 0px 16px ${alpha(theme.palette.secondary.main, .4)})` : 'none',
+                            opacity: loading ? .5 : .8,
+                            transition: theme.transitions.create(['opacity', 'filter'])
+                        })}
+                    >
+                        <Box
+                            sx={{
+                                height: '100%',
+                                border: '1px solid #333',
+                                borderRadius: '50%'
+                            }}
+                        >
+                            <MusicPoster
+                                alt={`${music.name}-${music.artist}`}
+                                src={music.poster}
+                                spinning={playing && !loading}
+                            />
+                        </Box>
+                    </Box>
                     <Box
                         sx={{
                             position: 'absolute',
@@ -275,19 +271,15 @@ function MusicPlayer({
                                 noWrap
                             >{music.artist}</Typography>
                         </Stack>
-                        {
-                            music && (
-                                <Box
-                                    sx={{
-                                        flexGrow: 1,
-                                        alignSelf: 'flex-start',
-                                        overflow: 'hidden'
-                                    }}
-                                >
-                                    <MusicLrc id={music.id} currentTime={currentTime} />
-                                </Box>
-                            )
-                        }
+                        <Box
+                            sx={{
+                                flexGrow: 1,
+                                alignSelf: 'flex-start',
+                                overflow: 'hidden'
+                            }}
+                        >
+                            <MusicLrc id={music.id} currentTime={currentTime} />
+                        </Box>
                     </Stack>
                     <Stack
                         direction="row"
@@ -399,108 +391,104 @@ function MusicPlayer({
                         </Tooltip> */}
                     </Stack>
                 </Stack>
-                {
-                    music && (
-                        <audio
-                            ref={audioRef}
-                            preload="auto"
-                            onLoadStart={
-                                () => setLoading(true)
+                <audio
+                    ref={audioRef}
+                    preload="auto"
+                    onLoadStart={
+                        () => setLoading(true)
+                    }
+                    onDurationChange={
+                        (event: React.SyntheticEvent<HTMLVideoElement>) => {
+                            setDuration(event.currentTarget.duration);
+                        }
+                    }
+                    onLoadedMetadata={
+                        () => {
+                            setAudioReady(true);
+                            tryToAutoPlay();
+                        }
+                    }
+                    onCanPlay={
+                        () => {
+                            setLoading(false)
+                        }
+                    }
+                    onCanPlayThrough={
+                        () => {
+                            setLoading(false)
+                        }
+                    }
+                    onPlay={
+                        () => {
+                            onPlayStateChange(true)
+                        }
+                    }
+                    onPause={
+                        () => {
+                            onPlayStateChange(false)
+                        }
+                    }
+                    onWaiting={
+                        () => {
+                            setLoading(true)
+                        }
+                    }
+                    onTimeUpdate={
+                        () => {
+                            if (!seekingRef.current) {
+                                setCurrentTime(audioRef.current.currentTime)
                             }
-                            onDurationChange={
-                                (event: React.SyntheticEvent<HTMLVideoElement>) => {
-                                    setDuration(event.currentTarget.duration);
+                        }
+                    }
+                    onProgress={
+                        () => {
+                            if (audioReady) {
+                                const buffered = audioRef.current.buffered;
+                                let bufferedEnd: number;
+                                try {
+                                    bufferedEnd = buffered.end(buffered.length - 1);
                                 }
-                            }
-                            onLoadedMetadata={
-                                () => {
-                                    setAudioReady(true);
-                                    tryToAutoPlay();
+                                catch (err) {
+                                    bufferedEnd = 0;
                                 }
+                                setBuffered(bufferedEnd / duration)
                             }
-                            onCanPlay={
-                                () => {
-                                    setLoading(false)
-                                }
+                        }
+                    }
+                    onSeeked={
+                        () => {
+                            seekingRef.current = false
+                        }
+                    }
+                    onEnded={
+                        () => {
+                            audioRef.current.currentTime = 0
+                            if (repeat === RepeatMode.One) {
+                                tryToAutoPlay()
                             }
-                            onCanPlayThrough={
-                                () => {
-                                    setLoading(false)
-                                }
+                            else {
+                                onPlayEnd?.(true)
                             }
-                            onPlay={
-                                () => {
-                                    onPlayStateChange(true)
-                                }
+                        }
+                    }
+                    onVolumeChange={
+                        () => setVolume(audioRef.current.volume)
+                    }
+                    onError={
+                        () => {
+                            if (hasError.current) {
+                                onPlayEnd?.(false)
+                                setLoading(false)
+                                onPlayStateChange(false)
                             }
-                            onPause={
-                                () => {
-                                    onPlayStateChange(false)
-                                }
+                            else {
+                                hasError.current = true
+                                setTimeout(reloadSong, 400)
                             }
-                            onWaiting={
-                                () => {
-                                    setLoading(true)
-                                }
-                            }
-                            onTimeUpdate={
-                                () => {
-                                    if (!seekingRef.current) {
-                                        setCurrentTime(audioRef.current.currentTime)
-                                    }
-                                }
-                            }
-                            onProgress={
-                                () => {
-                                    if (audioReady) {
-                                        const buffered = audioRef.current.buffered;
-                                        let bufferedEnd: number;
-                                        try {
-                                            bufferedEnd = buffered.end(buffered.length - 1);
-                                        }
-                                        catch (err) {
-                                            bufferedEnd = 0;
-                                        }
-                                        setBuffered(bufferedEnd / duration)
-                                    }
-                                }
-                            }
-                            onSeeked={
-                                () => {
-                                    seekingRef.current = false
-                                }
-                            }
-                            onEnded={
-                                () => {
-                                    audioRef.current.currentTime = 0
-                                    if (repeat === RepeatMode.One) {
-                                        tryToAutoPlay()
-                                    }
-                                    else {
-                                        onPlayEnd?.(true)
-                                    }
-                                }
-                            }
-                            onVolumeChange={
-                                () => setVolume(audioRef.current.volume)
-                            }
-                            onError={
-                                () => {
-                                    if (hasError.current) {
-                                        onPlayEnd?.(false)
-                                        setLoading(false)
-                                        onPlayStateChange(false)
-                                    }
-                                    else {
-                                        hasError.current = true
-                                        setTimeout(reloadSong, 400)
-                                    }
-                                }
-                            }
-                            src={music.url}
-                        />
-                    )
-                }
+                        }
+                    }
+                    src={music.url}
+                />
             </Stack>
             {
                 enableVisual && (
