@@ -487,7 +487,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
             setDownloading(false)
         }
         else {
-            window.open(url)
+            open(url)
         }
     }
 
@@ -921,7 +921,11 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                                         onClick={actionTrigger(toggleFullscreen)}
                                     >
                                         {
-                                            fullscreen ? <FullscreenExitRoundedIcon /> : <FullscreenRoundedIcon />
+                                            fullscreen ? (
+                                                <FullscreenExitRoundedIcon />
+                                            ) : (
+                                                <FullscreenRoundedIcon />
+                                            )
                                         }
                                     </IconButton>
                                 </Tooltip>

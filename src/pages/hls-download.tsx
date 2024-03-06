@@ -20,13 +20,18 @@ export function Head() {
 
 interface ServerProps {
     url: string | null;
+    title: string | null;
 }
 
 export async function getServerData({ query }: GetServerDataProps): Promise<GetServerDataReturn<ServerProps>> {
-    const { url = null } = query as Record<'url', string>;
+    const {
+        url = null,
+        title = null
+    } = query as Record<'url' | 'title', string>;
     return {
         props: {
-            url
+            url,
+            title
         }
     }
 }
@@ -34,6 +39,7 @@ export async function getServerData({ query }: GetServerDataProps): Promise<GetS
 function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerProps>) {
 
     const url = serverData?.url
+    const title = serverData?.title
     const [input, setInput] = useState(url ?? '')
     const [busy, setBusy] = useState(false)
     const hls2Mp4 = useRef<Hls2Mp4 | null>(null)
@@ -83,7 +89,7 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
             if (valid) {
                 const buffer = await hls2Mp4.current.download(url)
                 if (buffer !== null) {
-                    const fileName = getFileName(source)
+                    const fileName = title ?? getFileName(source)
                     hls2Mp4.current.saveToFile(buffer, `${fileName}.mp4`)
                 }
                 else {
