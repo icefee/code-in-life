@@ -1,7 +1,7 @@
 import { Buffer } from 'buffer'
 import { getResponse } from '../../../adaptors'
 import { errorHandler, ApiHandler } from '../../../util/middleware'
-import { proxyUrl, parseUrl, removeAds } from '../../../util/proxy'
+import { parseUrl, removeAds } from '../../../util/proxy'
 import { M3u8 } from '../../../util/regExp'
 import { Base64Params } from '../../../util/clue'
 

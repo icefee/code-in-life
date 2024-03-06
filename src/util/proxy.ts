@@ -70,33 +70,24 @@ export async function fetchFileChunks(
     return dataArray.buffer
 }
 
+function extInfLine(line: string) {
+    const extInfMatcher = new RegExp('#EXTINF:\\d+(.\\d+)?,')
+    return extInfMatcher.test(line)
+}
+
 export function removeAds(
     content: string,
     urlParser: (url: string) => string = (url) => url
 ) {
     const discontinuityTag = /#EXT-X-DISCONTINUITY/
-    const extInfMatcher = new RegExp('#EXTINF:\\d+(.\\d+)?,')
     const keyLineMatcher = /URI=".+\.k(ey)?"/
     const lines = content.split(/\n/).filter(line => line.trim().length > 0)
     const parts = []
-    let extLine = false, pathLength: number | null = null
-    let segmentIndex: number | null = null, segmentLinearSize: number | null = null
-    let inDiscontinuity = false
-    const segmentSize = lines.filter(
-        line => line.match(extInfMatcher)
-    ).length;
-    const discontinuitySize = lines.filter(
-        line => line.match(discontinuityTag)
-    ).length;
-    for (let i = 0; i < lines.length; i++) {
-        const line = lines[i]
+    let extLine = false
+    let segmentIndex: number | null = null,
+        segmentLinearSize = 0
+    for (const line of lines) {
         if (line.match(discontinuityTag)) {
-            if (discontinuitySize === 2) {
-                inDiscontinuity = !inDiscontinuity
-            }
-            continue;
-        }
-        if (inDiscontinuity) {
             continue;
         }
         const keyLineMatch = line.match(keyLineMatcher)
@@ -108,40 +99,35 @@ export function removeAds(
             )
         }
         else if (extLine) {
-            pathLength ??= line.length
             const segmentIndexMatch = line.match(/\d+(?=\.(ts|png|csv)(\?=\w+)?$)/)
+            const parsedLine = urlParser(line)
             if (segmentIndexMatch) {
-                const matchedIndex = segmentIndexMatch[0]
-                const index = Number(matchedIndex)
-                segmentLinearSize ??= index
-                const maxSegmentSize = Math.pow(10, matchedIndex.length)
+                const index = Number(segmentIndexMatch[0])
                 if (
-                    segmentSize < maxSegmentSize
-                    && segmentIndex !== null
-                    && index === segmentLinearSize + 1
+                    segmentIndex !== null
+                    && index === segmentIndex + 1
                 ) {
                     segmentLinearSize++
                 }
-                segmentIndex = index
+                if (
+                    segmentLinearSize > 3
+                    && index > segmentIndex + 3
+                ) {
+                    parts.pop()
+                }
+                else {
+                    parts.push(parsedLine)
+                    segmentIndex = index
+                }
             }
             else {
-                segmentLinearSize = 0
-            }
-            if (
-                (!segmentIndexMatch || segmentIndex !== segmentLinearSize)
-                && segmentLinearSize > 3
-                || line.length > pathLength + 3
-            ) {
-                parts.pop()
-            }
-            else {
-                parts.push(urlParser(line))
+                parts.push(parsedLine)
             }
         }
         else {
             parts.push(line)
         }
-        extLine = Boolean(line.match(extInfMatcher))
+        extLine = extInfLine(line)
     }
     return parts.join('\n')
 }
