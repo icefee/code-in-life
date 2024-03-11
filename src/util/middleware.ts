@@ -43,11 +43,3 @@ export const proxyJson = async (url: string, res: GatsbyFunctionResponse) => {
         return proxyJson(url, res)
     }
 }
-
-/**
- * @deprecated
- */
-export const crossOriginIsolatedHeaders = {
-    'cross-origin-embedder-policy': 'require-corp',
-    'cross-origin-opener-policy': 'same-origin'
-}

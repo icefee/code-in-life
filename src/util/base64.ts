@@ -1,6 +1,5 @@
-
 function bufferSupported() {
-    return 'Buffer' in globalThis;
+    return 'Buffer' in globalThis
 }
 
 export function utf8ToBase64(text: string) {

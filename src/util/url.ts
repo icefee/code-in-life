@@ -1,12 +1,12 @@
-
 export function generate(origin: string) {
-    const params = `${+new Date}`;
+    const params = `${+new Date}`
+    const paramKey = '__ts'
     if (origin.startsWith('http')) {
-        const url = new URL(origin);
-        url.searchParams.append('ts', params);
-        return url.toString();
+        const url = new URL(origin)
+        url.searchParams.append(paramKey, params)
+        return url.toString()
     }
     else {
-        return origin + (origin.match(/\?\w*=/) ? '&' : '?') + `ts=${params}`;
+        return origin + (origin.match(/\?\w*=/) ? '&' : '?') + `${paramKey}=${params}`
     }
 }

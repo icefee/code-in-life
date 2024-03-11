@@ -1,6 +1,6 @@
 import { utf8ToBase64, base64ToUtf8 } from './base64'
 
-type VideoClue = {
+type EncodedClue = {
     api: string;
     id: string | number;
 }
@@ -23,7 +23,7 @@ export abstract class Base64Params {
 
 export abstract class Clue {
 
-    public static parse(text: string): VideoClue | null {
+    public static parse(text: string): EncodedClue | null {
         const origin = Base64Params.parse(text)
         if (origin !== null) {
             const [api, id] = origin.split('|')
@@ -35,7 +35,7 @@ export abstract class Clue {
         return null
     }
 
-    public static create(api: VideoClue['api'], id: VideoClue['id']): string {
+    public static create(api: EncodedClue['api'], id: EncodedClue['id']): string {
         return Base64Params.create(`${api}|${id}`)
     }
 }

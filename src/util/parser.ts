@@ -1,16 +1,3 @@
-
-/*
-declare global {
-    interface Array<T> {
-        shuffle(this: T[]): T[];
-    }
-}
-
-Array.prototype.shuffle = function() {
-    return this.sort(() => Math.random() - .5)
-}
-*/
-
 export function utf82utf16(source: string) {
     var out, i, len, c;
     var char2, char3;
@@ -36,5 +23,5 @@ export function utf82utf16(source: string) {
                 break;
         }
     }
-    return out;
+    return out
 }
