@@ -3,11 +3,12 @@ import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Snackbar from '@mui/material/Snackbar'
-import Alert, { AlertProps } from '@mui/material/Alert'
+import Alert, { type AlertProps } from '@mui/material/Alert'
 import SearchResult from '~/components/search/Result'
 import SearchForm from '~/components/search/Form'
 import NoData from '~/components/search/NoData'
 import { LoadingOverlay } from '~/components/loading'
+import { getJson } from '~/util/proxy'
 
 const parseKeyword = (s: string) => {
     return s.startsWith('$') ? s.slice(1) : s
@@ -27,9 +28,9 @@ const getSearchParams = (s: string) => {
 
 const getSearch = async (searchParams: URLSearchParams, firstLoad = true) => {
     try {
-        const { code, data } = await fetch(
+        const { code, data } = await getJson<ApiJsonType<SearchVideo[]>>(
             `/api/video/list?${searchParams}`
-        ).then<ApiJsonType<SearchVideo[]>>(response => response.json())
+        )
         if (code === 0) {
             return data;
         }

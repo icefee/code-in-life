@@ -5,6 +5,7 @@ import Popover from '@mui/material/Popover'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { getJson } from '~/util/proxy'
 
 interface MusicLrcProps {
     id: SearchMusic['id'];
@@ -13,9 +14,7 @@ interface MusicLrcProps {
 
 async function downloadLrc(id: MusicLrcProps['id']): Promise<Lrc[] | null> {
     try {
-        const { code, data } = await fetch(`/api/music/lrc/${id}`).then<ApiJsonType<Lrc[]>>(
-            response => response.json()
-        )
+        const { code, data } = await getJson<ApiJsonType<Lrc[]>>(`/api/music/lrc/${id}`)
         if (code === 0) {
             return data;
         }
@@ -24,7 +23,7 @@ async function downloadLrc(id: MusicLrcProps['id']): Promise<Lrc[] | null> {
         }
     }
     catch (err) {
-        return null;
+        return null
     }
 }
 
@@ -77,7 +76,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
         const index = lrc.findIndex(
             ({ time }) => time > currentTime
         )
-        return index > -1 ? index - 1 : lrc.length - 1;
+        return index > -1 ? index - 1 : lrc.length - 1
     }, [lrc, currentTime])
 
     const lineActive = useMemo(() => lrc.length > 0 && lineIndex !== -1, [lrc, lineIndex])
@@ -312,4 +311,4 @@ function ScrollingLrc({ lrc, currentTime }: ScrollingLrcProps) {
     )
 }
 
-export default MusicLrc;
+export default MusicLrc

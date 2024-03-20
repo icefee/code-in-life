@@ -3,6 +3,16 @@ import { Base64Params } from './clue'
 
 type ParamsType = Record<string, string>
 
+export function getResponse(...args: Parameters<typeof fetch>): Promise<Response> {
+    return fetch(...args)
+}
+
+export async function getJson<T = any>(...args: Parameters<typeof fetch>): Promise<T> {
+    return getResponse(...args).then<T>(
+        response => response.json()
+    )
+}
+
 export function getParamsUrl(url: string, params: ParamsType) {
     const urlSearchParams = new URLSearchParams(params)
     return `${url}?${urlSearchParams}`

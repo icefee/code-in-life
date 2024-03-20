@@ -17,17 +17,19 @@ import NoData from '~/components/search/NoData'
 import { getJson } from '~/adaptors'
 import { Api } from '~/util/config'
 
+interface DataType {
+    name: string;
+    page: ResponsePagination;
+    video?: VideoListItem[];
+    types: VideoType[];
+    type: number | null;
+    s: string;
+    prefer18: boolean;
+}
+
 interface SearchResultProps {
     api: string;
-    data: {
-        name: string;
-        page: ResponsePagination;
-        video?: VideoListItem[];
-        types: VideoType[];
-        type: number | null;
-        s: string;
-        prefer18: boolean;
-    }
+    data: DataType;
 }
 
 const SiteSearch: React.FunctionComponent<PageProps<object, object, unknown, SearchResultProps>> = ({ serverData, location }) => {
