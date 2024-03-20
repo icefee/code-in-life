@@ -18,7 +18,7 @@ import MusicPlayList from '../components/player/MusicPlayList'
 import useLocalStorageState from '../components/hook/useLocalStorageState'
 import { Api } from '../util/config'
 import { blobToFile } from '../util/blobToFile'
-import { getParamsUrl, fetchFileChunks } from '../util/proxy'
+import { getJson, getParamsUrl, fetchFileChunks } from '../util/proxy'
 
 export function Head() {
     return (
@@ -496,11 +496,9 @@ async function getSearch(s: string): Promise<SearchMusic[] | null> {
         const searchParams = new URLSearchParams({
             s
         })
-        const { code, data } = await fetch(
+        const { code, data } = await getJson<ApiJsonType<SearchMusic[]>>(
             `/api/music/list?${searchParams}`
-        ).then<ApiJsonType<SearchMusic[]>>(
-            response => response.json()
-        );
+        )
         if (code === 0) {
             return data
         }

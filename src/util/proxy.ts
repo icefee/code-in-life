@@ -1,3 +1,13 @@
+export function getResponse(...args: Parameters<typeof fetch>): Promise<Response> {
+    return fetch(...args)
+}
+
+export async function getJson<T = any>(...args: Parameters<typeof fetch>): Promise<T> {
+    return getResponse(...args).then<T>(
+        response => response.json()
+    )
+}
+
 export function getParamsUrl(url: string, params: Record<string, string>) {
     const urlSearchParams = new URLSearchParams(params)
     return `${url}?${urlSearchParams}`
@@ -6,7 +16,7 @@ export function getParamsUrl(url: string, params: Record<string, string>) {
 async function loadFileChunk(url: string, [start, end]: [number, number], init?: RequestInit) {
     const headers = new Headers(init?.headers)
     headers.append('range', `bytes=${start}-${end}`)
-    return fetch(url, {
+    return getResponse(url, {
         ...init,
         headers
     })

@@ -5,6 +5,7 @@ import Popover from '@mui/material/Popover'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { getJson } from 'src/util/proxy'
 
 interface MusicLrcProps {
     id: SearchMusic['id'];
@@ -13,9 +14,7 @@ interface MusicLrcProps {
 
 async function downloadLrc(id: MusicLrcProps['id']): Promise<Lrc[] | null> {
     try {
-        const { code, data } = await fetch(`/api/music/lrc/${id}`).then<ApiJsonType<Lrc[]>>(
-            response => response.json()
-        )
+        const { code, data } = await getJson<ApiJsonType<Lrc[]>>(`/api/music/lrc/${id}`)
         if (code === 0) {
             return data;
         }
@@ -24,7 +23,7 @@ async function downloadLrc(id: MusicLrcProps['id']): Promise<Lrc[] | null> {
         }
     }
     catch (err) {
-        return null;
+        return null
     }
 }
 
@@ -89,11 +88,11 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
         if (lineActive) {
             return lrc[lineIndex].text
         }
-        return '';
+        return ''
     }, [downloading, lineActive, lrc, lineIndex])
 
     const lineDuration = useMemo(() => {
-        let duration = 1;
+        let duration = 3
         if (lineActive && lineIndex < lrc.length - 1) {
             duration = lrc[lineIndex + 1].time - lrc[lineIndex].time
         }
@@ -118,9 +117,9 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
 
     const displayLrc = useMemo(() => {
         if (lrcLine.trim().length > 0) {
-            return lrcLine;
+            return lrcLine
         }
-        return emptyPlaceholder;
+        return emptyPlaceholder
     }, [lrcLine])
 
     useEffect(() => {
@@ -312,4 +311,4 @@ function ScrollingLrc({ lrc, currentTime }: ScrollingLrcProps) {
     )
 }
 
-export default MusicLrc;
+export default MusicLrc
