@@ -39,7 +39,7 @@ const StyledVideo = styled('video')({
 
 function usePipEvent(ref: React.MutableRefObject<HTMLVideoElement>) {
 
-    const [pip, setPip] = useState<boolean>(false)
+    const [pip, setPip] = useState(false)
 
     const onEnter = () => {
         setPip(true)
@@ -98,7 +98,7 @@ function useFullscreenEvent() {
 function useStatus() {
     const [show, setShow] = useState(false)
     const [statusText, setStatusText] = useState('')
-    const timeoutRef = useRef<NodeJS.Timeout>()
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null)
     const outlet = (
         <Fade in={show} unmountOnExit>
             <Box sx={{
@@ -122,7 +122,10 @@ function useStatus() {
             setShow(false)
         }, duration)
     }
-    return { outlet, showStatus }
+    return {
+        outlet,
+        showStatus
+    }
 }
 
 function debounce(delay: number, callback: (args: any[]) => void) {

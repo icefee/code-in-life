@@ -102,7 +102,12 @@ export function removeAds(
             const segmentIndexMatch = line.match(/\d+(?=\.(ts|png|csv)(\?=\w+)?$)/)
             const parsedLine = urlParser(line)
             if (segmentIndexMatch) {
-                const index = Number(segmentIndexMatch[0])
+                const segmentIndexLabel = segmentIndexMatch[0]
+                const index = Number(
+                    segmentIndexLabel.slice(
+                        Math.max(0, segmentIndexLabel.length - 6)
+                    )
+                )
                 if (
                     segmentIndex !== null
                     && index === segmentIndex + 1

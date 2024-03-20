@@ -45,14 +45,6 @@ const apps: App[] = [
         iconBackground: 'linear-gradient(0, #9c27b0, #cddc39)'
     },
     {
-        id: 'music2',
-        name: '音乐搜索2',
-        url: '/mmj',
-        icon: MusicNoteIcon,
-        iconForeground: '#fff',
-        iconBackground: 'linear-gradient(45deg, #ff5722, #e91e63)'
-    },
-    {
         id: 'hls-download',
         name: 'hls视频下载',
         url: '/hls-download',
