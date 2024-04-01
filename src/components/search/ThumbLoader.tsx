@@ -1,71 +1,124 @@
 import React, { memo, useState, useEffect, useRef } from 'react'
 import Box from '@mui/material/Box'
+import ButtonBase from '@mui/material/ButtonBase'
+import Stack from '@mui/material/Stack'
 import Skeleton from '@mui/material/Skeleton'
+import Typography from '@mui/material/Typography'
+import { useTheme, type SxProps, type Theme } from '@mui/material/styles'
+import { generate } from '~/util/url'
+import { Api } from '~/util/config'
 
-type ThumbLoaderProps = {
+type ImageProps = React.JSX.IntrinsicElements['img']
+
+type ThumbLoaderProps = Omit<ImageProps, 'style' | 'onLoad' | 'onError'> & {
     src: string;
-    alt?: string;
     aspectRatio?: string;
 }
 
-function ThumbLoader({ src, alt, aspectRatio = '2 / 3' }: ThumbLoaderProps) {
-    const [loading, setLoading] = useState(true)
-    const imageRef = useRef<HTMLImageElement | null>(null)
+function ThumbLoader({
+    src,
+    aspectRatio = '2 / 3',
+    ...props
+}: ThumbLoaderProps) {
+
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState(false)
+    const imageRef = useRef<HTMLImageElement>(null!)
+    const { palette } = useTheme()
+
+    const commonSx: SxProps<Theme> = {
+        position: 'absolute',
+        width: '100%',
+        height: '100%',
+        left: 0,
+        top: 0
+    }
+
+    const showLoading = () => {
+        setLoading(true)
+    }
 
     const hideLoading = () => {
         setLoading(false)
     }
 
     useEffect(() => {
-        if (imageRef.current.complete) {
-            hideLoading()
+        if (!imageRef.current.complete) {
+            showLoading()
         }
-    }, [])
+    }, [src])
 
     return (
-        <Box sx={{
-            position: 'relative',
-            aspectRatio
-        }}>
+        <Box
+            sx={{
+                position: 'relative',
+                width: '100%',
+                aspectRatio,
+                bgcolor: palette.mode === 'dark' ? '#444' : '#eee'
+            }}
+        >
             <img
-                ref={imageRef}
                 style={{
                     display: 'block',
                     width: '100%',
                     height: '100%',
-                    objectFit: 'cover',
-                    opacity: loading ? 0 : 1
+                    opacity: error ? 0 : 1,
+                    objectFit: 'cover'
                 }}
+                ref={imageRef}
+                src={src}
                 onLoad={hideLoading}
                 onError={
                     () => {
-                        hideLoading
-                        imageRef.current.src = `/image_fail.jpg`;
+                        hideLoading()
+                        setError(true)
                     }
                 }
-                src={src}
-                alt={alt}
+                {...props}
             />
             {
                 loading && (
-                    <Box
+                    <Skeleton
                         sx={{
-                            position: 'absolute',
-                            left: 0,
-                            top: 0,
-                            width: '100%',
-                            height: '100%'
+                            ...commonSx,
+                            zIndex: 1
+                        }}
+                        animation="wave"
+                        variant="rectangular"
+                    />
+                )
+            }
+            {
+                error && (
+                    <Stack
+                        justifyContent="center"
+                        alignItems="center"
+                        component={ButtonBase}
+                        onClick={
+                            () => {
+                                setError(false)
+                                showLoading()
+                                imageRef.current.src = generate(src)
+                            }
+                        }
+                        sx={{
+                            ...commonSx,
+                            zIndex: 2
                         }}
                     >
-                        <Skeleton
-                            sx={{
-                                height: '100%'
+                        <img
+                            width={72}
+                            height={72}
+                            style={{
+                                opacity: .75
                             }}
-                            animation="wave"
-                            variant="rectangular"
-                            component="div"
+                            src={`${Api.assetSite}/assets/image_fail.png`}
                         />
-                    </Box>
+                        <Typography
+                            variant="caption"
+                            color="text.disabled"
+                        >点击重试</Typography>
+                    </Stack>
                 )
             }
         </Box>

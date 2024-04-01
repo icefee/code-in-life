@@ -1,5 +1,5 @@
 import React, { useId } from 'react'
-import SvgIcon, { SvgIconProps } from '@mui/material/SvgIcon'
+import SvgIcon, { type SvgIconProps } from '@mui/material/SvgIcon'
 
 function Spinner(props: SvgIconProps) {
     const id = useId()
@@ -21,7 +21,8 @@ function Spinner(props: SvgIconProps) {
                         strokeDasharray="60"
                         strokeDashoffset="60"
                         strokeOpacity=".3"
-                        d="M12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3Z">
+                        d="M12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3Z"
+                    >
                         <animate fill="freeze" attributeName="stroke-dashoffset" dur="1.3s" values="60;0" />
                     </path>
                     <path strokeDasharray="15" strokeDashoffset="15" d="M12 3C16.9706 3 21 7.02944 21 12">

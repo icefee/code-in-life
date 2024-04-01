@@ -1,31 +1,29 @@
-import React from 'react';
-import Stack from '@mui/material/Stack';
-import Fade from '@mui/material/Fade';
-import Backdrop from '@mui/material/Backdrop';
-import Typography, { type TypographyProps } from '@mui/material/Typography';
-import Spinner from './Spinner';
-import { type Theme } from '@mui/material/styles';
+import React from 'react'
+import Stack from '@mui/material/Stack'
+import Fade from '@mui/material/Fade'
+import Backdrop from '@mui/material/Backdrop'
+import Typography, { type TypographyProps } from '@mui/material/Typography'
+import Spinner from './Spinner'
+import type { Theme, SxProps } from '@mui/material/styles'
 
 type PropsType = {
     open: boolean;
-    spinSize?: number;
+    spinnerSize?: number;
     zIndex?: number;
     fixed?: boolean;
     label?: string;
     labelVariant?: TypographyProps['variant'];
-    labelColor?: string;
     withoutBackdrop?: boolean;
     withBackground?: boolean;
 }
 
-export default function LoadingOverlay({
+function LoadingOverlay({
     open,
-    spinSize = 36,
+    spinnerSize = 36,
     zIndex,
     fixed = true,
     label,
     labelVariant = 'body1',
-    labelColor,
     withoutBackdrop = false,
     withBackground = false
 }: PropsType) {
@@ -34,14 +32,14 @@ export default function LoadingOverlay({
         <>
             <Spinner
                 sx={{
-                    fontSize: spinSize
+                    fontSize: spinnerSize
                 }}
             />
             {
                 label && (
                     <Typography
                         sx={{
-                            ml: 1.5
+                            textIndent: 8
                         }}
                         variant={labelVariant}
                         color="inherit"
@@ -52,18 +50,22 @@ export default function LoadingOverlay({
     )
 
     const content = withBackground ? (
-        <Stack sx={{
-            p: 1.5,
-            backgroundColor: 'rgba(0, 0, 0, .75)',
-            borderRadius: 1.5
-        }} direction="row" alignItems="center">
+        <Stack
+            sx={{
+                p: 1.5,
+                backgroundColor: 'rgba(0, 0, 0, .75)',
+                borderRadius: 1.5
+            }}
+            direction="row"
+            alignItems="center"
+        >
             {inner}
         </Stack>
     ) : inner
 
-    const commonSx = {
-        color: labelColor,
-        zIndex: zIndex ?? ((theme: Theme) => theme.zIndex.drawer + 1),
+    const commonSx: SxProps<Theme> = {
+        color: '#fff',
+        zIndex: zIndex ?? ((theme) => theme.zIndex.modal + 1),
         ...(fixed ? null : { position: 'absolute' })
     }
 
@@ -73,10 +75,7 @@ export default function LoadingOverlay({
                 <Stack
                     sx={{
                         position: 'absolute',
-                        left: 0,
-                        top: 0,
-                        right: 0,
-                        bottom: 0,
+                        inset: 0,
                         ...commonSx
                     }}
                     direction="row"
@@ -97,3 +96,5 @@ export default function LoadingOverlay({
         >{content}</Backdrop>
     )
 }
+
+export default LoadingOverlay

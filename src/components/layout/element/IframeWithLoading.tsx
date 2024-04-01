@@ -29,8 +29,7 @@ function IframeWithLoading({ src, onLoad, style, ...props }: JSX.IntrinsicElemen
                 }
             />
             <LoadingOverlay
-                label="加载中"
-                labelColor="#fff"
+                label="加载中.."
                 open={loading}
                 fixed={false}
             />

@@ -101,41 +101,49 @@ function VideoPlay({ id, video }: VideoPlayProps) {
     }, [init])
 
     return (
-        <Box sx={{
-            height: '100%',
-            backgroundImage: 'var(--linear-gradient-image)'
-        }}>
+        <Box
+            sx={{
+                height: '100%',
+                backgroundImage: 'var(--linear-gradient-image)'
+            }}
+        >
             <title>{pageTitle}</title>
             {
                 video ? (
-                    <Box sx={{
-                        position: 'relative',
-                        width: '100%',
-                        maxWidth: 1200,
-                        height: '100%',
-                        zIndex: 5,
-                        overflow: 'hidden',
-                        margin: '0 auto',
-                        boxShadow: 'rgb(0 0 0 / 50%) 2px 2px 15px'
-                    }}>
-                        <Stack sx={
-                            (theme) => ({
-                                height: '100%',
-                                [theme.breakpoints.up('sm')]: {
-                                    overflowY: 'auto'
-                                }
-                            })
-                        }>
-                            <Box sx={(theme) => ({
-                                background: '#000',
-                                overflow: 'hidden',
-                                height: '45%',
-                                flexShrink: 0,
-                                [theme.breakpoints.up('sm')]: {
-                                    height: 'min(calc(min(100vw, 1200px) * 10 / 16), 600px)',
-                                    maxHeight: '100vh'
-                                }
-                            })}>
+                    <Box
+                        sx={{
+                            position: 'relative',
+                            width: '100%',
+                            maxWidth: 1200,
+                            height: '100%',
+                            zIndex: 5,
+                            overflow: 'hidden',
+                            margin: '0 auto',
+                            boxShadow: 'rgb(0 0 0 / 50%) 2px 2px 15px'
+                        }}
+                    >
+                        <Stack
+                            sx={
+                                ({ breakpoints }) => ({
+                                    height: '100%',
+                                    [breakpoints.up('sm')]: {
+                                        overflowY: 'auto'
+                                    }
+                                })
+                            }
+                        >
+                            <Box
+                                sx={({ breakpoints }) => ({
+                                    background: '#000',
+                                    overflow: 'hidden',
+                                    height: '45%',
+                                    flexShrink: 0,
+                                    [breakpoints.up('sm')]: {
+                                        height: 'min(calc(min(100vw, 1200px) * 10 / 16), 600px)',
+                                        maxHeight: '100vh'
+                                    }
+                                })}
+                            >
                                 {
                                     ready && (
                                         <VideoUrlParser url={playingVideo.url}>
@@ -159,10 +167,12 @@ function VideoPlay({ id, video }: VideoPlayProps) {
                             </Box>
                             {
                                 activeSource.urls.length > 1 && (
-                                    <Box sx={{
-                                        bgcolor: 'background.paper',
-                                        p: 1.5
-                                    }}>
+                                    <Box
+                                        sx={{
+                                            bgcolor: 'background.paper',
+                                            p: 1.5
+                                        }}
+                                    >
                                         <Typography
                                             variant="subtitle1"
                                             align="center"
@@ -172,24 +182,26 @@ function VideoPlay({ id, video }: VideoPlayProps) {
                             }
                             <Stack
                                 flexGrow={1}
-                                sx={(theme) => ({
-                                    [theme.breakpoints.only('xs')]: {
+                                sx={({ breakpoints }) => ({
+                                    [breakpoints.only('xs')]: {
                                         overflow: 'hidden'
                                     }
                                 })}
                             >
-                                <Box sx={(theme) => ({
-                                    position: 'relative',
-                                    zIndex: 4,
-                                    width: '100%',
-                                    bgcolor: 'background.paper',
-                                    borderBottom: 1,
-                                    borderColor: 'divider',
-                                    [theme.breakpoints.only('xs')]: {
-                                        transition: theme.transitions.create('box-shadow'),
-                                        boxShadow: 'rgb(0 0 0 / 10%) 0 4px 4px'
-                                    }
-                                })}>
+                                <Box
+                                    sx={({ breakpoints, transitions }) => ({
+                                        position: 'relative',
+                                        zIndex: 4,
+                                        width: '100%',
+                                        bgcolor: 'background.paper',
+                                        borderBottom: 1,
+                                        borderColor: 'divider',
+                                        [breakpoints.only('xs')]: {
+                                            transition: transitions.create('box-shadow'),
+                                            boxShadow: 'rgb(0 0 0 / 10%) 0 4px 4px'
+                                        }
+                                    })}
+                                >
                                     <Tabs
                                         value={activeTab}
                                         onChange={
@@ -202,15 +214,23 @@ function VideoPlay({ id, video }: VideoPlayProps) {
                                         <Tab label="同类推荐" />
                                     </Tabs>
                                 </Box>
-                                <TabPanel index={0} value={activeTab} disablePadding>
+                                <TabPanel
+                                    index={0}
+                                    value={activeTab}
+                                    disablePadding
+                                >
                                     <VideoProfile video={video} />
                                 </TabPanel>
-                                <TabPanel index={1} value={activeTab} disablePadding>
+                                <TabPanel
+                                    index={1}
+                                    value={activeTab}
+                                    disablePadding
+                                >
                                     <Stack
                                         direction="row"
-                                        sx={(theme) => ({
+                                        sx={({ breakpoints }) => ({
                                             height: '100%',
-                                            [theme.breakpoints.up('sm')]: {
+                                            [breakpoints.up('sm')]: {
                                                 minHeight: 250
                                             }
                                         })}
@@ -246,9 +266,9 @@ function VideoPlay({ id, video }: VideoPlayProps) {
                                             )
                                         }
                                         <Box
-                                            sx={(theme) => ({
+                                            sx={({ breakpoints }) => ({
                                                 width: '100%',
-                                                [theme.breakpoints.only('xs')]: {
+                                                [breakpoints.only('xs')]: {
                                                     flexGrow: 1,
                                                     overflowY: 'auto'
                                                 }
@@ -283,17 +303,21 @@ function VideoPlay({ id, video }: VideoPlayProps) {
                                                                                     disableElevation
                                                                                     variant={
                                                                                         episodeIndex === index ? 'contained' : 'outlined'
-                                                                                    } sx={{
+                                                                                    }
+                                                                                    sx={{
                                                                                         whiteSpace: 'nowrap',
                                                                                         overflow: 'hidden',
                                                                                         textOverflow: 'ellipsis'
-                                                                                    }} size="small" onClick={
+                                                                                    }}
+                                                                                    size="small"
+                                                                                    onClick={
                                                                                         () => {
                                                                                             if (episodeIndex !== index) {
                                                                                                 playVideo(index)
                                                                                             }
                                                                                         }
-                                                                                    }>{video.label}</Button>
+                                                                                    }
+                                                                                >{video.label}</Button>
                                                                             </Box>
                                                                         )
                                                                     )
@@ -306,12 +330,18 @@ function VideoPlay({ id, video }: VideoPlayProps) {
                                         </Box>
                                     </Stack>
                                 </TabPanel>
-                                <TabPanel index={2} value={activeTab} disablePadding>
-                                    <Box sx={{
-                                        height: '100%',
-                                        p: 1.5,
-                                        overflowY: 'auto'
-                                    }}>
+                                <TabPanel
+                                    index={2}
+                                    value={activeTab}
+                                    disablePadding
+                                >
+                                    <Box
+                                        sx={{
+                                            height: '100%',
+                                            p: 1.5,
+                                            overflowY: 'auto'
+                                        }}
+                                    >
                                         <RelatedList data={video.related} />
                                     </Box>
                                 </TabPanel>
@@ -333,13 +363,14 @@ interface VideoProfileProps {
 function VideoProfile({ video }: VideoProfileProps) {
     return (
         <Box
-            sx={(theme) => ({
+            sx={({ breakpoints }) => ({
                 height: '100%',
                 p: 1.5,
-                [theme.breakpoints.only('xs')]: {
+                [breakpoints.only('xs')]: {
                     overflowY: 'auto',
                 }
-            })}>
+            })}
+        >
             <Stack
                 direction="row"
                 columnGap={1.5}
@@ -347,14 +378,16 @@ function VideoProfile({ video }: VideoProfileProps) {
                     pb: 3
                 }}
             >
-                <Box sx={(theme) => ({
-                    width: '36%',
-                    aspectRatio: '2 / 3',
-                    flexShrink: 0,
-                    [theme.breakpoints.up('sm')]: {
-                        width: 180
-                    }
-                })}>
+                <Box
+                    sx={({ breakpoints }) => ({
+                        width: '36%',
+                        aspectRatio: '2 / 3',
+                        flexShrink: 0,
+                        [breakpoints.up('sm')]: {
+                            width: 180
+                        }
+                    })}
+                >
                     <ThumbLoader
                         src={video.pic}
                         alt={video.name}
@@ -416,34 +449,49 @@ function RelatedList({ data }: RelatedListProps) {
                             <Card elevation={2}>
                                 <CardActionArea href={`/video/play/${id}/`}>
                                     <Stack direction="row">
-                                        <Box sx={{
-                                            width: 96,
-                                            height: 128,
-                                            flexShrink: 0
-                                        }}>
+                                        <Box
+                                            sx={{
+                                                width: 96,
+                                                height: 128,
+                                                flexShrink: 0
+                                            }}
+                                        >
                                             <ThumbLoader
                                                 src={`/api/video/poster/${id}`}
                                                 aspectRatio="3 / 4"
                                             />
                                         </Box>
-                                        <Box sx={{
-                                            flexGrow: 1,
-                                            p: 1,
-                                            overflow: 'hidden'
-                                        }}>
-                                            <Stack sx={{
-                                                height: '100%'
-                                            }}>
-                                                <Box sx={{
-                                                    flexGrow: 1
-                                                }}>
+                                        <Box
+                                            sx={{
+                                                flexGrow: 1,
+                                                p: 1,
+                                                overflow: 'hidden'
+                                            }}
+                                        >
+                                            <Stack
+                                                sx={{
+                                                    height: '100%'
+                                                }}
+                                            >
+                                                <Box
+                                                    sx={{
+                                                        flexGrow: 1
+                                                    }}
+                                                >
                                                     <RowClipTypography
                                                         rows={2}
                                                         paragraph
                                                     >{name}</RowClipTypography>
-                                                    <Typography variant="subtitle2" color="text.secondary">{note}</Typography>
+                                                    <Typography
+                                                        variant="subtitle2"
+                                                        color="text.secondary"
+                                                    >{note}</Typography>
                                                 </Box>
-                                                <Typography variant="subtitle2" color="text.secondary" align="right">{last}</Typography>
+                                                <Typography
+                                                    variant="subtitle2"
+                                                    color="text.secondary"
+                                                    align="right"
+                                                >{last}</Typography>
                                             </Stack>
                                         </Box>
                                     </Stack>
@@ -479,7 +527,9 @@ export default function Page({ serverData }: PageProps<object, object, unknown, 
     useEffect(() => {
         (async function getVideoInfo() {
             try {
-                const { code, data } = await getJson<ApiJsonType<VideoInfo>>(`/api/video/detail/${id}`)
+                const { code, data } = await getJson<ApiJsonType<VideoInfo>>(
+                    `/api/video/detail/${id}`
+                )
                 if (code === 0) {
                     if (data.proxy) {
                         location.replace(`${Api.assetSite}/video/play/${id}`)

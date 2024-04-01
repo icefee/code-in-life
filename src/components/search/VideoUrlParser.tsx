@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography'
 import LoadingOverlay from '../loading/LoadingOverlay'
 import { Video, M3u8 } from '~/util/regExp'
 import { Base64Params } from '~/util/clue'
+import { getJson } from '~/util/proxy'
 
 type VideoUrlParserProps = {
     url: string;
@@ -17,8 +18,8 @@ type VideoUrlParserProps = {
 const parseUrl = async (url: string) => {
     try {
         const token = Base64Params.create(url)
-        const { code, data } = await fetch(`/api/video/parse/${token}`).then<ApiJsonType<string>>(
-            response => response.json()
+        const { code, data } = await getJson<ApiJsonType<string>>(
+            `/api/video/parse/${token}`
         )
         if (code === 0) {
             return data;
@@ -80,22 +81,21 @@ function VideoUrlParser({ url, children }: VideoUrlParserProps) {
             }
             <LoadingOverlay
                 open={videoUrl === null && !error}
-                spinSize={28}
+                spinnerSize={28}
                 fixed={false}
                 label="地址解析中.."
-                labelColor="#fff"
             />
             {
                 error && (
                     <Alert
                         severity="error"
                         sx={
-                            (theme) => ({
+                            ({ breakpoints }) => ({
                                 position: 'absolute',
                                 left: '50%',
                                 top: '50%',
                                 transform: 'translate(-50%, -50%)',
-                                [theme.breakpoints.only('xs')]: {
+                                [breakpoints.only('xs')]: {
                                     width: '90%'
                                 }
                             })
@@ -117,7 +117,7 @@ function VideoUrlParser({ url, children }: VideoUrlParserProps) {
                                 size="small"
                                 onClick={
                                     () => {
-                                        setError(false);
+                                        setError(false)
                                         _parseUrl()
                                     }
                                 }
@@ -137,6 +137,6 @@ function VideoUrlParser({ url, children }: VideoUrlParserProps) {
     )
 }
 
-VideoUrlParser.parseUrl = parseUrl;
+VideoUrlParser.parseUrl = parseUrl
 
-export default VideoUrlParser;
+export default VideoUrlParser

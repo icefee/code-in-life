@@ -1,4 +1,4 @@
-import { utf8ToBase64, base64ToUtf8 } from './base64'
+import { encode, decode } from './base64'
 
 type EncodedClue = {
     api: string;
@@ -9,7 +9,7 @@ export abstract class Base64Params {
 
     public static parse(text: string): string | null {
         try {
-            return base64ToUtf8(text + '='.repeat(4 - text.length % 4))
+            return decode(text + '='.repeat(4 - text.length % 4))
         }
         catch (err) {
             return null
@@ -17,7 +17,7 @@ export abstract class Base64Params {
     }
 
     public static create(text: string): string {
-        return utf8ToBase64(text).replace(/\={1,2}$/, '')
+        return encode(text).replace(/\={1,2}$/, '')
     }
 }
 

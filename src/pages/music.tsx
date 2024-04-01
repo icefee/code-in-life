@@ -461,13 +461,11 @@ export default function MusicSearch() {
                 open={searchTask.pending}
                 label="搜索中.."
                 withBackground
-                labelColor="#fff"
             />
             <LoadingOverlay
                 open={downloading}
                 label="歌曲下载中.."
                 withBackground
-                labelColor="#fff"
             />
             <Snackbar
                 open={Boolean(toastMsg)}

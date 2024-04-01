@@ -182,7 +182,6 @@ export default function VideoSearch() {
                     label="搜索中.."
                     withoutBackdrop
                     withBackground
-                    labelColor="#fff"
                 />
             </Stack>
             <Snackbar

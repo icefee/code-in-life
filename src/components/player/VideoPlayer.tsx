@@ -208,7 +208,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
     const [rate, setRate] = useState(1)
     const { pip, togglePip } = usePipEvent(videoRef)
 
-    const playerRef = useRef<HTMLDivElement>()
+    const playerRef = useRef<HTMLDivElement>(null!)
     const { fullscreen } = useFullscreenEvent()
     const controlsAutoHideTimeout = useRef<NodeJS.Timeout>()
 

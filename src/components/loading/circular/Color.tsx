@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 interface SpinProps {
     size?: number;
@@ -6,10 +6,15 @@ interface SpinProps {
 
 const ColorSpin = ({ size = 32 }: SpinProps) => {
     return (
-        <svg style={{
-            width: size,
-            height: size,
-        }} width="44" height="44" viewBox="0 0 44 44">
+        <svg
+            style={{
+                width: size,
+                height: size
+            }}
+            width="44"
+            height="44"
+            viewBox="0 0 44 44"
+        >
             <defs>
                 <radialGradient spreadMethod="reflect" id="radial-gradient">
                     <stop offset="0%" stopColor="#03a9f4" />
@@ -63,4 +68,4 @@ const ColorSpin = ({ size = 32 }: SpinProps) => {
     )
 }
 
-export default ColorSpin;
+export default ColorSpin
