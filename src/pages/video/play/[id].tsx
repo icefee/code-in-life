@@ -254,11 +254,15 @@ function VideoPlay({ id, video }: VideoPlayProps) {
                                                                 ...rest
                                                             })
                                                         )
-                                                    }>
+                                                    }
+                                                >
                                                     {
                                                         video.dataList.map(
                                                             (source: VideoSource, index: number) => (
-                                                                <Tab label={source.name} key={index} />
+                                                                <Tab
+                                                                    key={index}
+                                                                    label={source.name}
+                                                                />
                                                             )
                                                         )
                                                     }
@@ -287,9 +291,9 @@ function VideoPlay({ id, video }: VideoPlayProps) {
                                                                 direction="row"
                                                                 flexWrap="wrap"
                                                                 flexGrow={1}
-                                                                sx={(theme) => ({
+                                                                sx={({ breakpoints }) => ({
                                                                     p: 1.5,
-                                                                    [theme.breakpoints.only('xs')]: {
+                                                                    [breakpoints.only('xs')]: {
                                                                         overflowY: 'auto'
                                                                     }
                                                                 })}
@@ -336,11 +340,12 @@ function VideoPlay({ id, video }: VideoPlayProps) {
                                     disablePadding
                                 >
                                     <Box
-                                        sx={{
+                                        sx={({ palette }) => ({
                                             height: '100%',
+                                            bgcolor: palette.mode === 'dark' ? '#222' : '#eee',
                                             p: 1.5,
                                             overflowY: 'auto'
-                                        }}
+                                        })}
                                     >
                                         <RelatedList data={video.related} />
                                     </Box>
@@ -441,12 +446,12 @@ interface RelatedListProps {
 
 function RelatedList({ data }: RelatedListProps) {
     return (
-        <Grid spacing={1} container>
+        <Grid spacing={1.5} container>
             {
                 data.map(
                     ({ id, name, note, last }) => (
-                        <Grid xs={12} sm={6} lg={4} xl={3} key={id} item>
-                            <Card elevation={2}>
+                        <Grid xs={12} sm={6} lg={3} key={id} item>
+                            <Card raised>
                                 <CardActionArea href={`/video/play/${id}/`}>
                                     <Stack direction="row">
                                         <Box

@@ -27,10 +27,7 @@ function BackgroundContainer({
 
     const absoluteStyle: React.CSSProperties = {
         position: 'absolute',
-        width: '100%',
-        height: '100%',
-        left: 0,
-        top: 0,
+        inset: 0
     }
 
     const backgroundImage = useMemo(() => {
@@ -51,18 +48,19 @@ function BackgroundContainer({
             sx={{
                 position: 'relative',
                 height: '100%',
-                bgcolor: (theme) => theme.palette.mode === 'dark' ? 'background.paper' : 'initial',
+                bgcolor: ({ palette }) => palette.mode === 'dark' ? 'background.paper' : 'initial',
                 ...style
-            }}>
+            }}
+        >
             <Box
                 sx={{
                     ...absoluteStyle,
-                    opacity: (theme) => theme.palette.mode === 'dark' ? .45 : 'initial',
+                    opacity: ({ palette }) => palette.mode === 'dark' ? .45 : 'initial',
                     transition: 'background-image 2.5s ease-in-out',
                     backgroundRepeat: 'no-repeat',
                     backgroundPosition: 'center',
                     backgroundSize: 'cover',
-                    backgroundImage: backgroundImage,
+                    backgroundImage
                 }}
             />
             <Box
@@ -82,4 +80,4 @@ function BackgroundContainer({
     )
 }
 
-export default BackgroundContainer;
+export default BackgroundContainer
