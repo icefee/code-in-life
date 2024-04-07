@@ -10,18 +10,20 @@ export function Head() {
     )
 }
 
+type Log = {
+    id: number;
+    text: string;
+}
+
 function Hls2Mp4Demo() {
 
-    const [logs, setLogs] = useState<{
-        id: number;
-        text: string;
-    }[]>([])
+    const [logs, setLogs] = useState<Log[]>([])
     const [downloading, setDownloading] = useState(false)
     const hls2Mp4 = useRef<Hls2Mp4 | null>(null)
     const videoRef = useRef<HTMLVideoElement | null>(null)
     const logScrollerRef = useRef<HTMLUListElement | null>(null)
     const nextId = useRef(0)
-    const testUrl = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
+    const testUrl = 'https://test-streams.mux.dev/x36xhzz/url_2/193039199_mp4_h264_aac_ld_7.m3u8'
 
     const addLog = (log: string) => {
         setLogs(
@@ -67,7 +69,7 @@ function Hls2Mp4Demo() {
             const TaskType = Hls2Mp4.TaskType;
             if (type === TaskType.loadFFmeg) {
                 if (progress === 0) {
-                    addLog('load FFmpeg')
+                    addLog('loading FFmpeg')
                 }
                 else {
                     addLog('FFmpeg load complete')
@@ -107,9 +109,11 @@ function Hls2Mp4Demo() {
                 controls
             />
 
-            <div style={{
-                margin: 10
-            }}>
+            <div
+                style={{
+                    margin: 10
+                }}
+            >
                 <button
                     disabled={downloading}
                     onClick={

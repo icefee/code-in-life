@@ -1,17 +1,17 @@
-import React, { type SyntheticEvent, useState, useRef, useMemo, forwardRef, useImperativeHandle } from 'react';
-import Paper from '@mui/material/Paper';
-import Autocomplete from '@mui/material/Autocomplete';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import IconButton from '@mui/material/IconButton';
-import NoSsr from '@mui/material/NoSsr';
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-import InputBase from '@mui/material/InputBase';
-import { alpha } from '@mui/material/styles';
-import LoadingButton, { type LoadingButtonProps } from '@mui/lab/LoadingButton';
-import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
-import useLocalStorageState from '../hook/useLocalStorageState';
-import { isTextNotNull } from '~/util/string';
+import React, { useState, useRef, useMemo, forwardRef, useImperativeHandle } from 'react'
+import Paper from '@mui/material/Paper'
+import Autocomplete from '@mui/material/Autocomplete'
+import ListItem from '@mui/material/ListItem'
+import ListItemText from '@mui/material/ListItemText'
+import IconButton from '@mui/material/IconButton'
+import NoSsr from '@mui/material/NoSsr'
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
+import InputBase from '@mui/material/InputBase'
+import { alpha } from '@mui/material/styles'
+import LoadingButton, { type LoadingButtonProps } from '@mui/lab/LoadingButton'
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
+import useLocalStorageState from '../hook/useLocalStorageState'
+import { isTextNotNull } from '~/util/string'
 
 interface SearchFormProps {
     action?: string;
@@ -138,7 +138,7 @@ function SearchForm({
                     (_event, value) => onChange(value)
                 }
                 onChange={
-                    (_event: SyntheticEvent<Element, Event>, value: string | null) => {
+                    (_event: React.SyntheticEvent<Element, Event>, value: string | null) => {
                         if (value && value !== prevSubmitValue.current) {
                             handleSubmit(value)
                         }
@@ -226,4 +226,4 @@ function SearchForm({
     )
 }
 
-export default forwardRef<SearchFormInstance, SearchFormProps>(SearchForm);
+export default forwardRef<SearchFormInstance, SearchFormProps>(SearchForm)

@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 import type { GatsbyBrowser } from 'gatsby'
 import { StaticTheme } from './src/components/theme'
 import { SnackbarProvider } from './src/components/hook/useSnackbar'

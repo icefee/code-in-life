@@ -1,20 +1,20 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
-import List from '@mui/material/List';
-import ListSubheader from '@mui/material/ListSubheader';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
-import PlaylistAddRoundedcon from '@mui/icons-material/PlaylistAdd';
-import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
-import LyricsRoundedIcon from '@mui/icons-material/LyricsRounded';
-import MusicPoster from '../player/MusicPoster';
-import { MusicPlay as MusicPlayIcon } from '../loading';
-import useMenu from '../hook/useMenu';
+import React, { useState, useEffect, useMemo } from 'react'
+import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
+import List from '@mui/material/List'
+import ListSubheader from '@mui/material/ListSubheader'
+import ListItem from '@mui/material/ListItem'
+import ListItemButton from '@mui/material/ListItemButton'
+import ListItemText from '@mui/material/ListItemText'
+import IconButton from '@mui/material/IconButton'
+import Typography from '@mui/material/Typography'
+import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded'
+import PlaylistAddRoundedcon from '@mui/icons-material/PlaylistAdd'
+import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded'
+import LyricsRoundedIcon from '@mui/icons-material/LyricsRounded'
+import MusicPoster from '../player/MusicPoster'
+import { MusicPlay as MusicPlayIcon } from '../loading'
+import useMenu from '../hook/useMenu'
 
 type MenuAction = 'add' | 'download-song' | 'download-lrc';
 

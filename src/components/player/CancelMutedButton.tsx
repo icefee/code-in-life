@@ -1,9 +1,9 @@
-import React from 'react';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Zoom from '@mui/material/Zoom';
-import VolumeOffIcon from '@mui/icons-material/VolumeOff';
-import type { SxProps, Theme } from '@mui/material/styles';
+import React from 'react'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Zoom from '@mui/material/Zoom'
+import VolumeOffIcon from '@mui/icons-material/VolumeOff'
+import type { SxProps, Theme } from '@mui/material/styles'
 
 interface CancelMutedButtonProps {
     show: boolean;
@@ -26,4 +26,4 @@ function CancelMutedButton({ show, sx, onClick }: CancelMutedButtonProps) {
     )
 }
 
-export default CancelMutedButton;
+export default CancelMutedButton

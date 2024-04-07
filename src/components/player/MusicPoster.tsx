@@ -22,11 +22,13 @@ function MusicPoster({ spinning = false, src, alt }: MusicPosterProps) {
     }, [src])
 
     return (
-        <Box sx={{
-            position: 'relative',
-            width: '100%',
-            height: '100%'
-        }}>
+        <Box
+            sx={{
+                position: 'relative',
+                width: '100%',
+                height: '100%'
+            }}
+        >
             <Avatar
                 alt={alt}
                 src={poster ?? src}

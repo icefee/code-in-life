@@ -1,9 +1,10 @@
 import React from 'react'
+import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
-import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import HomeIcon from '@mui/icons-material/Home'
 
 export function Head() {
     return (
@@ -14,13 +15,12 @@ export function Head() {
 }
 
 const Page404 = () => (
-    <Box
+    <Stack
         component="main"
+        direction="row"
+        alignItems="center"
         sx={{
-            alignItems: 'center',
-            display: 'flex',
-            flexGrow: 1,
-            minHeight: '100%'
+            height: '100%'
         }}
     >
         <Container maxWidth="md">
@@ -35,9 +35,9 @@ const Page404 = () => (
                     align="center"
                     color="textPrimary"
                     variant="h2"
-                    sx={(theme) => ({
+                    sx={({ breakpoints }) => ({
                         mb: 6,
-                        [theme.breakpoints.down('sm')]: {
+                        [breakpoints.down('sm')]: {
                             mb: 3,
                             fontSize: 40
                         }
@@ -45,10 +45,12 @@ const Page404 = () => (
                 >
                     访问的内容不存在
                 </Typography>
-                <Box sx={{
-                    textAlign: 'center',
-                    mb: 3
-                }}>
+                <Box
+                    sx={{
+                        textAlign: 'center',
+                        mb: 3
+                    }}
+                >
                     <img
                         alt="page not found"
                         src="/page_not_found.svg"
@@ -60,20 +62,25 @@ const Page404 = () => (
                         }}
                     />
                 </Box>
-                <Button
-                    startIcon={
-                        <ArrowBackIcon fontSize="small" />
-                    }
-                    variant="contained"
-                    onClick={
-                        () => history.back()
-                    }
+                <Box
+                    sx={{
+                        color: '#6c63ff'
+                    }}
                 >
-                    返回上一页
-                </Button>
+                    <Button
+                        startIcon={
+                            <HomeIcon />
+                        }
+                        href="/"
+                        color="inherit"
+                        variant="outlined"
+                    >
+                        返回主页
+                    </Button>
+                </Box>
             </Box>
         </Container>
-    </Box>
+    </Stack>
 )
 
-export default Page404;
+export default Page404
