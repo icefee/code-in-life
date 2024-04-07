@@ -1,6 +1,6 @@
 :root {
   --linear-gradient: #90f7f9, #eccbfc;
-  --linear-gradient-image: linear-gradient(30deg, var(--linear-gradient));
+  --linear-gradient-image: linear-gradient(0, var(--linear-gradient));
   --scrollbar-thumb-color: rgba(0, 0, 0, .5);
   --scrollbar-thumb-hover-color: rgba(0, 0, 0, .75);
   --scrollbar-thumb-dark-mode-color: hsl(0 0% 100% / 50%);
@@ -46,7 +46,7 @@ body {
 
 @media screen and (prefers-color-scheme: dark) {
   :root {
-    --linear-gradient: #004160, #2e0944;
+    --linear-gradient: #3a86ff60, #121317;
   }
 
   ::-webkit-scrollbar-thumb {
@@ -65,15 +65,5 @@ body {
 
   to {
     transform: rotate(360deg);
-  }
-}
-
-@keyframes motion {
-  from {
-    background-position: center 0;
-  }
-
-  to {
-    background-position: center 100%;
   }
 }
