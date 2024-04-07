@@ -47,7 +47,7 @@ declare var QRCode: QRCodeInstance;
 
 function QrcodeGenerator() {
 
-    const canvasRef = useRef<HTMLCanvasElement>()
+    const canvasRef = useRef<HTMLCanvasElement>(null!)
     const [input, setInput] = useLocalStorageState<string>('__qr_cache', '')
     const [libLoaded, setLibLoaded] = useState(false)
     const [done, setDone] = useState(false)
@@ -86,30 +86,38 @@ function QrcodeGenerator() {
                     () => setLibLoaded(true)
                 }
             />
-            <Stack sx={{
-                position: 'relative',
-                height: '100%',
-                backgroundImage: 'var(--linear-gradient-image)'
-            }}>
-                <Stack sx={(theme) => ({
-                    position: 'absolute',
-                    width: '100%',
-                    left: '50%',
-                    top: done ? 40 : '50%',
-                    transform: 'translate(-50%, -50%)',
-                    px: 2,
-                    transition: theme.transitions.create('top'),
-                    zIndex: 20,
-                    [theme.breakpoints.up('sm')]: {
-                        width: 450,
-                        px: 0
+            <Stack
+                sx={{
+                    position: 'relative',
+                    height: '100%',
+                    backgroundImage: 'var(--linear-gradient-image)'
+                }}
+            >
+                <Stack
+                    sx={({ transitions, breakpoints }) => ({
+                        position: 'absolute',
+                        width: '100%',
+                        left: '50%',
+                        top: done ? 40 : '50%',
+                        transform: 'translate(-50%, -50%)',
+                        px: 2,
+                        transition: transitions.create('top'),
+                        zIndex: 20,
+                        [breakpoints.up('sm')]: {
+                            width: 450,
+                            px: 0
+                        }
+                    })}
+                    direction="row"
+                    columnGap={1}
+                    component="form"
+                    onSubmit={
+                        (event: React.FormEvent<HTMLFormElement>) => {
+                            event.preventDefault();
+                            generate()
+                        }
                     }
-                })} direction="row" columnGap={1} component="form" onSubmit={
-                    (event: React.FormEvent<HTMLFormElement>) => {
-                        event.preventDefault();
-                        generate()
-                    }
-                }>
+                >
                     <TextField
                         sx={{
                             flexGrow: 1
@@ -128,7 +136,11 @@ function QrcodeGenerator() {
                     />
                     <Button variant="outlined" disabled={!libLoaded} type="submit">生成</Button>
                 </Stack>
-                <Stack justifyContent="center" alignItems="center" flexGrow={1}>
+                <Stack
+                    justifyContent="center"
+                    alignItems="center"
+                    flexGrow={1}
+                >
                     <canvas
                         width={250}
                         height={250}
@@ -144,4 +156,4 @@ function QrcodeGenerator() {
     )
 }
 
-export default QrcodeGenerator;
+export default QrcodeGenerator

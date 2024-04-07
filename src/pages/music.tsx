@@ -184,7 +184,7 @@ export default function MusicSearch() {
         >
             <title>{pageTitle}</title>
             <Stack
-                sx={(theme) => ({
+                sx={({ breakpoints }) => ({
                     position: 'relative',
                     width: '100%',
                     '--max-width': '600px',
@@ -192,7 +192,7 @@ export default function MusicSearch() {
                     maxWidth: 'var(--max-width)',
                     margin: '0 auto',
                     overflow: 'hidden',
-                    [theme.breakpoints.up('sm')]: {
+                    [breakpoints.up('sm')]: {
                         backgroundImage: activeMusic ? 'linear-gradient(0, #0000002e, transparent)' : 'none'
                     }
                 })}

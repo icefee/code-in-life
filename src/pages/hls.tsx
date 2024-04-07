@@ -15,9 +15,11 @@ export default function Hls() {
     }
     */
     return (
-        <Box sx={{
-            height: 400
-        }}>
+        <Box
+            sx={{
+                height: 400
+            }}
+        >
             {/* <button onClick={downloadFile}>start</button> */}
             <VideoPlayer
                 title="测试m3u8视频"

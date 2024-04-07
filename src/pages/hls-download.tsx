@@ -164,33 +164,41 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
 
     return (
         <NoSsr>
-            <Stack sx={{
-                position: 'relative',
-                height: '100%',
-                backgroundImage: 'var(--linear-gradient-image)'
-            }}>
-                <Stack sx={(theme) => ({
-                    position: 'absolute',
-                    width: '100%',
-                    left: '50%',
-                    top: busy ? theme.spacing(5) : '50%',
-                    transform: 'translate(-50%, -50%)',
-                    px: 2,
-                    transition: theme.transitions.create('top'),
-                    transitionDelay: busy ? 0 : '.4s',
-                    zIndex: 20,
-                    [theme.breakpoints.up('sm')]: {
-                        width: 450,
-                        px: 0
-                    }
-                })} direction="row" columnGap={1} component="form" onSubmit={
-                    (event: React.FormEvent<HTMLFormElement>) => {
-                        event.preventDefault();
-                        if (!busy) {
-                            startDownload(input)
+            <Stack
+                sx={{
+                    position: 'relative',
+                    height: '100%',
+                    backgroundImage: 'var(--linear-gradient-image)'
+                }}
+            >
+                <Stack
+                    sx={({ spacing, transitions, breakpoints }) => ({
+                        position: 'absolute',
+                        width: '100%',
+                        left: '50%',
+                        top: busy ? spacing(5) : '50%',
+                        transform: 'translate(-50%, -50%)',
+                        px: 2,
+                        transition: transitions.create('top'),
+                        transitionDelay: busy ? 0 : '.4s',
+                        zIndex: 20,
+                        [breakpoints.up('sm')]: {
+                            width: 450,
+                            px: 0
+                        }
+                    })}
+                    direction="row"
+                    columnGap={1}
+                    component="form"
+                    onSubmit={
+                        (event: React.FormEvent<HTMLFormElement>) => {
+                            event.preventDefault();
+                            if (!busy) {
+                                startDownload(input)
+                            }
                         }
                     }
-                }>
+                >
                     <TextField
                         sx={{
                             flexGrow: 1
@@ -211,17 +219,19 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
                     />
                     <Button variant="outlined" type="submit" disabled={busy}>{busy ? '下载中..' : '下载'}</Button>
                 </Stack>
-                <Stack sx={(theme) => ({
-                    position: 'relative',
-                    width: '100%',
-                    maxWidth: 600,
-                    height: '100%',
-                    transition: theme.transitions.create(['opacity']),
-                    transitionDelay: busy ? '.4s' : 0,
-                    overflow: 'hidden',
-                    margin: '0 auto',
-                    opacity: busy ? 1 : 0
-                })}>
+                <Stack
+                    sx={({ transitions }) => ({
+                        position: 'relative',
+                        width: '100%',
+                        maxWidth: 600,
+                        height: '100%',
+                        transition: transitions.create(['opacity']),
+                        transitionDelay: busy ? '.4s' : 0,
+                        overflow: 'hidden',
+                        margin: '0 auto',
+                        opacity: busy ? 1 : 0
+                    })}
+                >
                     <Stack
                         sx={{
                             height: '100%',

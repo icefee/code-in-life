@@ -78,7 +78,8 @@ export default function VideoSearch() {
             style={{
                 height: '100%',
                 backgroundImage: 'var(--linear-gradient-image)'
-            }}>
+            }}
+        >
             <title>{pageTitle}</title>
             <Stack
                 sx={{
@@ -90,14 +91,16 @@ export default function VideoSearch() {
                 direction="row"
                 justifyContent="center"
             >
-                <Box sx={
-                    (theme) => ({
-                        width: '100%',
-                        [theme.breakpoints.up('sm')]: {
-                            width: 320
-                        }
-                    })
-                }>
+                <Box
+                    sx={
+                        ({ breakpoints }) => ({
+                            width: '100%',
+                            [breakpoints.up('sm')]: {
+                                width: 320
+                            }
+                        })
+                    }
+                >
                     <SearchForm
                         value={keyword}
                         onChange={setKeyword}

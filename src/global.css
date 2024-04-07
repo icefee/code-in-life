@@ -1,5 +1,5 @@
 :root {
-  --linear-gradient: #90f7f9, #eccbfc;
+  --linear-gradient: #90f7f9, #d9b8ff;
   --linear-gradient-image: linear-gradient(0, var(--linear-gradient));
   --scrollbar-thumb-color: rgba(0, 0, 0, .5);
   --scrollbar-thumb-hover-color: rgba(0, 0, 0, .75);

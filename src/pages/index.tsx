@@ -1,11 +1,10 @@
-import React, { ComponentType } from 'react'
+import React, { type ComponentType } from 'react'
 import { navigate, type PageProps, type GetServerDataProps, type GetServerDataReturn } from 'gatsby'
 import type { SvgIconProps } from '@mui/material/SvgIcon'
 import Stack from '@mui/material/Stack'
 import ButtonBase from '@mui/material/ButtonBase'
 import Typography from '@mui/material/Typography'
 import AlbumIcon from '@mui/icons-material/Album'
-import MusicNoteIcon from '@mui/icons-material/MusicNote'
 import TheatersIcon from '@mui/icons-material/Theaters'
 import QrCodeIcon from '@mui/icons-material/QrCode'
 import SaveAltIcon from '@mui/icons-material/SaveAlt'
@@ -74,6 +73,7 @@ interface AppIconProps {
 }
 
 function AppIcon({ app, mode }: AppIconProps) {
+
     const Icon = app.icon;
     const iconColor = app.iconBackground.match(/#[\da-f]{6}/g)?.[0]
 
@@ -81,7 +81,7 @@ function AppIcon({ app, mode }: AppIconProps) {
         <Stack
             sx={{
                 alignItems: 'center',
-                transition: (theme) => theme.transitions.create('filter'),
+                transition: ({ transitions }) => transitions.create('filter'),
                 '&:hover': {
                     filter: `drop-shadow(0 0 24px ${iconColor})`
                 }
@@ -112,9 +112,11 @@ function AppIcon({ app, mode }: AppIconProps) {
     )
 
     return (
-        <Stack sx={{
-            width: 'var(--icon-size)',
-        }}>
+        <Stack
+            sx={{
+                width: 'var(--icon-size)',
+            }}
+        >
             {
                 mode === AppMode.pwa ? (
                     <ButtonBase
@@ -155,20 +157,22 @@ export async function getServerData({ query }: GetServerDataProps): Promise<GetS
 function Index({ serverData }: PageProps<object, object, unknown, ServerProps>) {
     const mode = serverData.mode;
     return (
-        <Stack sx={(theme) => ({
-            height: '100%',
-            background: 'var(--linear-gradient-image)',
-            p: 2,
-            overflowY: 'auto',
-            [theme.breakpoints.up('sm')]: {
-                p: 3
-            }
-        })}>
+        <Stack
+            sx={({ breakpoints }) => ({
+                height: '100%',
+                background: 'var(--linear-gradient-image)',
+                p: 2,
+                overflowY: 'auto',
+                [breakpoints.up('sm')]: {
+                    p: 3
+                }
+            })}
+        >
             <Stack
-                sx={(theme) => ({
-                    '--icon-size': `min(calc((100vw - ${theme.spacing(10)}) / 4), 90px)`,
+                sx={({ spacing, breakpoints }) => ({
+                    '--icon-size': `min(calc((100vw - ${spacing(10)}) / 4), 90px)`,
                     gap: 2,
-                    [theme.breakpoints.up('sm')]: {
+                    [breakpoints.up('sm')]: {
                         '--icon-size': '96px',
                         gap: 3
                     }
@@ -192,4 +196,4 @@ function Index({ serverData }: PageProps<object, object, unknown, ServerProps>) 
     )
 }
 
-export default Index;
+export default Index
