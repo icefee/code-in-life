@@ -150,32 +150,11 @@ function MediaSlider({ buffered, sx, showTooltip = false, tooltipFormatter, disa
             >
                 <Slider
                     ref={rootRef}
+                    style={commonStyles}
+                    sx={commonSx}
                     onMouseMove={handleMouseMove}
                     onKeyDown={onKeyDown}
                     disabled={disabled}
-                    style={commonStyles}
-                    sx={{
-                        ...commonSx,
-                        '& .MuiSlider-thumb': {
-                            width: 0,
-                            height: 0,
-                            transition: '.2s ease',
-                            '&.Mui-active': {
-                                width: 16,
-                                height: 16,
-                            },
-                            '&.Mui-focusVisible': {
-                                boxShadow: 'none'
-                            },
-                            '&:after': {
-                                display: 'none'
-                            }
-                        },
-                        '&:hover .MuiSlider-thumb': {
-                            width: 12,
-                            height: 12
-                        }
-                    }}
                     {...props}
                 />
             </Tooltip>
