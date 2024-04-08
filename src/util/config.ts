@@ -3,7 +3,7 @@ import { isDev } from './env'
 export abstract class Api {
     public static netlifyDomain = 'netlify.app'
     public static site = `http://cik.${Api.netlifyDomain}`
-    public static assetSite = 'https://spacedeta-4-f1000878.deta.app'
+    public static assetSite = 'https://spacedeta-1-f1000878.deta.app'
     public static proxyServer = isDev ? '' : (process.env.POSTER_SERVER || `https://music-online.${Api.netlifyDomain}`)
 }
 

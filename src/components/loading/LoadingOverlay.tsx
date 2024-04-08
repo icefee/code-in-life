@@ -65,7 +65,7 @@ function LoadingOverlay({
 
     const commonSx: SxProps<Theme> = {
         color: '#fff',
-        zIndex: zIndex ?? ((theme) => theme.zIndex.modal + 1),
+        zIndex: zIndex ?? ((theme) => theme.zIndex.drawer + 1),
         ...(fixed ? null : { position: 'absolute' })
     }
 

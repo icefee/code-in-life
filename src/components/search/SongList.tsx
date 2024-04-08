@@ -42,9 +42,10 @@ function SongList({ data, onAction, ...rest }: SongListProps) {
 
     return (
         <List
-            sx={{
-                bgcolor: 'background.paper'
-            }}
+            sx={({ shadows }) => ({
+                bgcolor: 'background.paper',
+                boxShadow: shadows[4]
+            })}
             subheader={
                 <ListSubheader
                     disableGutters
