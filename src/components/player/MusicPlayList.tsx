@@ -20,7 +20,7 @@ import DownloadIcon from '@mui/icons-material/Download'
 import LyricsIcon from '@mui/icons-material/Lyrics'
 import PlaylistRemoveIcon from '@mui/icons-material/PlaylistRemove'
 import MusicPoster from './MusicPoster'
-import MusicPlayIcon from '../loading/MusicPlay'
+import { MusicPlay as MusicPlayIcon } from '../loading'
 import useMenu from '../hook/useMenu'
 
 const StyledInput = styled(InputBase)(({ theme }) => ({

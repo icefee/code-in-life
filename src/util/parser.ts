@@ -1,4 +1,3 @@
-
 export function utf82utf16(source: string) {
     var out, i, len, c;
     var char2, char3;

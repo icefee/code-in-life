@@ -1,4 +1,3 @@
-
 export function generate(origin: string) {
     const params = `${+new Date}`;
     if (origin.startsWith('http')) {

@@ -1,17 +1,17 @@
-import React, { useState, useRef, useMemo, forwardRef, useImperativeHandle } from 'react';
-import Paper from '@mui/material/Paper';
-import Autocomplete from '@mui/material/Autocomplete';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import IconButton from '@mui/material/IconButton';
-import NoSsr from '@mui/material/NoSsr';
-import CloseIcon from '@mui/icons-material/Close';
-import InputBase from '@mui/material/InputBase';
-import { alpha } from '@mui/material/styles';
-import LoadingButton, { type LoadingButtonProps } from '@mui/lab/LoadingButton';
-import SearchIcon from '@mui/icons-material/Search';
-import useLocalStorageState from '../hook/useLocalStorageState';
-import { isTextNotNull } from '../../util/string';
+import React, { useState, useRef, useMemo, forwardRef, useImperativeHandle } from 'react'
+import Paper from '@mui/material/Paper'
+import Autocomplete from '@mui/material/Autocomplete'
+import ListItem from '@mui/material/ListItem'
+import ListItemText from '@mui/material/ListItemText'
+import IconButton from '@mui/material/IconButton'
+import NoSsr from '@mui/material/NoSsr'
+import CloseIcon from '@mui/icons-material/Close'
+import InputBase from '@mui/material/InputBase'
+import { alpha } from '@mui/material/styles'
+import LoadingButton, { type LoadingButtonProps } from '@mui/lab/LoadingButton'
+import SearchIcon from '@mui/icons-material/Search'
+import useLocalStorageState from '../hook/useLocalStorageState'
+import { isTextNotNull } from '../../util/string'
 
 interface SearchFormProps {
     action?: string;

@@ -1,5 +1,5 @@
-import { useState, useRef, useLayoutEffect } from 'react';
-import useWindowSize from 'react-use/lib/useWindowSize';
+import { useState, useRef, useLayoutEffect } from 'react'
+import useWindowSize from 'react-use/lib/useWindowSize'
 
 function useResizeObserver<T extends HTMLElement = HTMLDivElement>() {
 

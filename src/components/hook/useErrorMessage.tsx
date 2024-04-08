@@ -1,13 +1,13 @@
-import React from 'react';
-import Alert from '@mui/material/Alert';
-import Button from '@mui/material/Button';
-import { useSnackbar } from './useSnackbar';
+import React from 'react'
+import Alert from '@mui/material/Alert'
+import Button from '@mui/material/Button'
+import { useSnackbar } from './useSnackbar'
 
 export { SnackbarProvider } from './useSnackbar'
 
 export default function useErrorMessage() {
 
-    const { showSnackbar, hideAll } = useSnackbar();
+    const { showSnackbar, hideAll } = useSnackbar()
 
     const showErrorMessage = ({
         message,
@@ -44,5 +44,5 @@ export default function useErrorMessage() {
             autoHideDuration
         })
     }
-    return showErrorMessage;
+    return showErrorMessage
 }

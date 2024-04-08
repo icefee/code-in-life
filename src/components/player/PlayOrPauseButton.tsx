@@ -1,7 +1,7 @@
-import React, { forwardRef } from 'react';
-import IconButton, { type IconButtonProps } from '@mui/material/IconButton';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import PauseIcon from '@mui/icons-material/Pause';
+import React, { forwardRef } from 'react'
+import IconButton, { type IconButtonProps } from '@mui/material/IconButton'
+import PlayArrowIcon from '@mui/icons-material/PlayArrow'
+import PauseIcon from '@mui/icons-material/Pause'
 
 interface PlayOrPauseButtonProps {
     playing: boolean;
@@ -21,4 +21,4 @@ const PlayOrPauseButton = forwardRef<HTMLButtonElement, PlayOrPauseButtonProps>(
     )
 })
 
-export default PlayOrPauseButton;
+export default PlayOrPauseButton

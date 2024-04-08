@@ -1,5 +1,5 @@
-import { useState, useEffect, type Dispatch, type SetStateAction } from 'react';
-import useLocalStorage from 'react-use/lib/useLocalStorage';
+import { useState, useEffect, type Dispatch, type SetStateAction } from 'react'
+import useLocalStorage from 'react-use/lib/useLocalStorage'
 
 type DataModel<T> = {
     init: boolean;

@@ -6,7 +6,7 @@ export function downloadFile(url: string, fileName: string = '') {
     return anchor
 }
 
-export function blobToFile(blob: Blob, fileName: string = ''): void {
+export function blobToFile(blob: Blob, fileName: string = '') {
     const url = URL.createObjectURL(blob)
     const anchor = downloadFile(url, fileName)
     setTimeout(() => {

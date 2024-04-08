@@ -1,5 +1,5 @@
-import React, { createContext, useState, useContext } from 'react';
-import Snackbar, { SnackbarProps } from '@mui/material/Snackbar';
+import React, { createContext, useState, useContext } from 'react'
+import Snackbar, { SnackbarProps } from '@mui/material/Snackbar'
 
 export type SnackbarOption = Exclude<SnackbarProps, 'open' | 'onClose'>
 

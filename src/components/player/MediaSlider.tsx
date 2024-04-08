@@ -1,8 +1,8 @@
-import React, { useState, useRef, useMemo, KeyboardEvent } from 'react';
-import Slider, { SliderProps } from '@mui/material/Slider';
-import { SxProps, Theme } from '@mui/material/styles';
-import Tooltip from '@mui/material/Tooltip';
-import { Instance } from '@popperjs/core';
+import React, { useState, useRef, useMemo, KeyboardEvent } from 'react'
+import Slider, { type SliderProps } from '@mui/material/Slider'
+import { SxProps, Theme } from '@mui/material/styles'
+import Tooltip from '@mui/material/Tooltip'
+import type { Instance } from '@popperjs/core'
 
 interface MediaSliderProps extends Omit<SliderProps, 'onMouseMove' | 'onKeyDown'> {
     buffered: number;
@@ -10,7 +10,14 @@ interface MediaSliderProps extends Omit<SliderProps, 'onMouseMove' | 'onKeyDown'
     tooltipFormatter?: (value: number) => string | number;
 }
 
-function MediaSlider({ buffered, components, sx, showTooltip = false, tooltipFormatter, disabled, ...props }: MediaSliderProps) {
+function MediaSlider({
+    buffered,
+    sx,
+    showTooltip = false,
+    tooltipFormatter,
+    disabled,
+    ...props
+}: MediaSliderProps) {
 
     const rootRef = useRef<HTMLSpanElement>();
     const positionRef = useRef<{ x: number; y: number }>({
@@ -124,4 +131,4 @@ function MediaSlider({ buffered, components, sx, showTooltip = false, tooltipFor
     )
 }
 
-export default MediaSlider;
+export default MediaSlider

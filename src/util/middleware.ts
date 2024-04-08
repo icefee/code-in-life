@@ -1,4 +1,4 @@
-import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby'
+import type { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby'
 
 export interface ApiHandler {
     (req: GatsbyFunctionRequest, res: GatsbyFunctionResponse): Promise<void>;

@@ -326,16 +326,16 @@ export default function MusicSearch() {
                 {
                     activeMusic !== null && (
                         <Stack
-                            sx={{
+                            sx={({ transitions, zIndex }) => ({
                                 position: 'fixed',
                                 width: '100%',
                                 maxWidth: 'var(--max-width)',
                                 bottom: 0,
                                 boxShadow: '0px -4px 12px 0px rgb(0 0 0 / 80%)',
-                                transition: (theme) => theme.transitions.create('transform'),
+                                transition: transitions.create('transform'),
                                 transform: playlistShow ? 'none' : 'translate(0, 50vh)',
-                                zIndex: 1250
-                            }}
+                                zIndex: zIndex.drawer + 2
+                            })}
                         >
                             <MusicPlayer
                                 music={activeMusic}
