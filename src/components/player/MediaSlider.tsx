@@ -1,6 +1,6 @@
 import React, { useState, useRef, useMemo, KeyboardEvent } from 'react'
 import Slider, { type SliderProps } from '@mui/material/Slider'
-import { SxProps, Theme } from '@mui/material/styles'
+import type { SxProps, Theme } from '@mui/material/styles'
 import Tooltip from '@mui/material/Tooltip'
 import type { Instance } from '@popperjs/core'
 
@@ -19,22 +19,22 @@ function MediaSlider({
     ...props
 }: MediaSliderProps) {
 
-    const rootRef = useRef<HTMLSpanElement>();
+    const rootRef = useRef<HTMLSpanElement | null>(null)
     const positionRef = useRef<{ x: number; y: number }>({
         x: 0,
         y: 0,
     })
-    const popperRef = useRef<Instance>(null)
-    const [hoverRate, setHoverRate] = useState(0);
+    const popperRef = useRef<Instance | null>(null)
+    const [hoverRate, setHoverRate] = useState(0)
 
     const handleMouseMove = (event: React.MouseEvent) => {
-        positionRef.current = { x: event.clientX, y: event.clientY };
+        positionRef.current = { x: event.clientX, y: event.clientY }
         if (popperRef.current != null) {
-            popperRef.current.update();
+            popperRef.current.update()
         }
-        const rootRect = rootRef.current?.getBoundingClientRect();
-        const rate = (positionRef.current.x - rootRect.x) / rootRect.width;
-        setHoverRate(rate);
+        const rootRect = rootRef.current?.getBoundingClientRect()
+        const rate = (positionRef.current.x - rootRect.x) / rootRect.width
+        setHoverRate(rate)
     }
 
     const commonSx = useMemo<SxProps<Theme>>(
@@ -55,11 +55,11 @@ function MediaSlider({
                 },
                 '&:before': {
                     width: '100%',
-                    opacity: .1
+                    opacity: .05
                 },
                 '&:after': {
                     width: 'calc(var(--buffered) * 100%)',
-                    opacity: .2,
+                    opacity: .1,
                     transition: (theme) => theme.transitions.create('width')
                 }
             },
@@ -72,7 +72,7 @@ function MediaSlider({
 
     const onKeyDown = (event: KeyboardEvent) => {
         if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-            event.preventDefault();
+            event.preventDefault()
         }
     }
 
@@ -102,18 +102,11 @@ function MediaSlider({
             >
                 <Slider
                     ref={rootRef}
+                    style={commonStyles}
+                    sx={commonSx}
                     onMouseMove={handleMouseMove}
                     onKeyDown={onKeyDown}
                     disabled={disabled}
-                    style={commonStyles}
-                    sx={{
-                        ...commonSx,
-                        '& .MuiSlider-thumb': {
-                            '&:after': {
-                                display: 'none',
-                            }
-                        }
-                    }}
                     {...props}
                 />
             </Tooltip>
@@ -124,8 +117,8 @@ function MediaSlider({
         <Slider
             style={commonStyles}
             sx={commonSx}
-            disabled={disabled}
             onKeyDown={onKeyDown}
+            disabled={disabled}
             {...props}
         />
     )
