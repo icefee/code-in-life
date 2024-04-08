@@ -1,18 +1,18 @@
+:root {
+  --linear-gradient: #90f7f9, #d9b8ff;
+  --linear-gradient-image: linear-gradient(0, var(--linear-gradient));
+  --scrollbar-thumb-color: rgba(0, 0, 0, .5);
+  --scrollbar-thumb-hover-color: rgba(0, 0, 0, .75);
+  --scrollbar-thumb-dark-mode-color: hsl(0 0% 100% / 50%);
+  --scrollbar-thumb-dark-mode-hover-color: hsl(0 0% 100% / 75%);
+}
+
 html,
 body,
 #___gatsby,
 #gatsby-focus-wrapper {
   height: 100%;
   overflow: hidden;
-}
-
-:root {
-  --linear-gradient: #90f7f9, #eccbfc;
-  --linear-gradient-image: linear-gradient(0, var(--linear-gradient));
-  --scrollbar-thumb-color: rgba(0, 0, 0, .5);
-  --scrollbar-thumb-hover-color: rgba(0, 0, 0, .75);
-  --scrollbar-thumb-dark-mode-color: hsl(0 0% 100% / 50%);
-  --scrollbar-thumb-dark-mode-hover-color: hsl(0 0% 100% / 75%);
 }
 
 body {

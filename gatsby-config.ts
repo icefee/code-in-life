@@ -11,8 +11,8 @@ const config: GatsbyConfig = {
         short_name: '音乐搜索',
         icon: 'static/icon.png',
         start_url: '/?mode=pwa',
-        background_color: '#03a9f4',
-        theme_color: '#3f51b5',
+        background_color: '#d9b8ff',
+        theme_color: '#d9b8ff',
         display: 'standalone'
       }
     },
