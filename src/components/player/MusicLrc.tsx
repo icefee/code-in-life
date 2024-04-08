@@ -5,7 +5,7 @@ import Popover from '@mui/material/Popover'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { getJson } from 'src/util/proxy'
+import { getJson } from '../../util/proxy'
 
 interface MusicLrcProps {
     id: SearchMusic['id'];
