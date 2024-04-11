@@ -17,7 +17,7 @@ const handler: ApiHandler = async (req, res) => {
         ).end(lrcText)
     }
     else {
-        throw new Error('lrc file not found.')
+        throw new Error('file not found.')
     }
 }
 

@@ -27,7 +27,7 @@ export function proxyUrl(url: string, remote: boolean = false, extend: ParamsTyp
 
 export function pureHlsUrl(url: string) {
     const token = Base64Params.create(url)
-    return `/api/video/pure/${token}`
+    return `${Api.assetSite}/api/video/hls/pure/${token}.m3u8`
 }
 
 export function parseUrl(url: string, base: string) {

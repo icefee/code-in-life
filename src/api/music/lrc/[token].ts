@@ -13,7 +13,7 @@ const handler: ApiHandler = async (req, res) => {
         })
     }
     else {
-        throw new Error('lrc not found.')
+        throw new Error('file not found.')
     }
 }
 
