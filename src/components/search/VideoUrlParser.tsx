@@ -22,12 +22,12 @@ const parseUrl = async (url: string) => {
             `/api/video/parse/${token}`
         )
         if (code === 0) {
-            return data;
+            return data
         }
         throw new Error('url parse fail.')
     }
     catch (err) {
-        return null;
+        return null
     }
 }
 
@@ -77,16 +77,7 @@ function VideoUrlParser({ url, children }: VideoUrlParserProps) {
             }}
         >
             {
-                videoUrl && children(videoUrl, _isHls(videoUrl))
-            }
-            <LoadingOverlay
-                open={videoUrl === null && !error}
-                spinnerSize={28}
-                fixed={false}
-                label="地址解析中.."
-            />
-            {
-                error && (
+                error ? (
                     <Alert
                         severity="error"
                         sx={
@@ -131,8 +122,14 @@ function VideoUrlParser({ url, children }: VideoUrlParserProps) {
                             >源地址播放</Button>
                         </Stack>
                     </Alert>
-                )
+                ) : videoUrl && children(videoUrl, _isHls(videoUrl))
             }
+            <LoadingOverlay
+                open={videoUrl === null && !error}
+                spinnerSize={28}
+                fixed={false}
+                label="地址解析中.."
+            />
         </Box>
     )
 }

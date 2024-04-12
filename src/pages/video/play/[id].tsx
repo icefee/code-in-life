@@ -248,12 +248,19 @@ function VideoPlay({ id, video }: VideoPlayProps) {
                                                     variant="scrollable"
                                                     value={sourceIndex}
                                                     onChange={
-                                                        (_event, active: number) => setPlayHistory(
-                                                            ({ sourceIndex, ...rest }) => ({
-                                                                sourceIndex: active,
-                                                                ...rest
-                                                            })
-                                                        )
+                                                        (_event, active: number) => {
+                                                            const nextSource = video.dataList[active]
+                                                            setPlayHistory(
+                                                                ({ sourceIndex, episodeIndex, ...rest }) => {
+                                                                    const nextEpisodeIndex = nextSource.urls.length < activeSource.urls.length ? nextSource.urls.length - 1 : episodeIndex
+                                                                    return {
+                                                                        sourceIndex: active,
+                                                                        episodeIndex: nextEpisodeIndex,
+                                                                        ...rest
+                                                                    }
+                                                                }
+                                                            )
+                                                        }
                                                     }
                                                 >
                                                     {

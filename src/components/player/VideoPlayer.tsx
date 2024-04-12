@@ -19,7 +19,7 @@ import Forward10RoundedIcon from '@mui/icons-material/Forward10Rounded'
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded'
 import useLocalStorageState from '../hook/useLocalStorageState'
 import MediaSlider from './MediaSlider'
-import CancelMutedButton from './CancelMutedButton'
+import UnmuteButton from './UnmuteButton'
 import { DarkThemed } from '../theme'
 import PlayOrPauseButton from './PlayOrPauseButton'
 import VolumeSetter from './VolumeSetter'
@@ -779,7 +779,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                         <Alert severity="error">视频加载失败</Alert>
                     </Stack>
                 </Fade>
-                <CancelMutedButton
+                <UnmuteButton
                     show={videoLoaded && !error && muted}
                     sx={{
                         left: 16,

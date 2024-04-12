@@ -1,19 +1,19 @@
 import React from 'react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Zoom from '@mui/material/Zoom'
+import Fade from '@mui/material/Fade'
 import VolumeOffIcon from '@mui/icons-material/VolumeOff'
 import type { SxProps, Theme } from '@mui/material/styles'
 
-interface CancelMutedButtonProps {
+interface UnmuteButtonProps {
     show: boolean;
     sx?: SxProps<Theme>;
     onClick?: VoidFunction;
 }
 
-function CancelMutedButton({ show, sx, onClick }: CancelMutedButtonProps) {
+function UnmuteButton({ show, sx, onClick }: UnmuteButtonProps) {
     return (
-        <Zoom in={show} unmountOnExit>
+        <Fade in={show} unmountOnExit>
             <Box sx={{
                 position: 'absolute',
                 ...sx
@@ -22,8 +22,8 @@ function CancelMutedButton({ show, sx, onClick }: CancelMutedButtonProps) {
                     <VolumeOffIcon />
                 } onClick={onClick}>取消静音</Button>
             </Box>
-        </Zoom>
+        </Fade>
     )
 }
 
-export default CancelMutedButton
+export default UnmuteButton
