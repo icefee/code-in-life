@@ -223,6 +223,7 @@ export default function MusicSearch() {
                             loading={searchTask.pending}
                             buttonColor="secondary"
                             autocompleteKey="music"
+                            placeholder="输入歌名/歌手名搜索.."
                         />
                     </Box>
                 </Stack>

@@ -19,7 +19,7 @@ type PropsType = {
 
 function LoadingOverlay({
     open,
-    spinnerSize = 36,
+    spinnerSize = 32,
     zIndex,
     fixed = true,
     label,
@@ -52,9 +52,10 @@ function LoadingOverlay({
     const content = withBackground ? (
         <Stack
             sx={{
-                p: 1.5,
-                backgroundColor: 'rgba(0, 0, 0, .75)',
-                borderRadius: 1.5
+                p: ({ spacing }) => spacing(1, 1.5),
+                bgcolor: 'rgba(0, 0, 0, .75)',
+                borderRadius: 1.5,
+                maxWidth: '80%'
             }}
             direction="row"
             alignItems="center"
