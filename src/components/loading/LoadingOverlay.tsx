@@ -1,10 +1,10 @@
-import React from 'react';
-import Stack from '@mui/material/Stack';
-import Fade from '@mui/material/Fade';
-import Backdrop from '@mui/material/Backdrop';
-import Typography, { type TypographyProps } from '@mui/material/Typography';
-import Spinner from './Spinner';
-import { type Theme } from '@mui/material/styles';
+import React from 'react'
+import Stack from '@mui/material/Stack'
+import Fade from '@mui/material/Fade'
+import Backdrop from '@mui/material/Backdrop'
+import Typography, { type TypographyProps } from '@mui/material/Typography'
+import Spinner from './Spinner'
+import type { SxProps, Theme } from '@mui/material/styles'
 
 type PropsType = {
     open: boolean;
@@ -18,9 +18,9 @@ type PropsType = {
     withBackground?: boolean;
 }
 
-export default function LoadingOverlay({
+function LoadingOverlay({
     open,
-    spinSize = 36,
+    spinSize = 32,
     zIndex,
     fixed = true,
     label,
@@ -53,17 +53,21 @@ export default function LoadingOverlay({
 
     const content = withBackground ? (
         <Stack sx={{
-            p: 1.5,
-            backgroundColor: 'rgba(0, 0, 0, .75)',
-            borderRadius: 1.5
-        }} direction="row" alignItems="center">
+            p: ({ spacing }) => spacing(1, 1.5),
+            bgcolor: 'rgba(0, 0, 0, .75)',
+            borderRadius: 1.5,
+            maxWidth: '80%'
+        }}
+            direction="row"
+            alignItems="center"
+        >
             {inner}
         </Stack>
     ) : inner
 
-    const commonSx = {
+    const commonSx: SxProps<Theme> = {
         color: labelColor,
-        zIndex: zIndex ?? ((theme: Theme) => theme.zIndex.drawer + 1),
+        zIndex: zIndex ?? ((theme) => theme.zIndex.drawer + 1),
         ...(fixed ? null : { position: 'absolute' })
     }
 
@@ -97,3 +101,5 @@ export default function LoadingOverlay({
         >{content}</Backdrop>
     )
 }
+
+export default LoadingOverlay

@@ -183,7 +183,7 @@ export default function MusicSearch() {
         >
             <title>{pageTitle}</title>
             <Stack
-                sx={(theme) => ({
+                sx={({ breakpoints }) => ({
                     position: 'relative',
                     width: '100%',
                     '--max-width': '600px',
@@ -191,7 +191,7 @@ export default function MusicSearch() {
                     maxWidth: 'var(--max-width)',
                     margin: '0 auto',
                     overflow: 'hidden',
-                    [theme.breakpoints.up('sm')]: {
+                    [breakpoints.up('sm')]: {
                         backgroundImage: activeMusic ? 'linear-gradient(0, #0000002e, transparent)' : 'none'
                     }
                 })}
@@ -207,9 +207,9 @@ export default function MusicSearch() {
                     justifyContent="center"
                 >
                     <Box
-                        sx={(theme) => ({
+                        sx={({ breakpoints }) => ({
                             width: '100%',
-                            [theme.breakpoints.up('sm')]: {
+                            [breakpoints.up('sm')]: {
                                 maxWidth: 320
                             }
                         })}
@@ -222,18 +222,19 @@ export default function MusicSearch() {
                             loading={searchTask.pending}
                             buttonColor="secondary"
                             autocompleteKey="music"
+                            placeholder="输入歌名/歌手名搜索.."
                         />
                     </Box>
                 </Stack>
                 {
                     searchTask.success ? searchTask.data.length > 0 ? (
                         <Box
-                            sx={(theme) => ({
+                            sx={({ breakpoints }) => ({
                                 height: '100%',
                                 px: 1.5,
                                 overflowY: 'auto',
                                 pb: activeMusic ? 12 : 2,
-                                [theme.breakpoints.up('sm')]: {
+                                [breakpoints.up('sm')]: {
                                     pb: activeMusic ? 14 : 2
                                 }
                             })}
@@ -404,7 +405,7 @@ export default function MusicSearch() {
                                         overflowY: 'auto',
                                         bgcolor: 'background.paper',
                                         color: '#fff',
-                                        borderTop: (theme) => `1px solid ${theme.palette.divider}`,
+                                        borderTop: ({ palette }) => `1px solid ${palette.divider}`,
                                         '&::-webkit-scrollbar-thumb': {
                                             bgcolor: 'var(--scrollbar-thumb-dark-mode-color)'
                                         },
