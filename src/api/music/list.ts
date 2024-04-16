@@ -3,17 +3,24 @@ import { errorHandler, ApiHandler } from '../../util/middleware'
 
 const handler: ApiHandler = async (req, res) => {
     const { s } = req.query
-    const list: SearchMusic[] = []
-    for (const k of adaptors) {
-        const adaptor = createApiAdaptor(k)
-        const result = await adaptor.getMusicSearch(s)
-        if (result) {
-            list.push(...result)
-        }
-    }
+    const result = await Promise.all(
+        adaptors.map(
+            (k) => {
+                const adaptor = createApiAdaptor(k)
+                return adaptor.getMusicSearch(s)
+            }
+        )
+    )
+    const data = result.reduce(
+        (prev, current) => [
+            ...prev,
+            ...current
+        ],
+        []
+    )
     res.json({
         code: 0,
-        data: list,
+        data,
         msg: '成功'
     })
 }
