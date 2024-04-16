@@ -1322,11 +1322,6 @@
   resolved "https://registry.yarnpkg.com/@ffmpeg/types/-/types-0.12.2.tgz#bc7eef321ae50225c247091f1f23fd3087c6aa1d"
   integrity sha512-NJtxwPoLb60/z1Klv0ueshguWQ/7mNm106qdHkB4HL49LXszjhjCCiL+ldHJGQ9ai2Igx0s4F24ghigy//ERdA==
 
-"@ffmpeg/util@^0.12.1":
-  version "0.12.1"
-  resolved "https://registry.yarnpkg.com/@ffmpeg/util/-/util-0.12.1.tgz#98afa20d7b4c0821eebdb205ddcfa5d07b0a4f53"
-  integrity sha512-10jjfAKWaDyb8+nAkijcsi9wgz/y26LOc1NKJradNMyCIl6usQcBbhkjX5qhALrSBcOy6TOeksunTYa+a03qNQ==
-
 "@floating-ui/core@^1.6.0":
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/@floating-ui/core/-/core-1.6.0.tgz#fa41b87812a16bf123122bf945946bae3fdf7fc1"
@@ -6553,10 +6548,10 @@ hls.js@^1.5.8:
   resolved "https://registry.yarnpkg.com/hls.js/-/hls.js-1.5.8.tgz#73c3d2984a56f103e6900bf7a5e65b288dba846e"
   integrity sha512-hJYMPfLhWO7/7+n4f9pn6bOheCGx0WgvVz7k3ouq3Pp1bja48NN+HeCQu3XCGYzqWQF/wo7Sk6dJAyWVJD8ECA==
 
-hls2mp4@^1.2.7:
-  version "1.2.7"
-  resolved "https://registry.yarnpkg.com/hls2mp4/-/hls2mp4-1.2.7.tgz#4696794e07b4eb4ac638f0cac4b269101924edda"
-  integrity sha512-EJ8d4sqKY9feDEAUSr3zr3elLQaJQgcQ7Z+qrjkFSAvFsuaPXY11z/CAXce/j9inXbJskfPduugrmn0TXwLaOw==
+hls2mp4@^1.2.8:
+  version "1.2.8"
+  resolved "https://registry.yarnpkg.com/hls2mp4/-/hls2mp4-1.2.8.tgz#be3721599eb9f5ce3463767ad5f951d430a36117"
+  integrity sha512-xxJU5bkQ97YTVTmBHLbIOFjCUDSHiR6p4gTXHxk5yqSYMCwU7wBw3ZlfvLp4EsILKjZR2z6/Od62TOma5rgG+w==
   dependencies:
     aes-js "^3.1.2"
 

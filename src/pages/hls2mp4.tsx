@@ -63,36 +63,38 @@ function Hls2Mp4Demo() {
         }
 
         hls2Mp4.current = new Hls2Mp4({
-            maxRetry: 5,
-            tsDownloadConcurrency: 20
-        }, (type, progress) => {
-            const TaskType = Hls2Mp4.TaskType;
-            if (type === TaskType.loadFFmeg) {
-                if (progress === 0) {
-                    addLog('loading FFmpeg')
+            onProgress: (type, progress) => {
+                const TaskType = Hls2Mp4.TaskType;
+                if (type === TaskType.loadFFmeg) {
+                    if (progress === 0) {
+                        addLog('loading FFmpeg')
+                    }
+                    else {
+                        addLog('FFmpeg load complete')
+                    }
                 }
-                else {
-                    addLog('FFmpeg load complete')
+                else if (type === TaskType.parseM3u8) {
+                    if (progress === 0) {
+                        addLog('parse m3u8')
+                    }
+                    else {
+                        addLog('m3u8 parsed complete')
+                    }
                 }
-            }
-            else if (type === TaskType.parseM3u8) {
-                if (progress === 0) {
-                    addLog('parse m3u8')
+                else if (type === TaskType.downloadTs) {
+                    addLog('download ts segments: ' + Math.round(progress * 100) + '%')
                 }
-                else {
-                    addLog('m3u8 parsed complete')
+                else if (type === TaskType.mergeTs) {
+                    if (progress === 0) {
+                        addLog('merge ts segments')
+                    }
+                    else {
+                        addLog('ts segments merged complete')
+                    }
                 }
-            }
-            else if (type === TaskType.downloadTs) {
-                addLog('download ts segments: ' + Math.round(progress * 100) + '%')
-            }
-            else if (type === TaskType.mergeTs) {
-                if (progress === 0) {
-                    addLog('merge ts segments')
-                }
-                else {
-                    addLog('ts segments merged complete')
-                }
+            },
+            onError: (err) => {
+                console.log(err)
             }
         })
     }, [])
@@ -120,7 +122,9 @@ function Hls2Mp4Demo() {
                         async () => {
                             setDownloading(true)
                             const buffer = await hls2Mp4.current.download(testUrl)
-                            hls2Mp4.current.saveToFile(buffer, 'test.mp4')
+                            if (buffer) {
+                                hls2Mp4.current.saveToFile(buffer, 'test.mp4')
+                            }
                             setDownloading(false)
                         }
                     }>Download to mp4</button>
