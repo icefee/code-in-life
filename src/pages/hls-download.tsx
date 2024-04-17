@@ -88,7 +88,7 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
             const { valid, url } = await testUrl(source)
             if (valid) {
                 const buffer = await hls2Mp4.current.download(url)
-                if (buffer !== null) {
+                if (buffer) {
                     const fileName = title ?? getFileName(source)
                     hls2Mp4.current.saveToFile(buffer, `${fileName}.mp4`)
                 }
@@ -108,6 +108,8 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
             setTimeout(
                 () => {
                     setBusy(false)
+                    setDownloading(false)
+                    setProgress(0)
                     hideAll()
                 },
                 1e3
@@ -118,41 +120,40 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
     useEffect(() => {
         hls2Mp4.current = new Hls2Mp4({
             maxRetry: 5,
-            tsDownloadConcurrency: 20
-        }, (type, progress) => {
-            const TaskType = Hls2Mp4.TaskType;
-            if (type === TaskType.loadFFmeg) {
-                if (progress === 0) {
-                    setStatus('加载FFmpeg..')
+            tsDownloadConcurrency: 10,
+            onProgress: (type, progress) => {
+                const TaskType = Hls2Mp4.TaskType;
+                if (type === TaskType.loadFFmeg) {
+                    if (progress === 0) {
+                        setStatus('加载FFmpeg..')
+                    }
+                    else {
+                        setStatus('FFmpeg加载完成')
+                    }
                 }
-                else {
-                    setStatus('FFmpeg加载完成')
+                else if (type === TaskType.parseM3u8) {
+                    if (progress === 0) {
+                        setStatus('解析m3u8文件..')
+                    }
+                    else {
+                        setStatus('m3u8文件解析完成')
+                    }
                 }
+                else if (type === TaskType.downloadTs) {
+                    const percent = Math.round(progress * 100)
+                    setProgress(percent)
+                    setStatus(`下载ts分片: ${percent}%`)
+                }
+                else if (type === TaskType.mergeTs) {
+                    if (progress === 0) {
+                        setStatus('合并ts分片..')
+                    }
+                    else {
+                        setStatus('ts分片完成')
+                    }
+                }
+                setDownloading(type === TaskType.downloadTs)
             }
-            else if (type === TaskType.parseM3u8) {
-                if (progress === 0) {
-                    setStatus('解析m3u8文件..')
-                }
-                else {
-                    setStatus('m3u8文件解析完成')
-                }
-            }
-            else if (type === TaskType.downloadTs) {
-                const percent = Math.round(progress * 100)
-                setProgress(percent)
-                setStatus(`下载ts分片: ${percent}%`)
-            }
-            else if (type === TaskType.mergeTs) {
-                if (progress === 0) {
-                    setStatus('合并ts分片..')
-                }
-                else {
-                    setStatus('ts分片完成')
-                }
-            }
-            setDownloading(type === TaskType.downloadTs)
-        }, (err) => {
-            console.log(err)
         })
     }, [])
 
