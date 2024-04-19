@@ -488,6 +488,17 @@ export default function MusicSearch() {
                     )
                 }
             </Snackbar>
+            <Snackbar
+                open={downloading}
+                anchorOrigin={{
+                    horizontal: 'center',
+                    vertical: 'bottom'
+                }}
+            >
+                <Alert severity="info">
+                    歌曲下载中, 请稍候..
+                </Alert>
+            </Snackbar>
         </Box>
     )
 }

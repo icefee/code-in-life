@@ -8,7 +8,7 @@ interface LoadingScreenProps {
     label?: string;
 }
 
-function LoadingScreen({ label = '数据加载中...' }: LoadingScreenProps) {
+function LoadingScreen({ label = '加载中..' }: LoadingScreenProps) {
     return (
         <Stack
             sx={{
