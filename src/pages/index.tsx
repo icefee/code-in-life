@@ -462,12 +462,6 @@ export default function MusicSearch() {
                 withBackground
                 labelColor="#fff"
             />
-            <LoadingOverlay
-                open={downloading}
-                label="歌曲下载中.."
-                withBackground
-                labelColor="#fff"
-            />
             <Snackbar
                 open={Boolean(toastMsg)}
                 autoHideDuration={5000}
@@ -487,6 +481,17 @@ export default function MusicSearch() {
                         >{toastMsg.msg}</Alert>
                     )
                 }
+            </Snackbar>
+            <Snackbar
+                open={downloading}
+                anchorOrigin={{
+                    horizontal: 'center',
+                    vertical: 'bottom'
+                }}
+            >
+                <Alert severity="info">
+                    歌曲下载中, 请稍候..
+                </Alert>
             </Snackbar>
         </Box>
     )
