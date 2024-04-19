@@ -463,11 +463,6 @@ export default function MusicSearch() {
                 label="搜索中.."
                 withBackground
             />
-            <LoadingOverlay
-                open={downloading}
-                label="歌曲下载中.."
-                withBackground
-            />
             <Snackbar
                 open={Boolean(toastMsg)}
                 autoHideDuration={5000}
