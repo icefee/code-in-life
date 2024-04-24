@@ -50,6 +50,7 @@ declare interface VideoInfo {
     state: number;
     tid: number;
     proxy: boolean;
+    prefer: boolean;
     dataList: VideoSource[];
     related: VideoRelated[];
 }
@@ -63,35 +64,6 @@ declare interface ResponsePagination {
     pagecount: number;
     pagesize: number;
     recordcount: number;
-}
-
-declare namespace ProxyVideo {
-
-    export interface SearchVideo {
-        videoInfoId: number;
-        videoTitle: string;
-        pageUrl: string;
-        createTime: string;
-        videoImgUrl: string;
-    }
-
-    export interface ParsedVideo {
-        id: number;
-        poster: string;
-        title: string;
-        createTime: string;
-    }
-
-    export interface SearchResult<T = SearchVideo> {
-        data: T[];
-        totalPage: number;
-        page: number;
-    }
-
-    export interface ParsedResult<T = ParsedVideo> extends Pick<SearchResult<T>, 'page'> {
-        list: T[];
-        total: number;
-    }
 }
 
 interface ApiJsonSuccess<T = unknown> {

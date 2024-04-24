@@ -24,7 +24,7 @@ interface DataType {
     types: VideoType[];
     type: number | null;
     s: string;
-    prefer18: boolean;
+    prefer: boolean;
 }
 
 interface SearchResultProps {
@@ -63,7 +63,7 @@ const SiteSearch: React.FunctionComponent<PageProps<object, object, unknown, Sea
                     responseError ? (
                         <NoData text="💔 数据获取失败." />
                     ) : (
-                        <BackgroundContainer prefer={data.prefer18}>
+                        <BackgroundContainer prefer={data.prefer}>
                             <Box
                                 sx={{
                                     position: 'relative',
