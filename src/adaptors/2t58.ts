@@ -132,11 +132,11 @@ export async function parseLrc(id: string) {
 }
 
 export async function getLrcText(id: string) {
-    const lrc = await parseLrc(id);
+    const lrc = await parseLrc(id)
     return lrc?.map(
         ({ time, text }) => {
             const seconds = Math.floor(time)
             return `[${timeFormatter(seconds)}:${Math.round((time - seconds) * 1000)}]${text}`
         }
-    ).join('\n');
+    ).join('\n')
 }

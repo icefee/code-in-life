@@ -5,8 +5,6 @@ import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import Tooltip from '@mui/material/Tooltip'
 import { alpha } from '@mui/material/styles'
-// import PictureInPictureAltRoundedIcon from '@mui/icons-material/PictureInPictureAltRounded';
-// import PictureInPictureRoundedIcon from '@mui/icons-material/PictureInPictureRounded';
 import RepeatOneRoundedIcon from '@mui/icons-material/RepeatOneRounded'
 import LoopRoundedIcon from '@mui/icons-material/LoopRounded'
 import ShuffleRoundedIcon from '@mui/icons-material/ShuffleRounded'
@@ -54,16 +52,15 @@ function MusicPlayer({
     const [audioReady, setAudioReady] = useState(false)
     const [duration, setDuration] = useState<number | null>(null)
     const [currentTime, setCurrentTime] = useState<number>(0)
-    const [volume, setVolume] = useLocalStorageState<number>('__volume', 1)
-    const cachedVolumeRef = useRef<number>(1)
+    const defaultVolume = .7
+    const [volume, setVolume] = useLocalStorageState<number>('__volume', defaultVolume)
+    const cachedVolumeRef = useRef<number>(defaultVolume)
     const [loading, setLoading] = useState(false)
     const isMobile = isMobileDevice()
     const hasError = useRef(false)
     const seekingRef = useRef(false)
     const [buffered, setBuffered] = useState(0)
-    const durationPlaceholder = '--:--';
-
-    // const [pip, setPip] = useState(false)
+    const durationPlaceholder = '--:--'
 
     useEffect(() => {
         return () => {
@@ -372,23 +369,6 @@ function MusicPlayer({
                                 {repeatMeta.icon}
                             </IconButton>
                         </Tooltip>
-                        {/* <Tooltip title={pip ? '画中画模式' : '退出画中画'}>
-                            <IconButton
-                                color="inherit"
-                                size="small"
-                                onClick={
-                                    () => {
-                                        setPip(
-                                            pip => !pip
-                                        )
-                                    }
-                                }
-                            >
-                                {
-                                    pip ? <PictureInPictureAltRoundedIcon /> : <PictureInPictureRoundedIcon />
-                                }
-                            </IconButton>
-                        </Tooltip> */}
                     </Stack>
                 </Stack>
                 <audio
