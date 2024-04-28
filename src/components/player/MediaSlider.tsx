@@ -10,24 +10,34 @@ interface MediaSliderProps extends Omit<SliderProps, 'onMouseMove' | 'onKeyDown'
     tooltipFormatter?: (value: number) => string | number;
 }
 
-function MediaSlider({ buffered, sx, showTooltip = false, tooltipFormatter, disabled, ...props }: MediaSliderProps) {
+function MediaSlider({
+    buffered,
+    sx,
+    showTooltip = false,
+    tooltipFormatter,
+    disabled,
+    ...props
+}: MediaSliderProps) {
 
-    const rootRef = useRef<HTMLSpanElement>();
+    const rootRef = useRef<HTMLSpanElement | null>(null)
     const positionRef = useRef<{ x: number; y: number }>({
         x: 0,
         y: 0,
     })
-    const popperRef = useRef<Instance>(null)
-    const [hoverRate, setHoverRate] = useState(0);
+    const popperRef = useRef<Instance | null>(null)
+    const [hoverRate, setHoverRate] = useState(0)
 
     const handleMouseMove = (event: React.MouseEvent) => {
-        positionRef.current = { x: event.clientX, y: event.clientY };
-        if (popperRef.current != null) {
-            popperRef.current.update();
+        positionRef.current = {
+            x: event.clientX,
+            y: event.clientY
         }
-        const rootRect = rootRef.current?.getBoundingClientRect();
-        const rate = (positionRef.current.x - rootRect.x) / rootRect.width;
-        setHoverRate(rate);
+        if (popperRef.current != null) {
+            popperRef.current.update()
+        }
+        const rootRect = rootRef.current?.getBoundingClientRect()
+        const rate = (positionRef.current.x - rootRect.x) / rootRect.width
+        setHoverRate(rate)
     }
 
     const commonSx = useMemo<SxProps<Theme>>(
@@ -57,7 +67,7 @@ function MediaSlider({ buffered, sx, showTooltip = false, tooltipFormatter, disa
                 }
             },
             '& .MuiSlider-track': {
-                backgroundImage: 'linear-gradient(90deg, hsl(0, 50%, 50%), hsl(60deg, 50%, 50%), hsl(180deg, 50%, 50%), currentColor)'
+                backgroundImage: 'linear-gradient(.25turn, hsl(0, 50%, 50%), hsl(60deg, 50%, 50%), hsl(180deg, 50%, 50%), currentColor)'
             }
         }),
         [sx]
@@ -68,61 +78,6 @@ function MediaSlider({ buffered, sx, showTooltip = false, tooltipFormatter, disa
             event.preventDefault();
         }
     }
-
-    /*
-    const RootElement = forwardRef<HTMLSpanElement, PropsWithChildren<{
-        className: string;
-        ownerState: SliderOwnerState;
-    }>>(({ children, ...props }, ref) => {
-
-        const rootRef = useRef<HTMLSpanElement>();
-        const [hoverRate, setHoverRate] = useState(0);
-
-        useImperativeHandle(ref, () => rootRef.current, []);
-        const popperRef = useRef<Instance>(null)
-
-        const handleMouseMove = (event: React.MouseEvent) => {
-            positionRef.current = { x: event.clientX, y: event.clientY };
-            if (popperRef.current != null) {
-                popperRef.current.update();
-            }
-            const rootRect = rootRef.current?.getBoundingClientRect();
-            const rate = (positionRef.current.x - rootRect.x) / rootRect.width;
-            setHoverRate(rate);
-        }
-
-        return (
-            <Tooltip
-                title={
-                    tooltipFormatter ? tooltipFormatter(hoverRate) : hoverRate
-                }
-                placement="top"
-                arrow
-                PopperProps={{
-                    popperRef,
-                    anchorEl: {
-                        getBoundingClientRect: () => {
-                            return new DOMRect(
-                                positionRef.current.x,
-                                rootRef.current?.getBoundingClientRect()?.y,
-                                0,
-                                0,
-                            )
-                        },
-                    }
-                }}
-            >
-                <SliderRoot
-                    ref={rootRef}
-                    onMouseMove={handleMouseMove}
-                    {...props}
-                >
-                    {children}
-                </SliderRoot>
-            </Tooltip>
-        )
-    });
-    */
 
     const commonStyles = {
         '--buffered': buffered

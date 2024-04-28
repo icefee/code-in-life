@@ -102,6 +102,7 @@ export default function VideoSearch() {
                     }
                 >
                     <SearchForm
+                        loading={searchTask.pending}
                         value={keyword}
                         onChange={setKeyword}
                         onSubmit={
