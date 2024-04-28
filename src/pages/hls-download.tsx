@@ -7,14 +7,15 @@ import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import LinearProgress from '@mui/material/LinearProgress'
 import Hls2Mp4 from 'hls2mp4'
+import HeadLayout from '~/components/layout/Head'
 import useErrorMessage from '~/components/hook/useErrorMessage'
 import { M3u8 } from '~/util/regExp'
 
 export function Head() {
     return (
-        <>
-            <title key="hls-download">hls视频下载</title>
-        </>
+        <HeadLayout>
+            <title>hls视频下载</title>
+        </HeadLayout>
     )
 }
 

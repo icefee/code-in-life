@@ -8,12 +8,13 @@ import AlbumIcon from '@mui/icons-material/Album'
 import TheatersIcon from '@mui/icons-material/Theaters'
 import QrCodeIcon from '@mui/icons-material/QrCode'
 import SaveAltIcon from '@mui/icons-material/SaveAlt'
+import HeadLayout from '~/components/layout/Head'
 
 export function Head() {
     return (
-        <>
-            <title key="apps">应用中心</title>
-        </>
+        <HeadLayout>
+            <title>应用中心</title>
+        </HeadLayout>
     )
 }
 

@@ -1,5 +1,5 @@
-import React from 'react';
-import Box from '@mui/material/Box';
+import React from 'react'
+import Box from '@mui/material/Box'
 
 interface TabPanelProps extends React.PropsWithChildren<{
     index: number;
@@ -22,4 +22,4 @@ function TabPanel({ index, value, disablePadding = false, children }: TabPanelPr
     return null;
 }
 
-export default TabPanel;
+export default TabPanel

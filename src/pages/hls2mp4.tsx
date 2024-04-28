@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Hls from 'hls.js'
 import Hls2Mp4 from 'hls2mp4'
+import HeadLayout from '~/components/layout/Head'
 
 export function Head() {
     return (
-        <>
-            <title key="hls2mp4">hls2mp4 demo</title>
-        </>
+        <HeadLayout>
+            <title>hls2mp4 demo</title>
+        </HeadLayout>
     )
 }
 

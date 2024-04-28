@@ -4,14 +4,15 @@ import NoSsr from '@mui/material/NoSsr'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
+import HeadLayout from '~/components/layout/Head'
 import useLocalStorageState from '~/components/hook/useLocalStorageState'
 import useErrorMessage from '~/components/hook/useErrorMessage'
 
 export function Head() {
     return (
-        <>
-            <title key="qr">二维码生成</title>
-        </>
+        <HeadLayout>
+            <title>二维码生成</title>
+        </HeadLayout>
     )
 }
 

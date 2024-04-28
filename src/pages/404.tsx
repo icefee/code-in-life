@@ -5,12 +5,13 @@ import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
 import HomeIcon from '@mui/icons-material/Home'
+import HeadLayout from '~/components/layout/Head'
 
 export function Head() {
     return (
-        <>
-            <title key="404">内容不存在</title>
-        </>
+        <HeadLayout>
+            <title>内容不存在</title>
+        </HeadLayout>
     )
 }
 

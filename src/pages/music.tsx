@@ -8,6 +8,7 @@ import IconButton from '@mui/material/IconButton'
 import Badge from '@mui/material/Badge'
 import Typography from '@mui/material/Typography'
 import PlaylistPlayRoundedIcon from '@mui/icons-material/PlaylistPlayRounded'
+import HeadLayout from '~/components/layout/Head'
 import SearchForm, { type SearchFormInstance } from '~/components/search/Form'
 import { LoadingOverlay } from '~/components/loading'
 import MusicPlayer, { RepeatMode } from '~/components/player/MusicPlayer'
@@ -23,9 +24,7 @@ import { blobToFile } from '~/util/blobToFile'
 
 export function Head() {
     return (
-        <>
-            <meta name="referrer" content="no-referrer" />
-        </>
+        <HeadLayout />
     )
 }
 
