@@ -12,10 +12,10 @@ const handler: ApiHandler = async (req, res) => {
         )
     )
     const data = result.reduce(
-        (prev, current) => [
+        (prev, current) => current ? [
             ...prev,
             ...current
-        ],
+        ] : prev,
         []
     )
     res.json({
