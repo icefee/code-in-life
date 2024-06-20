@@ -108,9 +108,11 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
     }, [lrc, lineIndex, currentTime])
 
     const placeholder = (text: string) => (
-        <Box sx={{
-            p: 2
-        }}>
+        <Box
+            sx={{
+                p: 2
+            }}
+        >
             <Typography variant="subtitle2">{text}</Typography>
         </Box>
     )
@@ -147,6 +149,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                     }
                 />
                 <div
+                    key={lineIndex}
                     style={{
                         position: 'relative',
                         cursor: 'pointer',
