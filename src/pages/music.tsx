@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
+import NoSsr from '@mui/material/NoSsr'
 import Stack from '@mui/material/Stack'
 import Snackbar from '@mui/material/Snackbar'
 import Alert, { type AlertProps } from '@mui/material/Alert'
@@ -175,325 +176,327 @@ export default function MusicSearch() {
     }, [activeMusic])
 
     return (
-        <Box
-            sx={{
-                height: '100%',
-                backgroundImage: 'var(--linear-gradient-image)'
-            }}
-        >
-            <title>{pageTitle}</title>
-            <Stack
-                sx={({ breakpoints }) => ({
-                    position: 'relative',
-                    width: '100%',
-                    '--max-width': '600px',
+        <NoSsr>
+            <Box
+                sx={{
                     height: '100%',
-                    maxWidth: 'var(--max-width)',
-                    margin: '0 auto',
-                    overflow: 'hidden',
-                    [breakpoints.up('sm')]: {
-                        backgroundImage: activeMusic ? 'linear-gradient(0, #0000002e, transparent)' : 'none'
-                    }
-                })}
+                    backgroundImage: 'var(--linear-gradient-image)'
+                }}
             >
+                <title>{pageTitle}</title>
                 <Stack
-                    sx={{
+                    sx={({ breakpoints }) => ({
                         position: 'relative',
                         width: '100%',
-                        p: 1.5,
-                        zIndex: 3
-                    }}
-                    direction="row"
-                    justifyContent="center"
+                        '--max-width': '600px',
+                        height: '100%',
+                        maxWidth: 'var(--max-width)',
+                        margin: '0 auto',
+                        overflow: 'hidden',
+                        [breakpoints.up('sm')]: {
+                            backgroundImage: activeMusic ? 'linear-gradient(0, #0000002e, transparent)' : 'none'
+                        }
+                    })}
                 >
-                    <Box
-                        sx={(theme) => ({
+                    <Stack
+                        sx={{
+                            position: 'relative',
                             width: '100%',
-                            [theme.breakpoints.up('sm')]: {
-                                maxWidth: 320
-                            }
-                        })}
+                            p: 1.5,
+                            zIndex: 3
+                        }}
+                        direction="row"
+                        justifyContent="center"
                     >
-                        <SearchForm
-                            ref={searchFormRef}
-                            value={keyword}
-                            onChange={setKeyword}
-                            onSubmit={onSearch}
-                            loading={searchTask.pending}
-                            buttonColor="secondary"
-                            autocompleteKey="music"
-                            placeholder="输入歌名/歌手名搜索.."
-                        />
-                    </Box>
-                </Stack>
-                {
-                    searchTask.success ? searchTask.data.length > 0 ? (
                         <Box
                             sx={(theme) => ({
-                                height: '100%',
-                                px: 1.5,
-                                overflowY: 'auto',
-                                pb: activeMusic ? 12 : 2,
+                                width: '100%',
                                 [theme.breakpoints.up('sm')]: {
-                                    pb: activeMusic ? 14 : 2
+                                    maxWidth: 320
                                 }
                             })}
-                            ref={songListWrapRef}
                         >
-                            <SongList
-                                data={searchTask.data}
-                                isCurrentPlaying={(music: SearchMusic) => ({
-                                    isCurrent: activeMusic && activeMusic.id === music.id,
-                                    playing
+                            <SearchForm
+                                ref={searchFormRef}
+                                value={keyword}
+                                onChange={setKeyword}
+                                onSubmit={onSearch}
+                                loading={searchTask.pending}
+                                buttonColor="secondary"
+                                autocompleteKey="music"
+                                placeholder="输入歌名/歌手名搜索.."
+                            />
+                        </Box>
+                    </Stack>
+                    {
+                        searchTask.success ? searchTask.data.length > 0 ? (
+                            <Box
+                                sx={(theme) => ({
+                                    height: '100%',
+                                    px: 1.5,
+                                    overflowY: 'auto',
+                                    pb: activeMusic ? 12 : 2,
+                                    [theme.breakpoints.up('sm')]: {
+                                        pb: activeMusic ? 14 : 2
+                                    }
                                 })}
-                                onTogglePlay={
-                                    async (music: SearchMusic) => {
-                                        if (activeMusic && music.id === activeMusic.id) {
-                                            setPlaying(
-                                                state => !state
-                                            )
+                                ref={songListWrapRef}
+                            >
+                                <SongList
+                                    data={searchTask.data}
+                                    isCurrentPlaying={(music: SearchMusic) => ({
+                                        isCurrent: activeMusic && activeMusic.id === music.id,
+                                        playing
+                                    })}
+                                    onTogglePlay={
+                                        async (music: SearchMusic) => {
+                                            if (activeMusic && music.id === activeMusic.id) {
+                                                setPlaying(
+                                                    state => !state
+                                                )
+                                            }
+                                            else {
+                                                const playIndex = playlist.data.findIndex(
+                                                    m => m.id === music.id
+                                                )
+                                                if (playIndex === -1) {
+                                                    setActiveMusic(music)
+                                                    setPlaylist(list => [music, ...list])
+                                                }
+                                                else {
+                                                    setActiveMusic(playlist.data[playIndex])
+                                                }
+                                            }
                                         }
-                                        else {
+                                    }
+                                    onAction={
+                                        async (cmd, music) => {
                                             const playIndex = playlist.data.findIndex(
                                                 m => m.id === music.id
                                             )
-                                            if (playIndex === -1) {
-                                                setActiveMusic(music)
-                                                setPlaylist(list => [music, ...list])
+                                            if (playIndex !== -1 && cmd === 'add') {
+                                                setToastMsg({
+                                                    type: 'warning',
+                                                    msg: '当前歌曲已经在播放列表中'
+                                                })
+                                                return;
+                                            }
+                                            switch (cmd) {
+                                                case 'add':
+                                                    setPlaylist(list => [...list, music])
+                                                    if (playlist.data.length === 0) {
+                                                        setActiveMusic(music)
+                                                    }
+                                                    setToastMsg({
+                                                        type: 'success',
+                                                        msg: '已加入播放列表'
+                                                    })
+                                                    break;
+                                                case 'download-song':
+                                                    downloadSong(music)
+                                                    break;
+                                                case 'download-lrc':
+                                                    downloadLrc(music)
+                                                    break;
+                                                default:
+                                                    break;
+                                            }
+                                        }
+                                    }
+                                />
+                            </Box>
+                        ) : (
+                            <NoData text='💔 没有找到相关的音乐, 换个关键词试试吧' />
+                        ) : (
+                            !searchTask.pending && (
+                                <Stack
+                                    sx={{
+                                        position: 'absolute',
+                                        width: '100%',
+                                        height: '100%',
+                                    }}
+                                    justifyContent="center"
+                                    alignItems="center"
+                                >
+                                    <Typography
+                                        variant="body1"
+                                        color="text.secondary"
+                                    >🔍 输入歌名/歌手名开始搜索</Typography>
+                                </Stack>
+                            )
+                        )
+                    }
+                    {
+                        activeMusic !== null && (
+                            <Stack
+                                sx={({ transitions, zIndex }) => ({
+                                    position: 'fixed',
+                                    width: '100%',
+                                    maxWidth: 'var(--max-width)',
+                                    bottom: 0,
+                                    boxShadow: '0px -4px 12px 0px rgb(0 0 0 / 80%)',
+                                    transition: transitions.create('transform'),
+                                    transform: playlistShow ? 'none' : 'translate(0, 50vh)',
+                                    zIndex: zIndex.drawer + 2
+                                })}
+                            >
+                                <MusicPlayer
+                                    music={activeMusic}
+                                    playing={playing}
+                                    onPlayStateChange={setPlaying}
+                                    enableVisual={isDev}
+                                    repeat={repeat.data}
+                                    extendButtons={
+                                        <Tooltip title="播放列表">
+                                            <Badge sx={{
+                                                '& .MuiBadge-badge': {
+                                                    top: 4,
+                                                    right: 4
+                                                }
+                                            }} color="secondary" badgeContent={playlist.data.length}>
+                                                <IconButton
+                                                    color="inherit"
+                                                    size="small"
+                                                    onClick={
+                                                        () => setPlaylistShow(
+                                                            show => !show
+                                                        )
+                                                    }
+                                                >
+                                                    <PlaylistPlayRoundedIcon />
+                                                </IconButton>
+                                            </Badge>
+                                        </Tooltip>
+                                    }
+                                    onRepeatChange={setRepeat}
+                                    onPlayEnd={
+                                        async (end) => {
+                                            if (!end) {
+                                                setToastMsg({
+                                                    type: 'error',
+                                                    msg: `“${activeMusic.name}”播放错误`
+                                                })
+                                            }
+                                            if (playlist.data.length > 1) {
+                                                const playIndex = playlist.data.findIndex(
+                                                    music => music.id === activeMusic.id
+                                                );
+                                                switch (repeat.data) {
+                                                    case RepeatMode.Random:
+                                                        const nextPlayIndex = generateRandomIndex(playlist.data.length - 1, playIndex)
+                                                        setActiveMusic(playlist.data[nextPlayIndex])
+                                                        break;
+                                                    case RepeatMode.All:
+                                                        if (playIndex < playlist.data.length - 1) {
+                                                            setActiveMusic(playlist.data[playIndex + 1])
+                                                        }
+                                                        else {
+                                                            setActiveMusic(playlist.data[0])
+                                                        }
+                                                }
                                             }
                                             else {
-                                                setActiveMusic(playlist.data[playIndex])
+                                                setPlaying(true)
                                             }
                                         }
                                     }
-                                }
-                                onAction={
-                                    async (cmd, music) => {
-                                        const playIndex = playlist.data.findIndex(
-                                            m => m.id === music.id
-                                        )
-                                        if (playIndex !== -1 && cmd === 'add') {
-                                            setToastMsg({
-                                                type: 'warning',
-                                                msg: '当前歌曲已经在播放列表中'
-                                            })
-                                            return;
-                                        }
-                                        switch (cmd) {
-                                            case 'add':
-                                                setPlaylist(list => [...list, music])
-                                                if (playlist.data.length === 0) {
+                                />
+                                <DarkThemed>
+                                    <Box
+                                        sx={{
+                                            height: '50vh',
+                                            overflowY: 'auto',
+                                            bgcolor: 'background.paper',
+                                            color: '#fff',
+                                            borderTop: (theme) => `1px solid ${theme.palette.divider}`,
+                                            '&::-webkit-scrollbar-thumb': {
+                                                bgcolor: 'var(--scrollbar-thumb-dark-mode-color)'
+                                            },
+                                            '&::-webkit-scrollbar-thumb:hover': {
+                                                bgcolor: 'var(--scrollbar-thumb-dark-mode-hover-color)'
+                                            }
+                                        }}
+                                    >
+                                        <MusicPlayList
+                                            data={playlist.data}
+                                            onChange={setPlaylist}
+                                            current={activeMusic}
+                                            playing={playing}
+                                            onPlay={
+                                                (music) => {
+                                                    if (!music) {
+                                                        setPlaying(false)
+                                                    }
                                                     setActiveMusic(music)
                                                 }
-                                                setToastMsg({
-                                                    type: 'success',
-                                                    msg: '已加入播放列表'
-                                                })
-                                                break;
-                                            case 'download-song':
-                                                downloadSong(music)
-                                                break;
-                                            case 'download-lrc':
-                                                downloadLrc(music)
-                                                break;
-                                            default:
-                                                break;
-                                        }
-                                    }
-                                }
-                            />
-                        </Box>
-                    ) : (
-                        <NoData text='💔 没有找到相关的音乐, 换个关键词试试吧' />
-                    ) : (
-                        !searchTask.pending && (
-                            <Stack
-                                sx={{
-                                    position: 'absolute',
-                                    width: '100%',
-                                    height: '100%',
-                                }}
-                                justifyContent="center"
-                                alignItems="center"
-                            >
-                                <Typography
-                                    variant="body1"
-                                    color="text.secondary"
-                                >🔍 输入歌名/歌手名开始搜索</Typography>
+                                            }
+                                            onTogglePlay={
+                                                () => {
+                                                    setPlaying(playing => !playing)
+                                                }
+                                            }
+                                            onSearch={
+                                                (s) => {
+                                                    setKeyword(s)
+                                                    onSearch(s)
+                                                    searchFormRef.current?.putSuggest(s)
+                                                }
+                                            }
+                                            onDownload={
+                                                (music, type) => {
+                                                    if (type === 'song') {
+                                                        downloadSong(music)
+                                                    }
+                                                    else if (type === 'lrc') {
+                                                        downloadLrc(music)
+                                                    }
+                                                }
+                                            }
+                                        />
+                                    </Box>
+                                </DarkThemed>
                             </Stack>
                         )
-                    )
-                }
-                {
-                    activeMusic !== null && (
-                        <Stack
-                            sx={({ transitions, zIndex }) => ({
-                                position: 'fixed',
-                                width: '100%',
-                                maxWidth: 'var(--max-width)',
-                                bottom: 0,
-                                boxShadow: '0px -4px 12px 0px rgb(0 0 0 / 80%)',
-                                transition: transitions.create('transform'),
-                                transform: playlistShow ? 'none' : 'translate(0, 50vh)',
-                                zIndex: zIndex.drawer + 2
-                            })}
-                        >
-                            <MusicPlayer
-                                music={activeMusic}
-                                playing={playing}
-                                onPlayStateChange={setPlaying}
-                                enableVisual={isDev}
-                                repeat={repeat.data}
-                                extendButtons={
-                                    <Tooltip title="播放列表">
-                                        <Badge sx={{
-                                            '& .MuiBadge-badge': {
-                                                top: 4,
-                                                right: 4
-                                            }
-                                        }} color="secondary" badgeContent={playlist.data.length}>
-                                            <IconButton
-                                                color="inherit"
-                                                size="small"
-                                                onClick={
-                                                    () => setPlaylistShow(
-                                                        show => !show
-                                                    )
-                                                }
-                                            >
-                                                <PlaylistPlayRoundedIcon />
-                                            </IconButton>
-                                        </Badge>
-                                    </Tooltip>
-                                }
-                                onRepeatChange={setRepeat}
-                                onPlayEnd={
-                                    async (end) => {
-                                        if (!end) {
-                                            setToastMsg({
-                                                type: 'error',
-                                                msg: `“${activeMusic.name}”播放错误`
-                                            })
-                                        }
-                                        if (playlist.data.length > 1) {
-                                            const playIndex = playlist.data.findIndex(
-                                                music => music.id === activeMusic.id
-                                            );
-                                            switch (repeat.data) {
-                                                case RepeatMode.Random:
-                                                    const nextPlayIndex = generateRandomIndex(playlist.data.length - 1, playIndex)
-                                                    setActiveMusic(playlist.data[nextPlayIndex])
-                                                    break;
-                                                case RepeatMode.All:
-                                                    if (playIndex < playlist.data.length - 1) {
-                                                        setActiveMusic(playlist.data[playIndex + 1])
-                                                    }
-                                                    else {
-                                                        setActiveMusic(playlist.data[0])
-                                                    }
-                                            }
-                                        }
-                                        else {
-                                            setPlaying(true)
-                                        }
-                                    }
-                                }
-                            />
-                            <DarkThemed>
-                                <Box
-                                    sx={{
-                                        height: '50vh',
-                                        overflowY: 'auto',
-                                        bgcolor: 'background.paper',
-                                        color: '#fff',
-                                        borderTop: (theme) => `1px solid ${theme.palette.divider}`,
-                                        '&::-webkit-scrollbar-thumb': {
-                                            bgcolor: 'var(--scrollbar-thumb-dark-mode-color)'
-                                        },
-                                        '&::-webkit-scrollbar-thumb:hover': {
-                                            bgcolor: 'var(--scrollbar-thumb-dark-mode-hover-color)'
-                                        }
-                                    }}
-                                >
-                                    <MusicPlayList
-                                        data={playlist.data}
-                                        onChange={setPlaylist}
-                                        current={activeMusic}
-                                        playing={playing}
-                                        onPlay={
-                                            (music) => {
-                                                if (!music) {
-                                                    setPlaying(false)
-                                                }
-                                                setActiveMusic(music)
-                                            }
-                                        }
-                                        onTogglePlay={
-                                            () => {
-                                                setPlaying(playing => !playing)
-                                            }
-                                        }
-                                        onSearch={
-                                            (s) => {
-                                                setKeyword(s)
-                                                onSearch(s)
-                                                searchFormRef.current?.putSuggest(s)
-                                            }
-                                        }
-                                        onDownload={
-                                            (music, type) => {
-                                                if (type === 'song') {
-                                                    downloadSong(music)
-                                                }
-                                                else if (type === 'lrc') {
-                                                    downloadLrc(music)
-                                                }
-                                            }
-                                        }
-                                    />
-                                </Box>
-                            </DarkThemed>
-                        </Stack>
-                    )
-                }
-            </Stack>
-            <LoadingOverlay
-                open={searchTask.pending}
-                label="搜索中.."
-                withBackground
-            />
-            <Snackbar
-                open={Boolean(toastMsg)}
-                autoHideDuration={5000}
-                onClose={
-                    () => setToastMsg(null)
-                }
-                anchorOrigin={{
-                    horizontal: 'center',
-                    vertical: 'bottom'
-                }}
-            >
-                {
-                    toastMsg && (
-                        <Alert
-                            severity={toastMsg.type}
-                            onClose={handleClose}
-                        >{toastMsg.msg}</Alert>
-                    )
-                }
-            </Snackbar>
-            <Snackbar
-                open={downloading}
-                anchorOrigin={{
-                    horizontal: 'center',
-                    vertical: 'bottom'
-                }}
-            >
-                <Alert severity="info">
-                    歌曲下载中, 请稍候..
-                </Alert>
-            </Snackbar>
-        </Box>
+                    }
+                </Stack>
+                <LoadingOverlay
+                    open={searchTask.pending}
+                    label="搜索中.."
+                    withBackground
+                />
+                <Snackbar
+                    open={Boolean(toastMsg)}
+                    autoHideDuration={5000}
+                    onClose={
+                        () => setToastMsg(null)
+                    }
+                    anchorOrigin={{
+                        horizontal: 'center',
+                        vertical: 'bottom'
+                    }}
+                >
+                    {
+                        toastMsg && (
+                            <Alert
+                                severity={toastMsg.type}
+                                onClose={handleClose}
+                            >{toastMsg.msg}</Alert>
+                        )
+                    }
+                </Snackbar>
+                <Snackbar
+                    open={downloading}
+                    anchorOrigin={{
+                        horizontal: 'center',
+                        vertical: 'bottom'
+                    }}
+                >
+                    <Alert severity="info">
+                        歌曲下载中, 请稍候..
+                    </Alert>
+                </Snackbar>
+            </Box>
+        </NoSsr>
     )
 }
 

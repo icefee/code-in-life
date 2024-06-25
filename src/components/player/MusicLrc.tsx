@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
-import GlobalStyles from '@mui/material/GlobalStyles'
+// import GlobalStyles from '@mui/material/GlobalStyles'
 import Fade from '@mui/material/Fade'
 import Popover from '@mui/material/Popover'
 import Box from '@mui/material/Box'
@@ -137,7 +137,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                 direction="row"
                 justifyContent="flex-end"
             >
-                <GlobalStyles
+                {/* <GlobalStyles
                     styles={
                         `
                         @property --line-played {
@@ -147,9 +147,8 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                         }
                         `
                     }
-                />
+                /> */}
                 <div
-                    key={lineIndex}
                     style={{
                         position: 'relative',
                         cursor: 'pointer',
@@ -262,8 +261,8 @@ function ScrollingLrc({ lrc, currentTime }: ScrollingLrcProps) {
     return (
         <Box
             sx={(theme) => ({
-                height: '40vh',
-                maxHeight: 400,
+                height: '60vh',
+                maxHeight: 600,
                 minWidth: 240,
                 maxWidth: 'var(--max-width)',
                 [theme.breakpoints.only('xs')]: {
