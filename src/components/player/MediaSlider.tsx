@@ -5,13 +5,13 @@ import Tooltip from '@mui/material/Tooltip'
 import type { Instance } from '@popperjs/core'
 
 interface MediaSliderProps extends Omit<SliderProps, 'onMouseMove' | 'onKeyDown'> {
-    buffered: number;
+    buffered?: number;
     showTooltip?: boolean;
     tooltipFormatter?: (value: number) => string | number;
 }
 
 function MediaSlider({
-    buffered,
+    buffered = 0,
     sx,
     showTooltip = false,
     tooltipFormatter,
@@ -93,6 +93,7 @@ function MediaSlider({
                 arrow
                 PopperProps={{
                     popperRef,
+                    disablePortal: true,
                     anchorEl: {
                         getBoundingClientRect: () => new DOMRect(
                             positionRef.current.x,

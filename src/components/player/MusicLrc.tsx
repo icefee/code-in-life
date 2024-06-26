@@ -261,7 +261,7 @@ function ScrollingLrc({ lrc, currentTime }: ScrollingLrcProps) {
     return (
         <Box
             sx={(theme) => ({
-                height: '60vh',
+                height: '50vh',
                 maxHeight: 600,
                 minWidth: 240,
                 maxWidth: 'var(--max-width)',
@@ -282,7 +282,7 @@ function ScrollingLrc({ lrc, currentTime }: ScrollingLrcProps) {
                 <Box
                     sx={{
                         transition: (theme) => theme.transitions.create('transform'),
-                        transform: `translate(0, calc(20vh - 24px - ${28 * activeIndex}px))`
+                        transform: `translate(0, calc(25vh - 24px - ${28 * activeIndex}px))`
                     }}
                 >
                     {

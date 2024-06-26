@@ -34,7 +34,7 @@ export function parseUrl(url: string, base: string) {
     return url.startsWith('http') ? url : new URL(url, base).href
 }
 
-async function loadFileChunk(url: string, [start, end]: [number, number], init?: RequestInit) {
+export async function loadFileChunk(url: string, [start, end]: [number, number], init?: RequestInit) {
     const headers = new Headers(init?.headers)
     headers.append('range', `bytes=${start}-${end}`)
     return fetch(url, {
@@ -43,7 +43,7 @@ async function loadFileChunk(url: string, [start, end]: [number, number], init?:
     })
 }
 
-export async function fetchFileChunks(
+export async function loadFileChunks(
     url: string,
     { chunkSize, ...init }: RequestInit & { chunkSize: number }
 ): Promise<ArrayBuffer> {

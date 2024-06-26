@@ -18,8 +18,7 @@ import NoData from '~/components/search/NoData'
 import SongList from '~/components/search/SongList'
 import MusicPlayList from '~/components/player/MusicPlayList'
 import useLocalStorageState from '~/components/hook/useLocalStorageState'
-import { getParamsUrl, fetchFileChunks } from '~/util/proxy'
-import { isDev } from '~/util/env'
+import { getParamsUrl, loadFileChunks } from '~/util/proxy'
 import { getJson } from '~/util/proxy'
 import { blobToFile } from '~/util/blobToFile'
 
@@ -135,7 +134,7 @@ export default function MusicSearch() {
         try {
             setDownloading(true)
             const url = `/api/music/download/${music.id}`
-            const data = await fetchFileChunks(url, {
+            const data = await loadFileChunks(url, {
                 chunkSize: Math.pow(2, 20) * 4 // 4mb
             })
             const { name } = generateSearchQuery(music)
@@ -344,7 +343,6 @@ export default function MusicSearch() {
                                     music={activeMusic}
                                     playing={playing}
                                     onPlayStateChange={setPlaying}
-                                    enableVisual={isDev}
                                     repeat={repeat.data}
                                     extendButtons={
                                         <Tooltip title="播放列表">
