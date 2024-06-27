@@ -179,8 +179,7 @@ function MusicPlayer({
                             p: .75,
                             borderRadius: '50%',
                             filter: playing ? `drop-shadow(0px 0px 16px ${alpha(theme.palette.secondary.main, .4)})` : 'none',
-                            opacity: loading ? .5 : .8,
-                            transition: theme.transitions.create(['opacity', 'filter'])
+                            transition: theme.transitions.create('filter')
                         })}
                     >
                         <Box
@@ -259,10 +258,17 @@ function MusicPlayer({
                                 noWrap
                             >{music.name}</Typography>
                         </Stack>
-                        <Stack>
+                        <Stack
+                            sx={(theme) => ({
+                                maxWidth: 100,
+                                [theme.breakpoints.up('sm')]: {
+                                    maxWidth: 160
+                                }
+                            })}
+                        >
                             <Typography
                                 variant="caption"
-                                color="#ffffffcc"
+                                color="#ddd"
                                 title={music.artist}
                                 lineHeight={1}
                                 noWrap
