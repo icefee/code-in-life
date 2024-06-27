@@ -34,8 +34,8 @@ export function restrictRange(range: string) {
 
 export function rangeContentIntact(range: string | null) {
     if (range) {
-        const [start, end] = range.replace(/^bytes\s\d+-/, '').split('/').map(Number)
-        return start === end
+        const [start, end] = range.replace(/^bytes\s0-/, '').split('/').map(Number)
+        return end - start === 1
     }
     return false
 }
