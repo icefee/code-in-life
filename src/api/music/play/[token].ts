@@ -1,5 +1,5 @@
 import { createApiAdaptor, parseId, getResponse, Headers } from '../../../adaptors'
-import { errorHandler, ApiHandler } from '../../../util/middleware'
+import { errorHandler, ApiHandler, restrictRange, rangeContentIntact } from '../../../util/middleware'
 
 const handler: ApiHandler = async (req, res) => {
     const { key, id } = parseId(req.params.token)
@@ -7,14 +7,18 @@ const handler: ApiHandler = async (req, res) => {
     const url = await adaptor.parseMusicUrl(id)
     if (url) {
         const requestHeaders = new Headers()
-        if (req.headers['range']) {
-            requestHeaders.append('range', req.headers['range'])
+        const range = req.headers['range']
+        if (range) {
+            requestHeaders.append('range', restrictRange(range))
             res.status(206)
         }
         const response = await getResponse(url, {
             headers: requestHeaders
         })
-        const headers = response.headers;
+        const headers = response.headers
+        if (rangeContentIntact(headers.get('content-range'))) {
+            res.status(200)
+        }
         headers.delete('content-disposition')
         headers.set('content-type', 'audio/mpeg')
         headers.set('accept-ranges', 'bytes')

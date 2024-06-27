@@ -18,8 +18,8 @@ import NoData from '~/components/search/NoData'
 import SongList from '~/components/search/SongList'
 import MusicPlayList from '~/components/player/MusicPlayList'
 import useLocalStorageState from '~/components/hook/useLocalStorageState'
-import { getParamsUrl, loadFileChunks } from '~/util/proxy'
-import { getJson } from '~/util/proxy'
+import { getParamsUrl, loadFileChunks, getJson } from '~/util/proxy'
+import { maxChunkSize } from '~/util/config'
 import { blobToFile } from '~/util/blobToFile'
 
 export function Head() {
@@ -135,7 +135,7 @@ export default function MusicSearch() {
             setDownloading(true)
             const url = `/api/music/download/${music.id}`
             const data = await loadFileChunks(url, {
-                chunkSize: Math.pow(2, 20) * 4 // 4mb
+                chunkSize: maxChunkSize
             })
             const { name } = generateSearchQuery(music)
             const blob = new Blob([data], { type: 'audio/mpeg' })

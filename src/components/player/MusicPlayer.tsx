@@ -16,7 +16,7 @@ import useLocalStorageState from '../hook/useLocalStorageState'
 import MediaSlider from './MediaSlider'
 import { Spinner } from '../loading'
 import AudioVisual from 'react-audio-visual'
-import { loadFileChunks } from '~/util/proxy'
+import { generate } from '~/util/url'
 import { timeFormatter } from '~/util/date'
 import { isMobileDevice } from '~/util/env'
 
@@ -34,6 +34,7 @@ interface MusicPlayerProps {
     onRepeatChange(mode: RepeatMode): void;
     onPlayStateChange(state: boolean): void;
     onPlayEnd?(end: boolean): void;
+    enableVisual?: boolean;
 }
 
 function MusicPlayer({
@@ -43,10 +44,12 @@ function MusicPlayer({
     extendButtons,
     onPlayStateChange,
     onRepeatChange,
-    onPlayEnd
+    onPlayEnd,
+    enableVisual = true
 }: MusicPlayerProps) {
 
     const audioRef = useRef<HTMLAudioElement | null>(null)
+    const [audioReady, setAudioReady] = useState(false)
     const [duration, setDuration] = useState<number | null>(null)
     const [currentTime, setCurrentTime] = useState<number>(0)
     const defaultVolume = .7
@@ -56,50 +59,20 @@ function MusicPlayer({
     const isMobile = isMobileDevice()
     const hasError = useRef(false)
     const seekingRef = useRef(false)
+    const [buffered, setBuffered] = useState(0)
     const durationPlaceholder = '--:--'
 
-    const [url, setUrl] = useState<string>(null)
-    const chunkSize = Math.pow(2, 20) * 2
-    const abortControl = useRef<AbortController>(null)
-
-    const loadMediaSource = async (url: string) => {
-        setLoading(true)
-        try {
-            abortControl.current = new AbortController()
-            const chunk = await loadFileChunks(url, {
-                chunkSize,
-                signal: abortControl.current.signal
-            })
-            setUrl(
-                URL.createObjectURL(
-                    new Blob([chunk], { type: 'audio/mpeg' })
-                )
-            )
-        }
-        catch (error) {
-            onPlayEnd?.(false)
-            hasError.current = true
-        }
-        abortControl.current = null
-        setLoading(false)
-    }
-
     useEffect(() => {
         return () => {
-            URL.revokeObjectURL(url)
-        }
-    }, [url])
-
-    useEffect(() => {
-        loadMediaSource(music.url)
-        return () => {
-            abortControl.current?.abort()
-            audioRef.current.currentTime = 0
-            setDuration(null)
-            setCurrentTime(0)
-            onPlayStateChange(false)
-            seekingRef.current = false
-            hasError.current = false
+            if (audioRef.current) {
+                audioRef.current.currentTime = 0
+                setDuration(null)
+                setCurrentTime(0)
+                setBuffered(0)
+                onPlayStateChange(false)
+                seekingRef.current = false
+                hasError.current = false
+            }
         }
     }, [music.url])
 
@@ -151,8 +124,14 @@ function MusicPlayer({
         }
         catch (err) {
             onPlayStateChange(false)
+            setLoading(false)
             console.warn('auto play blocked in case of browser security policy.')
         }
+    }
+
+    const reloadSong = () => {
+        audioRef.current.src = generate(music.url)
+        audioRef.current.load()
     }
 
     return (
@@ -296,7 +275,10 @@ function MusicPlayer({
                                 overflow: 'hidden'
                             }}
                         >
-                            <MusicLrc id={music.id} currentTime={currentTime} />
+                            <MusicLrc
+                                id={music.id}
+                                currentTime={currentTime}
+                            />
                         </Box>
                     </Stack>
                     <Stack
@@ -316,6 +298,7 @@ function MusicPlayer({
                                 size="small"
                                 color="secondary"
                                 value={duration ? currentTime / duration : 0}
+                                buffered={buffered}
                                 showTooltip={!isMobile}
                                 max={1}
                                 step={.00001}
@@ -342,8 +325,8 @@ function MusicPlayer({
                                     value={volume.data}
                                     onChange={
                                         (value) => {
-                                            audioRef.current.volume = value
-                                            cachedVolumeRef.current = value
+                                            audioRef.current.volume = value;
+                                            cachedVolumeRef.current = value;
                                         }
                                     }
                                     onMute={
@@ -352,12 +335,12 @@ function MusicPlayer({
                                                 audioRef.current.volume = 0;
                                             }
                                             else {
-                                                const targetVolume = cachedVolumeRef.current > 0 ? cachedVolumeRef.current : .5
-                                                audioRef.current.volume = targetVolume
+                                                const targetVolume = cachedVolumeRef.current > 0 ? cachedVolumeRef.current : .5;
+                                                audioRef.current.volume = targetVolume;
                                             }
                                         }
                                     }
-                                    disabled={duration !== null}
+                                    disabled={!audioReady}
                                     IconProps={{
                                         size: 'small'
                                     }}
@@ -393,14 +376,29 @@ function MusicPlayer({
                 </Stack>
                 <audio
                     ref={audioRef}
+                    preload="auto"
+                    onLoadStart={
+                        () => setLoading(true)
+                    }
                     onDurationChange={
                         (event: React.SyntheticEvent<HTMLVideoElement>) => {
-                            setDuration(event.currentTarget.duration)
+                            setDuration(event.currentTarget.duration);
                         }
                     }
                     onLoadedMetadata={
                         () => {
-                            tryToAutoPlay()
+                            setAudioReady(true);
+                            tryToAutoPlay();
+                        }
+                    }
+                    onCanPlay={
+                        () => {
+                            setLoading(false)
+                        }
+                    }
+                    onCanPlayThrough={
+                        () => {
+                            setLoading(false)
                         }
                     }
                     onPlay={
@@ -413,10 +411,30 @@ function MusicPlayer({
                             onPlayStateChange(false)
                         }
                     }
+                    onWaiting={
+                        () => {
+                            setLoading(true)
+                        }
+                    }
                     onTimeUpdate={
                         () => {
                             if (!seekingRef.current) {
                                 setCurrentTime(audioRef.current.currentTime)
+                            }
+                        }
+                    }
+                    onProgress={
+                        () => {
+                            if (audioReady) {
+                                const buffered = audioRef.current.buffered;
+                                let bufferedEnd: number;
+                                try {
+                                    bufferedEnd = buffered.end(buffered.length - 1);
+                                }
+                                catch (err) {
+                                    bufferedEnd = 0;
+                                }
+                                setBuffered(bufferedEnd / duration)
                             }
                         }
                     }
@@ -439,24 +457,41 @@ function MusicPlayer({
                     onVolumeChange={
                         () => setVolume(audioRef.current.volume)
                     }
-                    src={url}
+                    onError={
+                        () => {
+                            if (hasError.current) {
+                                onPlayEnd?.(false)
+                                setLoading(false)
+                                onPlayStateChange(false)
+                            }
+                            else {
+                                hasError.current = true
+                                setTimeout(reloadSong, 400)
+                            }
+                        }
+                    }
+                    src={music.url}
                 />
             </Stack>
-            <Box
-                sx={{
-                    position: 'absolute',
-                    inset: 0,
-                    zIndex: 1,
-                    opacity: .4
-                }}
-            >
-                <AudioVisual
-                    audio={audioRef}
-                    barInternal={4}
-                    barSpace={2}
-                    capHeight={1}
-                />
-            </Box>
+            {
+                enableVisual && (
+                    <Box
+                        sx={{
+                            position: 'absolute',
+                            inset: 0,
+                            zIndex: 1,
+                            opacity: .4
+                        }}
+                    >
+                        <AudioVisual
+                            audio={audioRef}
+                            barInternal={4}
+                            barSpace={2}
+                            capHeight={1}
+                        />
+                    </Box>
+                )
+            }
         </Stack>
     )
 }
