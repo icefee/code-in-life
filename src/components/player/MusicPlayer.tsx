@@ -253,10 +253,17 @@ function MusicPlayer({
                                 noWrap
                             >{music.name}</Typography>
                         </Stack>
-                        <Stack>
+                        <Stack
+                            sx={(theme) => ({
+                                maxWidth: 150,
+                                [theme.breakpoints.up('sm')]: {
+                                    maxWidth: 200
+                                }
+                            })}
+                        >
                             <Typography
                                 variant="caption"
-                                color="#ffffffcc"
+                                color="#ffc"
                                 title={music.artist}
                                 lineHeight={1}
                                 noWrap
@@ -373,7 +380,7 @@ function MusicPlayer({
                     }
                     onDurationChange={
                         (event: React.SyntheticEvent<HTMLVideoElement>) => {
-                            setDuration(event.currentTarget.duration);
+                            setDuration(event.currentTarget.duration)
                         }
                     }
                     onLoadedMetadata={
@@ -417,10 +424,10 @@ function MusicPlayer({
                     onProgress={
                         () => {
                             if (audioReady) {
-                                const buffered = audioRef.current.buffered;
+                                const buffered = audioRef.current.buffered
                                 let bufferedEnd: number;
                                 try {
-                                    bufferedEnd = buffered.end(buffered.length - 1);
+                                    bufferedEnd = buffered.end(buffered.length - 1)
                                 }
                                 catch (err) {
                                     bufferedEnd = 0;
@@ -489,4 +496,4 @@ function MusicPlayer({
     )
 }
 
-export default MusicPlayer;
+export default MusicPlayer

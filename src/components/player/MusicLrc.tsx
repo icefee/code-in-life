@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
-import GlobalStyles from '@mui/material/GlobalStyles'
+// import GlobalStyles from '@mui/material/GlobalStyles'
 import Fade from '@mui/material/Fade'
 import Popover from '@mui/material/Popover'
 import Box from '@mui/material/Box'
@@ -135,7 +135,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                 direction="row"
                 justifyContent="flex-end"
             >
-                <GlobalStyles
+                {/* <GlobalStyles
                     styles={
                         `
                         @property --line-played {
@@ -145,7 +145,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                         }
                         `
                     }
-                />
+                /> */}
                 <div
                     style={{
                         position: 'relative',
