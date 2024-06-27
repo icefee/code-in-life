@@ -133,7 +133,7 @@ export default function MusicSearch() {
         }
         try {
             setDownloading(true)
-            const url = `/api/music/download/${music.id}`
+            const url = `/api/music/play/${music.id}`
             const data = await loadFileChunks(url, {
                 chunkSize: maxChunkSize
             })
