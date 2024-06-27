@@ -99,7 +99,7 @@ function SongList({ data, onAction, ...rest }: SongListProps) {
                                         justifyContent: 'center'
                                     }}
                                 >
-                                    <Typography variant="button" color="text.secondary">已显示全部</Typography>
+                                    <Typography variant="button" color="text.secondary">已加载全部</Typography>
                                 </Stack>
                             )
                         }
@@ -209,4 +209,4 @@ function SongListItem({ current, divider, isCurrentPlaying, onTogglePlay, onActi
     )
 }
 
-export default SongList;
+export default SongList

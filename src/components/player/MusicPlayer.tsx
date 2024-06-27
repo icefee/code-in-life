@@ -8,6 +8,7 @@ import { alpha } from '@mui/material/styles'
 import RepeatOneRoundedIcon from '@mui/icons-material/RepeatOneRounded'
 import LoopRoundedIcon from '@mui/icons-material/LoopRounded'
 import ShuffleRoundedIcon from '@mui/icons-material/ShuffleRounded'
+import AudioVisual from 'react-audio-visual'
 import MusicPoster from './MusicPoster'
 import MusicLrc from './MusicLrc'
 import PlayOrPauseButton from './PlayOrPauseButton'
@@ -15,7 +16,6 @@ import VolumeSetter from './VolumeSetter'
 import useLocalStorageState from '../hook/useLocalStorageState'
 import MediaSlider from './MediaSlider'
 import { Spinner } from '../loading'
-import AudioVisual from 'react-audio-visual'
 import { generate } from '~/util/url'
 import { timeFormatter } from '~/util/date'
 import { isMobileDevice } from '~/util/env'
@@ -178,7 +178,7 @@ function MusicPlayer({
                             border: '6px solid hsla(0, 0%, 100%, .04)',
                             p: .75,
                             borderRadius: '50%',
-                            filter: playing ? `drop-shadow(0px 0px 16px ${alpha(theme.palette.secondary.main, .4)})` : 'none',
+                            filter: playing ? `drop-shadow(0px 0px 16px ${alpha(theme.palette.secondary.main, .6)})` : 'none',
                             transition: theme.transitions.create('filter')
                         })}
                     >
@@ -260,9 +260,9 @@ function MusicPlayer({
                         </Stack>
                         <Stack
                             sx={(theme) => ({
-                                maxWidth: 100,
+                                maxWidth: 150,
                                 [theme.breakpoints.up('sm')]: {
-                                    maxWidth: 160
+                                    maxWidth: 200
                                 }
                             })}
                         >
