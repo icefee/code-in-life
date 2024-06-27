@@ -236,6 +236,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
     }
 
     const onMediaAttached: HlsListeners[typeof Events.MEDIA_ATTACHED] = () => {
+        videoRef.current.playbackRate = rate
         tryToAutoPlay()
     }
 

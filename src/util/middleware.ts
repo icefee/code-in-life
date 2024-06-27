@@ -22,12 +22,8 @@ export function restrictRange(range: string) {
     const rangePrefix = 'bytes='
     let [start, end] = range.replace(rangePrefix, '').split('-').map(Number)
     const chunkSize = maxChunkSize / 2
-    let chunkOffset = chunkSize
-    if (start === 0) {
-        chunkOffset -= 1
-    }
     if (end === 0 || end - start > chunkSize) {
-        end = start + chunkOffset
+        end = start + chunkSize - 1
     }
     return `${rangePrefix}${start}-${end}`
 }
@@ -40,7 +36,7 @@ export function rangeContentIntact(range: string | null) {
     return false
 }
 
-export const errorHandler: ApiHandlerMiddleware = (handler: ApiHandler) => {
+export const errorHandler: ApiHandlerMiddleware = (handler) => {
     return async function middlewareHandler(req, res) {
         try {
             await handler(req, res)
