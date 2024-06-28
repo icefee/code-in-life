@@ -19,7 +19,7 @@ export function getParamsUrl(url: string, params: ParamsType) {
 }
 
 export function proxyUrl(url: string, remote: boolean = false, extend: ParamsType = {}) {
-    return getParamsUrl(`${remote ? Api.assetSite : ''}/api/proxy`, {
+    return getParamsUrl(`${remote ? Api.proxyUrl : ''}/api/proxy`, {
         url,
         ...extend
     })

@@ -30,7 +30,7 @@ export async function getMusicSearch(s: string): Promise<SearchMusic[]> {
                         name: nameMatch.trim(),
                         artist: artistMatch,
                         url: `/api/music/play/${id}`,
-                        poster: `${Api.proxyServer}/api/music/poster/${id}`
+                        poster: `${Api.posterServer}/api/music/poster/${id}`
                     }
                 }
             )

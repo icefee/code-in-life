@@ -21,7 +21,6 @@ import useLocalStorageState from '~/components/hook/useLocalStorageState'
 import { getParamsUrl, loadFileChunks, getJson } from '~/util/proxy'
 import { maxChunkSize } from '~/util/config'
 import { blobToFile } from '~/util/blobToFile'
-import { Base64Params } from '~/util/clue'
 
 export function Head() {
     return (
@@ -136,8 +135,7 @@ export default function MusicSearch() {
             setDownloading(true)
             const { data, msg } = await getJson<ApiJsonType<string>>(music.url)
             if (data) {
-                const token = Base64Params.create(data)
-                const url = `/api/music/${token}`
+                const url = `/api/music/download/${music.id}`
                 const buffer = await loadFileChunks(url, {
                     chunkSize: maxChunkSize
                 })

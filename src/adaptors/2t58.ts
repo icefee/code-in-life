@@ -25,7 +25,7 @@ async function matchSongs(source: string) {
                     name,
                     artist,
                     url: `/api/music/play/${id}`,
-                    poster: `${Api.proxyServer}/api/music/poster/${id}`
+                    poster: `${Api.posterServer}/api/music/poster/${id}`
                 }
             }
         )

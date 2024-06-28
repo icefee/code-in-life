@@ -15,12 +15,10 @@ import PlayOrPauseButton from './PlayOrPauseButton'
 import VolumeSetter from './VolumeSetter'
 import useLocalStorageState from '../hook/useLocalStorageState'
 import MediaSlider from './MediaSlider'
-import { getJson } from '~/util/proxy'
 import { Spinner } from '../loading'
 import { generate } from '~/util/url'
 import { timeFormatter } from '~/util/date'
-import { isMobileDevice, isIos } from '~/util/env'
-import { Base64Params } from '~/util/clue'
+import { isMobileDevice, isDev, isIos } from '~/util/env'
 
 export enum RepeatMode {
     All,
@@ -64,42 +62,8 @@ function MusicPlayer({
     const [buffered, setBuffered] = useState(0)
     const durationPlaceholder = '--:--'
 
-    const abortControllerRef = useRef<AbortController>()
-
-    const [url, setUrl] = useState<string>(null)
-
-    const parseMusicUrl = async (url: string) => {
-        const abortController = new AbortController()
-        const signal = abortController.signal
-        abortControllerRef.current = abortController
-        try {
-            setLoading(true)
-            const { code, data, msg } = await getJson<ApiJsonType<string>>(url, {
-                signal
-            })
-            if (code === 0) {
-                const token = Base64Params.create(data)
-                setUrl(
-                    `/api/music/${token}`
-                )
-            }
-            else {
-                throw new Error(msg)
-            }
-        }
-        catch (err) {
-            if (err.name !== 'AbortError') {
-                onPlayEnd?.(false)
-            }
-            setLoading(false)
-        }
-        abortControllerRef.current = null
-    }
-
     useEffect(() => {
-        parseMusicUrl(music.url)
         return () => {
-            abortControllerRef.current?.abort()
             audio.current.currentTime = 0
             setDuration(null)
             setCurrentTime(0)
@@ -126,12 +90,6 @@ function MusicPlayer({
             }
         }
     }
-
-    useEffect(() => {
-        if (url) {
-            audio.current.load()
-        }
-    }, [url])
 
     useEffect(() => {
         togglePlay(playing)
@@ -170,7 +128,7 @@ function MusicPlayer({
     }
 
     const reloadSong = () => {
-        audio.current.src = generate(url)
+        audio.current.src = generate(music.url)
         audio.current.load()
     }
 
@@ -516,11 +474,11 @@ function MusicPlayer({
                             }
                         }
                     }
-                    src={url}
+                    src={music.url}
                 />
             </Stack>
             {
-                enableVisual && !isIos() && (
+                enableVisual && isDev && !isIos() && (
                     <Box
                         sx={{
                             position: 'absolute',

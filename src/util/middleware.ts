@@ -21,12 +21,9 @@ export function appendContentDisposition(req: GatsbyFunctionRequest, res: Gatsby
 export function restrictRange(range: string) {
     const rangePrefix = 'bytes='
     let [start, end] = range.replace(rangePrefix, '').split('-').map(Number)
-    const chunkSize = maxChunkSize / 2
-    if (end === 0) {
-        end = chunkSize - 1
-    }
-    else if (end - start > maxChunkSize) {
-        end = start + maxChunkSize - 1
+    const chunkSize = maxChunkSize / 4
+    if (end === 0 || end - start > chunkSize) {
+        end = start + chunkSize - 1
     }
     return `${rangePrefix}${start}-${end}`
 }
