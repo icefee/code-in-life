@@ -21,6 +21,7 @@ import useLocalStorageState from '~/components/hook/useLocalStorageState'
 import { getParamsUrl, loadFileChunks, getJson } from '~/util/proxy'
 import { maxChunkSize } from '~/util/config'
 import { blobToFile } from '~/util/blobToFile'
+import { Base64Params } from '~/util/clue'
 
 export function Head() {
     return (
@@ -133,13 +134,20 @@ export default function MusicSearch() {
         }
         try {
             setDownloading(true)
-            const url = `/api/music/play/${music.id}`
-            const data = await loadFileChunks(url, {
-                chunkSize: maxChunkSize
-            })
-            const { name } = generateSearchQuery(music)
-            const blob = new Blob([data], { type: 'audio/mpeg' })
-            blobToFile(blob, `${name}.mp3`)
+            const { data, msg } = await getJson<ApiJsonType<string>>(music.url)
+            if (data) {
+                const token = Base64Params.create(data)
+                const url = `/api/music/${token}`
+                const buffer = await loadFileChunks(url, {
+                    chunkSize: maxChunkSize
+                })
+                const { name } = generateSearchQuery(music)
+                const blob = new Blob([buffer], { type: 'audio/mpeg' })
+                blobToFile(blob, `${name}.mp3`)
+            }
+            else {
+                throw new Error(msg)
+            }
         }
         catch (err) {
             setToastMsg({

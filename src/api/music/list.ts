@@ -1,5 +1,5 @@
 import { createApiAdaptor, adaptors } from '../../adaptors'
-import { errorHandler, ApiHandler } from '../../util/middleware'
+import { errorHandler, ApiHandler, createPayload } from '../../util/middleware'
 
 const handler: ApiHandler = async (req, res) => {
     const { s } = req.query
@@ -18,11 +18,9 @@ const handler: ApiHandler = async (req, res) => {
         ] : prev,
         []
     )
-    res.json({
-        code: 0,
-        data,
-        msg: '成功'
-    })
+    res.json(
+        createPayload(data)
+    )
 }
 
 export default errorHandler(handler)

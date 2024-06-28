@@ -458,7 +458,7 @@ function RelatedList({ data }: RelatedListProps) {
                 data.map(
                     ({ id, name, note, last }) => (
                         <Grid xs={12} sm={6} lg={3} key={id} item>
-                            <Card raised>
+                            <Card elevation={4}>
                                 <CardActionArea href={`/video/play/${id}/`}>
                                     <Stack direction="row">
                                         <Box
@@ -540,7 +540,7 @@ export default function Page({ serverData }: PageProps<object, object, unknown, 
         (async function getVideoInfo() {
             try {
                 const { code, data } = await getJson<ApiJsonType<VideoInfo>>(
-                    `/api/video/detail/${id}`
+                    `/api/video/${id}`
                 )
                 if (code === 0) {
                     if (data.proxy) {

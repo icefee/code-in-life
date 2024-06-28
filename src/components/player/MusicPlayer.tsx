@@ -15,10 +15,12 @@ import PlayOrPauseButton from './PlayOrPauseButton'
 import VolumeSetter from './VolumeSetter'
 import useLocalStorageState from '../hook/useLocalStorageState'
 import MediaSlider from './MediaSlider'
+import { getJson } from '~/util/proxy'
 import { Spinner } from '../loading'
 import { generate } from '~/util/url'
 import { timeFormatter } from '~/util/date'
-import { isMobileDevice } from '~/util/env'
+import { isMobileDevice, isIos } from '~/util/env'
+import { Base64Params } from '~/util/clue'
 
 export enum RepeatMode {
     All,
@@ -48,7 +50,7 @@ function MusicPlayer({
     enableVisual = true
 }: MusicPlayerProps) {
 
-    const audioRef = useRef<HTMLAudioElement | null>(null)
+    const audio = useRef<HTMLAudioElement | null>(null)
     const [audioReady, setAudioReady] = useState(false)
     const [duration, setDuration] = useState<number | null>(null)
     const [currentTime, setCurrentTime] = useState<number>(0)
@@ -62,27 +64,59 @@ function MusicPlayer({
     const [buffered, setBuffered] = useState(0)
     const durationPlaceholder = '--:--'
 
-    useEffect(() => {
-        return () => {
-            if (audioRef.current) {
-                audioRef.current.currentTime = 0
-                setDuration(null)
-                setCurrentTime(0)
-                setBuffered(0)
-                onPlayStateChange(false)
-                seekingRef.current = false
-                hasError.current = false
+    const abortControllerRef = useRef<AbortController>()
+
+    const [url, setUrl] = useState<string>(null)
+
+    const parseMusicUrl = async (url: string) => {
+        const abortController = new AbortController()
+        const signal = abortController.signal
+        abortControllerRef.current = abortController
+        try {
+            setLoading(true)
+            const { code, data, msg } = await getJson<ApiJsonType<string>>(url, {
+                signal
+            })
+            if (code === 0) {
+                const token = Base64Params.create(data)
+                setUrl(
+                    `/api/music/${token}`
+                )
             }
+            else {
+                throw new Error(msg)
+            }
+        }
+        catch (err) {
+            if (err.name !== 'AbortError') {
+                onPlayEnd?.(false)
+            }
+            setLoading(false)
+        }
+        abortControllerRef.current = null
+    }
+
+    useEffect(() => {
+        parseMusicUrl(music.url)
+        return () => {
+            abortControllerRef.current?.abort()
+            audio.current.currentTime = 0
+            setDuration(null)
+            setCurrentTime(0)
+            setBuffered(0)
+            onPlayStateChange(false)
+            seekingRef.current = false
+            hasError.current = false
         }
     }, [music.url])
 
     const togglePlay = async (play: boolean) => {
         try {
             if (play) {
-                await audioRef.current?.play()
+                await audio.current?.play()
             }
             else {
-                audioRef.current?.pause()
+                audio.current?.pause()
             }
         }
         catch (err) {
@@ -92,6 +126,12 @@ function MusicPlayer({
             }
         }
     }
+
+    useEffect(() => {
+        if (url) {
+            audio.current.load()
+        }
+    }, [url])
 
     useEffect(() => {
         togglePlay(playing)
@@ -113,13 +153,13 @@ function MusicPlayer({
     useEffect(() => {
         if (volume.init) {
             cachedVolumeRef.current = volume.data
-            audioRef.current.volume = volume.data
+            audio.current.volume = volume.data
         }
     }, [volume])
 
     const tryToAutoPlay = async () => {
         try {
-            await audioRef.current.play()
+            await audio.current.play()
             onPlayStateChange(true)
         }
         catch (err) {
@@ -130,8 +170,8 @@ function MusicPlayer({
     }
 
     const reloadSong = () => {
-        audioRef.current.src = generate(music.url)
-        audioRef.current.load()
+        audio.current.src = generate(url)
+        audio.current.load()
     }
 
     return (
@@ -320,7 +360,7 @@ function MusicPlayer({
                                 }
                                 onChangeCommitted={
                                     (_event, value: number) => {
-                                        audioRef.current.currentTime = value * duration
+                                        audio.current.currentTime = value * duration
                                     }
                                 }
                             />
@@ -331,18 +371,18 @@ function MusicPlayer({
                                     value={volume.data}
                                     onChange={
                                         (value) => {
-                                            audioRef.current.volume = value;
+                                            audio.current.volume = value;
                                             cachedVolumeRef.current = value;
                                         }
                                     }
                                     onMute={
                                         () => {
                                             if (volume.data > 0) {
-                                                audioRef.current.volume = 0;
+                                                audio.current.volume = 0;
                                             }
                                             else {
                                                 const targetVolume = cachedVolumeRef.current > 0 ? cachedVolumeRef.current : .5;
-                                                audioRef.current.volume = targetVolume;
+                                                audio.current.volume = targetVolume;
                                             }
                                         }
                                     }
@@ -381,20 +421,20 @@ function MusicPlayer({
                     </Stack>
                 </Stack>
                 <audio
-                    ref={audioRef}
+                    ref={audio}
                     preload="auto"
                     onLoadStart={
                         () => setLoading(true)
                     }
                     onDurationChange={
                         (event: React.SyntheticEvent<HTMLVideoElement>) => {
-                            setDuration(event.currentTarget.duration);
+                            setDuration(event.currentTarget.duration)
                         }
                     }
                     onLoadedMetadata={
                         () => {
-                            setAudioReady(true);
-                            tryToAutoPlay();
+                            setAudioReady(true)
+                            tryToAutoPlay()
                         }
                     }
                     onCanPlay={
@@ -425,14 +465,14 @@ function MusicPlayer({
                     onTimeUpdate={
                         () => {
                             if (!seekingRef.current) {
-                                setCurrentTime(audioRef.current.currentTime)
+                                setCurrentTime(audio.current.currentTime)
                             }
                         }
                     }
                     onProgress={
                         () => {
                             if (audioReady) {
-                                const buffered = audioRef.current.buffered;
+                                const buffered = audio.current.buffered;
                                 let bufferedEnd: number;
                                 try {
                                     bufferedEnd = buffered.end(buffered.length - 1);
@@ -451,7 +491,7 @@ function MusicPlayer({
                     }
                     onEnded={
                         () => {
-                            audioRef.current.currentTime = 0
+                            audio.current.currentTime = 0
                             if (repeat === RepeatMode.One) {
                                 tryToAutoPlay()
                             }
@@ -461,7 +501,7 @@ function MusicPlayer({
                         }
                     }
                     onVolumeChange={
-                        () => setVolume(audioRef.current.volume)
+                        () => setVolume(audio.current.volume)
                     }
                     onError={
                         () => {
@@ -476,11 +516,11 @@ function MusicPlayer({
                             }
                         }
                     }
-                    src={music.url}
+                    src={url}
                 />
             </Stack>
             {
-                enableVisual && (
+                enableVisual && !isIos() && (
                     <Box
                         sx={{
                             position: 'absolute',
@@ -490,7 +530,7 @@ function MusicPlayer({
                         }}
                     >
                         <AudioVisual
-                            audio={audioRef}
+                            audio={audio}
                             barInternal={4}
                             barSpace={2}
                             capHeight={1}

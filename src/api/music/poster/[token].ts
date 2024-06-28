@@ -15,7 +15,7 @@ const handler: ApiHandler = async (req, res) => {
         res.setHeader('cache-control', 'public, max-age=604800')
         const inheritedHeaders = [
             'content-type'
-        ];
+        ]
         for (const key of inheritedHeaders) {
             res.setHeader(key, headers.get(key))
         }

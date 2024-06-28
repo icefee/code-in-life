@@ -1,5 +1,5 @@
 import { getTextWithTimeout } from '../../../adaptors'
-import { errorHandler, ApiHandler } from '../../../util/middleware'
+import { errorHandler, ApiHandler, createPayload, createErrorPayload } from '../../../util/middleware'
 import { proxyUrl, parseUrl } from '../../../util/proxy'
 import { Base64Params } from '../../../util/clue'
 
@@ -27,20 +27,7 @@ const handler: ApiHandler = async (req, res) => {
     const { token } = req.params
     const url = Base64Params.parse(token)
     const data = await parseVideoUrl(url)
-    if (data) {
-        res.json({
-            code: 0,
-            data,
-            msg: '成功'
-        })
-    }
-    else {
-        res.json({
-            code: -1,
-            data,
-            msg: '失败'
-        })
-    }
+    res.json(data ? createPayload(data) : createErrorPayload())
 }
 
 export default errorHandler(handler)

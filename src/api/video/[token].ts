@@ -1,7 +1,7 @@
-import { getJson } from '../../../adaptors'
-import { errorHandler, ApiHandler } from '../../../util/middleware'
-import { Api } from '../../../util/config'
-import { Clue } from '../../../util/clue'
+import { getJson } from '../../adaptors'
+import { errorHandler, ApiHandler, createPayload } from '../../util/middleware'
+import { Api } from '../../util/config'
+import { Clue } from '../../util/clue'
 
 async function getRelatedList(api: string, typeId: number) {
     const searchParams = new URLSearchParams({
@@ -28,11 +28,9 @@ const handler: ApiHandler = async (req, res) => {
                 ...rest
             })
         )
-        res.json({
-            code: 0,
-            data,
-            msg: '成功'
-        })
+        res.json(
+            createPayload(data)
+        )
     }
     else {
         throw new Error(msg)

@@ -5,7 +5,7 @@ import { Api } from '../util/config'
 
 export const key = 'z';
 
-export const baseUrl = 'https://zz123.com';
+export const baseUrl = 'https://zz123.com'
 
 export async function getMusicSearch(s: string): Promise<SearchMusic[]> {
     const searchParams = new URLSearchParams({
@@ -73,9 +73,9 @@ async function getMusicInfo(id: string) {
         response => response.json()
     )
     if (status === 200) {
-        return data;
+        return data
     }
-    return null;
+    return null
 }
 
 function transformUrl(url: string): string {
@@ -96,7 +96,7 @@ export async function parsePoster(id: string) {
 }
 
 
-export async function parseMusicUrl(id: string) {
+export async function parseMusicUrl(id: string): Promise<string | null> {
     try {
         const info = await getMusicInfo(id)
         const url = transformUrl(info?.mp3)

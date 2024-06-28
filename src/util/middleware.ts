@@ -21,8 +21,12 @@ export function appendContentDisposition(req: GatsbyFunctionRequest, res: Gatsby
 export function restrictRange(range: string) {
     const rangePrefix = 'bytes='
     let [start, end] = range.replace(rangePrefix, '').split('-').map(Number)
+    const chunkSize = maxChunkSize / 2
     if (end === 0) {
-        end = maxChunkSize - 1
+        end = chunkSize - 1
+    }
+    else if (end - start > maxChunkSize) {
+        end = start + maxChunkSize - 1
     }
     return `${rangePrefix}${start}-${end}`
 }
@@ -35,21 +39,34 @@ export function rangeContentIntact(range: string | null) {
     return false
 }
 
+export const createPayload = <T = unknown>(data: T) => {
+    return {
+        code: 0,
+        data,
+        msg: '成功'
+    }
+}
+
+export const createErrorPayload = (error: any = '失败') => {
+    return {
+        code: -1,
+        data: null,
+        msg: error
+    }
+}
+
 export const errorHandler: ApiHandlerMiddleware = (handler) => {
     return async function middlewareHandler(req, res) {
         try {
             await handler(req, res)
         }
         catch (err) {
-            res.json({
-                code: -1,
-                data: null,
-                msg: String(err)
-            })
+            res.json(
+                createErrorPayload(err)
+            )
         }
     }
 }
-
 
 export const proxyJson = async (url: string, res: GatsbyFunctionResponse) => {
     const response = await getResponse(url)
