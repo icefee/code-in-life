@@ -20,6 +20,7 @@
     "@mui/icons-material": "^5.15.20",
     "@mui/lab": "^5.0.0-alpha.170",
     "@mui/material": "^5.15.20",
+    "caniuse-lite": "^1.0.30001643",
     "gatsby": "^5.13.6",
     "gatsby-adapter-netlify": "^1.1.6",
     "gatsby-plugin-alias-imports": "^1.0.5",

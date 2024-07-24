@@ -37,6 +37,9 @@ const config: GatsbyConfig = {
           '~/util': 'src/util'
         }
       }
+    },
+    {
+      resolve: 'gatsby-plugin-no-sourcemaps'
     }
   ]
 }

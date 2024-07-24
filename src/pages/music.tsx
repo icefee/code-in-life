@@ -133,19 +133,13 @@ export default function MusicSearch() {
         }
         try {
             setDownloading(true)
-            const { data, msg } = await getJson<ApiJsonType<string>>(music.url)
-            if (data) {
-                const url = `/api/music/download/${music.id}`
-                const buffer = await loadFileChunks(url, {
-                    chunkSize: maxChunkSize
-                })
-                const { name } = generateSearchQuery(music)
-                const blob = new Blob([buffer], { type: 'audio/mpeg' })
-                blobToFile(blob, `${name}.mp3`)
-            }
-            else {
-                throw new Error(msg)
-            }
+            const url = `/api/music/download/${music.id}`
+            const buffer = await loadFileChunks(url, {
+                chunkSize: maxChunkSize
+            })
+            const { name } = generateSearchQuery(music)
+            const blob = new Blob([buffer], { type: 'audio/mpeg' })
+            blobToFile(blob, `${name}.mp3`)
         }
         catch (err) {
             setToastMsg({
