@@ -7,6 +7,8 @@ import Box from '@mui/material/Box'
 import Tooltip from '@mui/material/Tooltip'
 import IconButton from '@mui/material/IconButton'
 import Badge from '@mui/material/Badge'
+import LinearProgress from '@mui/material/LinearProgress'
+import Collapse from '@mui/material/Collapse'
 import Typography from '@mui/material/Typography'
 import PlaylistPlayRoundedIcon from '@mui/icons-material/PlaylistPlayRounded'
 import HeadLayout from '~/components/layout/Head'
@@ -197,6 +199,30 @@ export default function MusicSearch() {
                         }
                     })}
                 >
+                    <Collapse in={downloading}>
+                        <Stack
+                            sx={{
+                                position: 'relative',
+                                height: 24
+                            }}
+                        >
+                            <LinearProgress
+                                color="secondary"
+                                sx={{
+                                    height: '100%'
+                                }}
+                            />
+                            <Typography
+                                variant="button"
+                                sx={{
+                                    position: 'absolute',
+                                    left: '50%',
+                                    top: '50%',
+                                    transform: 'translate(-50%, -50%)'
+                                }}
+                            >歌曲下载中, 请稍候..</Typography>
+                        </Stack>
+                    </Collapse>
                     <Stack
                         sx={{
                             position: 'relative',
@@ -231,7 +257,7 @@ export default function MusicSearch() {
                         searchTask.success ? searchTask.data.length > 0 ? (
                             <Box
                                 sx={(theme) => ({
-                                    height: '100%',
+                                    flexGrow: 1,
                                     px: 1.5,
                                     overflowY: 'auto',
                                     pb: activeMusic ? 12 : 2,
@@ -481,17 +507,6 @@ export default function MusicSearch() {
                             >{toastMsg.msg}</Alert>
                         )
                     }
-                </Snackbar>
-                <Snackbar
-                    open={downloading}
-                    anchorOrigin={{
-                        horizontal: 'center',
-                        vertical: 'bottom'
-                    }}
-                >
-                    <Alert severity="info">
-                        歌曲下载中, 请稍候..
-                    </Alert>
                 </Snackbar>
             </Box>
         </NoSsr>
