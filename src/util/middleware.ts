@@ -22,10 +22,11 @@ export const errorHandler: ApiHandlerMiddleware = (handler: ApiHandler) => {
             await handler(req, res)
         }
         catch (err) {
+            const msg = err instanceof Error ? err.message : String(err)
             res.json({
                 code: -1,
                 data: null,
-                msg: String(err)
+                msg
             })
         }
     }
