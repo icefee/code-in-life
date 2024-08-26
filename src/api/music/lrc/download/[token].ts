@@ -1,19 +1,18 @@
 import { GatsbyFunctionResponse } from 'gatsby'
-import { createApiAdaptor, parseId } from '../../../../adaptors'
-import { appendContentDisposition, errorHandler, ApiHandler } from '../../../../util/middleware'
+import { createApiAdaptor, parseId, Middleware } from '../../../../adaptors'
 
 function setHeader(res: GatsbyFunctionResponse) {
     res.setHeader('content-type', 'text/lrc')
     return res
 }
 
-const handler: ApiHandler = async (req, res) => {
+const handler: Middleware.ApiHandler = async (req, res) => {
     const { key, id } = parseId(req.params.token)
     const adaptor = createApiAdaptor(key)
     const lrcText = await adaptor.getLrcText(id)
     if (lrcText) {
         setHeader(
-            appendContentDisposition(req, res, 'lrc')
+            Middleware.appendContentDisposition(req, res, 'lrc')
         ).end(lrcText)
     }
     else {
@@ -21,4 +20,4 @@ const handler: ApiHandler = async (req, res) => {
     }
 }
 
-export default errorHandler(handler)
+export default Middleware.errorHandler(handler)

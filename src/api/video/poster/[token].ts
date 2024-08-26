@@ -1,19 +1,15 @@
-import { getJson } from '../../../adaptors'
-import { errorHandler, ApiHandler } from '../../../util/middleware'
-import { Api } from '../../../util/config'
-import { proxyUrl } from '../../../util/proxy'
-import { Clue } from '../../../util/clue'
+import { getJson, Middleware, Proxy, Clue, Config } from '../../../adaptors'
 
-const handler: ApiHandler = async (req, res) => {
-    const { api, id } = Clue.parse(req.params.token)
-    const url = `${Api.site}/api/video/${api}/${id}`
+const handler: Middleware.ApiHandler = async (req, res) => {
+    const { api, id } = Clue.VideoParams.parse(req.params.token)
+    const url = `${Config.Api.site}/api/video/${api}/${id}`
     const { code, data, msg } = await getJson<ApiJsonType<VideoInfo>>(url)
     if (code === 0) {
-        res.redirect(301, proxyUrl(data.pic, true))
+        res.redirect(301, Proxy.proxyUrl(data.pic, true))
     }
     else {
         throw new Error(msg)
     }
 }
 
-export default errorHandler(handler)
+export default Middleware.errorHandler(handler)

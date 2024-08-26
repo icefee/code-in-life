@@ -1,7 +1,7 @@
-import { errorHandler, ApiHandler } from '../util/middleware'
+import { Middleware } from '../adaptors'
 // import { open } from 'lmdb';
 
-const handler: ApiHandler = async (req, res) => {
+const handler: Middleware.ApiHandler = async (req, res) => {
 
     let msg = 'hello';
 
@@ -29,4 +29,4 @@ const handler: ApiHandler = async (req, res) => {
     })
 }
 
-export default errorHandler(handler)
+export default Middleware.errorHandler(handler)

@@ -1,9 +1,8 @@
-import { errorHandler, ApiHandler, proxyJson } from '../../util/middleware'
-import { Api } from '../../util/config'
+import { Middleware, Config } from '../../adaptors'
 
-const handler: ApiHandler = (req, res) => {
+const handler: Middleware.ApiHandler = (req, res) => {
     const searchParams = new URLSearchParams(req.query)
-    return proxyJson(`${Api.site}/api/video/list?${searchParams}`, res)
+    return Middleware.proxyJson(`${Config.Api.site}/api/video/list?${searchParams}`, res)
 }
 
-export default errorHandler(handler)
+export default Middleware.errorHandler(handler)

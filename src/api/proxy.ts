@@ -1,7 +1,6 @@
-import { getResponse, Headers } from '../adaptors'
-import { errorHandler, ApiHandler } from '../util/middleware'
+import { getResponse, Headers, Middleware } from '../adaptors'
 
-const handler: ApiHandler = async (req, res) => {
+const handler: Middleware.ApiHandler = async (req, res) => {
     const { url } = req.query as Record<'url', string>
     const requestHeaders = new Headers()
     for (let key in requestHeaders) {
@@ -61,4 +60,4 @@ const handler: ApiHandler = async (req, res) => {
     response.body.pipe(res)
 }
 
-export default errorHandler(handler)
+export default Middleware.errorHandler(handler)

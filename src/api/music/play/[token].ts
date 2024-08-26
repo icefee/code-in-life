@@ -1,21 +1,17 @@
-import { createApiAdaptor, parseId } from '../../../adaptors'
-import { errorHandler, ApiHandler } from '../../../util/middleware'
-import { isDev } from '../../../util/env'
-import { proxyUrl } from '../../../util/proxy'
-import { Base64Params } from '../../../util/clue'
+import { createApiAdaptor, parseId, Middleware, Env, Proxy, Clue } from '../../../adaptors'
 
-const handler: ApiHandler = async (req, res) => {
+const handler: Middleware.ApiHandler = async (req, res) => {
     const { key, id } = parseId(req.params.token)
     const adaptor = createApiAdaptor(key)
     const url = await adaptor.parseMusicUrl(id)
     if (url) {
-        if (isDev) {
-            const token = Base64Params.create(url)
+        if (Env.isDev) {
+            const token = Clue.Base64Params.create(url)
             res.redirect(`/api/music/${token}`)
         }
         else {
             res.redirect(
-                url.startsWith('https') ? url : proxyUrl(url, true)
+                url.startsWith('https') ? url : Proxy.proxyUrl(url, true)
             )
         }
     }
@@ -24,4 +20,4 @@ const handler: ApiHandler = async (req, res) => {
     }
 }
 
-export default errorHandler(handler)
+export default Middleware.errorHandler(handler)

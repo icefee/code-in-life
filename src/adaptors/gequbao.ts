@@ -44,6 +44,10 @@ export async function getMusicSearch(s: string): Promise<SearchMusic[]> {
     }
 }
 
+function getPageSource(id: string) {
+    return getHtml(`${baseUrl}/music/${id}`)
+}
+
 function parsePosterUrl(html: string) {
     const matchBlock = html.match(
         /mp3_cover\s=\s'https?:\/\/[^']+'/
@@ -53,9 +57,9 @@ function parsePosterUrl(html: string) {
 
 export async function parsePoster(id: string) {
     try {
-        const html = await getHtml(`${baseUrl}/music/${id}`)
+        const html = await getPageSource(id)
         const poster = parsePosterUrl(html)
-        return poster;
+        return poster
     }
     catch (err) {
         return null
@@ -78,7 +82,7 @@ async function getPlayUrl(id: string) {
 
 export async function parseMusicUrl(id: string) {
     try {
-        const html = await getHtml(`${baseUrl}/music/${id}`)
+        const html = await getPageSource(id)
         const urlMatcher = /https?:\/\/[^']+/
         const matchBlock = html.match(
             new RegExp(`window.mp3_url = '${urlMatcher.source}'`)
@@ -93,13 +97,13 @@ export async function parseMusicUrl(id: string) {
     }
 }
 
-const getLrcUrl = (id: string) => `${baseUrl}/download/lrc/${id}`
-
 export async function parseLrc(id: string) {
     try {
-        const lrc = await getHtml(getLrcUrl(id))
-        const lines = parseLrcText(lrc)
-        return lines
+        const html = await getPageSource(id)
+        const lrcText = html.match(
+            /(?<=id="content-lrc">)(.|\n)+?(?=<\/div>)/
+        )?.[0]
+        return parseLrcText(lrcText.replaceAll('<br />', '\n'))
     }
     catch (err) {
         return null
@@ -107,11 +111,11 @@ export async function parseLrc(id: string) {
 }
 
 export async function getLrcText(id: string) {
-    const lrc = await parseLrc(id);
+    const lrc = await parseLrc(id)
     return lrc?.map(
         ({ time, text }) => {
             const seconds = Math.floor(time)
             return `[${timeFormatter(seconds)}:${Math.round((time - seconds) * 1000)}]${text}`
         }
-    ).join('\n');
+    ).join('\n')
 }

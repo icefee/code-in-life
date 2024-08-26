@@ -1,7 +1,6 @@
-import { createApiAdaptor, adaptors } from '../../adaptors'
-import { errorHandler, ApiHandler, createPayload } from '../../util/middleware'
+import { createApiAdaptor, adaptors, Middleware } from '../../adaptors'
 
-const handler: ApiHandler = async (req, res) => {
+const handler: Middleware.ApiHandler = async (req, res) => {
     const { s } = req.query
     const result = await Promise.all(
         adaptors.map(
@@ -19,8 +18,8 @@ const handler: ApiHandler = async (req, res) => {
         []
     )
     res.json(
-        createPayload(data)
+        Middleware.createPayload(data)
     )
 }
 
-export default errorHandler(handler)
+export default Middleware.errorHandler(handler)

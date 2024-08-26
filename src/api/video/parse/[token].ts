@@ -1,18 +1,15 @@
-import { getTextWithTimeout } from '../../../adaptors'
-import { errorHandler, ApiHandler, createPayload, createErrorPayload } from '../../../util/middleware'
-import { proxyUrl, parseUrl } from '../../../util/proxy'
-import { Base64Params } from '../../../util/clue'
+import { getTextWithTimeout, Middleware, Proxy, Clue } from '../../../adaptors'
 
 async function parseVideoUrl(url: string) {
     try {
         const html = await getTextWithTimeout(
-            proxyUrl(url, true)
+            Proxy.proxyUrl(url, true)
         )
         const matches = html.match(
             new RegExp('(https?://)?[\\w\\u4e00-\\u9fa5-./@%?:]+?\\.(m3u8|webm|mp4)', 'i')
         )
         if (matches) {
-            return parseUrl(matches.at(0), url)
+            return Proxy.parseUrl(matches.at(0), url)
         }
         else {
             throw new Error('😥 not matched.')
@@ -23,11 +20,11 @@ async function parseVideoUrl(url: string) {
     }
 }
 
-const handler: ApiHandler = async (req, res) => {
+const handler: Middleware.ApiHandler = async (req, res) => {
     const { token } = req.params
-    const url = Base64Params.parse(token)
+    const url = Clue.Base64Params.parse(token)
     const data = await parseVideoUrl(url)
-    res.json(data ? createPayload(data) : createErrorPayload())
+    res.json(data ? Middleware.createPayload(data) : Middleware.createErrorPayload())
 }
 
-export default errorHandler(handler)
+export default Middleware.errorHandler(handler)

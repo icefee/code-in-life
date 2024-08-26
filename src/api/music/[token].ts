@@ -1,22 +1,20 @@
-import { getResponse, Headers } from '../../adaptors'
-import { errorHandler, ApiHandler, restrictRange, rangeContentIntact } from '../../util/middleware'
-import { Base64Params } from '../../util/clue'
+import { getResponse, Headers, Middleware, Clue } from '../../adaptors'
 
-const handler: ApiHandler = async (req, res) => {
+const handler: Middleware.ApiHandler = async (req, res) => {
     const token = req.params.token
     if (token) {
         const requestHeaders = new Headers()
         const range = req.headers['range']
         if (range) {
-            requestHeaders.append('range', restrictRange(range))
+            requestHeaders.append('range', Middleware.restrictRange(range))
             res.status(206)
         }
-        const url = Base64Params.parse(token)
+        const url = Clue.Base64Params.parse(token)
         const response = await getResponse(url, {
             headers: requestHeaders
         })
         const headers = response.headers
-        if (rangeContentIntact(headers.get('content-range'))) {
+        if (Middleware.rangeContentIntact(headers.get('content-range'))) {
             res.status(200)
         }
         headers.delete('content-disposition')
@@ -32,4 +30,4 @@ const handler: ApiHandler = async (req, res) => {
     }
 }
 
-export default errorHandler(handler)
+export default Middleware.errorHandler(handler)

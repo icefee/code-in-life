@@ -1,7 +1,6 @@
-import { createApiAdaptor, defaultPoster, parseId, getResponse } from '../../../adaptors'
-import { errorHandler, ApiHandler } from '../../../util/middleware'
+import { createApiAdaptor, defaultPoster, parseId, getResponse, Middleware } from '../../../adaptors'
 
-const handler: ApiHandler = async (req, res) => {
+const handler: Middleware.ApiHandler = async (req, res) => {
     const { key, id } = parseId(req.params.token)
     const adaptor = createApiAdaptor(key)
     const poster = await adaptor.parsePoster(id)
@@ -26,4 +25,4 @@ const handler: ApiHandler = async (req, res) => {
     }
 }
 
-export default errorHandler(handler)
+export default Middleware.errorHandler(handler)

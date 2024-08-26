@@ -21,7 +21,7 @@ export abstract class Base64Params {
     }
 }
 
-export abstract class Clue {
+export abstract class VideoParams {
 
     public static parse(text: string): EncodedClue | null {
         const origin = Base64Params.parse(text)

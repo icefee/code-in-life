@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography'
 import CardActionArea from '@mui/material/CardActionArea'
 import ThumbLoader from './ThumbLoader'
 import { RowClipTypography } from '../layout'
-import { Clue } from '~/util/clue'
+import { VideoParams } from '~/util/clue'
 
 type ListData = VideoListItem[];
 
@@ -46,7 +46,7 @@ interface VideoItemProps extends Pick<ListProps, 'api' | 'typed'> {
 
 function VideoItem({ video, api, typed }: VideoItemProps) {
 
-    const id = useMemo(() => Clue.create(api, video.id), [api, video.id])
+    const id = useMemo(() => VideoParams.create(api, video.id), [api, video.id])
     const videoUrl = useMemo(() => `/video/play/${id}`, [id])
 
     return (
