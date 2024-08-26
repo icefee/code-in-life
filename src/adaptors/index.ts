@@ -4,6 +4,11 @@ import * as t from './2t58'
 
 export * from './common'
 
+export * as Middleware from '../util/middleware'
+export * as Proxy from '../util/proxy'
+export * as Config from '../util/config'
+export * as Env from '../util/env'
+
 export type Adaptor = typeof g.key | typeof z.key | typeof t.key
 
 export const adaptors: Adaptor[] = [

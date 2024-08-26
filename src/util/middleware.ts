@@ -16,18 +16,32 @@ export function appendContentDisposition(req: GatsbyFunctionRequest, res: Gatsby
     return res
 }
 
+export const createPayload = <T = unknown>(data: T) => {
+    return {
+        code: 0,
+        data,
+        msg: '成功'
+    }
+}
+
+export const createErrorPayload = (error: any = '失败') => {
+    const msg = error instanceof Error ? error.message : String(error)
+    return {
+        code: -1,
+        data: null,
+        msg
+    }
+}
+
 export const errorHandler: ApiHandlerMiddleware = (handler: ApiHandler) => {
     return async function middlewareHandler(req, res) {
         try {
             await handler(req, res)
         }
         catch (err) {
-            const msg = err instanceof Error ? err.message : String(err)
-            res.json({
-                code: -1,
-                data: null,
-                msg
-            })
+            res.json(
+                createErrorPayload(err)
+            )
         }
     }
 }

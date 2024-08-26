@@ -1,13 +1,11 @@
-import { createApiAdaptor, parseId, getResponse } from '../../../adaptors'
-import { errorHandler, ApiHandler } from '../../../util/middleware'
-import { isDev } from '../../../util/env'
+import { createApiAdaptor, parseId, getResponse, Middleware, Proxy, Env } from '../../../adaptors'
 
-const handler: ApiHandler = async (req, res) => {
+const handler: Middleware.ApiHandler = async (req, res) => {
     const { key, id } = parseId(req.params.id)
     const adaptor = createApiAdaptor(key)
     const url = await adaptor.parseMusicUrl(id)
     if (url) {
-        if (isDev) {
+        if (Env.isDev) {
             const response = await getResponse(url)
             const headers = response.headers
             headers.delete('content-disposition')
@@ -19,7 +17,9 @@ const handler: ApiHandler = async (req, res) => {
             response.body.pipe(res)
         }
         else {
-            res.redirect(url)
+            res.redirect(
+                url.startsWith('https') ? url : Proxy.proxyUrl(url, true)
+            )
         }
     }
     else {
@@ -27,4 +27,4 @@ const handler: ApiHandler = async (req, res) => {
     }
 }
 
-export default errorHandler(handler)
+export default Middleware.errorHandler(handler)

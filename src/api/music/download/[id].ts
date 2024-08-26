@@ -1,7 +1,6 @@
-import { parseId, createApiAdaptor, getResponse, Headers } from '../../../adaptors'
-import { errorHandler, ApiHandler } from '../../../util/middleware'
+import { parseId, createApiAdaptor, getResponse, Headers, Middleware } from '../../../adaptors'
 
-const handler: ApiHandler = async (req, res) => {
+const handler: Middleware.ApiHandler = async (req, res) => {
     const { key, id } = parseId(req.params.id)
     const adaptor = createApiAdaptor(key)
     const url = await adaptor.parseMusicUrl(id)
@@ -30,4 +29,4 @@ const handler: ApiHandler = async (req, res) => {
     }
 }
 
-export default errorHandler(handler)
+export default Middleware.errorHandler(handler)

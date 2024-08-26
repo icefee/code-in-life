@@ -1,3 +1,5 @@
+import { Api } from './config'
+
 export function getResponse(...args: Parameters<typeof fetch>): Promise<Response> {
     return fetch(...args)
 }
@@ -11,6 +13,13 @@ export async function getJson<T = any>(...args: Parameters<typeof fetch>): Promi
 export function getParamsUrl(url: string, params: Record<string, string>) {
     const urlSearchParams = new URLSearchParams(params)
     return `${url}?${urlSearchParams}`
+}
+
+export function proxyUrl(url: string, remote: boolean = false, extend: Record<string, string> = {}) {
+    return getParamsUrl(`${remote ? Api.proxyUrl : ''}/api/proxy`, {
+        url,
+        ...extend
+    })
 }
 
 async function loadFileChunk(url: string, [start, end]: [number, number], init?: RequestInit) {
