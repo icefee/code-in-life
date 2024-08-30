@@ -162,7 +162,7 @@ export default function MusicSearch() {
     const downloadLrc = (music: SearchMusic) => {
         open(
             getParamsUrl(
-                `${Api.proxyServer}/api/music/lrc/download/${music.id}`,
+                `${Api.posterServer}/api/music/lrc/download/${music.id}`,
                 generateSearchQuery(music)
             )
         )
@@ -203,7 +203,13 @@ export default function MusicSearch() {
                     }
                 })}
             >
-                <Collapse in={downloading} unmountOnExit>
+                <Collapse
+                    sx={{
+                        flexShrink: 0
+                    }}
+                    in={downloading}
+                    unmountOnExit
+                >
                     <Stack
                         sx={{
                             position: 'relative',

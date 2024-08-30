@@ -1,6 +1,7 @@
 export function downloadFile(url: string, fileName: string = '') {
     const anchor = document.createElement('a')
     anchor.href = url
+    anchor.target = '_blank'
     anchor.download = fileName
     anchor.click()
     return anchor
