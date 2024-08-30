@@ -199,7 +199,13 @@ export default function MusicSearch() {
                         }
                     })}
                 >
-                    <Collapse in={downloading} unmountOnExit>
+                    <Collapse
+                        sx={{
+                            flexShrink: 0
+                        }}
+                        in={downloading}
+                        unmountOnExit
+                    >
                         <Stack
                             sx={{
                                 position: 'relative',

@@ -109,6 +109,7 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
             setTimeout(
                 () => {
                     setBusy(false)
+                    setStatus('')
                     setDownloading(false)
                     setProgress(0)
                     hideAll()
