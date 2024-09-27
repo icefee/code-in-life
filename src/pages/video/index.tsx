@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect, useRef } from 'react'
 import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
@@ -10,43 +10,20 @@ import NoData from '~/components/search/NoData'
 import { LoadingOverlay } from '~/components/loading'
 import { getJson } from '~/util/proxy'
 
+interface SourceKeys {
+    keys: string[];
+    preferKeys: string[];
+}
+
 const parseKeyword = (s: string) => {
     return s.startsWith('$') ? s.slice(1) : s
 }
 
-const getSearchParams = (s: string) => {
-    const searchParams = new URLSearchParams()
-    if (s.startsWith('$')) {
-        searchParams.set('s', parseKeyword(s))
-        searchParams.set('prefer', '18')
-    }
-    else {
-        searchParams.set('s', s)
-    }
-    return searchParams
-}
-
-const getSearch = async (searchParams: URLSearchParams, firstLoad = true) => {
-    try {
-        const { code, data } = await getJson<ApiJsonType<SearchVideo[]>>(
-            `/api/video/list?${searchParams}`
-        )
-        if (code === 0) {
-            return data;
-        }
-        else {
-            throw new Error('get search failed')
-        }
-    }
-    catch (err) {
-        if (firstLoad) {
-            return getSearch(searchParams, true)
-        }
-        return null
-    }
-}
-
 export default function VideoSearch() {
+
+    const [sourceKeys, setSourceKeys] = useState<SourceKeys | null>(null)
+
+    const abortController = useRef<AbortController>(null)
 
     const [keyword, setKeyword] = useState('')
     const [searchTask, setSearchTask] = useState<SearchTask<SearchVideo>>({
@@ -62,16 +39,88 @@ export default function VideoSearch() {
         if (reason === 'clickaway') {
             return;
         }
-        setToastMsg(null);
+        setToastMsg(null)
+    }
+
+    const getSourceKeys = async () => {
+        const { code, data } = await getJson<ApiJsonType<SourceKeys>>('/api/video/source')
+        if (code === 0) {
+            setSourceKeys(data)
+        }
+    }
+
+    const onSearch = async (text: string) => {
+
+        abortController.current?.abort()
+
+        const s = text.trim()
+        setSearchTask(t => ({
+            ...t,
+            completed: false,
+            pending: true
+        }))
+        let keys = sourceKeys.keys
+        const query = { s }
+        if (s.startsWith('$')) {
+            query.s = parseKeyword(s)
+            keys = sourceKeys.preferKeys
+        }
+        for (const key of keys) {
+            const [api, r] = key.split('_')
+            const searchParams = new URLSearchParams({
+                ...query,
+                api
+            })
+            const rating = +r
+            const controller = new AbortController()
+            abortController.current = controller
+            const { data } = await getJson<ApiJsonType<{
+                name: string;
+                page: ResponsePagination;
+                video?: VideoListItem[];
+            }>>(
+                `/api/video/list?${searchParams}`,
+                {
+                    signal: controller.signal
+                }
+            )
+            if (data) {
+                const { name, video, page } = data
+                if (video && video.length > 0) {
+                    setSearchTask(t => ({
+                        ...t,
+                        pending: false,
+                        keyword: query.s,
+                        success: true,
+                        data: [...t.data, {
+                            key: api,
+                            name,
+                            rating,
+                            data: video,
+                            page
+                        }].sort((prev, next) => next.rating - prev.rating)
+                    }))
+                }
+            }
+        }
+        abortController.current = null
+        setSearchTask(t => ({
+            ...t,
+            completed: true
+        }))
     }
 
     const pageTitle = useMemo(() => {
         let keyword = '影视搜索';
         if (searchTask.keyword !== '') {
-            keyword += ' - ' + parseKeyword(searchTask.keyword);
+            keyword += ' - ' + parseKeyword(searchTask.keyword)
         }
         return keyword;
     }, [searchTask.keyword])
+
+    useEffect(() => {
+        getSourceKeys()
+    }, [])
 
     return (
         <Stack
@@ -102,42 +151,10 @@ export default function VideoSearch() {
                     }
                 >
                     <SearchForm
-                        loading={searchTask.pending}
+                        loading={searchTask.pending || sourceKeys === null}
                         value={keyword}
                         onChange={setKeyword}
-                        onSubmit={
-                            async (text) => {
-                                const s = text.trim()
-                                setSearchTask(t => ({
-                                    ...t,
-                                    completed: false,
-                                    pending: true
-                                }))
-                                const data = await getSearch(
-                                    getSearchParams(s)
-                                )
-                                if (data) {
-                                    setSearchTask({
-                                        pending: false,
-                                        complete: true,
-                                        keyword: parseKeyword(s),
-                                        success: true,
-                                        data
-                                    })
-                                }
-                                else {
-                                    setToastMsg({
-                                        type: 'error',
-                                        msg: '获取搜索结果失败, 可能是网络连接问题'
-                                    })
-                                    setSearchTask(t => ({
-                                        ...t,
-                                        pending: false,
-                                        completed: true
-                                    }))
-                                }
-                            }
-                        }
+                        onSubmit={onSearch}
                         autocompleteKey="video"
                     />
                 </Box>

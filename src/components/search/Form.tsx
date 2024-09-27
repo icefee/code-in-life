@@ -19,6 +19,7 @@ interface SearchFormProps {
     onChange: (value: string) => void;
     onSubmit?: (value: string) => void;
     loading?: boolean;
+    disabled?: boolean;
     placeholder?: string;
     submitText?: string;
     buttonColor?: LoadingButtonProps['color'];
@@ -41,6 +42,7 @@ function SearchForm({
     onChange,
     onSubmit,
     loading = false,
+    disabled = false,
     placeholder = '输入关键词搜索...',
     submitText = '搜索',
     buttonColor,
@@ -98,6 +100,7 @@ function SearchForm({
         <NoSsr>
             <Autocomplete
                 value={value}
+                disabled={disabled}
                 blurOnSelect
                 freeSolo
                 options={filteredSuggests}
@@ -214,6 +217,7 @@ function SearchForm({
                             startIcon={
                                 <SearchRoundedIcon />
                             }
+                            disabled={disabled}
                             loading={loading}
                             type="submit"
                             color={buttonColor}
