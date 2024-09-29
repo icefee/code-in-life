@@ -23,7 +23,7 @@ export default function VideoSearch() {
 
     const [sourceKeys, setSourceKeys] = useState<SourceKeys | null>(null)
 
-    const abortController = useRef<AbortController>(null)
+    const abortController = useRef<AbortController | null>(null)
 
     const [keyword, setKeyword] = useState('')
     const [searchTask, setSearchTask] = useState<SearchTask<SearchVideo>>({
@@ -51,11 +51,21 @@ export default function VideoSearch() {
 
     const onSearch = async (text: string) => {
 
+        if (sourceKeys === null) {
+            setToastMsg({
+                type: 'error',
+                msg: '没有可用的源'
+            })
+            return
+        }
+
         abortController.current?.abort()
 
         const s = text.trim()
         setSearchTask(t => ({
             ...t,
+            data: [],
+            success: false,
             completed: false,
             pending: true
         }))
@@ -151,7 +161,8 @@ export default function VideoSearch() {
                     }
                 >
                     <SearchForm
-                        loading={searchTask.pending || sourceKeys === null}
+                        loading={searchTask.pending}
+                        disabled={sourceKeys === null}
                         value={keyword}
                         onChange={setKeyword}
                         onSubmit={onSearch}
