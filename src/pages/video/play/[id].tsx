@@ -52,7 +52,6 @@ function VideoPlay({ id, video }: VideoPlayProps) {
         episodeIndex: 0
     })
     const paramsLastCache = useRef(+new Date())
-    const [ready, setReady] = useState(false)
     const { data, init } = playHistory
     const { sourceIndex, episodeIndex, params } = data
 
@@ -94,12 +93,6 @@ function VideoPlay({ id, video }: VideoPlayProps) {
         }
     }
 
-    useEffect(() => {
-        if (init) {
-            setReady(true)
-        }
-    }, [init])
-
     return (
         <Box
             sx={{
@@ -135,8 +128,7 @@ function VideoPlay({ id, video }: VideoPlayProps) {
                             <Box
                                 sx={({ breakpoints }) => ({
                                     background: '#000',
-                                    overflow: 'hidden',
-                                    height: '45%',
+                                    height: 'max(45%, 320px)',
                                     flexShrink: 0,
                                     [breakpoints.up('sm')]: {
                                         height: 'min(calc(min(100vw, 1200px) * 10 / 16), 600px)',
@@ -145,7 +137,7 @@ function VideoPlay({ id, video }: VideoPlayProps) {
                                 })}
                             >
                                 {
-                                    ready && (
+                                    init && (
                                         <VideoUrlParser url={playingVideo.url}>
                                             {
                                                 (url: string, hls: boolean) => (
