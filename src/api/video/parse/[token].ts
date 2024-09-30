@@ -12,7 +12,7 @@ async function parseVideoUrl(url: string) {
             return Proxy.parseUrl(matches.at(0), url)
         }
         else {
-            throw new Error('😥 not matched.')
+            throw new Error('😥 no match found.')
         }
     }
     catch (err) {

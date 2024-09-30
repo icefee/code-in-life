@@ -6,12 +6,18 @@ export function encode(text: string) {
     if (bufferSupported()) {
         return Buffer.from(text).toString('base64')
     }
-    return btoa(encodeURIComponent(text))
+    try {
+        return btoa(text)
+    }
+    catch (err) {
+        const encoded = encodeURIComponent(text)
+        return btoa(encoded)
+    }
 }
 
 export function decode(text: string) {
     if (bufferSupported()) {
         return Buffer.from(text, 'base64').toString()
     }
-    return decodeURIComponent(atob(text))
+    return atob(text)
 }
