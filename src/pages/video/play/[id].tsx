@@ -46,6 +46,7 @@ interface VideoPlayProps {
 function VideoPlay({ id, video }: VideoPlayProps) {
 
     const [activeTab, setActiveTab] = useState(0)
+    const [ready, setReady] = useState(false)
     const [playHistory, setPlayHistory] = useLocalStorageState<PlayHistory>(id, {
         params: createVideoParams(),
         sourceIndex: 0,
@@ -73,7 +74,7 @@ function VideoPlay({ id, video }: VideoPlayProps) {
                 ...history,
                 params
             }))
-            paramsLastCache.current = nowTime;
+            paramsLastCache.current = nowTime
         }
     }
 
@@ -92,6 +93,12 @@ function VideoPlay({ id, video }: VideoPlayProps) {
             playVideo(episodeIndex + 1)
         }
     }
+
+    useEffect(() => {
+        if (init) {
+            setReady(true)
+        }
+    }, [init])
 
     return (
         <Box
@@ -116,14 +123,10 @@ function VideoPlay({ id, video }: VideoPlayProps) {
                         }}
                     >
                         <Stack
-                            sx={
-                                ({ breakpoints }) => ({
-                                    height: '100%',
-                                    [breakpoints.up('sm')]: {
-                                        overflowY: 'auto'
-                                    }
-                                })
-                            }
+                            sx={{
+                                height: '100%',
+                                overflowY: 'auto'
+                            }}
                         >
                             <Box
                                 sx={({ breakpoints }) => ({
@@ -137,7 +140,7 @@ function VideoPlay({ id, video }: VideoPlayProps) {
                                 })}
                             >
                                 {
-                                    init && (
+                                    ready && (
                                         <VideoUrlParser url={playingVideo.url}>
                                             {
                                                 (url: string, hls: boolean) => (
@@ -172,14 +175,7 @@ function VideoPlay({ id, video }: VideoPlayProps) {
                                     </Box>
                                 )
                             }
-                            <Stack
-                                flexGrow={1}
-                                sx={({ breakpoints }) => ({
-                                    [breakpoints.only('xs')]: {
-                                        overflow: 'hidden'
-                                    }
-                                })}
-                            >
+                            <Stack flexGrow={1}>
                                 <Box
                                     sx={({ breakpoints, transitions }) => ({
                                         position: 'relative',
@@ -269,13 +265,9 @@ function VideoPlay({ id, video }: VideoPlayProps) {
                                             )
                                         }
                                         <Box
-                                            sx={({ breakpoints }) => ({
-                                                width: '100%',
-                                                [breakpoints.only('xs')]: {
-                                                    flexGrow: 1,
-                                                    overflowY: 'auto'
-                                                }
-                                            })}
+                                            sx={{
+                                                width: '100%'
+                                            }}
                                         >
                                             {
                                                 video.dataList.map(
@@ -290,12 +282,9 @@ function VideoPlay({ id, video }: VideoPlayProps) {
                                                                 direction="row"
                                                                 flexWrap="wrap"
                                                                 flexGrow={1}
-                                                                sx={({ breakpoints }) => ({
-                                                                    p: 1.5,
-                                                                    [breakpoints.only('xs')]: {
-                                                                        overflowY: 'auto'
-                                                                    }
-                                                                })}
+                                                                sx={{
+                                                                    p: 1.5
+                                                                }}
                                                             >
                                                                 {
                                                                     source.urls.map(
