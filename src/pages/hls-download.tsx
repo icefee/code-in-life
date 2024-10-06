@@ -122,7 +122,7 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
     useEffect(() => {
         hls2Mp4.current = new Hls2Mp4({
             maxRetry: 5,
-            tsDownloadConcurrency: 10,
+            tsDownloadConcurrency: 3,
             onProgress: (type, progress) => {
                 const TaskType = Hls2Mp4.TaskType;
                 if (type === TaskType.loadFFmeg) {

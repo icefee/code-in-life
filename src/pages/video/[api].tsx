@@ -171,7 +171,6 @@ const SiteSearch: React.FunctionComponent<PageProps<object, object, unknown, Sea
                                                     <Pagination
                                                         page={data.page.page ?? searchPage}
                                                         count={data.page.pagecount}
-                                                        variant="outlined"
                                                         color="primary"
                                                         renderItem={(item) => {
                                                             const searchParams = new URLSearchParams(window.location.search);
