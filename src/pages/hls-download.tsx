@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import LinearProgress from '@mui/material/LinearProgress'
-import Hls2Mp4 from 'hls2mp4'
+import Hls2Mp4, { TaskType } from 'hls2mp4'
 import HeadLayout from '~/components/layout/Head'
 import useErrorMessage from '~/components/hook/useErrorMessage'
 import { M3u8 } from '~/util/regExp'
@@ -124,7 +124,6 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
             maxRetry: 5,
             tsDownloadConcurrency: 3,
             onProgress: (type, progress) => {
-                const TaskType = Hls2Mp4.TaskType;
                 if (type === TaskType.loadFFmeg) {
                     if (progress === 0) {
                         setStatus('加载FFmpeg..')
@@ -212,6 +211,7 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
                         type="url"
                         value={input}
                         disabled={busy}
+                        spellCheck={false}
                         onChange={
                             (event: React.ChangeEvent<HTMLTextAreaElement>) => {
                                 setInput(
