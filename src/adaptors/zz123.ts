@@ -1,4 +1,4 @@
-import { getResponse, parseLrcText, getTextWithTimeout } from './common'
+import { getResponse, parseLrcText, getTextWithTimeout, escapeSymbols } from './common'
 import { timeFormatter } from '../util/date'
 import { utf82utf16 } from '../util/parser'
 import { Api } from '../util/config'
@@ -14,7 +14,7 @@ export async function getMusicSearch(s: string): Promise<SearchMusic[]> {
     const url = `${baseUrl}/search/?${searchParams}`;
     try {
         const html = await getTextWithTimeout(url)
-        const matchBlocks = html.replace(/[\n\r]+/g, '').match(
+        const matchBlocks = escapeSymbols(html).replace(/[\n\r]+/g, '').match(
             /<div class="songname text-ellipsis color-link-content-primary">\s*<a href="\/play\/\w+\.htm" title="[^"]+" data-pjax="">[^<]+<\/a>\s*<\/div>\s*<div class="singername text-ellipsis color-link-content-secondary">\s*<a href="\/singer\/\w+\.htm" title="[^"]+" data-pjax="">[^"]+<\/a>\s*<\/div>/g
         )
         if (matchBlocks) {
