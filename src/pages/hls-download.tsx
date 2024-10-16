@@ -3,8 +3,12 @@ import type { GetServerDataProps, GetServerDataReturn, PageProps } from 'gatsby'
 import NoSsr from '@mui/material/NoSsr'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import TextField from '@mui/material/TextField'
+import FormControl from '@mui/material/FormControl'
+import InputLabel from '@mui/material/InputLabel'
+import OutlinedInput from '@mui/material/OutlinedInput'
+import InputAdornment from '@mui/material/InputAdornment'
 import Button from '@mui/material/Button'
+import IconButton from '@mui/material/IconButton'
 import LinearProgress from '@mui/material/LinearProgress'
 import UploadFileIcon from '@mui/icons-material/UploadFile'
 import Hls2Mp4, { TaskType } from 'hls2mp4'
@@ -215,43 +219,57 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
                         }
                     }
                 >
-                    <TextField
+                    <FormControl
                         sx={{
                             flexGrow: 1
                         }}
-                        label="hls地址"
-                        name="url"
                         size="small"
-                        type="url"
-                        value={input}
-                        disabled={busy}
-                        spellCheck={false}
-                        onChange={
-                            (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-                                setInput(
-                                    event.target.value
-                                )
+                        variant="outlined"
+                    >
+                        <InputLabel htmlFor="url">hls地址</InputLabel>
+                        <OutlinedInput
+                            id="url"
+                            name="url"
+                            type="url"
+                            label="hls地址"
+                            value={input}
+                            disabled={busy}
+                            spellCheck={false}
+                            endAdornment={
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        component="label"
+                                        disabled={busy}
+                                        edge="end"
+                                    >
+                                        <UploadFileIcon />
+                                        <input
+                                            hidden
+                                            accept=".m3u8"
+                                            onChange={
+                                                (event) => {
+                                                    if (event.target.files.length > 0) {
+                                                        const file = event.target.files[0]
+                                                        const url = URL.createObjectURL(file)
+                                                        startDownload(url, file.name.replace(/.m3u8$/, ''))
+                                                        event.target.value = ''
+                                                    }
+                                                }
+                                            }
+                                            type="file"
+                                        />
+                                    </IconButton>
+                                </InputAdornment>
                             }
-                        }
-                    />
-                    <Button component="label" variant="outlined" startIcon={<UploadFileIcon />} disabled={busy}>
-                        选择文件
-                        <input
-                            hidden
-                            accept=".m3u8"
                             onChange={
-                                (event) => {
-                                    if (event.target.files.length > 0) {
-                                        const file = event.target.files[0]
-                                        const url = URL.createObjectURL(file)
-                                        startDownload(url, file.name.replace(/.m3u8$/, ''))
-                                        event.target.value = ''
-                                    }
+                                (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+                                    setInput(
+                                        event.target.value
+                                    )
                                 }
                             }
-                            type="file"
                         />
-                    </Button>
+                    </FormControl>
                     <Button variant="contained" type="submit" disabled={busy}>{busy ? '下载中..' : '下载'}</Button>
                 </Stack>
                 <Stack
