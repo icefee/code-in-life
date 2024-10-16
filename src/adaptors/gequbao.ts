@@ -1,4 +1,4 @@
-import { getTextWithTimeout, getJson, parseLrcText, escapeSymbols } from './common'
+import { getTextWithTimeout, getResponse, parseLrcText, escapeSymbols } from './common'
 import { timeFormatter } from '../util/date'
 import { Api } from '../util/config'
 
@@ -49,10 +49,13 @@ function getPageSource(id: string) {
 }
 
 function parsePosterUrl(html: string) {
-    const matchBlock = html.match(
+    const matchCover = html.match(
         /mp3_cover\s=\s'https?:\/\/[^']+'/
-    )
-    return matchBlock ? matchBlock[0].match(/https?:\/\/[^']+/)[0] : null
+    )?.[0]
+    if (matchCover) {
+        return matchCover.slice(13, matchCover.length - 1)
+    }
+    return null
 }
 
 export async function parsePoster(id: string) {
@@ -67,17 +70,26 @@ export async function parsePoster(id: string) {
 }
 
 async function getPlayUrl(id: string) {
+    const html = await getPageSource(id)
+    const matchId = html.match(
+        /play_id\s=\s'[\w\=]+'/
+    )[0]
+    const clue = matchId.slice(11, matchId.length - 1)
     const searchParams = new URLSearchParams({
-        id,
-        json: '1'
+        id: clue
     })
-    const { data } = await getJson<{
+    const { code, data } = await getResponse(`${baseUrl}/api/play-url`, {
+        method: 'POST',
+        body: searchParams
+    }).then<{
         code: number;
         data: {
             url: string;
-        };
-    }>(`${baseUrl}/api/play_url?${searchParams}`)
-    return data.url
+        }
+    }>(
+        (response) => response.json()
+    )
+    return code === 1 ? data.url : null
 }
 
 export async function parseMusicUrl(id: string) {
