@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import LinearProgress from '@mui/material/LinearProgress'
+import UploadFileIcon from '@mui/icons-material/UploadFile'
 import Hls2Mp4, { TaskType } from 'hls2mp4'
 import HeadLayout from '~/components/layout/Head'
 import useErrorMessage from '~/components/hook/useErrorMessage'
@@ -76,8 +77,18 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
         }
     }
 
-    const startDownload = async (source: string) => {
-        if (!/^https?:\/\/.+\.[a-z]{2,5}.*/.test(source)) {
+    const checkUrl = (url: string) => {
+        try {
+            new URL(url)
+            return true
+        }
+        catch (err) {
+            return false
+        }
+    }
+
+    const startDownload = async (source: string, name?: string) => {
+        if (!checkUrl(source)) {
             showError({
                 message: '非法的地址'
             })
@@ -90,7 +101,7 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
             if (valid) {
                 const buffer = await hls2Mp4.current.download(url)
                 if (buffer) {
-                    const fileName = title ?? getFileName(source)
+                    const fileName = name ?? title ?? getFileName(source)
                     hls2Mp4.current.saveToFile(buffer, `${fileName}.mp4`)
                 }
                 else {
@@ -116,6 +127,9 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
                 },
                 1e3
             )
+        }
+        if (source.startsWith('blob:')) {
+            URL.revokeObjectURL(source)
         }
     }
 
@@ -220,7 +234,25 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
                             }
                         }
                     />
-                    <Button variant="outlined" type="submit" disabled={busy}>{busy ? '下载中..' : '下载'}</Button>
+                    <Button component="label" variant="outlined" startIcon={<UploadFileIcon />} disabled={busy}>
+                        选择文件
+                        <input
+                            hidden
+                            accept=".m3u8"
+                            onChange={
+                                (event) => {
+                                    if (event.target.files.length > 0) {
+                                        const file = event.target.files[0]
+                                        const url = URL.createObjectURL(file)
+                                        startDownload(url, file.name.replace(/.m3u8$/, ''))
+                                        event.target.value = ''
+                                    }
+                                }
+                            }
+                            type="file"
+                        />
+                    </Button>
+                    <Button variant="contained" type="submit" disabled={busy}>{busy ? '下载中..' : '下载'}</Button>
                 </Stack>
                 <Stack
                     sx={({ transitions }) => ({
