@@ -10,7 +10,7 @@ import InputAdornment from '@mui/material/InputAdornment'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import LinearProgress from '@mui/material/LinearProgress'
-import UploadFileIcon from '@mui/icons-material/UploadFile'
+import UploadFileOutlined from '@mui/icons-material/UploadFileOutlined'
 import Hls2Mp4, { TaskType } from 'hls2mp4'
 import HeadLayout from '~/components/layout/Head'
 import useErrorMessage from '~/components/hook/useErrorMessage'
@@ -242,7 +242,11 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
                                         disabled={busy}
                                         edge="end"
                                     >
-                                        <UploadFileIcon />
+                                        <UploadFileOutlined
+                                            sx={{
+                                                opacity: .75
+                                            }}
+                                        />
                                         <input
                                             hidden
                                             accept=".m3u8"
