@@ -1,10 +1,10 @@
 import React, { useState, useRef, useMemo, forwardRef, useImperativeHandle } from 'react'
+import NoSsr from '@mui/material/NoSsr'
 import Paper from '@mui/material/Paper'
 import Autocomplete from '@mui/material/Autocomplete'
 import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
 import IconButton from '@mui/material/IconButton'
-import NoSsr from '@mui/material/NoSsr'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import InputBase from '@mui/material/InputBase'
 import { alpha } from '@mui/material/styles'
@@ -54,7 +54,6 @@ function SearchForm({
     const prevSubmitValue = useRef<string>()
     const input = useRef<HTMLInputElement | null>(null)
     const [autoCompleteOpen, setAutoCompleteOpen] = useState(false)
-    const highlightValue = useRef<string | null>(null)
 
     const putSuggest = (value: string) => {
         setSuggests(
@@ -94,7 +93,7 @@ function SearchForm({
 
     useImperativeHandle(ref, () => ({
         putSuggest
-    }))
+    }), [])
 
     return (
         <NoSsr>
@@ -113,7 +112,7 @@ function SearchForm({
                         sx: {
                             borderTopLeftRadius: 0,
                             borderTopRightRadius: 0,
-                            backgroundColor: (theme) => alpha(theme.palette.background.paper, .75),
+                            backgroundColor: ({ palette }) => alpha(palette.background.paper, .75),
                             backdropFilter: 'blur(4px)'
                         }
                     }
@@ -131,7 +130,7 @@ function SearchForm({
                 }
                 onKeyDown={
                     (event) => {
-                        if (event.key === 'Enter' && !highlightValue.current) {
+                        if (event.key === 'Enter' && value !== '') {
                             handleSubmit(value)
                             input.current.blur()
                         }
@@ -141,16 +140,11 @@ function SearchForm({
                     (_event, value) => onChange(value)
                 }
                 onChange={
-                    (_event: React.SyntheticEvent<Element, Event>, value: string | null) => {
+                    (_, value: string | null) => {
                         if (value && value !== prevSubmitValue.current) {
                             handleSubmit(value)
                         }
                         onChange(value ?? '')
-                    }
-                }
-                onHighlightChange={
-                    (_event, value) => {
-                        highlightValue.current = value
                     }
                 }
                 renderOption={(props, option) => (
@@ -190,7 +184,7 @@ function SearchForm({
                             } : null)
                         }}
                         onSubmit={
-                            (event: React.SyntheticEvent<HTMLFormElement>) => {
+                            (event) => {
                                 if (onSubmit) {
                                     event.preventDefault()
                                     input.current.blur()
@@ -203,7 +197,6 @@ function SearchForm({
                             sx={{ flex: 1 }}
                             placeholder={placeholder}
                             inputRef={input}
-                            type="search"
                             autoFocus
                             inputProps={{
                                 style: {
@@ -213,6 +206,9 @@ function SearchForm({
                             }}
                         />
                         <LoadingButton
+                            sx={{
+                                p: 1.5
+                            }}
                             loadingPosition="start"
                             startIcon={
                                 <SearchRoundedIcon />
@@ -221,7 +217,6 @@ function SearchForm({
                             loading={loading}
                             type="submit"
                             color={buttonColor}
-                            sx={{ p: 1.5 }}
                         >{loading ? loadingSubmitText : submitText}</LoadingButton>
                     </Paper>
                 )}

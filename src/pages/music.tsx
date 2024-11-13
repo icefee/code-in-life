@@ -69,6 +69,8 @@ export default function MusicSearch() {
     }
 
     const onSearch = async (text: string) => {
+        console.log('onsubmit....' + text)
+        return;
         const s = text.trim()
         if (s.length === 0) {
             setToastMsg({
@@ -82,15 +84,15 @@ export default function MusicSearch() {
             complete: false,
             pending: true
         }))
-        let success = false;
-        let data = null;
+        let success = false
+        let data = null
         const list = await getSearch(s)
         if (list) {
-            data = list;
-            success = true;
+            data = list
+            success = true
         }
         else {
-            success = false;
+            success = false
             setToastMsg({
                 type: 'error',
                 msg: '获取歌曲列表失败'
