@@ -69,8 +69,6 @@ export default function MusicSearch() {
     }
 
     const onSearch = async (text: string) => {
-        console.log('onsubmit....' + text)
-        return;
         const s = text.trim()
         if (s.length === 0) {
             setToastMsg({
