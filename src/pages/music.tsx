@@ -378,12 +378,16 @@ export default function MusicSearch() {
                                     repeat={repeat.data}
                                     extendButtons={
                                         <Tooltip title="播放列表">
-                                            <Badge sx={{
-                                                '& .MuiBadge-badge': {
-                                                    top: 4,
-                                                    right: 4
-                                                }
-                                            }} color="secondary" badgeContent={playlist.data.length}>
+                                            <Badge
+                                                sx={{
+                                                    '& .MuiBadge-badge': {
+                                                        top: 4,
+                                                        right: 4
+                                                    }
+                                                }}
+                                                color="secondary"
+                                                badgeContent={playlist.data.length}
+                                            >
                                                 <IconButton
                                                     color="inherit"
                                                     size="small"

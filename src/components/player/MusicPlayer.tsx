@@ -63,14 +63,16 @@ function MusicPlayer({
     const durationPlaceholder = '--:--'
 
     useEffect(() => {
-        return () => {
-            audio.current.currentTime = 0
-            setDuration(null)
-            setCurrentTime(0)
-            setBuffered(0)
-            onPlayStateChange(false)
-            seekingRef.current = false
-            hasError.current = false
+        if (audio.current) {
+            return () => {
+                audio.current.currentTime = 0
+                setDuration(null)
+                setCurrentTime(0)
+                setBuffered(0)
+                onPlayStateChange(false)
+                seekingRef.current = false
+                hasError.current = false
+            }
         }
     }, [music.url])
 
