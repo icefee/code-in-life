@@ -1,45 +1,66 @@
-import { getResponse, parseLrcText, getTextWithTimeout, escapeSymbols } from './common'
+import { cheerio, getResponse, parseLrcText, getTextWithTimeout } from './common'
 import { timeFormatter } from '../util/date'
 import { utf82utf16 } from '../util/parser'
-import { Api } from '../util/config'
 
-export const key = 'z';
+export const key = 'z'
 
 export const baseUrl = 'https://zz123.com'
 
-export async function getMusicSearch(s: string): Promise<SearchMusic[]> {
+async function getPageSearch(s: string, p: number) {
     const searchParams = new URLSearchParams({
         key: s
     })
-    const url = `${baseUrl}/search/?${searchParams}`;
+    if (p > 1) {
+        searchParams.set('page', `${p}`)
+    }
+    const url = `${baseUrl}/search/?${searchParams}`
     try {
         const html = await getTextWithTimeout(url)
-        const matchBlocks = escapeSymbols(html).replace(/[\n\r]+/g, '').match(
-            /<div class="songname text-ellipsis color-link-content-primary">\s*<a href="\/play\/\w+\.htm" title="[^"]+" data-pjax="">[^<]+<\/a>\s*<\/div>\s*<div class="singername text-ellipsis color-link-content-secondary">\s*<a href="\/singer\/\w+\.htm" title="[^"]+" data-pjax="">[^"]+<\/a>\s*<\/div>/g
-        )
-        if (matchBlocks) {
-            return matchBlocks.map(
-                (block) => {
-                    const url = block.match(/\/play\/\w+\.htm/)[0]
-                    const idMatch = url.match(/(?<=\/play\/)\w+(?=\.htm)/)[0]
-                    const nameMatch = block.match(/(?<=<div class="songname text-ellipsis color-link-content-primary">\s*<a href="\/play\/\w+\.htm" title=")[^"]+(?=")/)[0]
-                    const artistMatch = block.match(/(?<=<div class="singername text-ellipsis color-link-content-secondary">\s*<a href="\/singer\/\w+\.htm" title=")[^"]+(?=")/)[0]
-                    const id = key + idMatch
-                    return {
-                        id,
-                        name: nameMatch.trim(),
-                        artist: artistMatch,
-                        url: `/api/music/play/${id}`,
-                        poster: `${Api.posterServer}/api/music/poster/${id}`
-                    }
-                }
-            )
+        const $ = cheerio.load(html)
+        const blocks = $('.card-list-item.statistics_item')
+        const songs = [] as SearchMusic[]
+        if (blocks) {
+            for (let i = 0; i < blocks.length; i++) {
+                const block = $(blocks[i])
+                const id = key + block.attr('data-id')
+                const name = block.attr('data-tag')
+                const artist = block.find('.singername a').text()
+                const poster = block.find('.item-cover img').attr('data-src')
+                songs.push({
+                    id,
+                    name,
+                    artist,
+                    url: `/api/music/play/${id}`,
+                    poster
+                })
+            }
         }
-        return [];
+        return songs
     }
     catch (err) {
-        return null;
+        return null
     }
+}
+
+export async function getMusicSearch(s: string): Promise<SearchMusic[]> {
+    let page = 1, pageSize = 50
+    let result = [] as SearchMusic[]
+    while (true) {
+        const songs = await getPageSearch(s, page)
+        if (songs) {
+            result.push(...songs)
+            if (songs.length < pageSize) {
+                break
+            }
+            else {
+                page++
+            }
+        }
+        else {
+            break
+        }
+    }
+    return result
 }
 
 interface MusicInfo {

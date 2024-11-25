@@ -1,4 +1,5 @@
 import fetch, { Response } from 'node-fetch'
+export * as cheerio from 'cheerio'
 import { type Adaptor } from '.'
 import { userAgent } from '../util/config'
 import { isTextNotNull } from '../util/string'
@@ -30,6 +31,7 @@ export async function getTextWithTimeout(...args: Parameters<typeof fetch>): Pro
         const text = await getText(url, {
             ...init,
             headers: {
+                'cache-control': 'no-cache',
                 'user-agent': userAgent
             },
             timeout: 8e3

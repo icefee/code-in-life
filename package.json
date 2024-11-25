@@ -20,6 +20,7 @@
     "@mui/icons-material": "^5.16.5",
     "@mui/lab": "^5.0.0-alpha.173",
     "@mui/material": "^5.16.5",
+    "cheerio": "^1.0.0",
     "gatsby": "^5.14.0",
     "gatsby-adapter-netlify": "^1.2.0",
     "gatsby-plugin-alias-imports": "^1.0.5",

@@ -1,4 +1,4 @@
-import { getTextWithTimeout, getResponse, parseLrcText, escapeSymbols } from './common'
+import { cheerio, getTextWithTimeout, getResponse, parseLrcText } from './common'
 import { timeFormatter } from '../util/date'
 import { Api } from '../util/config'
 
@@ -6,38 +6,29 @@ export const key = 'g'
 
 export const baseUrl = 'https://www.gequbao.com'
 
-const getHtml = (url: string) => getTextWithTimeout(url, {
-    headers: {
-        'cache-control': 'no-cache'
-    }
-})
-
 export async function getMusicSearch(s: string): Promise<SearchMusic[]> {
     const url = `${baseUrl}/s/${s}`;
     try {
-        const html = await getHtml(url)
-        const matchBlocks = escapeSymbols(html).replace(/[\n\r]+/g, '').match(
-            /<div class="row">\s*<div class="col-5 col-content">\s*<a href="\/music\/\d+"\s*class="text-primary font-weight-bold"\s+target="_blank">[^<]+<\/a>\s*<\/div>\s*<div class="text-success col-4 col-content">[^<]+<\/div>\s*<div class="col-3 col-content text-right">\s*<a href="\/music\/\d+" target="_blank"><u>下载<\/u><\/a>\s*<\/div>\s*<\/div>/g
-        )
-        if (matchBlocks) {
-            return matchBlocks.map(
-                (block) => {
-                    const url = block.match(/music\/\d+/)[0]
-                    const idMatch = url.match(/\d+/)[0]
-                    const nameMatch = block.match(/(?<=<a href="\/music\/\d+"\s*class="text-primary\s+font-weight-bold"\s+target="_blank">)[^<]+(?=<\/a>)/)[0]
-                    const artistMatch = block.match(/(?<=<div\s+class="text-success\s+col-4\s+col-content">)[^<]+(?=<\/div>)/)[0]
-                    const id = key + idMatch
-                    return {
-                        id,
-                        name: nameMatch.trim(),
-                        artist: artistMatch.trim(),
-                        url: `/api/music/play/${id}`,
-                        poster: `${Api.posterServer}/api/music/poster/${id}`
-                    }
-                }
-            )
+        const html = await getTextWithTimeout(url)
+        const $ = cheerio.load(html)
+        const blocks = $('.card-text .row .music-link')
+        const songs = [] as SearchMusic[]
+        if (blocks) {
+            for (let i = 0; i < blocks.length; i++) {
+                const block = $(blocks[i])
+                const id = key + block.attr('href').match(/\d+$/)?.[0]
+                const name = block.find('small.text-jade').text().trim()
+                const artist = block.find('.music-title span').text()
+                songs.push({
+                    id,
+                    name,
+                    artist,
+                    url: `/api/music/play/${id}`,
+                    poster: `${Api.posterServer}/api/music/poster/${id}`
+                })
+            }
         }
-        return []
+        return songs
     }
     catch (err) {
         return null
@@ -45,7 +36,7 @@ export async function getMusicSearch(s: string): Promise<SearchMusic[]> {
 }
 
 function getPageSource(id: string) {
-    return getHtml(`${baseUrl}/music/${id}`)
+    return getTextWithTimeout(`${baseUrl}/music/${id}`)
 }
 
 function parsePosterUrl(html: string) {
