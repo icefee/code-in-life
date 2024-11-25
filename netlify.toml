@@ -3,4 +3,8 @@
 [[headers]]
   for = "/*"
   [headers.values]
-    Content-Security-Policy = "frame-ancestors https://*.deta.space https://*.onrender.com"
+    Content-Security-Policy = "frame-ancestors https://app-center.netlify.app https://*.onrender.com"
+[[redirects]]
+  from = "/"
+  to = "https://code-app.netlify.app"
+  status = 301
