@@ -6,5 +6,5 @@
     Content-Security-Policy = "frame-ancestors https://app-center.netlify.app https://*.onrender.com"
 [[redirects]]
   from = "/"
-  to = "https://code-app.netlify.app"
+  to = "https://code-app.netlify.app/music/"
   status = 301
