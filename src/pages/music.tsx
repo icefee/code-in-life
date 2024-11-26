@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
+import type { GetServerDataReturn, PageProps } from 'gatsby'
 import NoSsr from '@mui/material/NoSsr'
 import Stack from '@mui/material/Stack'
 import Snackbar from '@mui/material/Snackbar'
@@ -10,6 +11,7 @@ import Badge from '@mui/material/Badge'
 import LinearProgress from '@mui/material/LinearProgress'
 import Collapse from '@mui/material/Collapse'
 import Typography from '@mui/material/Typography'
+import { alpha } from '@mui/material/styles'
 import PlaylistPlayRoundedIcon from '@mui/icons-material/PlaylistPlayRounded'
 import HeadLayout from '~/components/layout/Head'
 import SearchForm, { type SearchFormInstance } from '~/components/search/Form'
@@ -30,7 +32,34 @@ export function Head() {
     )
 }
 
-export default function MusicSearch() {
+interface ServerProps {
+    images: string[] | null;
+}
+
+export async function getServerData(): Promise<GetServerDataReturn<ServerProps>> {
+    let images = null
+    const data = await getJson<Array<{
+        title: string;
+        copyright: string;
+        fullUrl: string;
+        thumbUrl: string;
+        imageUrl: string;
+        pageUrl: string;
+        date: string;
+    }>>('https://peapix.com/bing/feed?country=cn')
+    if (data) {
+        images = data.map(
+            ({ imageUrl }) => imageUrl
+        )
+    }
+    return {
+        props: {
+            images
+        }
+    }
+}
+
+export default function MusicSearch({ serverData }: PageProps<object, object, unknown, ServerProps>) {
 
     const [keyword, setKeyword] = useState('')
     const [toastMsg, setToastMsg] = useState<ToastMsg<AlertProps['severity']> | null>(null)
@@ -170,6 +199,16 @@ export default function MusicSearch() {
         return '音乐搜索';
     }, [activeMusic, playing])
 
+    const backgroundImageUrl = useMemo(() => {
+        if (serverData?.images) {
+            const { images } = serverData
+            if (images.length > 0) {
+                return images[Math.floor(Math.random() * images.length)]
+            }
+        }
+        return null
+    }, [serverData?.images])
+
     useEffect(() => {
         if (!activeMusic) {
             setPlaylistShow(false)
@@ -181,22 +220,23 @@ export default function MusicSearch() {
             <Box
                 sx={{
                     height: '100%',
-                    backgroundImage: 'var(--linear-gradient-image)'
+                    backgroundImage: backgroundImageUrl ? `url(${backgroundImageUrl})` : 'var(--linear-gradient-image)',
+                    backgroundSize: 'cover'
                 }}
             >
                 <title>{pageTitle}</title>
                 <Stack
-                    sx={({ breakpoints }) => ({
+                    sx={({ palette }) => ({
                         position: 'relative',
                         width: '100%',
                         '--max-width': '600px',
                         height: '100%',
                         maxWidth: 'var(--max-width)',
+                        bgcolor: alpha(palette.background.default, .4),
+                        backdropFilter: 'blur(4px)',
+                        borderRadius: 1,
                         margin: '0 auto',
-                        overflow: 'hidden',
-                        [breakpoints.up('sm')]: {
-                            backgroundImage: activeMusic ? 'linear-gradient(0, #0000002e, transparent)' : 'none'
-                        }
+                        overflow: 'hidden'
                     })}
                 >
                     <Collapse
@@ -240,9 +280,9 @@ export default function MusicSearch() {
                         justifyContent="center"
                     >
                         <Box
-                            sx={(theme) => ({
+                            sx={({ breakpoints }) => ({
                                 width: '100%',
-                                [theme.breakpoints.up('sm')]: {
+                                [breakpoints.up('sm')]: {
                                     maxWidth: 320
                                 }
                             })}
