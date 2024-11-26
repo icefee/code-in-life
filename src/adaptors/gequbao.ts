@@ -17,8 +17,8 @@ export async function getMusicSearch(s: string): Promise<SearchMusic[]> {
             for (let i = 0; i < blocks.length; i++) {
                 const block = $(blocks[i])
                 const id = key + block.attr('href').match(/\d+$/)?.[0]
-                const name = block.find('small.text-jade').text().trim()
-                const artist = block.find('.music-title span').text()
+                const name = block.find('.music-title span').text()
+                const artist = block.find('small.text-jade').text().trim()
                 songs.push({
                     id,
                     name,

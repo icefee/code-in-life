@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
 import NoSsr from '@mui/material/NoSsr'
 import Stack from '@mui/material/Stack'
+import Box from '@mui/material/Box'
 import Snackbar from '@mui/material/Snackbar'
 import Alert, { type AlertProps } from '@mui/material/Alert'
-import Box from '@mui/material/Box'
 import Tooltip from '@mui/material/Tooltip'
 import IconButton from '@mui/material/IconButton'
 import Badge from '@mui/material/Badge'
@@ -50,7 +50,7 @@ export default function MusicSearch() {
     const [repeat, setRepeat] = useLocalStorageState<RepeatMode>('__repeat_mode', RepeatMode.All)
 
     const [playlist, setPlaylist] = useLocalStorageState<SearchMusic[]>('__playlist', [])
-    const songListWrapRef = useRef<HTMLDivElement | null>(null)
+    const listScroller = useRef<HTMLDivElement | null>(null)
 
     const [downloading, setDownloading] = useState(false)
 
@@ -106,21 +106,15 @@ export default function MusicSearch() {
     }
 
     useEffect(() => {
-        if (playlist.init) {
-            if (playlist.data.length > 0) {
-                setActiveMusic(playlist.data[0])
-            }
-            return () => {
-                if (playlist.data.length === 0) {
-                    setPlaylistShow(false)
-                }
-            }
+        const { init, data } = playlist
+        if (init && data.length > 0) {
+            setActiveMusic(data[0])
         }
     }, [playlist])
 
     useEffect(() => {
         if (searchTask.success && searchTask.data.length > 0) {
-            songListWrapRef.current.scrollTo({
+            listScroller.current.scrollTo({
                 top: 0,
                 behavior: 'auto'
             })
@@ -192,9 +186,8 @@ export default function MusicSearch() {
                     sx={({ palette }) => ({
                         position: 'relative',
                         width: '100%',
-                        '--max-width': '600px',
                         height: '100%',
-                        maxWidth: 'var(--max-width)',
+                        maxWidth: 600,
                         bgcolor: alpha(palette.background.default, .4),
                         backdropFilter: 'blur(4px)',
                         margin: '0 auto',
@@ -273,7 +266,7 @@ export default function MusicSearch() {
                                         pb: activeMusic ? 14 : 2
                                     }
                                 })}
-                                ref={songListWrapRef}
+                                ref={listScroller}
                             >
                                 <SongList
                                     data={searchTask.data}
@@ -284,9 +277,7 @@ export default function MusicSearch() {
                                     onTogglePlay={
                                         async (music: SearchMusic) => {
                                             if (activeMusic && music.id === activeMusic.id) {
-                                                setPlaying(
-                                                    state => !state
-                                                )
+                                                setPlaying(!playing)
                                             }
                                             else {
                                                 const playIndex = playlist.data.findIndex(
@@ -363,10 +354,11 @@ export default function MusicSearch() {
                         activeMusic !== null && (
                             <Stack
                                 sx={({ transitions, zIndex }) => ({
-                                    position: 'fixed',
-                                    width: '100%',
-                                    maxWidth: 'var(--max-width)',
+                                    position: 'absolute',
+                                    left: 0,
                                     bottom: 0,
+                                    width: '100%',
+                                    height: 'fit-content',
                                     boxShadow: '0px -4px 12px 0px rgb(0 0 0 / 80%)',
                                     transition: transitions.create('transform'),
                                     transform: `translate(0, ${playlistShow ? 0 : '50vh'})`,
@@ -444,7 +436,7 @@ export default function MusicSearch() {
                                             overflowY: 'auto',
                                             bgcolor: 'background.paper',
                                             color: '#fff',
-                                            borderTop: (theme) => `1px solid ${theme.palette.divider}`,
+                                            borderTop: ({ palette }) => `1px solid ${palette.divider}`,
                                             '&::-webkit-scrollbar-thumb': {
                                                 bgcolor: 'var(--scrollbar-thumb-dark-mode-color)'
                                             },
@@ -455,7 +447,14 @@ export default function MusicSearch() {
                                     >
                                         <MusicPlayList
                                             data={playlist.data}
-                                            onChange={setPlaylist}
+                                            onChange={
+                                                (list) => {
+                                                    if (list.length === 0) {
+                                                        setPlaylistShow(false)
+                                                    }
+                                                    setPlaylist(list)
+                                                }
+                                            }
                                             current={activeMusic}
                                             playing={playing}
                                             onPlay={
