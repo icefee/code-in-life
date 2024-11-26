@@ -55,6 +55,10 @@ function SearchForm({
     const input = useRef<HTMLInputElement | null>(null)
     const [autoCompleteOpen, setAutoCompleteOpen] = useState(false)
 
+    const filterSuggests = (sugs: Suggest[], value: string) => sugs.filter(
+        sug => sug.key !== autocompleteKey || sug.value !== value
+    )
+
     const putSuggest = (value: string) => {
         setSuggests(
             sugs => [
@@ -62,9 +66,7 @@ function SearchForm({
                     key: autocompleteKey,
                     value
                 },
-                ...sugs.filter(
-                    sug => sug.value !== value
-                )
+                ...filterSuggests(sugs, value)
             ]
         )
     }
@@ -93,7 +95,7 @@ function SearchForm({
 
     useImperativeHandle(ref, () => ({
         putSuggest
-    }), [])
+    }), [suggests.data])
 
     return (
         <NoSsr>
@@ -155,9 +157,7 @@ function SearchForm({
                                 (event) => {
                                     event.stopPropagation()
                                     setSuggests(
-                                        sugs => sugs.filter(
-                                            sug => sug.key !== autocompleteKey || sug.value !== option
-                                        )
+                                        sugs => filterSuggests(sugs, option)
                                     )
                                 }
                             }>
