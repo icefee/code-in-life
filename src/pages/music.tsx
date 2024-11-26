@@ -106,8 +106,15 @@ export default function MusicSearch() {
     }
 
     useEffect(() => {
-        if (playlist.init && playlist.data.length > 0) {
-            setActiveMusic(playlist.data[0])
+        if (playlist.init) {
+            if (playlist.data.length > 0) {
+                setActiveMusic(playlist.data[0])
+            }
+            return () => {
+                if (playlist.data.length === 0) {
+                    setPlaylistShow(false)
+                }
+            }
         }
     }, [playlist])
 
@@ -170,14 +177,6 @@ export default function MusicSearch() {
         }
         return '音乐搜索';
     }, [activeMusic, playing])
-
-    useEffect(() => {
-        return () => {
-            if (!activeMusic) {
-                setPlaylistShow(false)
-            }
-        }
-    }, [activeMusic])
 
     return (
         <NoSsr>
@@ -495,12 +494,12 @@ export default function MusicSearch() {
                             </Stack>
                         )
                     }
+                    <LoadingOverlay
+                        open={searchTask.pending}
+                        label="搜索中.."
+                        withBackground
+                    />
                 </Stack>
-                <LoadingOverlay
-                    open={searchTask.pending}
-                    label="搜索中.."
-                    withBackground
-                />
                 <Snackbar
                     open={Boolean(toastMsg)}
                     autoHideDuration={5000}
