@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
-import type { GetServerDataReturn, PageProps } from 'gatsby'
 import NoSsr from '@mui/material/NoSsr'
 import Stack from '@mui/material/Stack'
 import Snackbar from '@mui/material/Snackbar'
@@ -23,7 +22,7 @@ import SongList from '~/components/search/SongList'
 import MusicPlayList from '~/components/player/MusicPlayList'
 import useLocalStorageState from '~/components/hook/useLocalStorageState'
 import { getParamsUrl, loadFileChunks, getJson } from '~/util/proxy'
-import { maxChunkSize } from '~/util/config'
+import { maxChunkSize, Api } from '~/util/config'
 import { blobToFile } from '~/util/blobToFile'
 
 export function Head() {
@@ -32,34 +31,7 @@ export function Head() {
     )
 }
 
-interface ServerProps {
-    images: string[] | null;
-}
-
-export async function getServerData(): Promise<GetServerDataReturn<ServerProps>> {
-    let images = null
-    const data = await getJson<Array<{
-        title: string;
-        copyright: string;
-        fullUrl: string;
-        thumbUrl: string;
-        imageUrl: string;
-        pageUrl: string;
-        date: string;
-    }>>('https://peapix.com/bing/feed?country=cn')
-    if (data) {
-        images = data.map(
-            ({ imageUrl }) => imageUrl
-        )
-    }
-    return {
-        props: {
-            images
-        }
-    }
-}
-
-export default function MusicSearch({ serverData }: PageProps<object, object, unknown, ServerProps>) {
+export default function MusicSearch() {
 
     const [keyword, setKeyword] = useState('')
     const [toastMsg, setToastMsg] = useState<ToastMsg<AlertProps['severity']> | null>(null)
@@ -74,7 +46,7 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
     const [activeMusic, setActiveMusic] = useState<SearchMusic | null>(null)
     const [playing, setPlaying] = useState(false)
 
-    const [playlistShow, setPlaylistShow] = useState(false)
+    const [playlistShow, setPlaylistShow] = useState(true)
     const [repeat, setRepeat] = useLocalStorageState<RepeatMode>('__repeat_mode', RepeatMode.All)
 
     const [playlist, setPlaylist] = useLocalStorageState<SearchMusic[]>('__playlist', [])
@@ -199,19 +171,11 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
         return '音乐搜索';
     }, [activeMusic, playing])
 
-    const backgroundImageUrl = useMemo(() => {
-        if (serverData?.images) {
-            const { images } = serverData
-            if (images.length > 0) {
-                return images[Math.floor(Math.random() * images.length)]
-            }
-        }
-        return null
-    }, [serverData?.images])
-
     useEffect(() => {
-        if (!activeMusic) {
-            setPlaylistShow(false)
+        return () => {
+            if (!activeMusic) {
+                setPlaylistShow(false)
+            }
         }
     }, [activeMusic])
 
@@ -220,7 +184,7 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
             <Box
                 sx={{
                     height: '100%',
-                    backgroundImage: backgroundImageUrl ? `url(${backgroundImageUrl})` : 'var(--linear-gradient-image)',
+                    backgroundImage: `url(${Api.proxyUrl}/api/image/bing?country=cn)`,
                     backgroundSize: 'cover'
                 }}
             >
@@ -234,7 +198,6 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
                         maxWidth: 'var(--max-width)',
                         bgcolor: alpha(palette.background.default, .4),
                         backdropFilter: 'blur(4px)',
-                        borderRadius: 1,
                         margin: '0 auto',
                         overflow: 'hidden'
                     })}
@@ -302,12 +265,12 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
                     {
                         searchTask.success ? searchTask.data.length > 0 ? (
                             <Box
-                                sx={(theme) => ({
+                                sx={({ breakpoints }) => ({
                                     flexGrow: 1,
                                     px: 1.5,
                                     overflowY: 'auto',
                                     pb: activeMusic ? 12 : 2,
-                                    [theme.breakpoints.up('sm')]: {
+                                    [breakpoints.up('sm')]: {
                                         pb: activeMusic ? 14 : 2
                                     }
                                 })}
@@ -407,7 +370,7 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
                                     bottom: 0,
                                     boxShadow: '0px -4px 12px 0px rgb(0 0 0 / 80%)',
                                     transition: transitions.create('transform'),
-                                    transform: playlistShow ? 'none' : 'translate(0, 50vh)',
+                                    transform: `translate(0, ${playlistShow ? 0 : '50vh'})`,
                                     zIndex: zIndex.drawer + 2
                                 })}
                             >
@@ -432,9 +395,9 @@ export default function MusicSearch({ serverData }: PageProps<object, object, un
                                                     color="inherit"
                                                     size="small"
                                                     onClick={
-                                                        () => setPlaylistShow(
-                                                            show => !show
-                                                        )
+                                                        () => {
+                                                            setPlaylistShow(!playlistShow)
+                                                        }
                                                     }
                                                 >
                                                     <PlaylistPlayRoundedIcon />
