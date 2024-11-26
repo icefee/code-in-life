@@ -174,24 +174,25 @@ export default function MusicSearch() {
 
     return (
         <NoSsr>
+            <title>{pageTitle}</title>
             <Box
                 sx={{
                     height: '100%',
                     backgroundImage: `url(${Api.proxyUrl}/api/image/bing?country=cn)`,
-                    backgroundSize: 'cover'
+                    backgroundSize: 'cover',
+                    overflow: 'hidden',
+                    '--max-width': '600px'
                 }}
             >
-                <title>{pageTitle}</title>
                 <Stack
                     sx={({ palette }) => ({
                         position: 'relative',
                         width: '100%',
                         height: '100%',
-                        maxWidth: 600,
+                        maxWidth: 'var(--max-width)',
                         bgcolor: alpha(palette.background.default, .4),
                         backdropFilter: 'blur(4px)',
-                        margin: '0 auto',
-                        overflow: 'hidden'
+                        margin: '0 auto'
                     })}
                 >
                     <Collapse
@@ -350,155 +351,156 @@ export default function MusicSearch() {
                             )
                         )
                     }
-                    {
-                        activeMusic !== null && (
-                            <Stack
-                                sx={({ transitions, zIndex }) => ({
-                                    position: 'absolute',
-                                    left: 0,
-                                    bottom: 0,
-                                    width: '100%',
-                                    height: 'fit-content',
-                                    boxShadow: '0px -4px 12px 0px rgb(0 0 0 / 80%)',
-                                    transition: transitions.create('transform'),
-                                    transform: `translate(0, ${playlistShow ? 0 : '50vh'})`,
-                                    zIndex: zIndex.drawer + 2
-                                })}
-                            >
-                                <MusicPlayer
-                                    music={activeMusic}
-                                    playing={playing}
-                                    onPlayStateChange={setPlaying}
-                                    repeat={repeat.data}
-                                    extendButtons={
-                                        <Tooltip title="播放列表">
-                                            <Badge
-                                                sx={{
-                                                    '& .MuiBadge-badge': {
-                                                        top: 4,
-                                                        right: 4
-                                                    }
-                                                }}
-                                                color="secondary"
-                                                badgeContent={playlist.data.length}
-                                            >
-                                                <IconButton
-                                                    color="inherit"
-                                                    size="small"
-                                                    onClick={
-                                                        () => {
-                                                            setPlaylistShow(!playlistShow)
-                                                        }
-                                                    }
-                                                >
-                                                    <PlaylistPlayRoundedIcon />
-                                                </IconButton>
-                                            </Badge>
-                                        </Tooltip>
-                                    }
-                                    onRepeatChange={setRepeat}
-                                    onPlayEnd={
-                                        async (end) => {
-                                            if (!end) {
-                                                setToastMsg({
-                                                    type: 'error',
-                                                    msg: `“${activeMusic.name}”播放错误`
-                                                })
-                                            }
-                                            if (playlist.data.length > 1) {
-                                                const playIndex = playlist.data.findIndex(
-                                                    music => music.id === activeMusic.id
-                                                );
-                                                switch (repeat.data) {
-                                                    case RepeatMode.Random:
-                                                        const nextPlayIndex = generateRandomIndex(playlist.data.length - 1, playIndex)
-                                                        setActiveMusic(playlist.data[nextPlayIndex])
-                                                        break;
-                                                    case RepeatMode.All:
-                                                        if (playIndex < playlist.data.length - 1) {
-                                                            setActiveMusic(playlist.data[playIndex + 1])
-                                                        }
-                                                        else {
-                                                            setActiveMusic(playlist.data[0])
-                                                        }
-                                                }
-                                            }
-                                            else {
-                                                setPlaying(true)
-                                            }
-                                        }
-                                    }
-                                />
-                                <DarkThemed>
-                                    <Box
-                                        sx={{
-                                            height: '50vh',
-                                            overflowY: 'auto',
-                                            bgcolor: 'background.paper',
-                                            color: '#fff',
-                                            borderTop: ({ palette }) => `1px solid ${palette.divider}`,
-                                            '&::-webkit-scrollbar-thumb': {
-                                                bgcolor: 'var(--scrollbar-thumb-dark-mode-color)'
-                                            },
-                                            '&::-webkit-scrollbar-thumb:hover': {
-                                                bgcolor: 'var(--scrollbar-thumb-dark-mode-hover-color)'
-                                            }
-                                        }}
-                                    >
-                                        <MusicPlayList
-                                            data={playlist.data}
-                                            onChange={
-                                                (list) => {
-                                                    if (list.length === 0) {
-                                                        setPlaylistShow(false)
-                                                    }
-                                                    setPlaylist(list)
-                                                }
-                                            }
-                                            current={activeMusic}
-                                            playing={playing}
-                                            onPlay={
-                                                (music) => {
-                                                    if (!music) {
-                                                        setPlaying(false)
-                                                    }
-                                                    setActiveMusic(music)
-                                                }
-                                            }
-                                            onTogglePlay={
-                                                () => {
-                                                    setPlaying(playing => !playing)
-                                                }
-                                            }
-                                            onSearch={
-                                                (s) => {
-                                                    setKeyword(s)
-                                                    onSearch(s)
-                                                    searchFormRef.current?.putSuggest(s)
-                                                }
-                                            }
-                                            onDownload={
-                                                (music, type) => {
-                                                    if (type === 'song') {
-                                                        downloadSong(music)
-                                                    }
-                                                    else if (type === 'lrc') {
-                                                        downloadLrc(music)
-                                                    }
-                                                }
-                                            }
-                                        />
-                                    </Box>
-                                </DarkThemed>
-                            </Stack>
-                        )
-                    }
                     <LoadingOverlay
                         open={searchTask.pending}
                         label="搜索中.."
+                        fixed={false}
                         withBackground
                     />
                 </Stack>
+                {
+                    activeMusic !== null && (
+                        <Stack
+                            sx={({ transitions, zIndex }) => ({
+                                position: 'fixed',
+                                width: '100%',
+                                maxWidth: 'var(--max-width)',
+                                boxShadow: '0px -4px 12px 0px rgb(0 0 0 / 80%)',
+                                transition: transitions.create('transform'),
+                                bottom: 0,
+                                left: '50%',
+                                transform: `translate(-50%, ${playlistShow ? 0 : '50vh'})`,
+                                zIndex: zIndex.drawer + 2
+                            })}
+                        >
+                            <MusicPlayer
+                                music={activeMusic}
+                                playing={playing}
+                                onPlayStateChange={setPlaying}
+                                repeat={repeat.data}
+                                extendButtons={
+                                    <Tooltip title="播放列表">
+                                        <Badge
+                                            sx={{
+                                                '& .MuiBadge-badge': {
+                                                    top: 4,
+                                                    right: 4
+                                                }
+                                            }}
+                                            color="secondary"
+                                            badgeContent={playlist.data.length}
+                                        >
+                                            <IconButton
+                                                color="inherit"
+                                                size="small"
+                                                onClick={
+                                                    () => {
+                                                        setPlaylistShow(!playlistShow)
+                                                    }
+                                                }
+                                            >
+                                                <PlaylistPlayRoundedIcon />
+                                            </IconButton>
+                                        </Badge>
+                                    </Tooltip>
+                                }
+                                onRepeatChange={setRepeat}
+                                onPlayEnd={
+                                    async (end) => {
+                                        if (!end) {
+                                            setToastMsg({
+                                                type: 'error',
+                                                msg: `“${activeMusic.name}”播放错误`
+                                            })
+                                        }
+                                        if (playlist.data.length > 1) {
+                                            const playIndex = playlist.data.findIndex(
+                                                music => music.id === activeMusic.id
+                                            );
+                                            switch (repeat.data) {
+                                                case RepeatMode.Random:
+                                                    const nextPlayIndex = generateRandomIndex(playlist.data.length - 1, playIndex)
+                                                    setActiveMusic(playlist.data[nextPlayIndex])
+                                                    break;
+                                                case RepeatMode.All:
+                                                    if (playIndex < playlist.data.length - 1) {
+                                                        setActiveMusic(playlist.data[playIndex + 1])
+                                                    }
+                                                    else {
+                                                        setActiveMusic(playlist.data[0])
+                                                    }
+                                            }
+                                        }
+                                        else {
+                                            setPlaying(true)
+                                        }
+                                    }
+                                }
+                            />
+                            <DarkThemed>
+                                <Box
+                                    sx={{
+                                        height: '50vh',
+                                        overflowY: 'auto',
+                                        bgcolor: 'background.paper',
+                                        color: '#fff',
+                                        borderTop: ({ palette }) => `1px solid ${palette.divider}`,
+                                        '&::-webkit-scrollbar-thumb': {
+                                            bgcolor: 'var(--scrollbar-thumb-dark-mode-color)'
+                                        },
+                                        '&::-webkit-scrollbar-thumb:hover': {
+                                            bgcolor: 'var(--scrollbar-thumb-dark-mode-hover-color)'
+                                        }
+                                    }}
+                                >
+                                    <MusicPlayList
+                                        data={playlist.data}
+                                        onChange={
+                                            (list) => {
+                                                if (list.length === 0) {
+                                                    setPlaylistShow(false)
+                                                }
+                                                setPlaylist(list)
+                                            }
+                                        }
+                                        current={activeMusic}
+                                        playing={playing}
+                                        onPlay={
+                                            (music) => {
+                                                if (!music) {
+                                                    setPlaying(false)
+                                                }
+                                                setActiveMusic(music)
+                                            }
+                                        }
+                                        onTogglePlay={
+                                            () => {
+                                                setPlaying(playing => !playing)
+                                            }
+                                        }
+                                        onSearch={
+                                            (s) => {
+                                                setKeyword(s)
+                                                onSearch(s)
+                                                searchFormRef.current?.putSuggest(s)
+                                            }
+                                        }
+                                        onDownload={
+                                            (music, type) => {
+                                                if (type === 'song') {
+                                                    downloadSong(music)
+                                                }
+                                                else if (type === 'lrc') {
+                                                    downloadLrc(music)
+                                                }
+                                            }
+                                        }
+                                    />
+                                </Box>
+                            </DarkThemed>
+                        </Stack>
+                    )
+                }
                 <Snackbar
                     open={Boolean(toastMsg)}
                     autoHideDuration={5000}
