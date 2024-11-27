@@ -62,23 +62,21 @@ export default function MusicSearch() {
     }
 
     const generateRandomIndex = (max: number, current: number) => {
-        const random = Math.round(Math.random() * max);
+        const random = Math.round(Math.random() * max)
         if (random === current) {
             return generateRandomIndex(max, current)
         }
-        return random;
+        return random
     }
 
     const onSearch = async (text: string) => {
-        console.log(`Search text: ${text}`)
-        return
         const s = text.trim()
         if (s.length === 0) {
             setToastMsg({
                 type: 'warning',
                 msg: '关键词不能为空'
             })
-            return;
+            return
         }
         setSearchTask(t => ({
             ...t,
