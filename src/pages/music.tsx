@@ -180,7 +180,7 @@ export default function MusicSearch() {
             <Box
                 sx={{
                     height: '100%',
-                    backgroundImage: `url(${Api.proxyUrl}/api/image/bing?country=cn)`,
+                    backgroundImage: `url(${Api.proxyUrl}/api/image/bing)`,
                     backgroundSize: 'cover',
                     overflow: 'hidden',
                     '--max-width': '600px'

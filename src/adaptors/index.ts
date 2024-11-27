@@ -20,12 +20,12 @@ export const adaptors: Adaptor[] = [
 export function createApiAdaptor(key: Adaptor) {
     switch (key) {
         case g.key:
-            return g;
+            return g
         case z.key:
-            return z;
+            return z
         case t.key:
-            return t;
+            return t
         default:
-            break;
+            break
     }
 }
