@@ -9,6 +9,7 @@ import TheatersIcon from '@mui/icons-material/Theaters'
 import QrCodeIcon from '@mui/icons-material/QrCode'
 import SaveAltIcon from '@mui/icons-material/SaveAlt'
 import HeadLayout from '~/components/layout/Head'
+import { Api } from '~/util/config'
 
 export function Head() {
     return (
@@ -156,12 +157,16 @@ export async function getServerData({ query }: GetServerDataProps): Promise<GetS
 }
 
 function Index({ serverData }: PageProps<object, object, unknown, ServerProps>) {
+
     const mode = serverData.mode;
+
     return (
         <Stack
             sx={({ breakpoints }) => ({
                 height: '100%',
-                background: 'var(--linear-gradient-image)',
+                bgcolor: 'background.paper',
+                backgroundImage: `url(${Api.proxyUrl}/api/image/bing)`,
+                backgroundSize: 'cover',
                 p: 2,
                 overflowY: 'auto',
                 [breakpoints.up('sm')]: {

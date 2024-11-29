@@ -9,6 +9,7 @@ import IconButton from '@mui/material/IconButton'
 import Badge from '@mui/material/Badge'
 import LinearProgress from '@mui/material/LinearProgress'
 import Collapse from '@mui/material/Collapse'
+import Fade from '@mui/material/Fade'
 import Typography from '@mui/material/Typography'
 import { alpha } from '@mui/material/styles'
 import PlaylistPlayRoundedIcon from '@mui/icons-material/PlaylistPlayRounded'
@@ -46,7 +47,7 @@ export default function MusicSearch() {
     const [activeMusic, setActiveMusic] = useState<SearchMusic | null>(null)
     const [playing, setPlaying] = useState(false)
 
-    const [playlistShow, setPlaylistShow] = useState(true)
+    const [playlistShow, setPlaylistShow] = useState(false)
     const [repeat, setRepeat] = useLocalStorageState<RepeatMode>('__repeat_mode', RepeatMode.All)
 
     const [playlist, setPlaylist] = useLocalStorageState<SearchMusic[]>('__playlist', [])
@@ -109,6 +110,9 @@ export default function MusicSearch() {
         const { init, data } = playlist
         if (init && data.length > 0) {
             setActiveMusic(data[0])
+            setTimeout(() => {
+                setPlaylistShow(true)
+            }, 400)
         }
     }, [playlist])
 
@@ -297,7 +301,7 @@ export default function MusicSearch() {
                                     onAction={
                                         async (cmd, music) => {
                                             const playIndex = playlist.data.findIndex(
-                                                m => m.id === music.id
+                                                ({ id }) => id === music.id
                                             )
                                             if (playIndex !== -1 && cmd === 'add') {
                                                 setToastMsg({
@@ -351,6 +355,19 @@ export default function MusicSearch() {
                             )
                         )
                     }
+                    <Fade in={playlistShow} unmountOnExit>
+                        <Box
+                            sx={{
+                                position: 'absolute',
+                                inset: 0,
+                                zIndex: 4,
+                                bgcolor: '#0008'
+                            }}
+                            onClick={
+                                () => setPlaylistShow(false)
+                            }
+                        />
+                    </Fade>
                     <LoadingOverlay
                         open={searchTask.pending}
                         label="搜索中.."
@@ -366,10 +383,12 @@ export default function MusicSearch() {
                                 width: '100%',
                                 maxWidth: 'var(--max-width)',
                                 boxShadow: '0px -4px 12px 0px rgb(0 0 0 / 80%)',
-                                transition: transitions.create('transform'),
+                                transition: transitions.create('transform', {
+                                    duration: '.4s'
+                                }),
                                 bottom: 0,
                                 left: '50%',
-                                transform: `translate(-50%, ${playlistShow ? 0 : '50vh'})`,
+                                transform: `translate(-50%, ${playlistShow ? 0 : '60vh'})`,
                                 zIndex: zIndex.drawer + 2
                             })}
                         >
@@ -440,7 +459,7 @@ export default function MusicSearch() {
                             <DarkThemed>
                                 <Box
                                     sx={{
-                                        height: '50vh',
+                                        height: '60vh',
                                         overflowY: 'auto',
                                         bgcolor: 'background.paper',
                                         color: '#fff',
