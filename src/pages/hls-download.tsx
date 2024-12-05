@@ -11,7 +11,7 @@ import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import LinearProgress from '@mui/material/LinearProgress'
 import UploadFileOutlined from '@mui/icons-material/UploadFileOutlined'
-import Hls2Mp4, { TaskType } from 'hls2mp4'
+import Hls2Mp4 from 'hls2mp4'
 import HeadLayout from '~/components/layout/Head'
 import useErrorMessage from '~/components/hook/useErrorMessage'
 import { M3u8 } from '~/util/regExp'
@@ -142,7 +142,7 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
             maxRetry: 5,
             tsDownloadConcurrency: 3,
             onProgress: (type, progress) => {
-                if (type === TaskType.loadFFmeg) {
+                if (type === Hls2Mp4.TaskType.loadFFmeg) {
                     if (progress === 0) {
                         setStatus('加载FFmpeg..')
                     }
@@ -150,7 +150,7 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
                         setStatus('FFmpeg加载完成')
                     }
                 }
-                else if (type === TaskType.parseM3u8) {
+                else if (type === Hls2Mp4.TaskType.parseM3u8) {
                     if (progress === 0) {
                         setStatus('解析m3u8文件..')
                     }
@@ -158,12 +158,12 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
                         setStatus('m3u8文件解析完成')
                     }
                 }
-                else if (type === TaskType.downloadTs) {
+                else if (type === Hls2Mp4.TaskType.downloadTs) {
                     const percent = Math.round(progress * 100)
                     setProgress(percent)
                     setStatus(`下载ts分片: ${percent}%`)
                 }
-                else if (type === TaskType.mergeTs) {
+                else if (type === Hls2Mp4.TaskType.mergeTs) {
                     if (progress === 0) {
                         setStatus('合并ts分片..')
                     }
@@ -171,7 +171,7 @@ function HlsDownload({ serverData }: PageProps<object, object, unknown, ServerPr
                         setStatus('ts分片完成')
                     }
                 }
-                setDownloading(type === TaskType.downloadTs)
+                setDownloading(type === Hls2Mp4.TaskType.downloadTs)
             }
         })
     }, [])

@@ -27,7 +27,7 @@ import RateSetter from './RateSetter'
 import MiniProcess from './MiniProcess'
 import { Spinner } from '../loading'
 import { timeFormatter } from '~/util/date'
-import { isMobileDevice, isIos } from '~/util/env'
+import { isMobileDevice } from '~/util/env'
 
 const Events = Hls.Events
 
@@ -199,7 +199,6 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
     const [buffered, setBuffered] = useState(0)
     const [muted, setMuted] = useState(false)
     const isMobile = isMobileDevice()
-    const ios = isIos()
     const durationPlaceholder = '--:--'
     const [controlsShow, setControlsShow] = useState(true)
     const seekingRef = useRef(false)
@@ -934,7 +933,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                                     </IconButton>
                                 </Tooltip>
                                 {
-                                    !live && !disableDownload && !ios && (
+                                    !live && !disableDownload && (
                                         <Tooltip title="下载">
                                             <IconButton
                                                 color="inherit"
