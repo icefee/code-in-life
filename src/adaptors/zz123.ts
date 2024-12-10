@@ -19,6 +19,7 @@ async function getPageSearch(s: string, p: number) {
         const $ = cheerio.load(html)
         const blocks = $('.card-list-item.statistics_item')
         const songs = [] as SearchMusic[]
+        const matchReg = new RegExp(s.replace(/\\/g, '\\\\'), 'i')
         if (blocks) {
             for (let i = 0; i < blocks.length; i++) {
                 const block = $(blocks[i])
@@ -26,13 +27,15 @@ async function getPageSearch(s: string, p: number) {
                 const name = block.attr('data-tag')
                 const artist = block.find('.singername a').text()
                 const poster = block.find('.item-cover img').attr('data-src')
-                songs.push({
-                    id,
-                    name,
-                    artist,
-                    url: `/api/music/play/${id}`,
-                    poster
-                })
+                if ([name, artist].some(s => s.match(matchReg))) {
+                    songs.push({
+                        id,
+                        name,
+                        artist,
+                        url: `/api/music/play/${id}`,
+                        poster
+                    })
+                }
             }
         }
         return songs
