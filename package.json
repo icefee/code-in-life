@@ -37,6 +37,7 @@
   "devDependencies": {
     "@emotion/babel-plugin": "11.11.0",
     "@types/node": "^20.10.0",
+    "@types/node-fetch": "^2.6.12",
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
     "typescript": "^5.2.2"
@@ -47,6 +48,5 @@
   },
   "bugs": {
     "url": "https://github.com/icefee/code-in-life/issues"
-  },
-  "packageManager": "yarn@1.22.19+sha1.4ba7fc5c6e704fce2066ecbfb0b0d8976fe62447"
+  }
 }

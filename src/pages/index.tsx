@@ -9,7 +9,6 @@ import TheatersIcon from '@mui/icons-material/Theaters'
 import QrCodeIcon from '@mui/icons-material/QrCode'
 import SaveAltIcon from '@mui/icons-material/SaveAlt'
 import HeadLayout from '~/components/layout/Head'
-import { Api } from '~/util/config'
 
 export function Head() {
     return (
@@ -162,11 +161,9 @@ function Index({ serverData }: PageProps<object, object, unknown, ServerProps>) 
 
     return (
         <Stack
+            className="image-container"
             sx={({ breakpoints }) => ({
-                height: '100%',
                 bgcolor: 'background.paper',
-                backgroundImage: `url(${Api.proxyUrl}/api/image/bing)`,
-                backgroundSize: 'cover',
                 p: 2,
                 overflowY: 'auto',
                 [breakpoints.up('sm')]: {

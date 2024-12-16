@@ -23,7 +23,7 @@ import SongList from '~/components/search/SongList'
 import MusicPlayList from '~/components/player/MusicPlayList'
 import useLocalStorageState from '~/components/hook/useLocalStorageState'
 import { getParamsUrl, loadFileChunks, getJson } from '~/util/proxy'
-import { maxChunkSize, Api } from '~/util/config'
+import { maxChunkSize } from '~/util/config'
 import { blobToFile } from '~/util/blobToFile'
 
 export function Head() {
@@ -180,10 +180,8 @@ export default function MusicSearch() {
         <NoSsr>
             <title>{pageTitle}</title>
             <Box
+                className="image-container"
                 sx={{
-                    height: '100%',
-                    backgroundImage: `url(${Api.proxyUrl}/api/image/bing)`,
-                    backgroundSize: 'cover',
                     overflow: 'hidden',
                     '--max-width': '600px'
                 }}

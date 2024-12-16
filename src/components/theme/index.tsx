@@ -1,11 +1,11 @@
-import React, { useMemo, useState, useEffect } from 'react';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { ThemeProvider, createTheme, useTheme } from '@mui/material/styles';
+import React, { useMemo, useState, useEffect } from 'react'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { ThemeProvider, createTheme, useTheme } from '@mui/material/styles'
 import type { Theme } from '@mui/material/styles'
-import { useLocalStorage } from 'react-use';
-import CssBaseline from '@mui/material/CssBaseline';
-import { darkTheme } from './DarkThemed';
-export { default as DarkThemed } from './DarkThemed';
+import { useLocalStorage } from 'react-use'
+import CssBaseline from '@mui/material/CssBaseline'
+import { darkTheme } from './DarkThemed'
+export { default as DarkThemed } from './DarkThemed'
 
 export type ThemeMode = {
     themeMode?: boolean;
@@ -18,14 +18,14 @@ export interface ThemeStoragerProps {
 
 const useOsTheme = () => {
     const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
-    return prefersDarkMode;
+    return prefersDarkMode
 }
 
 export const ThemeStorager: React.FC<ThemeStoragerProps> = ({ children }) => {
-    const theme = useTheme<Theme>();
-    const [themeMode, setThemeMode] = useState<boolean | null>(null);
-    const [storage, setStorage] = useLocalStorage<boolean>('__dark_theme', null);
-    const osTheme = useOsTheme();
+    const theme = useTheme<Theme>()
+    const [themeMode, setThemeMode] = useState<boolean | null>(null)
+    const [storage, setStorage] = useLocalStorage<boolean>('__dark_theme', null)
+    const osTheme = useOsTheme()
 
     useEffect(
         () => setThemeMode(storage),
@@ -49,11 +49,11 @@ export const ThemeStorager: React.FC<ThemeStoragerProps> = ({ children }) => {
     )
 
     const displayTheme = useMemo<Theme>(() => {
-        const isDark = themeMode === null ? osTheme : themeMode;
+        const isDark = themeMode === null ? osTheme : themeMode
         if (isDark) {
-            return darkTheme;
+            return darkTheme
         }
-        return theme;
+        return theme
     }, [theme, themeMode, osTheme])
 
     return (
@@ -72,7 +72,7 @@ type ThemeChildren<T> = T | T[];
 export const StaticTheme: React.FC<{
     children: ((darkMode: boolean) => ThemeChildren<React.ReactNode>) | ThemeChildren<React.ReactNode>;
 }> = ({ children }) => {
-    const osTheme = useOsTheme();
+    const osTheme = useOsTheme()
     const theme = useMemo(
         () =>
             createTheme({

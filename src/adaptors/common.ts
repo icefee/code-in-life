@@ -31,6 +31,7 @@ export async function getTextWithTimeout(...args: Parameters<typeof fetch>): Pro
         const text = await getText(url, {
             ...init,
             headers: {
+                ...init?.headers,
                 'cache-control': 'no-cache',
                 'user-agent': userAgent
             },

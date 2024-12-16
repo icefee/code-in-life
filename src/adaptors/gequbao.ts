@@ -35,8 +35,18 @@ export async function getMusicSearch(s: string): Promise<SearchMusic[]> {
     }
 }
 
-function getPageSource(id: string) {
-    return getTextWithTimeout(`${baseUrl}/music/${id}`)
+async function getPageSource(id: string) {
+    const url = `${baseUrl}/music/${id}`
+    const response = await getResponse(url)
+    if (response.status === 403) {
+        const cookie = response.headers.get('set-cookie').split(';')[0]
+        return getTextWithTimeout(url, {
+            headers: {
+                cookie
+            }
+        })
+    }
+    return response.text()
 }
 
 function parsePosterUrl(html: string) {
