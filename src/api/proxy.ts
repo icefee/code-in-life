@@ -3,7 +3,7 @@ import { getResponse, Headers, Middleware } from '../adaptors'
 const handler: Middleware.ApiHandler = async (req, res) => {
     const { url } = req.query as Record<'url', string>
     const requestHeaders = new Headers()
-    for (let key in requestHeaders) {
+    for (let key in req.headers) {
         const values = req.headers[key];
         if (typeof values === 'string') {
             requestHeaders.append(key, values)
