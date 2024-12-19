@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
+import type { PageProps } from 'gatsby'
 import NoSsr from '@mui/material/NoSsr'
 import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
@@ -32,8 +33,9 @@ export function Head() {
     )
 }
 
-export default function MusicSearch() {
+export default function MusicSearch({ location }: PageProps) {
 
+    const proxy = /^\?proxy/.test(location.search)
     const [keyword, setKeyword] = useState('')
     const [toastMsg, setToastMsg] = useState<ToastMsg<AlertProps['severity']> | null>(null)
     const [searchTask, setSearchTask] = useState<SearchTask<SearchMusic>>({
@@ -395,6 +397,7 @@ export default function MusicSearch() {
                                 playing={playing}
                                 onPlayStateChange={setPlaying}
                                 repeat={repeat.data}
+                                proxy={proxy}
                                 extendButtons={
                                     <Tooltip title="播放列表">
                                         <Badge

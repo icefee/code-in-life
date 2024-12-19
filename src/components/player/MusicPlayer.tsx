@@ -18,7 +18,7 @@ import MediaSlider from './MediaSlider'
 import { Spinner } from '../loading'
 import { generate } from '~/util/url'
 import { timeFormatter } from '~/util/date'
-import { isMobileDevice, isDev, isIos } from '~/util/env'
+import { isMobileDevice, isDev } from '~/util/env'
 
 export enum RepeatMode {
     All,
@@ -27,6 +27,7 @@ export enum RepeatMode {
 }
 
 interface MusicPlayerProps {
+    proxy?: boolean;
     music: SearchMusic;
     playing: boolean;
     repeat: RepeatMode;
@@ -45,7 +46,8 @@ function MusicPlayer({
     onPlayStateChange,
     onRepeatChange,
     onPlayEnd,
-    enableVisual = true
+    enableVisual = true,
+    proxy = false
 }: MusicPlayerProps) {
 
     const audio = useRef<HTMLAudioElement | null>(null)
@@ -476,11 +478,11 @@ function MusicPlayer({
                             }
                         }
                     }
-                    src={music.url}
+                    src={music.url.concat(proxy ? '?proxy=1' : '')}
                 />
             </Stack>
             {
-                enableVisual && isDev && !isIos() && (
+                enableVisual && isDev && (
                     <Box
                         sx={{
                             position: 'absolute',

@@ -10,8 +10,9 @@ const handler: Middleware.ApiHandler = async (req, res) => {
             res.redirect(`/api/music/${token}`)
         }
         else {
+            const proxy = 'proxy' in req.query
             res.redirect(
-                url.startsWith('https') ? url : Proxy.proxyUrl(url, true)
+                (proxy || !url.startsWith('https')) ? Proxy.proxyUrl(url, true) : url
             )
         }
     }
