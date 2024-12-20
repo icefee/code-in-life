@@ -59,7 +59,7 @@ export default function MusicSearch({ location }: PageProps) {
 
     const handleClose = (_event?: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
-            return;
+            return
         }
         setToastMsg(null)
     }
@@ -70,6 +70,17 @@ export default function MusicSearch({ location }: PageProps) {
             return generateRandomIndex(max, current)
         }
         return random
+    }
+
+    const getPlayingIndex = (active: SearchMusic = activeMusic) => {
+        const { data } = playlist
+        const index = active ? data.findIndex(
+            music => music.id === active.id
+        ) : -1
+        return {
+            index,
+            data
+        }
     }
 
     const onSearch = async (text: string) => {
@@ -116,7 +127,35 @@ export default function MusicSearch({ location }: PageProps) {
                 setPlaylistShow(true)
             }, 400)
         }
+        if (data.length > 1) {
+            navigator.mediaSession.setActionHandler('previoustrack', () => {
+                playPrevious()
+            })
+            navigator.mediaSession.setActionHandler('nexttrack', () => {
+                playNext()
+            })
+        }
+        return () => {
+            if (data.length > 1) {
+                navigator.mediaSession.setActionHandler('previoustrack', null)
+                navigator.mediaSession.setActionHandler('nexttrack', null)
+            }
+        }
     }, [playlist])
+
+    useEffect(() => {
+        const { data } = playlist
+        if (data.length > 1) {
+            navigator.mediaSession.setActionHandler('previoustrack', playPrevious)
+            navigator.mediaSession.setActionHandler('nexttrack', playNext)
+        }
+        return () => {
+            if (data.length > 1) {
+                navigator.mediaSession.setActionHandler('previoustrack', null)
+                navigator.mediaSession.setActionHandler('nexttrack', null)
+            }
+        }
+    }, [playlist, activeMusic])
 
     useEffect(() => {
         if (searchTask.success && searchTask.data.length > 0) {
@@ -139,7 +178,7 @@ export default function MusicSearch({ location }: PageProps) {
                 type: 'warning',
                 msg: '已经有文件下载中..'
             })
-            return;
+            return
         }
         try {
             setDownloading(true)
@@ -173,10 +212,47 @@ export default function MusicSearch({ location }: PageProps) {
 
     const pageTitle = useMemo(() => {
         if (activeMusic) {
-            return `🎵 ${activeMusic.name} - ${activeMusic.artist} ${playing ? '⏸' : '▶'}`;
+            return `🎵 ${activeMusic.name} - ${activeMusic.artist} ${playing ? '⏸' : '▶'}`
         }
-        return '音乐搜索';
+        return '音乐搜索'
     }, [activeMusic, playing])
+
+    const playPrevious = () => {
+        const { index, data } = getPlayingIndex()
+        if (index > 0) {
+            setActiveMusic(data[index - 1])
+        }
+        else {
+            setActiveMusic(data[data.length - 1])
+        }
+    }
+
+    const playNext = () => {
+        const { index, data } = getPlayingIndex()
+        if (index < data.length - 1) {
+            setActiveMusic(data[index + 1])
+        }
+        else {
+            setActiveMusic(data[0])
+        }
+    }
+
+    useEffect(() => {
+        if (activeMusic) {
+            const { name, artist, poster } = activeMusic
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: name,
+                artist: artist,
+                artwork: [
+                    {
+                        src: poster,
+                        sizes: '256x256',
+                        type: 'image/jpeg'
+                    }
+                ]
+            })
+        }
+    }, [activeMusic])
 
     return (
         <NoSsr>
@@ -280,35 +356,31 @@ export default function MusicSearch({ location }: PageProps) {
                                         playing
                                     })}
                                     onTogglePlay={
-                                        async (music: SearchMusic) => {
+                                        async (music) => {
                                             if (activeMusic && music.id === activeMusic.id) {
                                                 setPlaying(!playing)
                                             }
                                             else {
-                                                const playIndex = playlist.data.findIndex(
-                                                    m => m.id === music.id
-                                                )
-                                                if (playIndex === -1) {
+                                                const { index } = getPlayingIndex(music)
+                                                if (index === -1) {
                                                     setActiveMusic(music)
                                                     setPlaylist(list => [music, ...list])
                                                 }
                                                 else {
-                                                    setActiveMusic(playlist.data[playIndex])
+                                                    setActiveMusic(playlist.data[index])
                                                 }
                                             }
                                         }
                                     }
                                     onAction={
                                         async (cmd, music) => {
-                                            const playIndex = playlist.data.findIndex(
-                                                ({ id }) => id === music.id
-                                            )
-                                            if (playIndex !== -1 && cmd === 'add') {
+                                            const { index } = getPlayingIndex(music)
+                                            if (index !== -1 && cmd === 'add') {
                                                 setToastMsg({
                                                     type: 'warning',
                                                     msg: '当前歌曲已经在播放列表中'
                                                 })
-                                                return;
+                                                return
                                             }
                                             switch (cmd) {
                                                 case 'add':
@@ -320,15 +392,15 @@ export default function MusicSearch({ location }: PageProps) {
                                                         type: 'success',
                                                         msg: '已加入播放列表'
                                                     })
-                                                    break;
+                                                    break
                                                 case 'download-song':
                                                     downloadSong(music)
-                                                    break;
+                                                    break
                                                 case 'download-lrc':
                                                     downloadLrc(music)
-                                                    break;
+                                                    break
                                                 default:
-                                                    break;
+                                                    break
                                             }
                                         }
                                     }
@@ -434,21 +506,14 @@ export default function MusicSearch({ location }: PageProps) {
                                             })
                                         }
                                         if (playlist.data.length > 1) {
-                                            const playIndex = playlist.data.findIndex(
-                                                music => music.id === activeMusic.id
-                                            );
                                             switch (repeat.data) {
                                                 case RepeatMode.Random:
-                                                    const nextPlayIndex = generateRandomIndex(playlist.data.length - 1, playIndex)
+                                                    const { index, data } = getPlayingIndex()
+                                                    const nextPlayIndex = generateRandomIndex(data.length - 1, index)
                                                     setActiveMusic(playlist.data[nextPlayIndex])
-                                                    break;
+                                                    break
                                                 case RepeatMode.All:
-                                                    if (playIndex < playlist.data.length - 1) {
-                                                        setActiveMusic(playlist.data[playIndex + 1])
-                                                    }
-                                                    else {
-                                                        setActiveMusic(playlist.data[0])
-                                                    }
+                                                    playNext()
                                             }
                                         }
                                         else {
