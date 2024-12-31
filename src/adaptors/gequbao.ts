@@ -38,8 +38,9 @@ export async function getMusicSearch(s: string): Promise<SearchMusic[]> {
 async function getPageSource(id: string) {
     const url = `${baseUrl}/music/${id}`
     const response = await getResponse(url)
-    if (response.status === 403) {
-        const cookie = response.headers.get('set-cookie').split(';')[0]
+    const setCookie = response.headers.get('set-cookie')
+    if (response.status === 403 && setCookie) {
+        const cookie = setCookie.split(';')[0]
         return getTextWithTimeout(url, {
             headers: {
                 cookie
@@ -49,61 +50,44 @@ async function getPageSource(id: string) {
     return response.text()
 }
 
-function parsePosterUrl(html: string) {
-    const matchCover = html.match(
-        /mp3_cover\s=\s'https?:\/\/[^']+'/
-    )?.[0]
-    if (matchCover) {
-        return matchCover.slice(13, matchCover.length - 1)
-    }
-    return null
-}
-
 export async function parsePoster(id: string) {
     try {
         const html = await getPageSource(id)
-        const poster = parsePosterUrl(html)
-        return poster
+        const matchCover = html.match(
+            /mp3_cover\s=\s'https?:\/\/[^']+'/
+        )?.[0]
+        if (matchCover) {
+            return matchCover.slice(13, matchCover.length - 1)
+        }
+        return null
     }
     catch (err) {
         return null
     }
 }
 
-async function getPlayUrl(id: string) {
-    const html = await getPageSource(id)
-    const matchId = html.match(
-        /play_id\s=\s'[\w\=]+'/
-    )[0]
-    const clue = matchId.slice(11, matchId.length - 1)
-    const searchParams = new URLSearchParams({
-        id: clue
-    })
-    const { code, data } = await getResponse(`${baseUrl}/api/play-url`, {
-        method: 'POST',
-        body: searchParams
-    }).then<{
-        code: number;
-        data: {
-            url: string;
-        }
-    }>(
-        (response) => response.json()
-    )
-    return code === 1 ? data.url : null
-}
-
 export async function parseMusicUrl(id: string) {
     try {
         const html = await getPageSource(id)
-        const urlMatcher = /https?:\/\/[^']+/
-        const matchBlock = html.match(
-            new RegExp(`window.mp3_url = '${urlMatcher.source}'`)
+        const matchId = html.match(
+            /play_id\s=\s'[\w\=]+'/
+        )[0]
+        const clue = matchId.slice(11, matchId.length - 1)
+        const searchParams = new URLSearchParams({
+            id: clue
+        })
+        const { code, data } = await getResponse(`${baseUrl}/api/play-url`, {
+            method: 'POST',
+            body: searchParams
+        }).then<{
+            code: number;
+            data: {
+                url: string;
+            }
+        }>(
+            (response) => response.json()
         )
-        if (matchBlock) {
-            return matchBlock[0].match(urlMatcher)[0]
-        }
-        return getPlayUrl(id)
+        return code === 1 ? data.url : null
     }
     catch (err) {
         return null
