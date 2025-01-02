@@ -14,7 +14,7 @@ function Head({ children }: React.PropsWithChildren) {
           `
           .image-container {
             height: 100%;
-            background-image: url(${Api.proxyUrl}/api/image/bing);
+            background-image: url(${Api.assetSite}/api/image/bing);
             background-size: cover;
           }
           @media screen and (prefers-color-scheme: dark) {
