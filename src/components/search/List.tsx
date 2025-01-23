@@ -10,6 +10,7 @@ import CardActionArea from '@mui/material/CardActionArea'
 import ThumbLoader from './ThumbLoader'
 import { RowClipTypography } from '../layout'
 import { VideoParams } from '~/util/clue'
+import { Api } from '~/util/config'
 
 type ListData = VideoListItem[];
 
@@ -47,16 +48,20 @@ interface VideoItemProps extends Pick<ListProps, 'api' | 'typed'> {
 function VideoItem({ video, api, typed }: VideoItemProps) {
 
     const id = useMemo(() => VideoParams.create(api, video.id), [api, video.id])
-    const videoUrl = useMemo(() => `/video/play/${id}`, [id])
+    const videoUrl = useMemo(() => `${Api.assetSite}/video/play/${id}`, [id])
 
     return (
         <Card elevation={2}>
             <Stack direction="row">
-                <CardActionArea sx={{
-                    width: 125,
-                    height: 180,
-                    flexShrink: 0
-                }} href={videoUrl} target="_blank">
+                <CardActionArea
+                    sx={{
+                        width: 125,
+                        height: 180,
+                        flexShrink: 0
+                    }}
+                    href={videoUrl}
+                    target="_blank"
+                >
                     <ThumbLoader
                         src={`/api/video/poster/${id}`}
                         aspectRatio="125 / 180"
