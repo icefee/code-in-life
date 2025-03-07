@@ -127,13 +127,12 @@ export default function MusicSearch({ location }: PageProps) {
                 setPlaylistShow(true)
             }, 400)
         }
+        else {
+            setPlaylistShow(false)
+        }
         if (data.length > 1) {
-            navigator.mediaSession.setActionHandler('previoustrack', () => {
-                playPrevious()
-            })
-            navigator.mediaSession.setActionHandler('nexttrack', () => {
-                playNext()
-            })
+            navigator.mediaSession.setActionHandler('previoustrack', playPrevious)
+            navigator.mediaSession.setActionHandler('nexttrack', playNext)
         }
         return () => {
             if (data.length > 1) {
@@ -285,7 +284,8 @@ export default function MusicSearch({ location }: PageProps) {
                         <Stack
                             sx={{
                                 position: 'relative',
-                                height: 24
+                                height: 24,
+                                zIndex: 6
                             }}
                         >
                             <LinearProgress
@@ -540,14 +540,7 @@ export default function MusicSearch({ location }: PageProps) {
                                 >
                                     <MusicPlayList
                                         data={playlist.data}
-                                        onChange={
-                                            (list) => {
-                                                if (list.length === 0) {
-                                                    setPlaylistShow(false)
-                                                }
-                                                setPlaylist(list)
-                                            }
-                                        }
+                                        onChange={setPlaylist}
                                         current={activeMusic}
                                         playing={playing}
                                         onPlay={
