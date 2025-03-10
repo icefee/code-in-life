@@ -121,14 +121,16 @@ export default function MusicSearch({ location }: PageProps) {
 
     useEffect(() => {
         const { init, data } = playlist
-        if (init && data.length > 0) {
-            setActiveMusic(data[0])
-            setTimeout(() => {
-                setPlaylistShow(true)
-            }, 400)
-        }
-        else {
-            setPlaylistShow(false)
+        if (init) {
+            if (data.length > 0) {
+                setActiveMusic(data[0])
+                setTimeout(() => {
+                    setPlaylistShow(true)
+                }, 400)
+            }
+            else {
+                setPlaylistShow(false)
+            }
         }
         if (data.length > 1) {
             navigator.mediaSession.setActionHandler('previoustrack', playPrevious)
