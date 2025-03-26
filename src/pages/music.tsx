@@ -271,7 +271,7 @@ export default function MusicSearch({ location }: PageProps) {
                         width: '100%',
                         height: '100%',
                         maxWidth: 'var(--max-width)',
-                        bgcolor: alpha(palette.background.default, .4),
+                        bgcolor: activeMusic ? alpha(palette.background.default, .4) : 'none',
                         backdropFilter: 'blur(4px)',
                         margin: '0 auto'
                     })}
@@ -423,7 +423,10 @@ export default function MusicSearch({ location }: PageProps) {
                                 >
                                     <Typography
                                         variant="body1"
-                                        color="text.secondary"
+                                        sx={{
+                                            color: '#fff',
+                                            textShadow: '#000 1px 1px 2px'
+                                        }}
                                     >🔍 输入歌名/歌手名开始搜索</Typography>
                                 </Stack>
                             )

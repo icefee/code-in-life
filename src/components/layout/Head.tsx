@@ -10,8 +10,7 @@ function Head({ children }: React.PropsWithChildren) {
         content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
       />
       <style>
-        {
-          `
+        {`
           .image-container {
             height: 100%;
             background-image: url(${Api.assetSite}/api/image/bing);
@@ -23,8 +22,7 @@ function Head({ children }: React.PropsWithChildren) {
               background-blend-mode: color;
             }
           }
-          `
-        }</style>
+        `}</style>
       {children}
     </>
   )

@@ -1,4 +1,4 @@
-import React, { type ComponentType } from 'react'
+import React from 'react'
 import { navigate, type PageProps, type GetServerDataProps, type GetServerDataReturn } from 'gatsby'
 import type { SvgIconProps } from '@mui/material/SvgIcon'
 import Stack from '@mui/material/Stack'
@@ -22,7 +22,7 @@ interface App {
     id: string;
     name: string;
     url: string;
-    icon: ComponentType<SvgIconProps>;
+    icon: React.ComponentType<SvgIconProps>;
     iconForeground: string;
     iconBackground: string;
 }
@@ -106,7 +106,9 @@ function AppIcon({ app, mode }: AppIconProps) {
             <Typography
                 variant="button"
                 sx={{
-                    fontSize: 'calc(var(--icon-size) * .16)'
+                    color: '#fff',
+                    fontSize: 'calc(var(--icon-size) * .16)',
+                    textShadow: '#000 1px 1px 2px'
                 }}
             >{app.name}</Typography>
         </Stack>

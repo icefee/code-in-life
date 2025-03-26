@@ -143,11 +143,7 @@ function MusicPlayList({
                     }
                     return {
                         match: true,
-                        children: (
-                            <>
-                                {nodes}
-                            </>
-                        )
+                        children: nodes
                     }
                 }
                 return {
@@ -184,44 +180,56 @@ function MusicPlayList({
     return (
         <List subheader={
             <ListSubheader disableGutters component="li">
-                <Stack sx={{
-                    pl: 2,
-                    pr: 1,
-                    py: .5
-                }} direction="row" justifyContent="space-between" alignItems="center">
+                <Stack
+                    sx={{
+                        pl: 2,
+                        pr: 1,
+                        py: .5
+                    }}
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                >
                     <Typography variant="subtitle2">播放列表</Typography>
                     <Stack direction="row" alignItems="center" columnGap={1}>
-                        <Stack sx={{
-                            px: 1,
-                            py: .5,
-                            bgcolor: '#ffffff10',
-                            borderRadius: 1
-                        }} direction="row" alignItems="center" columnGap={1}>
+                        <Stack
+                            sx={{
+                                px: 1,
+                                py: .5,
+                                bgcolor: '#ffffff10',
+                                borderRadius: 1
+                            }}
+                            direction="row"
+                            alignItems="center"
+                            columnGap={1}
+                        >
                             <SearchRoundedIcon fontSize="small" />
                             <StyledInput
                                 placeholder="输入关键词搜索.."
                                 value={keyword}
                                 onChange={
-                                    (event: React.ChangeEvent<HTMLInputElement>) => {
+                                    (event) => {
                                         setKeyword(event.target.value)
                                     }
                                 }
                             />
                         </Stack>
-                        <IconButton onClick={
-                            (event: React.MouseEvent<HTMLButtonElement>) => {
-                                showMenu(event.currentTarget, [
-                                    {
-                                        icon: <ClearAllRoundedIcon />,
-                                        text: '清空播放列表',
-                                        onClick: () => {
-                                            clearPlayList()
-                                            hideMenu()
+                        <IconButton
+                            onClick={
+                                (event) => {
+                                    showMenu(event.currentTarget, [
+                                        {
+                                            icon: <ClearAllRoundedIcon />,
+                                            text: '清空播放列表',
+                                            onClick: () => {
+                                                clearPlayList()
+                                                hideMenu()
+                                            }
                                         }
-                                    }
-                                ]);
+                                    ]);
+                                }
                             }
-                        }>
+                        >
                             <MoreVertRoundedIcon />
                         </IconButton>
                         {outlet}
@@ -342,7 +350,7 @@ function PlayListItem({ music, playing, isCurrent, divider, onAction, onClick }:
             secondaryAction={
                 <>
                     <IconButton onClick={
-                        (event: React.MouseEvent<HTMLButtonElement>) => {
+                        (event) => {
                             showMenu(event.currentTarget, [
                                 {
                                     icon: <PublishRoundedIcon />,
@@ -393,10 +401,12 @@ function PlayListItem({ music, playing, isCurrent, divider, onAction, onClick }:
                     flexShrink: 0,
                     mr: 2
                 }}>
-                    <Box sx={{
-                        height: '100%',
-                        opacity: isCurrent ? .75 : 1
-                    }}>
+                    <Box
+                        sx={{
+                            height: '100%',
+                            opacity: isCurrent ? .75 : 1
+                        }}
+                    >
                         <MusicPoster
                             src={music.poster}
                             alt={`${music.name}-${music.artist}`}
