@@ -1,4 +1,4 @@
-import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby'
+import type { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby'
 import { getResponse } from '../adaptors'
 import { maxChunkSize } from './config'
 

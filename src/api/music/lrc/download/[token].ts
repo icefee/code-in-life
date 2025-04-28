@@ -1,4 +1,4 @@
-import { GatsbyFunctionResponse } from 'gatsby'
+import { type GatsbyFunctionResponse } from 'gatsby'
 import { createApiAdaptor, parseId, Middleware } from '../../../../adaptors'
 
 function setHeader(res: GatsbyFunctionResponse) {

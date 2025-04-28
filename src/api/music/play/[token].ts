@@ -5,7 +5,7 @@ const handler: Middleware.ApiHandler = async (req, res) => {
     const adaptor = createApiAdaptor(key)
     const url = await adaptor.parseMusicUrl(id)
     if (url) {
-        if (Env.isDev) {
+        if (Env.isDev || req.query.__ts) {
             const token = Clue.Base64Params.create(url)
             res.redirect(`/api/music/${token}`)
         }
