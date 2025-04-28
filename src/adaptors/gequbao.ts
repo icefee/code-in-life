@@ -53,11 +53,11 @@ async function getPageSource(id: string) {
 export async function parsePoster(id: string) {
     try {
         const html = await getPageSource(id)
-        const matchCover = html.match(
-            /mp3_cover\s=\s'https?:\/\/[^']+'/
-        )?.[0]
-        if (matchCover) {
-            return matchCover.slice(13, matchCover.length - 1)
+        const matches = html.replace(/\\\//g, '/').match(
+            /(?<="mp3_cover":")https?:\/\/[^']+?(?=")/
+        )
+        if (matches) {
+            return matches[0]
         }
         return null
     }
@@ -69,10 +69,9 @@ export async function parsePoster(id: string) {
 export async function parseMusicUrl(id: string) {
     try {
         const html = await getPageSource(id)
-        const matchId = html.match(
-            /play_id\s=\s'[\w\=]+'/
-        )[0]
-        const clue = matchId.slice(11, matchId.length - 1)
+        const clue = html.match(
+            /(?<="play_id":")[\w\=]+/
+        )?.[0]
         const searchParams = new URLSearchParams({
             id: clue
         })
