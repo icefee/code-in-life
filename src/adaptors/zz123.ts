@@ -85,8 +85,7 @@ async function getMusicInfo(id: string) {
     const { status, data } = await getJson<MusicParseApiJson<MusicInfo>>(`${baseUrl}/ajax/`, {
         method: 'POST',
         headers: {
-            'referer': baseUrl,
-            'content-type': 'application/x-www-form-urlencoded'
+            'referer': baseUrl
         },
         body: new URLSearchParams({
             id,
@@ -134,7 +133,9 @@ export async function parseLrc(id: string) {
         const lrcs = parseLrcText(info.lrc)
         return lrcs.filter(
             ({ text }) => {
-                const domain = new URL(baseUrl).hostname.replace(/.com/, '')
+                const domain = new URL(baseUrl).hostname
+                    .replace('www', '')
+                    .replace(/\.com$/, '')
                 return !text.match(new RegExp(domain))
             }
         )
