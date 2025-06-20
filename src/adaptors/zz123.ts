@@ -1,10 +1,9 @@
-import { cheerio, getResponse, parseLrcText, getTextWithTimeout } from './common'
+import { cheerio, getJson, parseLrcText, getTextWithTimeout } from './common'
 import { timeFormatter } from '../util/date'
-import { utf82utf16 } from '../util/parser'
 
 export const key = 'z'
 
-export const baseUrl = 'https://zz123.com'
+export const baseUrl = 'https://www.zz123.com'
 
 async function getPageSearch(s: string, p: number) {
     const searchParams = new URLSearchParams({
@@ -83,26 +82,25 @@ interface MusicParseApiJson<T = unknown> {
 }
 
 async function getMusicInfo(id: string) {
-    const { status, data } = await getResponse(`${baseUrl}/ajax/`, {
+    const { status, data } = await getJson<MusicParseApiJson<MusicInfo>>(`${baseUrl}/ajax/`, {
         method: 'POST',
-        body: new URLSearchParams({
-            act: 'songinfo',
-            id,
-            lang: ''
-        }),
         headers: {
-            'referer': baseUrl
-        }
-    }).then<MusicParseApiJson<MusicInfo>>(
-        response => response.json()
-    )
+            'referer': baseUrl,
+            'content-type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({
+            id,
+            act: 'songinfo',
+            lang: ''
+        })
+    })
     if (status === 200) {
         return data
     }
     return null
 }
 
-function transformUrl(url: string): string {
+function transformUrl(url: string) {
     if (url.startsWith('http')) {
         return url
     }
@@ -112,7 +110,7 @@ function transformUrl(url: string): string {
 export async function parsePoster(id: string) {
     try {
         const info = await getMusicInfo(id)
-        return transformUrl(info?.pic)
+        return transformUrl(info.pic)
     }
     catch (err) {
         return null
@@ -123,15 +121,7 @@ export async function parsePoster(id: string) {
 export async function parseMusicUrl(id: string): Promise<string | null> {
     try {
         const info = await getMusicInfo(id)
-        const url = transformUrl(info?.mp3)
-        if (url.match(/xplay/)) {
-            const response = await getResponse(url, {
-                redirect: 'manual'
-            })
-            const audioUrl = response.headers.get('location')
-            return utf82utf16(decodeURI(audioUrl))
-        }
-        return url
+        return transformUrl(info.mp3)
     }
     catch (err) {
         return null
