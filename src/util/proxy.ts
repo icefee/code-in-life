@@ -14,8 +14,8 @@ export async function getJson<T = any>(...args: Parameters<typeof fetch>): Promi
 }
 
 export function getParamsUrl(url: string, params: ParamsType) {
-    const urlSearchParams = new URLSearchParams(params)
-    return `${url}?${urlSearchParams}`
+    const searchParams = new URLSearchParams(params)
+    return `${url}?${searchParams}`
 }
 
 export function proxyUrl(url: string, remote: boolean = false, extend: ParamsType = {}) {

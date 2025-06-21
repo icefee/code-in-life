@@ -1,5 +1,7 @@
 import { cheerio, getJson, parseLrcText, getTextWithTimeout } from './common'
 import { timeFormatter } from '../util/date'
+import { proxyUrl } from '../util/proxy'
+import { Api } from '../util/config'
 
 export const key = 'z'
 
@@ -12,7 +14,7 @@ async function getPageSearch(s: string, p: number) {
     if (p > 1) {
         searchParams.set('page', `${p}`)
     }
-    const url = `${baseUrl}/search/?${searchParams}`
+    const url = proxyUrl(`${baseUrl}/search/?${searchParams}`, true)
     try {
         const html = await getTextWithTimeout(url)
         const $ = cheerio.load(html)
@@ -37,9 +39,11 @@ async function getPageSearch(s: string, p: number) {
                 }
             }
         }
+        console.log(songs)
         return songs
     }
     catch (err) {
+        console.log(err)
         return null
     }
 }
@@ -82,11 +86,8 @@ interface MusicParseApiJson<T = unknown> {
 }
 
 async function getMusicInfo(id: string) {
-    const { status, data } = await getJson<MusicParseApiJson<MusicInfo>>(`${baseUrl}/ajax/`, {
+    const { status, data } = await getJson<MusicParseApiJson<MusicInfo>>(`${Api.proxyUrl}/api/proxy?url=${baseUrl}/ajax/`, {
         method: 'POST',
-        headers: {
-            'referer': baseUrl
-        },
         body: new URLSearchParams({
             id,
             act: 'songinfo',
