@@ -1,7 +1,7 @@
 import { cheerio, getJson, parseLrcText, getTextWithTimeout } from './common'
 import { timeFormatter } from '../util/date'
 import { proxyUrl } from '../util/proxy'
-import { Api, userAgent } from '../util/config'
+import { Api } from '../util/config'
 
 export const key = 'z'
 
@@ -84,19 +84,22 @@ interface MusicParseApiJson<T = unknown> {
 }
 
 async function getMusicInfo(id: string) {
-    const { status, data } = await getJson<MusicParseApiJson<MusicInfo>>(`${Api.proxyUrl}/api/proxy?url=${baseUrl}/ajax/`, {
-        method: 'POST',
-        headers: {
-            'user-agent': userAgent
-        },
-        body: new URLSearchParams({
-            id,
-            act: 'songinfo',
-            lang: ''
-        })
-    })
+    const { status, data, msg } = await getJson<MusicParseApiJson<MusicInfo>>(
+        `${Api.proxyUrl}/api/proxy?url=${baseUrl}/ajax/`,
+        {
+            method: 'POST',
+            body: new URLSearchParams({
+                id,
+                act: 'songinfo',
+                lang: ''
+            })
+        }
+    )
     if (status === 200) {
         return data
+    }
+    else {
+        console.error('Get music info error: %s', msg)
     }
     return null
 }
