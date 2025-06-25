@@ -1,7 +1,7 @@
 import { cheerio, getJson, parseLrcText, getTextWithTimeout } from './common'
 import { timeFormatter } from '../util/date'
 import { proxyUrl } from '../util/proxy'
-import { Api } from '../util/config'
+import { Api, userAgent } from '../util/config'
 
 export const key = 'z'
 
@@ -39,11 +39,9 @@ async function getPageSearch(s: string, p: number) {
                 }
             }
         }
-        console.log(songs)
         return songs
     }
     catch (err) {
-        console.log(err)
         return null
     }
 }
@@ -88,6 +86,9 @@ interface MusicParseApiJson<T = unknown> {
 async function getMusicInfo(id: string) {
     const { status, data } = await getJson<MusicParseApiJson<MusicInfo>>(`${Api.proxyUrl}/api/proxy?url=${baseUrl}/ajax/`, {
         method: 'POST',
+        headers: {
+            'user-agent': userAgent
+        },
         body: new URLSearchParams({
             id,
             act: 'songinfo',
