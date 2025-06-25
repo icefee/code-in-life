@@ -1,10 +1,29 @@
-import { getTextWithTimeout, getResponse, parseLrcText, escapeSymbols } from './common'
+import { getResponse, getText, parseLrcText, escapeSymbols, Headers } from './common'
 import { timeFormatter } from '../util/date'
 import { userAgent, Api } from '../util/config'
 
 export const key = 't'
 
-export const baseUrl = 'http://www.2t58.com'
+export const baseUrl = 'http://2t58.com'
+
+const getSafeResponse: typeof getResponse = async (url, init) => {
+    const response = await getResponse(url, init)
+    if (response.status === 403) {
+        const [cookie] = response.headers.get('set-cookie').split(';')
+        const headers = new Headers(init?.headers)
+        headers.set('cookie', cookie)
+        return getResponse(url, {
+            ...init,
+            headers
+        })
+    }
+    return response
+}
+
+const getSafeText: typeof getText = async (...args) => {
+    const response = await getSafeResponse(...args)
+    return response.text()
+}
 
 async function matchSongs(source: string) {
     const matchBlocks = source.match(
@@ -40,7 +59,7 @@ async function getPageSongs(s: string, page: number) {
     }
     url += '.html'
     try {
-        const html = await getTextWithTimeout(url)
+        const html = await getSafeText(url)
         const songs = await matchSongs(html)
         return {
             html,
@@ -81,7 +100,7 @@ interface ParsedSongType {
 
 async function parseSong(id: string) {
     try {
-        const result = await getResponse(`${baseUrl}/js/play.php`, {
+        const result = await getSafeResponse(`${baseUrl}/js/play.php`, {
             method: 'POST',
             body: new URLSearchParams({
                 id,
@@ -116,7 +135,7 @@ const getLrcUrl = (id: string) => `${baseUrl}/plug/down.php?ac=music&lk=lrc&id=$
 
 export async function parseLrc(id: string) {
     try {
-        const lrc = await getTextWithTimeout(getLrcUrl(id))
+        const lrc = await getSafeText(getLrcUrl(id))
         const lrcs = parseLrcText(lrc)
         return lrcs.filter(
             ({ text }) => !text.match(
