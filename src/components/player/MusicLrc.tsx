@@ -1,18 +1,18 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
-// import GlobalStyles from '@mui/material/GlobalStyles'
+import GlobalStyles from '@mui/material/GlobalStyles'
 import Fade from '@mui/material/Fade'
 import Popover from '@mui/material/Popover'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { getJson } from '~/util/proxy'
+import { isIos } from '~/util/env'
 
-interface MusicLrcProps {
-    id: SearchMusic['id'];
+interface MusicLrcProps extends Pick<SearchMusic, 'id'> {
     currentTime: number;
 }
 
-async function downloadLrc(id: MusicLrcProps['id']): Promise<Lrc[] | null> {
+async function downloadLrc(id: SearchMusic['id']): Promise<Lrc[] | null> {
     try {
         const { code, data } = await getJson<ApiJsonType<Lrc[]>>(`/api/music/lrc/${id}`)
         if (code === 0) {
@@ -31,7 +31,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
 
     const [downloading, setDownloading] = useState(false)
     const [lrc, setLrc] = useState<Lrc[]>([])
-    const lrcCache = useRef<Map<MusicLrcProps['id'], Lrc[]>>(new Map())
+    const lrcCache = useRef<Map<SearchMusic['id'], Lrc[]>>(new Map())
     const [anchorEl, setAnchorEl] = useState<HTMLSpanElement | null>(null)
     const downloadingPlaceholder = '正在下载歌词..'
     const emptyPlaceholder = '🎵🎵...'
@@ -42,7 +42,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
         setAnchorEl(null)
     }
 
-    const getLrc = async (id: MusicLrcProps['id']) => {
+    const getLrc = async (id: SearchMusic['id']) => {
         let data: Lrc[] | null = null
         if (lrcCache.current.has(id)) {
             data = lrcCache.current.get(id)
@@ -119,9 +119,9 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
 
     const displayLrc = useMemo(() => {
         if (lrcLine.trim().length > 0) {
-            return lrcLine;
+            return lrcLine
         }
-        return emptyPlaceholder;
+        return emptyPlaceholder
     }, [lrcLine])
 
     useEffect(() => {
@@ -137,17 +137,21 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                 direction="row"
                 justifyContent="flex-end"
             >
-                {/* <GlobalStyles
-                    styles={
-                        `
-                        @property --line-played {
-                            syntax: "<number>";
-                            inherits: true;
-                            initial-value: 0;
-                        }
-                        `
-                    }
-                /> */}
+                {
+                    !isIos() && (
+                        <GlobalStyles
+                            styles={
+                                `
+                                @property --line-played {
+                                    syntax: "<number>";
+                                    inherits: true;
+                                    initial-value: 0;
+                                }
+                                `
+                            }
+                        />
+                    )
+                }
                 <div
                     style={{
                         position: 'relative',
@@ -156,8 +160,8 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                         '--line-played': linePlayedDuration / lineDuration
                     } as React.CSSProperties}
                     onClick={
-                        (event: React.MouseEvent<HTMLDivElement>) => {
-                            setAnchorEl(event.currentTarget);
+                        (event) => {
+                            setAnchorEl(event.currentTarget)
                         }
                     }
                     title={displayLrc}
@@ -281,7 +285,7 @@ function ScrollingLrc({ lrc, currentTime }: ScrollingLrcProps) {
             >
                 <Box
                     sx={{
-                        transition: (theme) => theme.transitions.create('transform'),
+                        transition: ({ transitions }) => transitions.create('transform'),
                         transform: `translate(0, calc(25vh - 24px - ${28 * activeIndex}px))`
                     }}
                 >
