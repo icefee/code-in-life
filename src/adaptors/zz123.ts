@@ -5,7 +5,7 @@ import { Api } from '../util/config'
 
 export const key = 'z'
 
-export const baseUrl = 'https://www.zz123.com'
+export const baseUrl = 'https://zz123.com'
 
 async function getPageSearch(s: string, p: number) {
     const searchParams = new URLSearchParams({
@@ -139,7 +139,6 @@ export async function parseLrc(id: string) {
         return lrcs.filter(
             ({ text }) => {
                 const domain = new URL(baseUrl).hostname
-                    .replace('www', '')
                     .replace(/\.com$/, '')
                 return !text.match(new RegExp(domain))
             }
