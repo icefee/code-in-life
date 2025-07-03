@@ -37,7 +37,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
     const emptyPlaceholder = '🎵🎵...'
 
     const [show, setShow] = useState(false)
-    const [iosDevice, setIosDevice] = useState(false)
+    const isClient = typeof window !== 'undefined'
 
     const handleClose = () => {
         setAnchorEl(null)
@@ -59,10 +59,6 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
             data
         }
     }
-
-    useEffect(() => {
-        setIosDevice(isIos())
-    }, [])
 
     useEffect(() => {
         setDownloading(true)
@@ -143,7 +139,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                 justifyContent="flex-end"
             >
                 {
-                    !iosDevice && (
+                    isClient && !isIos() && (
                         <GlobalStyles
                             styles={
                                 `
