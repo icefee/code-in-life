@@ -143,7 +143,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                 justifyContent="flex-end"
             >
                 {
-                    !isIos() && (
+                    !iosDevice && (
                         <GlobalStyles
                             styles={
                                 `
