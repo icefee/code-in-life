@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
-import GlobalStyles from '@mui/material/GlobalStyles'
 import Fade from '@mui/material/Fade'
 import Popover from '@mui/material/Popover'
 import Box from '@mui/material/Box'
@@ -37,7 +36,6 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
     const emptyPlaceholder = '🎵🎵...'
 
     const [show, setShow] = useState(false)
-    const isClient = typeof window !== 'undefined'
 
     const handleClose = () => {
         setAnchorEl(null)
@@ -132,27 +130,23 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
         }
     }, [displayLrc])
 
+    useEffect(() => {
+        if (typeof window !== 'undefined' && isIos()) {
+            window.CSS.registerProperty({
+                name: '--line-played',
+                syntax: '<number>',
+                initialValue: '0',
+                inherits: true
+            })
+        }
+    }, [])
+
     return (
         <>
             <Stack
                 direction="row"
                 justifyContent="flex-end"
             >
-                {
-                    isClient && !isIos() && (
-                        <GlobalStyles
-                            styles={
-                                `
-                                @property --line-played {
-                                    syntax: "<number>";
-                                    inherits: true;
-                                    initial-value: 0;
-                                }
-                                `
-                            }
-                        />
-                    )
-                }
                 <div
                     style={{
                         position: 'relative',
