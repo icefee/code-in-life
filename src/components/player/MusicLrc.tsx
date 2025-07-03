@@ -37,6 +37,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
     const emptyPlaceholder = '🎵🎵...'
 
     const [show, setShow] = useState(false)
+    const [iosDevice, setIosDevice] = useState(false)
 
     const handleClose = () => {
         setAnchorEl(null)
@@ -58,6 +59,10 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
             data
         }
     }
+
+    useEffect(() => {
+        setIosDevice(isIos())
+    }, [])
 
     useEffect(() => {
         setDownloading(true)

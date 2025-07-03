@@ -6639,10 +6639,10 @@ header-case@^2.0.4:
     capital-case "^1.0.4"
     tslib "^2.0.3"
 
-hls.js@^1.6.2:
-  version "1.6.2"
-  resolved "https://registry.yarnpkg.com/hls.js/-/hls.js-1.6.2.tgz#02272bea644b5f61f71741256618d6b629ae7834"
-  integrity sha512-rx+pETSCJEDThm/JCm8CuadcAC410cVjb1XVXFNDKFuylaayHk1+tFxhkjvnMDAfqsJHxZXDAJ3Uc2d5xQyWlQ==
+hls.js@^1.6.6:
+  version "1.6.6"
+  resolved "https://registry.yarnpkg.com/hls.js/-/hls.js-1.6.6.tgz#39c6e659e0851af09441637473a681727e99a44d"
+  integrity sha512-S4uTCwTHOtImW+/jxMjzG7udbHy5z682YQRbm/4f7VXuVNEoGBRjPJnD3Fxrufomdhzdtv24KnxRhPMXSvL6Fw==
 
 hls2mp4@^1.2.11:
   version "1.2.11"
