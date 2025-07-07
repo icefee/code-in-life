@@ -15,7 +15,7 @@ async function downloadLrc(id: SearchMusic['id']): Promise<Lrc[] | null> {
     try {
         const { code, data } = await getJson<ApiJsonType<Lrc[]>>(`/api/music/lrc/${id}`)
         if (code === 0) {
-            return data;
+            return data
         }
         else {
             throw new Error('download lrc failed.')
@@ -152,8 +152,9 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                         position: 'relative',
                         cursor: 'pointer',
                         overflow: 'hidden',
-                        '--line-played': linePlayedDuration / lineDuration
-                    } as React.CSSProperties}
+                        /** @ts-ignore */
+                        '--line-played': Math.min(1, linePlayedDuration / lineDuration)
+                    }}
                     onClick={
                         (event) => {
                             setAnchorEl(event.currentTarget)
@@ -172,7 +173,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
                         noWrap
                     >
                         {
-                            displayLrc.split('').map(
+                            displayLrc.split(new RegExp('(?:)', 'u')).map(
                                 (text, index, chars) => {
                                     const lineDurationMilliseconds = lineDuration * 1e3
                                     const delay = (lineDurationMilliseconds / chars.length) * index
