@@ -131,7 +131,7 @@ function MusicLrc({ id, currentTime }: MusicLrcProps) {
     }, [displayLrc])
 
     useEffect(() => {
-        if (typeof window !== 'undefined' && isIos()) {
+        if (typeof window !== 'undefined' && !isIos()) {
             window.CSS.registerProperty({
                 name: '--line-played',
                 syntax: '<number>',

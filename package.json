@@ -2,7 +2,7 @@
   "name": "code-in-life",
   "private": true,
   "description": "A website hosted on gatsby cloud",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "license": "MIT",
   "scripts": {
     "build": "gatsby build",
@@ -21,7 +21,7 @@
     "@mui/lab": "^5.0.0-alpha.176",
     "@mui/material": "^5.17.1",
     "cheerio": "^1.1.0",
-    "gatsby": "^5.14.4",
+    "gatsby": "^5.14.5",
     "gatsby-adapter-netlify": "^1.2.0",
     "gatsby-plugin-alias-imports": "^1.0.5",
     "gatsby-plugin-manifest": "^5.14.0",
