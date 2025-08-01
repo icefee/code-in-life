@@ -1,21 +1,14 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react'
-import loadable from '@loadable/component'
 import Stack from '@mui/material/Stack'
-import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Snackbar from '@mui/material/Snackbar'
 import Alert, { type AlertProps } from '@mui/material/Alert'
-import { type SvgIconProps } from '@mui/material/SvgIcon'
 import SearchResult from '~/components/search/Result'
 import SearchForm from '~/components/search/Form'
 import NoData from '~/components/search/NoData'
 import { LoadingOverlay } from '~/components/loading'
 import { getJson } from '~/util/proxy'
-
-const Spinner: React.ForwardRefExoticComponent<SvgIconProps> = loadable(
-    () => import('../../components/loading/Spinner')
-)
 
 interface SourceKeys {
     keys: string[];
@@ -213,31 +206,7 @@ export default function VideoSearch() {
                             >
                                 {
                                     sourceKeys === null ? (
-                                        <Stack
-                                            component={Paper}
-                                            direction="row"
-                                            alignItems="center"
-                                            spacing={1}
-                                            elevation={4}
-                                            sx={{
-                                                p: 1.5
-                                            }}
-                                        >
-                                            <Box
-                                                sx={{
-                                                    fontSize: 28,
-                                                    width: '1em',
-                                                    height: '1em'
-                                                }}
-                                            >
-                                                <Spinner
-                                                    sx={{
-                                                        fontSize: 'inherit'
-                                                    }}
-                                                />
-                                            </Box>
-                                            <Typography>查询源数据中...</Typography>
-                                        </Stack>
+                                        <Typography>⌛ 查询源数据中...</Typography>
                                     ) : (
                                         <Typography variant="body1" color="text.secondary">🔍 输入关键词开始搜索</Typography>
                                     )
