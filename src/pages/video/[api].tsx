@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react'
+import { navigate } from 'gatsby'
 import type { GetServerDataProps, HeadProps, PageProps } from 'gatsby'
 import NoSsr from '@mui/material/NoSsr'
 import Box from '@mui/material/Box'
@@ -101,7 +102,9 @@ const SiteSearch: React.FunctionComponent<PageProps<object, object, unknown, Sea
                                                         const searchParams = new URLSearchParams(location.search)
                                                         searchParams.set('s', value)
                                                         searchParams.delete('p')
-                                                        location.href = `/video/${api}?${searchParams}`
+                                                        navigate(`/video/${api}/?${searchParams}`, {
+                                                            replace: true
+                                                        })
                                                     }
                                                 }
                                             />
@@ -132,15 +135,23 @@ const SiteSearch: React.FunctionComponent<PageProps<object, object, unknown, Sea
                                         />
                                         {
                                             data.types.map(
-                                                type => (
-                                                    <Tab
-                                                        key={type.tid}
-                                                        label={type.tname}
-                                                        value={type.tid}
-                                                        href={`/video/${serverData.api}?t=` + type.tid + (data.s !== '' ? `&s=${data.s}` : '')}
-                                                        component="a"
-                                                    />
-                                                )
+                                                ({ tid, tname }) => {
+                                                    const searchParams = new URLSearchParams({
+                                                        t: tid
+                                                    })
+                                                    if (data.s !== '') {
+                                                        searchParams.set('s', data.s)
+                                                    }
+                                                    return (
+                                                        <Tab
+                                                            key={tid}
+                                                            label={tname}
+                                                            value={tid}
+                                                            href={`/video/${serverData.api}/?${searchParams}`}
+                                                            component="a"
+                                                        />
+                                                    )
+                                                }
                                             )
                                         }
                                     </Tabs>
@@ -175,7 +186,7 @@ const SiteSearch: React.FunctionComponent<PageProps<object, object, unknown, Sea
                                                         renderItem={(item) => {
                                                             const searchParams = new URLSearchParams(window.location.search);
                                                             searchParams.set('p', String(item.page));
-                                                            const href = `/video/${api}?${searchParams}`;
+                                                            const href = `/video/${api}/?${searchParams}`;
                                                             const current = item.page === data.page.page;
                                                             return (
                                                                 <PaginationItem
