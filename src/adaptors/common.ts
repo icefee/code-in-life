@@ -1,8 +1,10 @@
 import fetch, { Response } from 'node-fetch'
-export * as cheerio from 'cheerio'
 import { type Adaptor } from '.'
 import { userAgent } from '../util/config'
 import { isTextNotNull } from '../util/string'
+
+export * as cheerio from 'cheerio'
+
 export { isTextNotNull, escapeSymbols } from '../util/string'
 
 export { type HeadersInit, Headers } from 'node-fetch'

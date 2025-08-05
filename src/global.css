@@ -1,6 +1,10 @@
 :root {
-  --linear-gradient: #90f7f9, #d9b8ff;
-  --linear-gradient-image: linear-gradient(0, var(--linear-gradient));
+  --linear-gradient-image: radial-gradient(59.25vw 33.25vh at 58.21vw 126.59vh, rgba(143, 104, 161, 0.20) 0%, rgba(122, 119, 189, 0.00) 100%),
+    linear-gradient(0deg, rgba(255, 255, 255, 0.60) 0%, rgba(255, 255, 255, 0.60) 100%),
+    radial-gradient(83.18vw 44.19vh at 30.71vw 11.71vh, rgba(252, 207, 46, 0.25) 0%, rgba(252, 207, 46, 0.00) 100%),
+    radial-gradient(228.29vw 118.08vh at 93vw 56.29vh, rgba(76, 141, 235, 0.35) 0%, rgba(76, 141, 235, 0.00) 100%),
+    radial-gradient(123.93vw 62.45vh at 20.75vw 110.69vh, rgba(215, 18, 27, 0.30) 0%, rgba(215, 18, 27, 0.00) 100%),
+    linear-gradient(180deg, #FFF 11.76%, #EAF2F9 209.7%);
   --scrollbar-thumb-color: rgba(0, 0, 0, .5);
   --scrollbar-thumb-hover-color: rgba(0, 0, 0, .75);
   --scrollbar-thumb-dark-mode-color: hsl(0 0% 100% / 50%);
@@ -46,7 +50,7 @@ body {
 
 @media screen and (prefers-color-scheme: dark) {
   :root {
-    --linear-gradient: #3a86ff60, #121317;
+    --linear-gradient-image: linear-gradient(0, #3a86ff60, #121317);
   }
 
   ::-webkit-scrollbar-thumb {
