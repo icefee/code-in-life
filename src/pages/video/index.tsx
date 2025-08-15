@@ -61,7 +61,6 @@ export default function VideoSearch() {
 
         abortController.current?.abort()
 
-        const s = text.trim()
         setSearchTask(t => ({
             ...t,
             data: [],
@@ -70,6 +69,7 @@ export default function VideoSearch() {
             pending: true
         }))
         let keys = sourceKeys.keys
+        const s = text.trim()
         const query = { s }
         if (s.startsWith('$')) {
             query.s = parseKeyword(s)
@@ -235,7 +235,10 @@ export default function VideoSearch() {
             >
                 {
                     toastMsg && (
-                        <Alert severity={toastMsg.type} onClose={handleClose}>{toastMsg.msg}</Alert>
+                        <Alert
+                            severity={toastMsg.type}
+                            onClose={handleClose}
+                        >{toastMsg.msg}</Alert>
                     )
                 }
             </Snackbar>

@@ -1,7 +1,7 @@
 export abstract class Api {
     public static site = 'http://cik.netlify.app'
-    public static assetSite = 'https://app-center.netlify.app'
-    public static proxyUrl = 'https://astro-app-7d4.pages.dev'
+    public static assetSite = 'https://web-app-center.netlify.app'
+    public static proxyUrl = 'https://deploy-3wi.pages.dev'
     public static posterServer = process.env.POSTER_SERVER || ''
 }
 
