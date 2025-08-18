@@ -14,7 +14,7 @@ const config: GatsbyConfig = {
         short_name: '应用中心',
         icon: 'static/icon.png',
         start_url: '/?mode=pwa',
-        background_color: '#d9b8ff',
+        background_color: '#eaf2f9',
         theme_color: '#d9b8ff',
         display: 'standalone',
         cache_busting_mode: 'none'

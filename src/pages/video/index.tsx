@@ -3,6 +3,8 @@ import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Snackbar from '@mui/material/Snackbar'
+import Fade from '@mui/material/Fade'
+import LinearProgress from '@mui/material/LinearProgress'
 import Alert, { type AlertProps } from '@mui/material/Alert'
 import SearchResult from '~/components/search/Result'
 import SearchForm from '~/components/search/Form'
@@ -26,12 +28,15 @@ export default function VideoSearch() {
     const abortController = useRef<AbortController | null>(null)
 
     const [keyword, setKeyword] = useState('')
-    const [searchTask, setSearchTask] = useState<SearchTask<SearchVideo>>({
+    const [searchTask, setSearchTask] = useState<SearchTask<SearchVideo> & {
+        progress: number;
+    }>({
         keyword: '',
         data: [],
         pending: false,
         complete: false,
-        success: false
+        success: false,
+        progress: 0
     })
     const [toastMsg, setToastMsg] = useState<ToastMsg<AlertProps['severity']>>(null)
 
@@ -75,13 +80,12 @@ export default function VideoSearch() {
             query.s = parseKeyword(s)
             keys = sourceKeys.preferKeys
         }
-        for (const key of keys) {
-            const [api, r] = key.split('_')
+        for (let i = 0, l = keys.length; i < l; i++) {
+            const [api, r] = keys[i].split('_')
             const searchParams = new URLSearchParams({
                 ...query,
                 api
             })
-            const rating = +r
             const controller = new AbortController()
             abortController.current = controller
             const { data } = await getJson<ApiJsonType<{
@@ -99,26 +103,34 @@ export default function VideoSearch() {
                 if (video && video.length > 0) {
                     setSearchTask(t => ({
                         ...t,
-                        pending: false,
                         keyword: query.s,
                         success: true,
                         data: [...t.data, {
                             key: api,
                             name,
-                            rating,
+                            rating: +r,
                             data: video,
                             page
                         }].sort((prev, next) => next.rating - prev.rating)
                     }))
                 }
             }
+            const c = i + 1
+            setSearchTask(t => ({
+                ...t,
+                progress: c / l,
+                status: [c, l].join(' / ')
+            }))
         }
         abortController.current = null
         setSearchTask(t => ({
             ...t,
+            pending: false,
             completed: true
         }))
     }
+
+    const sourceKeysPending = useMemo(() => sourceKeys === null, [sourceKeys])
 
     const pageTitle = useMemo(() => {
         let keyword = '影视搜索';
@@ -177,12 +189,32 @@ export default function VideoSearch() {
                 }}
                 flexGrow={1}
             >
+                <Fade in={sourceKeysPending || searchTask.pending}>
+                    <Box
+                        sx={{
+                            position: 'absolute',
+                            left: 0,
+                            top: 0,
+                            right: 0,
+                            zIndex: 818
+                        }}
+                    >
+                        <LinearProgress
+                            variant={sourceKeysPending ? 'query' : searchTask.progress > 0 ? 'determinate' : 'indeterminate'}
+                            color="info"
+                            value={searchTask.progress * 100}
+                            sx={{
+                                height: 2
+                            }}
+                        />
+                    </Box>
+                </Fade>
                 {
                     searchTask.success ? (
                         searchTask.data.length > 0 ? (
                             <Box sx={{
                                 flexGrow: 1,
-                                overflow: 'hidden',
+                                overflow: "hidden",
                                 pt: 9
                             }}>
                                 <SearchResult
@@ -191,36 +223,35 @@ export default function VideoSearch() {
                                 />
                             </Box>
                         ) : (
-                            <NoData text='💔 没有找到相关的内容, 换个关键词试试吧' />
+                            <NoData text="💔 没有找到相关的内容, 换个关键词试试吧" />
                         )
+                    ) : searchTask.pending ? (
+                        <LoadingOverlay
+                            open
+                            label="搜索中.."
+                            withoutBackdrop
+                            withBackground
+                        />
                     ) : (
-                        !searchTask.pending && (
-                            <Stack
-                                sx={{
-                                    position: 'relative',
-                                    zIndex: 120
-                                }}
-                                flexGrow={1}
-                                justifyContent="center"
-                                alignItems="center"
-                            >
-                                {
-                                    sourceKeys === null ? (
-                                        <Typography>⌛ 查询源数据中...</Typography>
-                                    ) : (
-                                        <Typography variant="body1" color="text.secondary">🔍 输入关键词开始搜索</Typography>
-                                    )
-                                }
-                            </Stack>
-                        )
+                        <Stack
+                            sx={{
+                                position: 'relative',
+                                zIndex: 120
+                            }}
+                            flexGrow={1}
+                            justifyContent="center"
+                            alignItems="center"
+                        >
+                            {
+                                sourceKeysPending ? (
+                                    <Typography>⌛ 查询源数据中...</Typography>
+                                ) : (
+                                    <Typography color="text.secondary">🔍 输入关键词开始搜索</Typography>
+                                )
+                            }
+                        </Stack>
                     )
                 }
-                <LoadingOverlay
-                    open={searchTask.pending}
-                    label="搜索中.."
-                    withoutBackdrop
-                    withBackground
-                />
             </Stack>
             <Snackbar
                 open={Boolean(toastMsg)}
