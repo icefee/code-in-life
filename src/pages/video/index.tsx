@@ -13,8 +13,8 @@ import { LoadingOverlay } from '~/components/loading'
 import { getJson } from '~/util/proxy'
 
 interface SourceKeys {
-    keys: SourceType[];
-    preferKeys: SourceType[];
+    normal: SourceType[];
+    prefer: SourceType[];
 }
 
 const parseKeyword = (s: string) => {
@@ -73,12 +73,12 @@ export default function VideoSearch() {
             completed: false,
             pending: true
         }))
-        let keys = sourceKeys.keys
+        let keys = sourceKeys.normal
         const s = text.trim()
         const query = { s }
         if (s.startsWith('$')) {
             query.s = parseKeyword(s)
-            keys = sourceKeys.preferKeys
+            keys = sourceKeys.prefer
         }
         keys.sort((prev, next) => next.rating - prev.rating)
         for (let i = 0, l = keys.length; i < l; i++) {
