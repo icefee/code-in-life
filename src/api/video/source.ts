@@ -1,26 +1,24 @@
 import { Middleware, Config, getJson } from '../../adaptors'
 
-type DataSource = {
-    key: string;
-    rating: number;
-    group: string;
-}
-
 const handler: Middleware.ApiHandler = async (_, res) => {
     const { data } = await getJson<ApiJsonType<DataSource[]>>(`${Config.Api.site}/api/video/source`)
-    const keys = []
-    const preferKeys = []
-    for (const { key, rating, group } of data) {
-        const k = `${key}_${rating}`
+    const normal = []
+    const prefer = []
+    for (const { key, name, rating, group } of data) {
+        const source = {
+            key,
+            name,
+            rating
+        }
         if (group === 'normal') {
-            keys.push(k)
+            normal.push(source)
         }
         else {
-            preferKeys.push(k)
+            prefer.push(source)
         }
     }
     res.json(
-        Middleware.createPayload({ keys, preferKeys })
+        Middleware.createPayload({ normal, prefer })
     )
 }
 

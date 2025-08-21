@@ -1,9 +1,16 @@
 declare module '*.module.css'
 
-declare interface SearchVideo {
+declare interface SourceType {
     key: string;
     name: string;
     rating: number;
+}
+
+declare interface DataSource extends SourceType {
+    group: string;
+}
+
+declare interface SearchVideo extends SourceType {
     data: VideoListItem[];
     page: ResponsePagination;
 }

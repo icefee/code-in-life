@@ -13,8 +13,8 @@ import { LoadingOverlay } from '~/components/loading'
 import { getJson } from '~/util/proxy'
 
 interface SourceKeys {
-    keys: string[];
-    preferKeys: string[];
+    keys: SourceType[];
+    preferKeys: SourceType[];
 }
 
 const parseKeyword = (s: string) => {
@@ -80,11 +80,12 @@ export default function VideoSearch() {
             query.s = parseKeyword(s)
             keys = sourceKeys.preferKeys
         }
+        keys.sort((prev, next) => next.rating - prev.rating)
         for (let i = 0, l = keys.length; i < l; i++) {
-            const [api, r] = keys[i].split('_')
+            const { key, rating } = keys[i]
             const searchParams = new URLSearchParams({
                 ...query,
-                api
+                api: key
             })
             const controller = new AbortController()
             abortController.current = controller
@@ -101,25 +102,26 @@ export default function VideoSearch() {
             if (data) {
                 const { name, video, page } = data
                 if (video && video.length > 0) {
-                    setSearchTask(t => ({
-                        ...t,
+                    setSearchTask(({ data, ...rest }) => ({
+                        ...rest,
                         keyword: query.s,
                         success: true,
-                        data: [...t.data, {
-                            key: api,
-                            name,
-                            rating: +r,
-                            data: video,
-                            page
-                        }].sort((prev, next) => next.rating - prev.rating)
+                        data: [
+                            ...data,
+                            {
+                                key,
+                                name,
+                                rating,
+                                data: video,
+                                page
+                            }
+                        ]
                     }))
                 }
             }
-            const c = i + 1
             setSearchTask(t => ({
                 ...t,
-                progress: c / l,
-                status: [c, l].join(' / ')
+                progress: (i + 1) / l
             }))
         }
         abortController.current = null
