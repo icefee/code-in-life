@@ -54,6 +54,25 @@ export default function VideoSearch() {
         }
     }
 
+    const getVideoData = async (searchParams: URLSearchParams, { signal }: AbortController) => {
+        try {
+            const { data } = await getJson<ApiJsonType<{
+                name: string;
+                page: ResponsePagination;
+                video?: VideoListItem[];
+            }>>(
+                `/api/video/list?${searchParams}`,
+                {
+                    signal
+                }
+            )
+            return data
+        }
+        catch (err) {
+            return null
+        }
+    }
+
     const onSearch = async (text: string) => {
 
         if (sourceKeys === null) {
@@ -83,21 +102,14 @@ export default function VideoSearch() {
         keys.sort((prev, next) => next.rating - prev.rating)
         for (let i = 0, l = keys.length; i < l; i++) {
             const { key, rating } = keys[i]
-            const searchParams = new URLSearchParams({
-                ...query,
-                api: key
-            })
             const controller = new AbortController()
             abortController.current = controller
-            const { data } = await getJson<ApiJsonType<{
-                name: string;
-                page: ResponsePagination;
-                video?: VideoListItem[];
-            }>>(
-                `/api/video/list?${searchParams}`,
-                {
-                    signal: controller.signal
-                }
+            const data = await getVideoData(
+                new URLSearchParams({
+                    ...query,
+                    api: key
+                }),
+                controller
             )
             if (data) {
                 const { name, video, page } = data
