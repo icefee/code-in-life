@@ -282,6 +282,7 @@ function MusicPlayList({
                                                     }
                                                 }
                                                 input.click()
+                                                hideMenu()
                                             }
                                         },
                                         {
@@ -295,6 +296,7 @@ function MusicPlayList({
                                                     }
                                                 )
                                                 blobToFile(blob, 'playlist.json')
+                                                hideMenu()
                                             }
                                         },
                                         {
