@@ -15,6 +15,8 @@ import ClearAllRoundedIcon from '@mui/icons-material/ClearAllRounded'
 import ManageSearchRoundedIcon from '@mui/icons-material/ManageSearchRounded'
 import PersonSearchRoundedIcon from '@mui/icons-material/PersonSearchOutlined'
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded'
+import FileUploadRoundedIcon from '@mui/icons-material/FileUploadRounded'
+import FileDownloadRoundedIcon from '@mui/icons-material/FileDownloadRounded'
 import PublishRoundedIcon from '@mui/icons-material/PublishRounded'
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded'
 import LyricsRoundedIcon from '@mui/icons-material/LyricsRounded'
@@ -22,6 +24,8 @@ import PlaylistRemoveRoundedIcon from '@mui/icons-material/PlaylistRemoveRounded
 import MusicPoster from './MusicPoster'
 import { MusicPlay as MusicPlayIcon } from '../loading'
 import useMenu from '../hook/useMenu'
+import useErrorMessage from '../hook/useErrorMessage'
+import { blobToFile } from '~/util/blobToFile'
 
 const StyledInput = styled(InputBase)(({ theme }) => ({
     fontSize: '.8em',
@@ -71,6 +75,25 @@ function MusicPlayList({
 
     const [keyword, setKeyword] = useState('')
     const { outlet, showMenu, hideMenu } = useMenu()
+    const { showErrorMessage, showSnackbar, renderAlert, anchorOrigin } = useErrorMessage()
+
+    const showError = (message: string) => {
+        showErrorMessage({
+            message
+        })
+    }
+
+    const showMessage = (message: string, security = 'success') => {
+        showSnackbar({
+            anchorOrigin,
+            children: renderAlert({
+                variant: 'filled',
+                security,
+                children: message
+            }),
+            autoHideDuration: 3e3
+        })
+    }
 
     const pinToTop = (music: SearchMusic) => {
         onChange(
@@ -158,14 +181,14 @@ function MusicPlayList({
         if (validKeyword === '') {
             return []
         }
-        const matched = [];
-        let hasMatched = false;
+        const matched: ListMatch[] = [];
+        let hasMatched = false
         for (const { id, name, artist } of data) {
-            const [_name, _artist] = getMatchResult([name, artist]);
+            const [_name, _artist] = getMatchResult([name, artist])
             let firstMatch = false;
             if ((_name.match || _artist.match) && !hasMatched) {
-                firstMatch = true;
-                hasMatched = true;
+                firstMatch = true
+                hasMatched = true
             }
             matched.push({
                 id,
@@ -174,7 +197,7 @@ function MusicPlayList({
                 firstMatch
             })
         }
-        return matched;
+        return matched
     }, [data, keyword])
 
     return (
@@ -217,7 +240,63 @@ function MusicPlayList({
                         <IconButton
                             onClick={
                                 (event) => {
+                                    const jsonType = 'application/json'
                                     showMenu(event.currentTarget, [
+                                        {
+                                            icon: <FileUploadRoundedIcon />,
+                                            text: '导入播放列表',
+                                            onClick: () => {
+                                                const input = document.createElement('input')
+                                                input.type = 'file'
+                                                input.accept = jsonType
+                                                input.onchange = async (event) => {
+                                                    const files = (event.target as HTMLInputElement).files
+                                                    if (files.length > 0) {
+                                                        const file = files[0]
+                                                        if (file.type === jsonType) {
+                                                            try {
+                                                                const text = await file.text()
+                                                                const localData = JSON.parse(text) as SearchMusic[]
+                                                                const newData: SearchMusic[] = []
+                                                                for (const music of localData) {
+                                                                    const exist = data.find(({ id }) => id === music.id)
+                                                                    if (!exist) {
+                                                                        newData.push(music)
+                                                                    }
+                                                                }
+                                                                onChange([...data, ...newData])
+                                                                if (newData.length > 0) {
+                                                                    showMessage(`已导入${newData.length}首歌曲`)
+                                                                }
+                                                                else {
+                                                                    showMessage('导入的新歌曲都已在播放列表中', 'warning')
+                                                                }
+                                                            }
+                                                            catch (err) {
+                                                                showError('播放列表读取失败: ' + String(err))
+                                                            }
+                                                        }
+                                                        else {
+                                                            showError('非法的文件类型: ' + file.type)
+                                                        }
+                                                    }
+                                                }
+                                                input.click()
+                                            }
+                                        },
+                                        {
+                                            icon: <FileDownloadRoundedIcon />,
+                                            text: '导出播放列表',
+                                            onClick: () => {
+                                                const blob = new Blob(
+                                                    [JSON.stringify(data)],
+                                                    {
+                                                        type: jsonType
+                                                    }
+                                                )
+                                                blobToFile(blob, 'playlist.json')
+                                            }
+                                        },
                                         {
                                             icon: <ClearAllRoundedIcon />,
                                             text: '清空播放列表',
@@ -226,7 +305,7 @@ function MusicPlayList({
                                                 hideMenu()
                                             }
                                         }
-                                    ]);
+                                    ])
                                 }
                             }
                         >

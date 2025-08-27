@@ -115,16 +115,17 @@ function ListType({ videoList, keyword }: SearchResultProps) {
                             </Box>
                             {
                                 page.pagecount > 1 && (
-                                    <Box sx={(theme) => ({
-                                        display: 'flex',
-                                        justifyContent: 'flex-end',
-                                        p: theme.spacing(0, 2, 2),
-                                        color: '#fff'
-                                    })}>
+                                    <Box
+                                        sx={({ spacing }) => ({
+                                            display: 'flex',
+                                            justifyContent: 'flex-end',
+                                            p: spacing(0, 2, 2)
+                                        })}
+                                    >
                                         <Button
                                             LinkComponent="a"
                                             variant="outlined"
-                                            color="inherit"
+                                            color="primary"
                                             endIcon={
                                                 <ArrowForwardIosIcon />
                                             }

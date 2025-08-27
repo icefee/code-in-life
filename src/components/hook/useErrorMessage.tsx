@@ -1,13 +1,23 @@
 import React from 'react'
-import Alert from '@mui/material/Alert'
+import Alert, { type AlertProps } from '@mui/material/Alert'
 import Button from '@mui/material/Button'
+import type { SnackbarOrigin } from '@mui/material/Snackbar'
 import { useSnackbar } from './useSnackbar'
 
 export { SnackbarProvider } from './useSnackbar'
 
 export default function useErrorMessage() {
 
-    const context = useSnackbar();
+    const context = useSnackbar()
+
+    const renderAlert = (props: AlertProps) => (
+        <Alert {...props} />
+    )
+
+    const anchorOrigin = {
+        vertical: 'bottom',
+        horizontal: 'center'
+    } satisfies SnackbarOrigin
 
     const showErrorMessage = ({
         message,
@@ -20,32 +30,32 @@ export default function useErrorMessage() {
         actionText?: string;
         onAction?: VoidFunction;
     }) => {
-        context?.showSnackbar({
-            anchorOrigin: {
-                vertical: 'bottom',
-                horizontal: 'center'
-            },
-            children: (
-                <Alert variant="filled" severity="error" action={
-                    onAction ? (
-                        <Button
-                            variant="outlined"
-                            color="inherit"
-                            size="small"
-                            onClick={
-                                () => {
-                                    context?.hideAll();
-                                    onAction();
-                                }
-                            }>{actionText}</Button>
-                    ) : null
-                }>{message}</Alert>
-            ),
+        context.showSnackbar({
+            anchorOrigin,
+            children: renderAlert({
+                variant: 'filled',
+                security: 'error',
+                action: onAction ? (
+                    <Button
+                        variant="outlined"
+                        color="inherit"
+                        size="small"
+                        onClick={
+                            () => {
+                                context?.hideAll();
+                                onAction();
+                            }
+                        }>{actionText}</Button>
+                ) : null,
+                children: message
+            }),
             autoHideDuration
         })
     }
     return {
+        anchorOrigin,
         showErrorMessage,
+        renderAlert,
         ...context
     }
 }
