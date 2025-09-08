@@ -90,6 +90,7 @@ export default function VideoSearch() {
             data: [],
             success: false,
             completed: false,
+            progress: 0,
             pending: true
         }))
         let keys = sourceKeys.normal

@@ -2,7 +2,7 @@
   "name": "code-in-life",
   "private": true,
   "description": "A website hosted on gatsby cloud",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "license": "MIT",
   "scripts": {
     "build": "gatsby build",
