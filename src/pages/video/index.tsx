@@ -66,10 +66,16 @@ export default function VideoSearch() {
                     signal
                 }
             )
-            return data
+            return {
+                data,
+                aborted: false
+            }
         }
         catch (err) {
-            return null
+            return {
+                data: null,
+                aborted: Boolean(`${err}`.match(/AbortError/i))
+            }
         }
     }
 
@@ -105,13 +111,22 @@ export default function VideoSearch() {
             const { key, rating } = keys[i]
             const controller = new AbortController()
             abortController.current = controller
-            const data = await getVideoData(
+            const { aborted, data } = await getVideoData(
                 new URLSearchParams({
                     ...query,
                     api: key
                 }),
                 controller
             )
+            if (aborted) {
+                setSearchTask(t => ({
+                    ...t,
+                    data: [],
+                    success: false,
+                    progress: 0
+                }))
+                return
+            }
             if (data) {
                 const { name, video, page } = data
                 if (video && video.length > 0) {
@@ -148,7 +163,7 @@ export default function VideoSearch() {
     const sourceKeysPending = useMemo(() => sourceKeys === null, [sourceKeys])
 
     const pageTitle = useMemo(() => {
-        let keyword = '影视搜索';
+        let keyword = '影视搜索'
         if (searchTask.keyword !== '') {
             keyword += ' - ' + parseKeyword(searchTask.keyword)
         }
