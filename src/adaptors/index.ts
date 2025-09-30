@@ -12,8 +12,8 @@ export * as Config from '../util/config'
 export type Adaptor = typeof g.key | typeof z.key | typeof t.key
 
 export const adaptors: Adaptor[] = [
-    z.key,
     g.key,
+    z.key,
     t.key
 ]
 

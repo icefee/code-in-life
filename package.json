@@ -1,8 +1,8 @@
 {
   "name": "code-in-life",
   "private": true,
-  "description": "A website hosted on gatsby cloud",
-  "version": "0.1.10",
+  "description": "A website hosted on netlify cloud(before gatsby cloud).",
+  "version": "0.1.11",
   "license": "MIT",
   "scripts": {
     "build": "gatsby build",
