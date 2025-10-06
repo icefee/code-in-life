@@ -21,7 +21,7 @@
     "@mui/lab": "^5.0.0-alpha.176",
     "@mui/material": "^5.17.1",
     "cheerio": "^1.1.0",
-    "gatsby": "^5.14.6",
+    "gatsby": "^5.15.0",
     "gatsby-adapter-netlify": "^1.2.0",
     "gatsby-plugin-alias-imports": "^1.0.5",
     "gatsby-plugin-manifest": "^5.14.0",

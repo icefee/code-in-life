@@ -34,7 +34,7 @@ export default function useErrorMessage() {
             anchorOrigin,
             children: renderAlert({
                 variant: 'filled',
-                security: 'error',
+                severity: 'error',
                 action: onAction ? (
                     <Button
                         variant="outlined"
