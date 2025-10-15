@@ -25,7 +25,7 @@ const getSafeText: typeof getText = async (...args) => {
     return response.text()
 }
 
-async function matchSongs(source: string) {
+function matchSongs(source: string) {
     const matchBlocks = source.match(
         new RegExp(`<div class="name"><a href="/song/\\w+.html" target="_mp3">.+? - .+?</a></div>`, 'gm')
     )
@@ -60,7 +60,7 @@ async function getPageSongs(s: string, page: number) {
     url += '.html'
     try {
         const html = await getSafeText(url)
-        const songs = await matchSongs(html)
+        const songs = matchSongs(html)
         return {
             html,
             songs
