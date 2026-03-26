@@ -25,7 +25,7 @@ import MusicPoster from './MusicPoster'
 import { MusicPlay as MusicPlayIcon } from '../loading'
 import useMenu from '../hook/useMenu'
 import useErrorMessage from '../hook/useErrorMessage'
-import { blobToFile } from '~/util/blobToFile'
+import { blobToFile, openFile } from '~/util/blob'
 
 const StyledInput = styled(InputBase)(({ theme }) => ({
     fontSize: '.8em',
@@ -245,44 +245,37 @@ function MusicPlayList({
                                         {
                                             icon: <FileUploadRoundedIcon />,
                                             text: '导入播放列表',
-                                            onClick: () => {
-                                                const input = document.createElement('input')
-                                                input.type = 'file'
-                                                input.accept = jsonType
-                                                input.onchange = async (event) => {
-                                                    const files = (event.target as HTMLInputElement).files
-                                                    if (files.length > 0) {
-                                                        const file = files[0]
-                                                        if (file.type === jsonType) {
-                                                            try {
-                                                                const text = await file.text()
-                                                                const localData = JSON.parse(text) as SearchMusic[]
-                                                                const newData: SearchMusic[] = []
-                                                                for (const music of localData) {
-                                                                    const exist = data.find(({ id }) => id === music.id)
-                                                                    if (!exist) {
-                                                                        newData.push(music)
-                                                                    }
-                                                                }
-                                                                onChange([...data, ...newData])
-                                                                if (newData.length > 0) {
-                                                                    showMessage(`已导入${newData.length}首歌曲`)
-                                                                }
-                                                                else {
-                                                                    showMessage('导入的新歌曲都已在播放列表中', 'warning')
+                                            onClick: async () => {
+                                                hideMenu()
+                                                const file = await openFile(jsonType)
+                                                if (file !== null) {
+                                                    if (file.type === jsonType) {
+                                                        try {
+                                                            const text = await file.text()
+                                                            const localData = JSON.parse(text) as SearchMusic[]
+                                                            const newData: SearchMusic[] = []
+                                                            for (const music of localData) {
+                                                                const exist = data.find(({ id }) => id === music.id)
+                                                                if (!exist) {
+                                                                    newData.push(music)
                                                                 }
                                                             }
-                                                            catch (err) {
-                                                                showError('播放列表读取失败: ' + String(err))
+                                                            onChange([...data, ...newData])
+                                                            if (newData.length > 0) {
+                                                                showMessage(`已导入${newData.length}首歌曲`)
+                                                            }
+                                                            else {
+                                                                showMessage('导入的新歌曲都已在播放列表中', 'warning')
                                                             }
                                                         }
-                                                        else {
-                                                            showError('非法的文件类型: ' + file.type)
+                                                        catch (err) {
+                                                            showError('播放列表读取失败: ' + String(err))
                                                         }
                                                     }
+                                                    else {
+                                                        showError('非法的文件类型: ' + file.type)
+                                                    }
                                                 }
-                                                input.click()
-                                                hideMenu()
                                             }
                                         },
                                         {

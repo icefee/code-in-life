@@ -25,7 +25,7 @@ import MusicPlayList from '~/components/player/MusicPlayList'
 import useLocalStorageState from '~/components/hook/useLocalStorageState'
 import { getParamsUrl, loadFileChunks, getJson } from '~/util/proxy'
 import { maxChunkSize } from '~/util/config'
-import { blobToFile } from '~/util/blobToFile'
+import { blobToFile } from '~/util/blob'
 
 export function Head() {
     return (
