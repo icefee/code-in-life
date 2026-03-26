@@ -37,7 +37,7 @@ const VideoParserPlayer: React.FC<PageProps<object, object, unknown, ServerProps
                 }}
             >
                 {
-                    localPlayUrl === null ? (
+                    localPlayUrl === null ? Boolean(queryUrl) ? (
                         <VideoUrlParser url={queryUrl}>
                             {
                                 (parsedUrl) => {
@@ -53,7 +53,7 @@ const VideoParserPlayer: React.FC<PageProps<object, object, unknown, ServerProps
                                 }
                             }
                         </VideoUrlParser>
-                    ) : (
+                    ) : null : (
                         <VideoPlayer
                             url={localPlayUrl}
                             hls
@@ -64,9 +64,9 @@ const VideoParserPlayer: React.FC<PageProps<object, object, unknown, ServerProps
                 <IconButton
                     color='secondary'
                     sx={{
-                        position: 'absolute',
-                        right: 2,
-                        bottom: 2,
+                        position: 'primary',
+                        top: 16,
+                        right: 16,
                         zIndex: 180
                     }}
                     onClick={
