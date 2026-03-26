@@ -62,9 +62,9 @@ const VideoParserPlayer: React.FC<PageProps<object, object, unknown, ServerProps
                     )
                 }
                 <IconButton
-                    color='secondary'
+                    color='primary'
                     sx={{
-                        position: 'primary',
+                        position: 'absolute',
                         top: 16,
                         right: 16,
                         zIndex: 180
