@@ -8,10 +8,10 @@ import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
-import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded'
-import PlaylistAddRoundedcon from '@mui/icons-material/PlaylistAdd'
-import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded'
-import LyricsRoundedIcon from '@mui/icons-material/LyricsRounded'
+import MoreVertSharpIcon from '@mui/icons-material/MoreVertSharp'
+import PlaylistAddSharpcon from '@mui/icons-material/PlaylistAdd'
+import DownloadSharpIcon from '@mui/icons-material/DownloadSharp'
+import LyricsSharpIcon from '@mui/icons-material/LyricsSharp'
 import MusicPoster from '../player/MusicPoster'
 import { MusicPlay as MusicPlayIcon } from '../loading'
 import useMenu from '../hook/useMenu'
@@ -135,25 +135,25 @@ function SongListItem({ current, divider, isCurrentPlaying, onTogglePlay, onActi
                         (event: React.MouseEvent<HTMLButtonElement>) => {
                             showMenu(event.currentTarget, [
                                 {
-                                    icon: <PlaylistAddRoundedcon />,
+                                    icon: <PlaylistAddSharpcon />,
                                     text: '加入播放列表',
                                     onClick: handleMenuAction('add')
                                 },
                                 null,
                                 {
-                                    icon: <DownloadRoundedIcon />,
+                                    icon: <DownloadSharpIcon />,
                                     text: '下载歌曲',
                                     onClick: handleMenuAction('download-song')
                                 },
                                 {
-                                    icon: <LyricsRoundedIcon />,
+                                    icon: <LyricsSharpIcon />,
                                     text: '下载歌词',
                                     onClick: handleMenuAction('download-lrc')
                                 }
                             ])
                         }
                     }>
-                        <MoreVertRoundedIcon />
+                        <MoreVertSharpIcon />
                     </IconButton>
                     {outlet}
                 </>

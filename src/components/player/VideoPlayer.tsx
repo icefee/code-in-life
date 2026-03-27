@@ -9,14 +9,14 @@ import Alert from '@mui/material/Alert'
 import { styled, alpha } from '@mui/material/styles'
 import Hls, { ErrorTypes, type HlsListeners, type ErrorData } from 'hls.js'
 import Hls2Mp4 from 'hls2mp4'
-import SkipNextRoundedIcon from '@mui/icons-material/SkipNextRounded'
-import PictureInPictureRoundedIcon from '@mui/icons-material/PictureInPictureRounded'
-import PictureInPictureAltRoundedIcon from '@mui/icons-material/PictureInPictureAltRounded'
-import FullscreenRoundedIcon from '@mui/icons-material/FullscreenRounded'
-import FullscreenExitRoundedIcon from '@mui/icons-material/FullscreenExitRounded'
-import Replay10RoundedIcon from '@mui/icons-material/Replay10Rounded'
-import Forward10RoundedIcon from '@mui/icons-material/Forward10Rounded'
-import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded'
+import SkipNextSharpIcon from '@mui/icons-material/SkipNextSharp'
+import PictureInPictureSharpIcon from '@mui/icons-material/PictureInPictureSharp'
+import PictureInPictureAltSharpIcon from '@mui/icons-material/PictureInPictureAltSharp'
+import FullscreenSharpIcon from '@mui/icons-material/FullscreenSharp'
+import FullscreenExitSharpIcon from '@mui/icons-material/FullscreenExitSharp'
+import Replay10SharpIcon from '@mui/icons-material/Replay10Sharp'
+import Forward10SharpIcon from '@mui/icons-material/Forward10Sharp'
+import DownloadSharpIcon from '@mui/icons-material/DownloadSharp'
 import useLocalStorageState from '../hook/useLocalStorageState'
 import MediaSlider from './MediaSlider'
 import UnmuteButton from './UnmuteButton'
@@ -695,7 +695,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                                         }}
                                         size="large"
                                     >
-                                        <Replay10RoundedIcon fontSize="inherit" />
+                                        <Replay10SharpIcon fontSize="inherit" />
                                     </IconButton>
                                 </Fade>
                                 <Fade in={controlsShow && videoLoaded && !error} unmountOnExit>
@@ -720,7 +720,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                                         }}
                                         size="large"
                                     >
-                                        <Forward10RoundedIcon fontSize="inherit" />
+                                        <Forward10SharpIcon fontSize="inherit" />
                                     </IconButton>
                                 </Fade>
                                 <MiniProcess
@@ -875,7 +875,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                                                 color="inherit"
                                                 onClick={onNext}
                                             >
-                                                <SkipNextRoundedIcon />
+                                                <SkipNextSharpIcon />
                                             </IconButton>
                                         </Tooltip>
                                     )
@@ -925,9 +925,9 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                                     >
                                         {
                                             fullscreen ? (
-                                                <FullscreenExitRoundedIcon />
+                                                <FullscreenExitSharpIcon />
                                             ) : (
-                                                <FullscreenRoundedIcon />
+                                                <FullscreenSharpIcon />
                                             )
                                         }
                                     </IconButton>
@@ -939,7 +939,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                                                 color="inherit"
                                                 onClick={downloading ? null : actionTrigger(downloadVideo)}
                                             >
-                                                <DownloadRoundedIcon />
+                                                <DownloadSharpIcon />
                                             </IconButton>
                                         </Tooltip>
                                     )
@@ -959,7 +959,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({
                                         )}
                                     >
                                         {
-                                            pip ? <PictureInPictureAltRoundedIcon /> : <PictureInPictureRoundedIcon />
+                                            pip ? <PictureInPictureAltSharpIcon /> : <PictureInPictureSharpIcon />
                                         }
                                     </IconButton>
                                 </Tooltip>

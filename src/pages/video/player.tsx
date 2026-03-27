@@ -3,7 +3,7 @@ import type { GetServerDataProps, GetServerDataReturn, PageProps } from 'gatsby'
 import NoSsr from '@mui/material/NoSsr'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
-import FileUploadRoundedIcon from '@mui/icons-material/FileUpload'
+import FileUploadSharpIcon from '@mui/icons-material/FileUpload'
 import { VideoPlayer, type VideoPlayerProps } from '~/components/player'
 import VideoUrlParser from '~/components/search/VideoUrlParser'
 import { pureHlsUrl } from '~/util/proxy'
@@ -67,15 +67,14 @@ const VideoParserPlayer: React.FC<PageProps<object, object, unknown, ServerProps
                 }
                 <IconButton
                     color='inherit'
-                    size='large'
                     sx={{
                         position: 'absolute',
-                        transition: 'all .4s',
+                        transition: ({ transitions }) => transitions.create('transform'),
                         color: '#fff',
                         zIndex: 180,
-                        left: 12,
-                        top: 12,
-                        transform: (queryUrlValid || localVideo !== null) ? 'none' : 'translate(calc(-100% + 16px + 50vw), calc(-100% + 16px + 50vh))',
+                        left: 8,
+                        top: 8,
+                        transform: (queryUrlValid || localVideo !== null) ? 'none' : 'translate(calc(-100% + 8px + 50vw), calc(-100% + 8px + 50vh))',
                     }}
                     onClick={
                         async () => {
@@ -96,7 +95,7 @@ const VideoParserPlayer: React.FC<PageProps<object, object, unknown, ServerProps
                         }
                     }
                 >
-                    <FileUploadRoundedIcon
+                    <FileUploadSharpIcon
                         sx={{
                             fontSize: 32,
                         }}

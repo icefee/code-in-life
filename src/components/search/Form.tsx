@@ -5,11 +5,11 @@ import Autocomplete from '@mui/material/Autocomplete'
 import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
 import IconButton from '@mui/material/IconButton'
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
+import CloseSharpIcon from '@mui/icons-material/CloseSharp'
 import InputBase from '@mui/material/InputBase'
 import { alpha } from '@mui/material/styles'
 import LoadingButton, { type LoadingButtonProps } from '@mui/lab/LoadingButton'
-import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
+import SearchSharpIcon from '@mui/icons-material/SearchSharp'
 import useLocalStorageState from '../hook/useLocalStorageState'
 import { isTextNotNull } from '~/util/string'
 
@@ -161,7 +161,7 @@ function SearchForm({
                                     )
                                 }
                             }>
-                                <CloseRoundedIcon fontSize="small" />
+                                <CloseSharpIcon fontSize="small" />
                             </IconButton>
                         }
                         disablePadding
@@ -211,7 +211,7 @@ function SearchForm({
                             }}
                             loadingPosition="start"
                             startIcon={
-                                <SearchRoundedIcon />
+                                <SearchSharpIcon />
                             }
                             disabled={disabled}
                             loading={loading}

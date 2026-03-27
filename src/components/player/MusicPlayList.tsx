@@ -10,17 +10,17 @@ import InputBase from '@mui/material/InputBase'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import { styled } from '@mui/material/styles'
-import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
-import ClearAllRoundedIcon from '@mui/icons-material/ClearAllRounded'
-import ManageSearchRoundedIcon from '@mui/icons-material/ManageSearchRounded'
-import PersonSearchRoundedIcon from '@mui/icons-material/PersonSearchOutlined'
-import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded'
-import FileUploadRoundedIcon from '@mui/icons-material/FileUploadRounded'
-import FileDownloadRoundedIcon from '@mui/icons-material/FileDownloadRounded'
-import PublishRoundedIcon from '@mui/icons-material/PublishRounded'
-import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded'
-import LyricsRoundedIcon from '@mui/icons-material/LyricsRounded'
-import PlaylistRemoveRoundedIcon from '@mui/icons-material/PlaylistRemoveRounded'
+import SearchSharpIcon from '@mui/icons-material/SearchSharp'
+import ClearAllSharpIcon from '@mui/icons-material/ClearAllSharp'
+import ManageSearchSharpIcon from '@mui/icons-material/ManageSearchSharp'
+import PersonSearchSharpIcon from '@mui/icons-material/PersonSearchOutlined'
+import MoreVertSharpIcon from '@mui/icons-material/MoreVertSharp'
+import FileUploadSharpIcon from '@mui/icons-material/FileUploadSharp'
+import FileDownloadSharpIcon from '@mui/icons-material/FileDownloadSharp'
+import PublishSharpIcon from '@mui/icons-material/PublishSharp'
+import DownloadSharpIcon from '@mui/icons-material/DownloadSharp'
+import LyricsSharpIcon from '@mui/icons-material/LyricsSharp'
+import PlaylistRemoveSharpIcon from '@mui/icons-material/PlaylistRemoveSharp'
 import MusicPoster from './MusicPoster'
 import { MusicPlay as MusicPlayIcon } from '../loading'
 import useMenu from '../hook/useMenu'
@@ -226,7 +226,7 @@ function MusicPlayList({
                             alignItems="center"
                             columnGap={1}
                         >
-                            <SearchRoundedIcon fontSize="small" />
+                            <SearchSharpIcon fontSize="small" />
                             <StyledInput
                                 placeholder="输入关键词搜索.."
                                 value={keyword}
@@ -243,7 +243,7 @@ function MusicPlayList({
                                     const jsonType = 'application/json'
                                     showMenu(event.currentTarget, [
                                         {
-                                            icon: <FileUploadRoundedIcon />,
+                                            icon: <FileUploadSharpIcon />,
                                             text: '导入播放列表',
                                             onClick: async () => {
                                                 hideMenu()
@@ -279,7 +279,7 @@ function MusicPlayList({
                                             }
                                         },
                                         {
-                                            icon: <FileDownloadRoundedIcon />,
+                                            icon: <FileDownloadSharpIcon />,
                                             text: '导出播放列表',
                                             onClick: () => {
                                                 const blob = new Blob(
@@ -293,7 +293,7 @@ function MusicPlayList({
                                             }
                                         },
                                         {
-                                            icon: <ClearAllRoundedIcon />,
+                                            icon: <ClearAllSharpIcon />,
                                             text: '清空播放列表',
                                             onClick: () => {
                                                 clearPlayList()
@@ -304,7 +304,7 @@ function MusicPlayList({
                                 }
                             }
                         >
-                            <MoreVertRoundedIcon />
+                            <MoreVertSharpIcon />
                         </IconButton>
                         {outlet}
                     </Stack>
@@ -427,41 +427,41 @@ function PlayListItem({ music, playing, isCurrent, divider, onAction, onClick }:
                         (event) => {
                             showMenu(event.currentTarget, [
                                 {
-                                    icon: <PublishRoundedIcon />,
+                                    icon: <PublishSharpIcon />,
                                     text: '置顶',
                                     onClick: handleMenuAction('pin')
                                 },
                                 {
-                                    icon: <PlaylistRemoveRoundedIcon />,
+                                    icon: <PlaylistRemoveSharpIcon />,
                                     text: '移出播放列表',
                                     onClick: handleMenuAction('remove')
                                 },
                                 null,
                                 {
-                                    icon: <PersonSearchRoundedIcon />,
+                                    icon: <PersonSearchSharpIcon />,
                                     text: `搜索“${music.artist}”`,
                                     onClick: handleMenuAction('search-artist')
                                 },
                                 {
-                                    icon: <ManageSearchRoundedIcon />,
+                                    icon: <ManageSearchSharpIcon />,
                                     text: `搜索“${music.name}”`,
                                     onClick: handleMenuAction('search-name')
                                 },
                                 null,
                                 {
-                                    icon: <DownloadRoundedIcon />,
+                                    icon: <DownloadSharpIcon />,
                                     text: '下载歌曲',
                                     onClick: handleMenuAction('download-song')
                                 },
                                 {
-                                    icon: <LyricsRoundedIcon />,
+                                    icon: <LyricsSharpIcon />,
                                     text: '下载歌词',
                                     onClick: handleMenuAction('download-lrc')
                                 }
                             ])
                         }
                     }>
-                        <MoreVertRoundedIcon />
+                        <MoreVertSharpIcon />
                     </IconButton>
                     {outlet}
                 </>

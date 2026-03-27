@@ -13,7 +13,7 @@ import Collapse from '@mui/material/Collapse'
 import Fade from '@mui/material/Fade'
 import Typography from '@mui/material/Typography'
 import { alpha } from '@mui/material/styles'
-import PlaylistPlayRoundedIcon from '@mui/icons-material/PlaylistPlayRounded'
+import PlaylistPlaySharpIcon from '@mui/icons-material/PlaylistPlaySharp'
 import HeadLayout from '~/components/layout/Head'
 import SearchForm, { type SearchFormInstance } from '~/components/search/Form'
 import { LoadingOverlay } from '~/components/loading'
@@ -496,7 +496,7 @@ export default function MusicSearch({ location }: PageProps) {
                                                     }
                                                 }
                                             >
-                                                <PlaylistPlayRoundedIcon />
+                                                <PlaylistPlaySharpIcon />
                                             </IconButton>
                                         </Badge>
                                     </Tooltip>

@@ -5,17 +5,17 @@ import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import Tooltip from '@mui/material/Tooltip'
 import { alpha } from '@mui/material/styles'
-import RepeatOneRoundedIcon from '@mui/icons-material/RepeatOneRounded'
-import LoopRoundedIcon from '@mui/icons-material/LoopRounded'
-import ShuffleRoundedIcon from '@mui/icons-material/ShuffleRounded'
+import RepeatOneSharpIcon from '@mui/icons-material/RepeatOneSharp'
+import LoopSharpIcon from '@mui/icons-material/LoopSharp'
+import ShuffleSharpIcon from '@mui/icons-material/ShuffleSharp'
 import AudioVisual from 'react-audio-visual'
 import MusicPoster from './MusicPoster'
 import MusicLrc from './MusicLrc'
 import PlayOrPauseButton from './PlayOrPauseButton'
 import VolumeSetter from './VolumeSetter'
-import useLocalStorageState from '../hook/useLocalStorageState'
 import MediaSlider from './MediaSlider'
 import { Spinner } from '../loading'
+import useLocalStorageState from '../hook/useLocalStorageState'
 import { generate } from '~/util/url'
 import { timeFormatter } from '~/util/date'
 import { isMobileDevice, isDev } from '~/util/env'
@@ -102,13 +102,13 @@ function MusicPlayer({
     const repeatMeta = useMemo(() => {
         return repeat === RepeatMode.All ? {
             label: '列表循环',
-            icon: <LoopRoundedIcon />
+            icon: <LoopSharpIcon />
         } : repeat === RepeatMode.One ? {
             label: '单曲循环',
-            icon: <RepeatOneRoundedIcon />
+            icon: <RepeatOneSharpIcon />
         } : {
             label: '随机播放',
-            icon: <ShuffleRoundedIcon />
+            icon: <ShuffleSharpIcon />
         }
     }, [repeat])
 
