@@ -85,7 +85,7 @@ const VideoParserPlayer: React.FC<PageProps<object, object, unknown, ServerProps
                                     const url = URL.createObjectURL(file)
                                     setLocalVideo({
                                         url,
-                                        hls: M3u8.isM3u8Url(url)
+                                        hls: M3u8.isM3u8Url(file.name)
                                     })
                                     if (!localUrl) {
                                         setTimeout(() => {
