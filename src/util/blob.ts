@@ -7,7 +7,7 @@ export function downloadFile(url: string, fileName: string = '') {
     return anchor
 }
 
-export function blobToFile(blob: Blob, fileName: string = ''): void {
+export function blobToFile(blob: Blob, fileName: string = '') {
     const url = URL.createObjectURL(blob)
     const anchor = downloadFile(url, fileName)
     setTimeout(() => {
@@ -22,7 +22,7 @@ export function openFile(accept: string) {
             const input = document.createElement('input')
             input.type = 'file'
             input.accept = accept
-            input.onchange = async (event) => {
+            input.onchange = (event) => {
                 const files = (event.target as HTMLInputElement).files
                 if (files.length > 0) {
                     const file = files[0]
