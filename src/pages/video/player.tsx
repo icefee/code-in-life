@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import type { GetServerDataProps, GetServerDataReturn, PageProps } from 'gatsby'
 import NoSsr from '@mui/material/NoSsr'
 import Box from '@mui/material/Box'
@@ -31,12 +31,12 @@ const VideoParserPlayer: React.FC<PageProps<object, object, unknown, ServerProps
     const [localVideo, setLocalVideo] = useState<LocalVideo | null>(null)
     const queryUrlValid = typeof queryUrl === 'string' && queryUrl.startsWith('http')
 
-    const createPlayer = (props: Pick<VideoPlayerProps, 'url' | 'hls'>) => (
+    const localPlayer = useMemo(() => localVideo === null ? null : (
         <VideoPlayer
-            {...props}
+            {...localVideo}
             autoplay
         />
-    )
+    ), [localVideo])
 
     return (
         <NoSsr>
@@ -53,11 +53,17 @@ const VideoParserPlayer: React.FC<PageProps<object, object, unknown, ServerProps
                                 (parsedUrl) => {
                                     const url = pureHlsUrl(parsedUrl)
                                     const hls = M3u8.isM3u8Url(url)
-                                    return createPlayer({ url, hls })
+                                    return (
+                                        <VideoPlayer
+                                            url={url}
+                                            hls={hls}
+                                            autoplay
+                                        />
+                                    )
                                 }
                             }
                         </VideoUrlParser>
-                    ) : null : createPlayer(localVideo)
+                    ) : null : localPlayer
                 }
                 <IconButton
                     color='primary'
@@ -66,9 +72,9 @@ const VideoParserPlayer: React.FC<PageProps<object, object, unknown, ServerProps
                         position: 'absolute',
                         transition: 'all .4s',
                         zIndex: 180,
+                        left: 12,
                         top: 12,
-                        right: 12,
-                        transform: (queryUrlValid || localVideo !== null) ? 'none' : 'translate(calc(100% - 16px - 50vw), calc(50vh + 16px - 100%))',
+                        transform: (queryUrlValid || localVideo !== null) ? 'none' : 'translate(calc(100% + 16px - 50vw), calc(50vh + 16px - 100%))',
                     }}
                     onClick={
                         async () => {
@@ -80,11 +86,11 @@ const VideoParserPlayer: React.FC<PageProps<object, object, unknown, ServerProps
                                     url,
                                     hls: M3u8.isM3u8Url(url)
                                 })
-                                setTimeout(() => {
-                                    if (localUrl !== null) {
+                                if (!localUrl) {
+                                    setTimeout(() => {
                                         URL.revokeObjectURL(localUrl)
-                                    }
-                                }, 1000)
+                                    }, 200)
+                                }
                             }
                         }
                     }
