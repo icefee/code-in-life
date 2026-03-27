@@ -8,7 +8,7 @@ import { VideoPlayer, type VideoPlayerProps } from '~/components/player'
 import VideoUrlParser from '~/components/search/VideoUrlParser'
 import { pureHlsUrl } from '~/util/proxy'
 import { M3u8 } from '~/util/regExp'
-import { openFile, blobToFile } from '~/util/blob'
+import { openFile } from '~/util/blob'
 
 interface ServerProps {
     url: string;
@@ -80,12 +80,9 @@ const VideoParserPlayer: React.FC<PageProps<object, object, unknown, ServerProps
                     onClick={
                         async () => {
                             const file = await openFile('.m3u8,.mp4')
-                            let log = ''
                             if (file !== null) {
-                                log += '\n file not null'
                                 let localUrl = localVideo?.url
                                 const url = URL.createObjectURL(file)
-                                log += 'object url = ' + url
                                 setLocalVideo({
                                     url,
                                     hls: M3u8.isM3u8Url(file.name)
@@ -96,8 +93,6 @@ const VideoParserPlayer: React.FC<PageProps<object, object, unknown, ServerProps
                                     }, 200)
                                 }
                             }
-                            const blob = new Blob([log], { type: 'text/plain' })
-                            blobToFile(blob, 'log.txt')
                         }
                     }
                 >
