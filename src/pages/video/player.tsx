@@ -74,7 +74,7 @@ const VideoParserPlayer: React.FC<PageProps<object, object, unknown, ServerProps
                         zIndex: 180,
                         left: 8,
                         top: 8,
-                        transform: (queryUrlValid || localVideo !== null) ? 'none' : 'translate(calc(-100% + 8px + 50vw), calc(-100% + 8px + 50vh))',
+                        transform: (queryUrlValid || localVideo !== null) ? 'none' : 'translate(calc(-50% - 8px + 50vw), calc(-50% - 8px + 50vh))',
                     }}
                     onClick={
                         async () => {
