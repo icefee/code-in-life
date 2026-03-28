@@ -1,8 +1,8 @@
 import React from 'react'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import Spinner from './Spinner'
 import { alpha } from '@mui/material/styles'
+import Spinner from './Spinner'
 
 interface LoadingScreenProps {
     label?: string;
