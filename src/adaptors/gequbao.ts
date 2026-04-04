@@ -7,18 +7,17 @@ export const key = 'g'
 export const baseUrl = 'https://www.gequbao.com'
 
 export async function getMusicSearch(s: string): Promise<SearchMusic[]> {
-    const url = `${baseUrl}/s/${s}`;
+    const url = `${baseUrl}/s/${s}`
     try {
         const html = await getTextWithTimeout(url)
         const $ = cheerio.load(html)
-        const blocks = $('.card-text .row .music-link')
+        const blocks = $('.card-text .row .d-block')
         const songs = [] as SearchMusic[]
         if (blocks) {
             for (let i = 0; i < blocks.length; i++) {
                 const block = $(blocks[i])
                 const id = key + block.attr('href').match(/\d+$/)?.[0]
-                const name = block.find('.music-title span').text()
-                const artist = block.find('small.text-jade').text().trim()
+                const [name, artist] = block.attr('title').split(' - ')
                 songs.push({
                     id,
                     name,
@@ -38,28 +37,14 @@ export async function getMusicSearch(s: string): Promise<SearchMusic[]> {
 async function getPageSource(id: string) {
     const url = `${baseUrl}/music/${id}`
     const response = await getResponse(url)
-    const setCookie = response.headers.get('set-cookie')
-    if (response.status === 403 && setCookie) {
-        const cookie = setCookie.split(';')[0]
-        return getTextWithTimeout(url, {
-            headers: {
-                cookie
-            }
-        })
-    }
     return response.text()
 }
 
 export async function parsePoster(id: string) {
     try {
         const html = await getPageSource(id)
-        const matches = html.replace(/\\\//g, '/').match(
-            /(?<="mp3_cover":")https?:\/\/[^']+?(?=")/
-        )
-        if (matches) {
-            return matches[0]
-        }
-        return null
+        const $ = cheerio.load(html)
+        return $('#aplayer img').attr('src')
     }
     catch (err) {
         return null
@@ -69,15 +54,19 @@ export async function parsePoster(id: string) {
 export async function parseMusicUrl(id: string) {
     try {
         const html = await getPageSource(id)
-        const clue = html.match(
-            /(?<="play_id":")[\w\=]+/
+        const dataJson = html.match(
+            /(?<=window.appData\s*=\s*JSON.parse\(').+?(?='\);)/
         )?.[0]
-        const searchParams = new URLSearchParams({
-            id: clue
-        })
+        const { play_id } = JSON.parse(
+            dataJson
+                .replace(/\\u0022/g, '"')
+                .replace(/\\u([0-9a-fA-F]{4})/g, '\\\\u$1')
+        )
         const { code, data } = await getResponse(`${baseUrl}/api/play-url`, {
             method: 'POST',
-            body: searchParams
+            body: new URLSearchParams({
+                id: play_id
+            })
         }).then<{
             code: number;
             data: {
@@ -96,9 +85,8 @@ export async function parseMusicUrl(id: string) {
 export async function parseLrc(id: string) {
     try {
         const html = await getPageSource(id)
-        const lrcText = html.match(
-            /(?<=id="content-lrc">)(.|\n)+?(?=<\/div>)/
-        )?.[0]
+        const $ = cheerio.load(html)
+        const lrcText = $('#content-lrc').text()
         return parseLrcText(lrcText.replaceAll('<br />', '\n'))
     }
     catch (err) {
