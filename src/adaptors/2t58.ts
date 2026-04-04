@@ -1,4 +1,4 @@
-import { getResponse, getText, parseLrcText, escapeSymbols, Headers } from './common'
+import { parseLrcText, escapeSymbols, getTextWithTimeout, getJson } from './common'
 import { timeFormatter } from '../util/date'
 import { userAgent, Api } from '../util/config'
 
@@ -6,6 +6,7 @@ export const key = 't'
 
 export const baseUrl = 'http://2t58.com'
 
+/*
 const getSafeResponse: typeof getResponse = async (url, init) => {
     const response = await getResponse(url, init)
     if (response.status === 403) {
@@ -24,6 +25,7 @@ const getSafeText: typeof getText = async (...args) => {
     const response = await getSafeResponse(...args)
     return response.text()
 }
+*/
 
 function matchSongs(source: string) {
     const matchBlocks = source.match(
@@ -59,7 +61,7 @@ async function getPageSongs(s: string, page: number) {
     }
     url += '.html'
     try {
-        const html = await getSafeText(url)
+        const html = await getTextWithTimeout(url)
         const songs = matchSongs(html)
         return {
             html,
@@ -100,7 +102,7 @@ interface ParsedSongType {
 
 async function parseSong(id: string) {
     try {
-        const result = await getSafeResponse(`${baseUrl}/js/play.php`, {
+        const result = await getJson<ParsedSongType>(`${baseUrl}/js/play.php`, {
             method: 'POST',
             body: new URLSearchParams({
                 id,
@@ -111,9 +113,7 @@ async function parseSong(id: string) {
                 'referer': `${baseUrl}/song/${id}.html`,
                 'user-agent': userAgent
             }
-        }).then<ParsedSongType>(
-            response => response.json()
-        )
+        })
         return result
     }
     catch (err) {
@@ -135,7 +135,7 @@ const getLrcUrl = (id: string) => `${baseUrl}/plug/down.php?ac=music&lk=lrc&id=$
 
 export async function parseLrc(id: string) {
     try {
-        const lrc = await getSafeText(getLrcUrl(id))
+        const lrc = await getTextWithTimeout(getLrcUrl(id))
         const lrcs = parseLrcText(lrc)
         return lrcs.filter(
             ({ text }) => !text.match(
