@@ -1,4 +1,4 @@
-import { cheerio, getTextWithTimeout, getResponse, parseLrcText } from './common'
+import { cheerio, getTextWithTimeout, parseLrcText, getJson } from './common'
 import { timeFormatter } from '../util/date'
 import { Api } from '../util/config'
 
@@ -34,10 +34,8 @@ export async function getMusicSearch(s: string): Promise<SearchMusic[]> {
     }
 }
 
-async function getPageSource(id: string) {
-    const url = `${baseUrl}/music/${id}`
-    const response = await getResponse(url)
-    return response.text()
+function getPageSource(id: string) {
+    return getTextWithTimeout(`${baseUrl}/music/${id}`)
 }
 
 export async function parsePoster(id: string) {
@@ -62,19 +60,17 @@ export async function parseMusicUrl(id: string) {
                 .replace(/\\u0022/g, '"')
                 .replace(/\\u([0-9a-fA-F]{4})/g, '\\\\u$1')
         )
-        const { code, data } = await getResponse(`${baseUrl}/api/play-url`, {
-            method: 'POST',
-            body: new URLSearchParams({
-                id: play_id
-            })
-        }).then<{
+        const { code, data } = await getJson<{
             code: number;
             data: {
                 url: string;
             }
-        }>(
-            (response) => response.json()
-        )
+        }>(`${baseUrl}/api/play-url`, {
+            method: 'POST',
+            body: new URLSearchParams({
+                id: play_id
+            })
+        })
         return code === 1 ? data.url : null
     }
     catch (err) {
