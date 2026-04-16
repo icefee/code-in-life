@@ -1,7 +1,7 @@
 {
   "name": "code-in-life",
   "description": "A website hosted on netlify cloud(before gatsby cloud).",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "license": "MIT",
   "scripts": {
     "build": "gatsby build",
@@ -26,7 +26,7 @@
     "gatsby-plugin-manifest": "^5.16.0",
     "gatsby-plugin-no-sourcemaps": "^5.16.0",
     "gatsby-plugin-offline": "^6.14.0",
-    "hls.js": "^1.6.15",
+    "hls.js": "^1.6.16",
     "hls2mp4": "^1.2.12",
     "react": "^18.3.0",
     "react-audio-visual": "^1.0.10",
